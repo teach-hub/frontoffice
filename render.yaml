@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: frontoffice
+    env: node
+    repo: https://github.com/teach-hub/frontoffice.git # optional
+    region: ohio
+    plan: free
+    branch: main
+    buildCommand: npm install && npm run build
+    startCommand: npx serve -s build
+    numInstances: 1
+    healthCheckPath: /
