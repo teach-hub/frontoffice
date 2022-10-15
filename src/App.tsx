@@ -1,26 +1,54 @@
-import React from 'react';
+import { useEffect } from 'react';
+import { graphql } from 'babel-plugin-relay/macro'
+import { fetchQuery, RelayEnvironmentProvider} from 'react-relay';
+
+import environment from './relayEnvironment';
+
 import logo from './logo.svg';
 import './App.css';
 
-function App() {
+
+const AppVersionQuery = graphql`
+  query AppQuery {
+    app {
+      version
+    }
+  }
+`;
+
+
+const App = ({ environment }: { environment: any }) => {
+
+  useEffect(() => {
+    fetchQuery(environment, AppVersionQuery, {})
+      .toPromise()
+      .then(queryResult => {
+        console.log('GraphQL response');
+        console.log(queryResult);
+      }
+    );
+  }, [environment])
+
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.tsx</code> and save to reload.
+          Hey there, you're using TeachHub
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
       </header>
     </div>
   );
 }
 
-export default App;
+
+const AppRoot = (props: any) => {
+
+  return (
+    <RelayEnvironmentProvider environment={environment}>
+      <App environment={environment} />
+    </RelayEnvironmentProvider>
+  );
+}
+
+export default AppRoot;
