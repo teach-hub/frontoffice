@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { graphql } from 'babel-plugin-relay/macro'
 import { fetchQuery, RelayEnvironmentProvider} from 'react-relay';
+import { ChakraProvider } from '@chakra-ui/react'
 
 import environment from './relayEnvironment';
 
-import logo from './logo.svg';
-import './App.css';
-
+import Box from './components/Box';
+import Heading from './components/Heading';
 
 const AppVersionQuery = graphql`
   query AppQuery {
@@ -30,24 +30,20 @@ const App = ({ environment }: { environment: any }) => {
   }, [environment])
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Hey there, you're using TeachHub
-        </p>
-      </header>
-    </div>
+    <>
+      <Heading mb={4} size="xl">TeachHub</Heading>
+    </>
   );
 }
 
 
-const AppRoot = (props: any) => {
-
+const AppRoot = () => {
   return (
-    <RelayEnvironmentProvider environment={environment}>
-      <App environment={environment} />
-    </RelayEnvironmentProvider>
+    <ChakraProvider>
+      <RelayEnvironmentProvider environment={environment}>
+        <App environment={environment} />
+      </RelayEnvironmentProvider>
+    </ChakraProvider>
   );
 }
 
