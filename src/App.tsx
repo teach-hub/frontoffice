@@ -1,50 +1,34 @@
-import { useEffect } from 'react';
-import { graphql } from 'babel-plugin-relay/macro'
-import { fetchQuery, RelayEnvironmentProvider} from 'react-relay';
+import { RelayEnvironmentProvider} from 'react-relay';
+import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react'
 
 import environment from './relayEnvironment';
 
-import Box from './components/Box';
-import Heading from './components/Heading';
+import Root from './routes/root';
+import NotFoundRoute from './routes/notFound';
 
-const AppVersionQuery = graphql`
-  query AppQuery {
-    app {
-      version
-    }
-  }
-`;
-
-
-const App = ({ environment }: { environment: any }) => {
-
-  useEffect(() => {
-    fetchQuery(environment, AppVersionQuery, {})
-      .toPromise()
-      .then(queryResult => {
-        console.log('GraphQL response');
-        console.log(queryResult);
-      }
-    );
-  }, [environment])
-
+const App = () => {
   return (
-    <>
-      <Heading mb={4} size="xl">TeachHub</Heading>
-    </>
+    <Routes>
+      <Route path="/">
+        <Route index element={<Root />} />
+
+        {/* Using path="*"" means "match anything", so this route
+            acts like a catch-all for URLs that we don't have explicit
+            routes for. */}
+        <Route path="*" element={<NotFoundRoute />} />
+      </Route>
+    </Routes>
   );
 }
 
-
-const AppRoot = () => {
-  return (
-    <ChakraProvider>
-      <RelayEnvironmentProvider environment={environment}>
-        <App environment={environment} />
-      </RelayEnvironmentProvider>
-    </ChakraProvider>
-  );
-}
+const AppRoot = () =>
+  <ChakraProvider>
+    <RelayEnvironmentProvider environment={environment}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </RelayEnvironmentProvider>
+  </ChakraProvider>
 
 export default AppRoot;

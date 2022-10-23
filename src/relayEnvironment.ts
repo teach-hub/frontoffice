@@ -1,11 +1,13 @@
 import { Environment, Network, RecordSource, Store } from 'relay-runtime';
 
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:4000';
+
 const fetchQuery = async (
   operation: any,
   variables: any,
 ) => {
 
-  const url = 'http://localhost:3000/graphql';
+  const url = `${BACKEND_URL}/graphql`;
 
   const body = JSON.stringify({
     query: operation.text,

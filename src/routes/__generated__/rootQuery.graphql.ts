@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1bab442780f7e15bc5ee4bf9636b2495>>
+ * @generated SignedSource<<97e9bd33e6c8e80b672d99913ae71628>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,15 +9,15 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type AppQuery$variables = {};
-export type AppQuery$data = {
+export type rootQuery$variables = {};
+export type rootQuery$data = {
   readonly app: {
     readonly version: string | null;
   } | null;
 };
-export type AppQuery = {
-  response: AppQuery$data;
-  variables: AppQuery$variables;
+export type rootQuery = {
+  response: rootQuery$data;
+  variables: rootQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -46,7 +46,7 @@ return {
     "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
-    "name": "AppQuery",
+    "name": "rootQuery",
     "selections": (v0/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
@@ -55,20 +55,20 @@ return {
   "operation": {
     "argumentDefinitions": [],
     "kind": "Operation",
-    "name": "AppQuery",
+    "name": "rootQuery",
     "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "269ff7ac5029050d4141c3df6b6a7262",
+    "cacheID": "3e30f938f14f9720152c21396e72739a",
     "id": null,
     "metadata": {},
-    "name": "AppQuery",
+    "name": "rootQuery",
     "operationKind": "query",
-    "text": "query AppQuery {\n  app {\n    version\n  }\n}\n"
+    "text": "query rootQuery {\n  app {\n    version\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "e765b3b4c5b40c69358cfa694304a277";
+(node as any).hash = "d90e3eb3150f2a5d3a0a85c7d6ea7e17";
 
 export default node;
