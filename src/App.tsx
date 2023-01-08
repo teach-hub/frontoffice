@@ -6,19 +6,24 @@ import environment from './relayEnvironment';
 
 import Root from './routes/root';
 import NotFoundRoute from './routes/notFound';
+import UserProfilePage from './pages/UserProfile';
+import Navigation from './components/Navigation';
 
 const App = () => {
   return (
-    <Routes>
-      <Route path="/">
-        <Route index element={<Root />} />
+    <Navigation>
+      <Routes>
+        <Route path="/">
+          <Route index element={<Root />} />
 
-        {/* Using path="*"" means "match anything", so this route
-            acts like a catch-all for URLs that we don't have explicit
-            routes for. */}
-        <Route path="*" element={<NotFoundRoute />} />
-      </Route>
-    </Routes>
+          {/* Using path="*"" means "match anything", so this route
+              acts like a catch-all for URLs that we don't have explicit
+              routes for. */}
+          <Route path="profile" element={<UserProfilePage />} />
+          <Route path="*" element={<NotFoundRoute />} />
+        </Route>
+      </Routes>
+    </Navigation>
   );
 };
 

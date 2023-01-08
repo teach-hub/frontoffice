@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<97e9bd33e6c8e80b672d99913ae71628>>
+ * @generated SignedSource<<9943c58193f2b510cea6b2e0723033d5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,14 +10,11 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 export type rootQuery$variables = {};
-export type rootQuery$data = {
-  readonly app: {
-    readonly version: string | null;
-  } | null;
+export type rootQuery$data = { readonly app: { readonly version: string | null; } | null;
 };
-export type rootQuery = {
-  response: rootQuery$data;
-  variables: rootQuery$variables;
+export type UserProfileQuery = {
+  response: UserProfileQuery$data;
+  variables: UserProfileQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -25,16 +22,23 @@ var v0 = [
   {
     "alias": null,
     "args": null,
-    "concreteType": "AppType",
+    "concreteType": "UserType",
     "kind": "LinkedField",
-    "name": "app",
+    "name": "viewer",
     "plural": false,
     "selections": [
       {
         "alias": null,
         "args": null,
         "kind": "ScalarField",
-        "name": "version",
+        "name": "name",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "surname",
         "storageKey": null
       }
     ],
@@ -46,7 +50,7 @@ return {
     "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
-    "name": "rootQuery",
+    "name": "UserProfileQuery",
     "selections": (v0/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
@@ -55,20 +59,20 @@ return {
   "operation": {
     "argumentDefinitions": [],
     "kind": "Operation",
-    "name": "rootQuery",
+    "name": "UserProfileQuery",
     "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "3e30f938f14f9720152c21396e72739a",
+    "cacheID": "9329695d75b1fb42bb0f867ee259ba4e",
     "id": null,
     "metadata": {},
-    "name": "rootQuery",
+    "name": "UserProfileQuery",
     "operationKind": "query",
-    "text": "query rootQuery {\n  app {\n    version\n  }\n}\n"
+    "text": "query UserProfileQuery {\n  viewer {\n    name\n    surname\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "d90e3eb3150f2a5d3a0a85c7d6ea7e17";
+(node as any).hash = "264b7b7311061608f7f0ed70de300928";
 
 export default node;
