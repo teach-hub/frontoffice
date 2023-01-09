@@ -12,9 +12,9 @@ type Props = ButtonProps & {
   _hover?: Record<string, string>;
 }
 
-const Button = ({children, onClick, h, w, colorScheme, ...rest}: Props): JSX.Element => {
+const Button = ({children, onClick, colorScheme, ...rest}: Props): JSX.Element => {
   return (
-    <ChakraButton {...rest} onClick={onClick} h={h} w={w} colorScheme={colorScheme}>
+    <ChakraButton {...rest} onClick={onClick} colorScheme={colorScheme}>
       {children}
     </ChakraButton>
   );
