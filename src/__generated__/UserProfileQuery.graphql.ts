@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9943c58193f2b510cea6b2e0723033d5>>
+ * @generated SignedSource<<62dbdd66975d7b9924d0839367996288>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -22,11 +22,18 @@ var v0 = [
   {
     "alias": null,
     "args": null,
-    "concreteType": "UserType",
+    "concreteType": "User",
     "kind": "LinkedField",
     "name": "viewer",
     "plural": false,
     "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "userId",
+        "storageKey": null
+      },
       {
         "alias": null,
         "args": null,
@@ -38,7 +45,28 @@ var v0 = [
         "alias": null,
         "args": null,
         "kind": "ScalarField",
-        "name": "surname",
+        "name": "lastName",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "githubId",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "file",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "notificationEmail",
         "storageKey": null
       }
     ],
@@ -63,16 +91,16 @@ return {
     "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "9329695d75b1fb42bb0f867ee259ba4e",
+    "cacheID": "a7975fb56ae7148dd4928be923725ac5",
     "id": null,
     "metadata": {},
     "name": "UserProfileQuery",
     "operationKind": "query",
-    "text": "query UserProfileQuery {\n  viewer {\n    name\n    surname\n  }\n}\n"
+    "text": "query UserProfileQuery {\n  viewer {\n    userId\n    name\n    lastName\n    githubId\n    file\n    notificationEmail\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "264b7b7311061608f7f0ed70de300928";
+(node as any).hash = "0f4325581d09ad23e30335df104191e2";
 
 export default node;

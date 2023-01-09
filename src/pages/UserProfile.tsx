@@ -1,5 +1,5 @@
 import { useEffect, useState, ChangeEvent } from 'react';
-import { fetchQuery, useRelayEnvironment } from 'react-relay';
+import { fetchQuery, useRelayEnvironment, useMutation } from 'react-relay';
 import { graphql } from 'babel-plugin-relay/macro'
 
 import {
@@ -19,15 +19,43 @@ import Button from '../components/Button';
 const Query = graphql`
   query UserProfileQuery {
     viewer {
+      userId
       name
-      surname
+      lastName
+      githubId
+      file
+      notificationEmail
     }
   }
 `;
 
-const CancelButton = () => {
+/*
+      name: { type: GraphQLString },
+      lastName: { type: GraphQLString },
+      file: { type: GraphQLString },
+      githubId: { type: GraphQLString },
+      notificationsEmail: { type: GraphQLString },
+*/
+
+const mutation = graphql`
+  mutation UserProfileMutation(
+    $id: ID!,
+    $name: String,
+    $lastName: String,
+    $githubId: String,
+    $notificationEmail: String
+  ) {
+    updateUser(userId: $id, name: $name, lastName: $lastName, githubId: $githubId, notificationEmail: $notificationEmail) {
+      name
+      lastName
+      notificationEmail
+    }
+  }
+`;
+
+const CancelButton = (rest: any) => {
   return (
-    <Button bg="red.400" color="white" w="full" _hover={{ bg: 'red.500' }}>
+    <Button {...rest} bg="red.400" color="white" w="full" _hover={{ bg: 'red.500' }}>
       Cancelar
     </Button>
   );
@@ -53,7 +81,10 @@ const UserProfilePage = (): JSX.Element => {
 
   const [queryResult, setResult] = useState<UserProfileQuery$data['viewer'] | undefined>();
   const [isEditing, setIsEditing] = useState<boolean>(false);
+
   const relayEnv = useRelayEnvironment();
+
+  const [commitMutation, isMutationInFlight] = useMutation(mutation);
 
   useEffect(() => {
     fetchQuery<UserProfileQuery>(relayEnv, Query, {})
@@ -64,9 +95,9 @@ const UserProfilePage = (): JSX.Element => {
 
         setResult(queryResult?.viewer);
       })
-  }, [])
+  }, [relayEnv])
 
-  const handleOnChangeField = (fieldName: 'name' | 'surname') => (e: ChangeEvent<HTMLInputElement>) => {
+  const handleOnChangeField = (fieldName: string) => (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
     setResult(c => {
@@ -74,6 +105,21 @@ const UserProfilePage = (): JSX.Element => {
 
       return { ...c, [fieldName]: value };
     })
+  }
+
+  const handleSubmit = (e: MouseEvent) => {
+    commitMutation({ variables: {
+      id: queryResult?.userId,
+      name: queryResult?.name,
+      lastName: queryResult?.lastName,
+      githubId: queryResult?.githubId,
+      file: queryResult?.file,
+      notificationEmail: queryResult?.notificationEmail
+    }})
+  }
+
+  const handleCancel = (e: MouseEvent) => {
+    setIsEditing(false);
   }
 
   return (
@@ -101,7 +147,8 @@ const UserProfilePage = (): JSX.Element => {
             <FormLabel>Apellido</FormLabel>
             <InputField
               isReadOnly={!isEditing}
-              onChange={handleOnChangeField('surname')}
+              value={queryResult?.lastName ?? undefined}
+              onChange={handleOnChangeField('lastName')}
               placeholder="Perez"
               type="text"
             />
@@ -111,15 +158,19 @@ const UserProfilePage = (): JSX.Element => {
             <FormLabel>Padron</FormLabel>
             <InputField
               isReadOnly={!isEditing}
+              value={queryResult?.file ?? undefined}
+              onChange={handleOnChangeField('file')}
               placeholder="12345"
               type="number"
             />
           </FormControl>
 
           <FormControl padding="10px" isRequired>
-            <FormLabel>Email</FormLabel>
+            <FormLabel>Email (notificaciones)</FormLabel>
             <InputField
               isReadOnly={!isEditing}
+              value={queryResult?.notificationEmail ?? undefined}
+              onChange={handleOnChangeField('noticationsEmail')}
               placeholder="joseph@example.com"
               type="email"
             />
@@ -129,17 +180,18 @@ const UserProfilePage = (): JSX.Element => {
             <FormLabel>Usuario de Github</FormLabel>
             <InputField
               isReadOnly={!isEditing}
+              value={queryResult?.githubId ?? undefined}
+              onChange={handleOnChangeField('githubId')}
               placeholder="michalescott"
               type="text"
             />
           </FormControl>
         </Box>
-
       </Box>
       {isEditing &&
         <Stack padding="10px" spacing={6} direction={['column', 'row']}>
-          <CancelButton />
-          <SubmitButton />
+          <CancelButton onClick={handleCancel} />
+          <SubmitButton onClick={handleSubmit} />
         </Stack>
       }
     </Box>
