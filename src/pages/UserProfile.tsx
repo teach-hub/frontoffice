@@ -1,20 +1,18 @@
-import { useEffect, useState, ChangeEvent } from 'react';
-import { fetchQuery, useRelayEnvironment, useMutation } from 'react-relay';
-import { graphql } from 'babel-plugin-relay/macro'
+import { useState, ChangeEvent, Suspense } from 'react';
+import { useRelayEnvironment, commitMutation, useLazyLoadQuery } from 'react-relay';
 
-import {
-  Box,
-  FormControl,
-  FormLabel,
-  Heading,
-  Stack,
-} from '@chakra-ui/react';
+import { graphql } from 'babel-plugin-relay/macro';
 
-import { UserProfileQuery, UserProfileQuery$data } from '../__generated__/UserProfileQuery.graphql';
+import { FormControl, FormLabel, Stack } from '@chakra-ui/react';
 
 import AvatarImage from '../components/AvatarImage';
 import InputField from '../components/InputField';
 import Button from '../components/Button';
+import Box from '../components/Box';
+import Heading from '../components/Heading';
+
+import type { UserProfileQuery, UserProfileQuery$data } from '../__generated__/UserProfileQuery.graphql';
+import type { UserProfileMutation } from '../__generated__/UserProfileMutation.graphql';
 
 const Query = graphql`
   query UserProfileQuery {
@@ -29,25 +27,20 @@ const Query = graphql`
   }
 `;
 
-/*
-      name: { type: GraphQLString },
-      lastName: { type: GraphQLString },
-      file: { type: GraphQLString },
-      githubId: { type: GraphQLString },
-      notificationsEmail: { type: GraphQLString },
-*/
-
 const mutation = graphql`
   mutation UserProfileMutation(
     $id: ID!,
     $name: String,
     $lastName: String,
+    $file: String,
     $githubId: String,
     $notificationEmail: String
   ) {
-    updateUser(userId: $id, name: $name, lastName: $lastName, githubId: $githubId, notificationEmail: $notificationEmail) {
+    updateUser(userId: $id, file: $file, name: $name, lastName: $lastName, githubId: $githubId, notificationEmail: $notificationEmail) {
       name
       lastName
+      file
+      githubId
       notificationEmail
     }
   }
@@ -76,26 +69,16 @@ const SubmitButton = (rest: any) => {
   )
 };
 
+type Props = {
+  user: UserProfileQuery$data;
+}
 
-const UserProfilePage = (): JSX.Element => {
+const UserProfilePage = ({ user }: Props): JSX.Element => {
 
-  const [queryResult, setResult] = useState<UserProfileQuery$data['viewer'] | undefined>();
+  const [queryResult, setResult] = useState<UserProfileQuery$data['viewer'] | undefined>(user.viewer);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const relayEnv = useRelayEnvironment();
-
-  const [commitMutation, isMutationInFlight] = useMutation(mutation);
-
-  useEffect(() => {
-    fetchQuery<UserProfileQuery>(relayEnv, Query, {})
-      .toPromise()
-      .then(queryResult => {
-        console.log('GraphQL response');
-        console.log(queryResult);
-
-        setResult(queryResult?.viewer);
-      })
-  }, [relayEnv])
 
   const handleOnChangeField = (fieldName: string) => (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -108,14 +91,19 @@ const UserProfilePage = (): JSX.Element => {
   }
 
   const handleSubmit = (e: MouseEvent) => {
-    commitMutation({ variables: {
-      id: queryResult?.userId,
-      name: queryResult?.name,
-      lastName: queryResult?.lastName,
-      githubId: queryResult?.githubId,
-      file: queryResult?.file,
-      notificationEmail: queryResult?.notificationEmail
-    }})
+    return commitMutation<UserProfileMutation>(
+      relayEnv, {
+        mutation,
+        variables: {
+          id: queryResult?.userId ?? '',
+          name: queryResult?.name,
+          lastName: queryResult?.lastName,
+          githubId: queryResult?.githubId,
+          file: queryResult?.file,
+          notificationEmail: queryResult?.notificationEmail
+        }
+      }
+    )
   }
 
   const handleCancel = (e: MouseEvent) => {
@@ -198,4 +186,17 @@ const UserProfilePage = (): JSX.Element => {
   )
 }
 
-export default UserProfilePage;
+
+const UserProfilePageContainer = () => {
+  const data = useLazyLoadQuery<UserProfileQuery>(Query, {});
+
+  return <UserProfilePage user={data} />;
+};
+
+export default () => {
+  return (
+    <Suspense fallback={<div> Loading... </div>}>
+      <UserProfilePageContainer />
+    </Suspense>
+  );
+}
