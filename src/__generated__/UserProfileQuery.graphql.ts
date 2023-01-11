@@ -9,8 +9,16 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type rootQuery$variables = {};
-export type rootQuery$data = { readonly app: { readonly version: string | null; } | null;
+export type UserProfileQuery$variables = {};
+export type UserProfileQuery$data = {
+  readonly viewer: {
+    readonly file: string | null;
+    readonly githubId: string | null;
+    readonly lastName: string | null;
+    readonly name: string | null;
+    readonly notificationEmail: string | null;
+    readonly userId: string | null;
+  } | null;
 };
 export type UserProfileQuery = {
   response: UserProfileQuery$data;
