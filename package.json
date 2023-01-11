@@ -30,7 +30,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "relay": "relay-compiler"
+    "relay": "relay-compiler",
+    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": [
@@ -53,6 +54,10 @@
   "devDependencies": {
     "@types/react-relay": "^14.1.2",
     "babel-plugin-relay": "^14.1.0",
+    "husky": "^8.0.3",
+    "jest": "^27.5.1",
+    "lint-staged": "^13.1.0",
+    "prettier": "^2.8.2",
     "relay-compiler": "^14.1.0"
   }
 }

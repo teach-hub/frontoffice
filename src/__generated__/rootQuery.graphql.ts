@@ -10,10 +10,7 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 export type rootQuery$variables = {};
-export type rootQuery$data = {
-  readonly app: {
-    readonly version: string | null;
-  } | null;
+export type rootQuery$data = { readonly app: { readonly version: string | null; } | null;
 };
 export type rootQuery = {
   response: rootQuery$data;

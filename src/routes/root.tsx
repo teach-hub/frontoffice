@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchQuery, useRelayEnvironment } from 'react-relay';
-import { graphql } from 'babel-plugin-relay/macro'
+import { graphql } from 'babel-plugin-relay/macro';
 
 import { rootQuery, rootQuery$data } from '__generated__/rootQuery.graphql';
 
@@ -13,7 +13,6 @@ const Query = graphql`
 `;
 
 const Root = () => {
-
   const relayEnv = useRelayEnvironment();
 
   const [appVersion, setAppVersion] = useState<rootQuery$data | undefined>();
@@ -24,10 +23,9 @@ const Root = () => {
       .then(queryResult => {
         console.log('GraphQL response');
         console.log(queryResult);
-        setAppVersion(queryResult)
-      }
-    );
-  }, [relayEnv])
+        setAppVersion(queryResult);
+      });
+  }, [relayEnv]);
 
   return (
     <div>
@@ -35,6 +33,6 @@ const Root = () => {
       <h1>Current version: {appVersion?.app?.version}</h1>
     </div>
   );
-}
+};
 
 export default Root;
