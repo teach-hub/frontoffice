@@ -1,6 +1,6 @@
-import { RelayEnvironmentProvider} from 'react-relay';
+import { RelayEnvironmentProvider } from 'react-relay';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import { ChakraProvider } from '@chakra-ui/react'
+import { ChakraProvider } from '@chakra-ui/react';
 
 import environment from './relayEnvironment';
 
@@ -20,9 +20,9 @@ const App = () => {
       </Route>
     </Routes>
   );
-}
+};
 
-const AppRoot = () =>
+const AppRoot = () => (
   <ChakraProvider>
     <RelayEnvironmentProvider environment={environment}>
       <BrowserRouter>
@@ -30,5 +30,6 @@ const AppRoot = () =>
       </BrowserRouter>
     </RelayEnvironmentProvider>
   </ChakraProvider>
+);
 
 export default AppRoot;
