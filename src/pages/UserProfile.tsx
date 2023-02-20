@@ -40,6 +40,7 @@ const mutation = graphql`
     $notificationEmail: String
   ) {
     updateUser(userId: $id, file: $file, name: $name, lastName: $lastName, githubId: $githubId, notificationEmail: $notificationEmail) {
+      id
       name
       lastName
       file
@@ -85,22 +86,13 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
 
   const relayEnv = useRelayEnvironment();
 
-  const handleOnChangeField = (fieldName: string) => (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-
-    setResult(c => {
-      if (!c) return c;
-
-      return { ...c, [fieldName]: value };
-    })
-  }
-
-  const handleSubmit = (e: MouseEvent) => {
+  const onSubmit = (values: any) => {
     setShowSpinner(true);
-    return commitMutation<UserProfileMutation>(
+    commitMutation<UserProfileMutation>(
       relayEnv, {
         mutation,
         onCompleted(response, errors) {
+          // TODO: Fetchear el nuevo usuario una vez actualizado en el backend.
           setShowSpinner(false);
           toast({
             title: "¡Usuario actualizado!",
@@ -117,11 +109,11 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
         },
         variables: {
           id: queryResult?.userId ?? '',
-          name: queryResult?.name,
-          lastName: queryResult?.lastName,
-          githubId: queryResult?.githubId,
-          file: queryResult?.file,
-          notificationEmail: queryResult?.notificationEmail
+          name: values.name,
+          lastName: values.lastName,
+          githubId: values.githubId,
+          file: values.file,
+          notificationEmail: values.notificationsEmail
         }
       },
     );
@@ -132,7 +124,6 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
   }
 
   const validateForm = (values: any) => {
-    console.log('Validating', values);
     const errors = {};
 
     if (!values.name) {
@@ -163,10 +154,9 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
             githubId: queryResult?.githubId,
           }}
           validate={validateForm}
-          onSubmit={() => {}}
+          onSubmit={onSubmit}
         >
-          {({ values, errors, touched, handleChange }) => {
-            console.log('errors', errors)
+          {({ values, errors, touched, handleChange, handleSubmit }) => {
             return (
               <Box flex="1">
                 <Box padding="10px">
@@ -244,18 +234,17 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
                   </FormControl>
                 </Box>
 
+                {isEditing &&
+                  <Stack paddingTop="40px" spacing={6} direction={['column', 'row']}>
+                    <CancelButton onClick={handleCancel} />
+                    <SubmitButton onClick={handleSubmit} />
+                  </Stack>
+                }
               </Box>
             )
           }}
         </Formik>
       </Box>
-
-      {isEditing &&
-        <Stack padding="10px" spacing={6} direction={['column', 'row']}>
-          <CancelButton onClick={handleCancel} />
-          <SubmitButton onClick={handleSubmit} />
-        </Stack>
-      }
     </Box>
   )
 }
