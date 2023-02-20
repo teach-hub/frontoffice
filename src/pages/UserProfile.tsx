@@ -1,5 +1,5 @@
 import { Formik } from 'formik';
-import { useState, ChangeEvent, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useRelayEnvironment, commitMutation, useLazyLoadQuery } from 'react-relay';
 
 import { graphql } from 'babel-plugin-relay/macro';
@@ -91,9 +91,12 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
     commitMutation<UserProfileMutation>(
       relayEnv, {
         mutation,
-        onCompleted(response, errors) {
-          // TODO: Fetchear el nuevo usuario una vez actualizado en el backend.
+        onCompleted(response) {
           setShowSpinner(false);
+          console.log(response.updateUser);
+          if (response.updateUser) {
+            setResult({ userId: (queryResult?.userId ?? null), ...(response.updateUser) })
+          }
           toast({
             title: "¡Usuario actualizado!",
             description: "El usuario fue actualizado",
@@ -123,12 +126,27 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
     setIsEditing(false);
   }
 
-  const validateForm = (values: any) => {
-    const errors = {};
+  type FormValues = {
+    name: string | undefined | null;
+    lastName: string | undefined | null;
+    githubId: string | undefined | null;
+    notificationsEmail: string | undefined | null;
+    file: string | undefined | null;
+  }
+
+  const validateForm = (values: FormValues) => {
+    const errors: { [P in keyof Partial<FormValues>]: string } = {};
 
     if (!values.name) {
-      // @ts-expect-error
       errors.name = 'Nombre no puede ser vacio';
+    }
+
+    if (!values.lastName) {
+      errors.lastName = 'Nombre no puede ser vacio';
+    }
+
+    if (!values.file) {
+      errors.lastName = 'El padron no puede estar vacio';
     }
 
     return errors;
@@ -156,7 +174,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
           validate={validateForm}
           onSubmit={onSubmit}
         >
-          {({ values, errors, touched, handleChange, handleSubmit }) => {
+          {({ values, errors, handleChange, handleSubmit }) => {
             return (
               <Box flex="1">
                 <Box padding="10px">
