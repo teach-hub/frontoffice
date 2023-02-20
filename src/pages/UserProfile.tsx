@@ -17,6 +17,8 @@ import useToast from '../hooks/useToast';
 import type { UserProfileQuery, UserProfileQuery$data } from '../__generated__/UserProfileQuery.graphql';
 import type { UserProfileMutation } from '../__generated__/UserProfileMutation.graphql';
 
+type Mutable<T> = { -readonly [P in keyof T]: T[P] };
+
 const Query = graphql`
   query UserProfileQuery {
     viewer {
@@ -80,13 +82,13 @@ type Props = {
 const UserProfilePage = ({ user }: Props): JSX.Element => {
 
   const toast = useToast();
-  const [queryResult, setResult] = useState<UserProfileQuery$data['viewer'] | undefined>(user.viewer);
+  const [queryResult, setResult] = useState<UserProfileQuery$data['viewer']>(user.viewer);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   const relayEnv = useRelayEnvironment();
 
-  const onSubmit = (values: any) => {
+  const onSubmit = (values: FormValues) => {
     setShowSpinner(true);
     commitMutation<UserProfileMutation>(
       relayEnv, {
@@ -103,7 +105,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
             status: "success"
           })
         },
-        onError(error) {
+        onError() {
           toast({
             title: "Error",
             description: "El usuario no pudo ser actualizado",
@@ -116,26 +118,19 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
           lastName: values.lastName,
           githubId: values.githubId,
           file: values.file,
-          notificationEmail: values.notificationsEmail
+          notificationEmail: values.notificationEmail
         }
       },
     );
   }
 
-  const handleCancel = (e: MouseEvent) => {
-    setIsEditing(false);
-  }
+  const handleCancel = () => setIsEditing(false);
 
-  type FormValues = {
-    name: string | undefined | null;
-    lastName: string | undefined | null;
-    githubId: string | undefined | null;
-    notificationsEmail: string | undefined | null;
-    file: string | undefined | null;
-  }
+  type FormValues = Mutable<Omit<NonNullable<UserProfileQuery$data['viewer']>, 'userId'>>;
+  type FormErrors = { [P in keyof Partial<FormValues>]: string };
 
-  const validateForm = (values: FormValues) => {
-    const errors: { [P in keyof Partial<FormValues>]: string } = {};
+  const validateForm = (values: FormValues): FormErrors => {
+    const errors: FormErrors = {};
 
     if (!values.name) {
       errors.name = 'Nombre no puede ser vacio';
@@ -149,15 +144,17 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
       errors.lastName = 'El padron no puede estar vacio';
     }
 
+    // TODO. Validar que el email tenga forma de email.
+
     return errors;
   }
 
-  if (showSpinner) return <Spinner />;
+  if (showSpinner || !queryResult) return <Spinner />;
 
   return (
     <Box padding="20%" paddingTop="50px">
       <Heading lineHeight={1.1} fontSize={{ base: '2xl', sm: '3xl' }}>
-        Perfil de {queryResult?.name}
+        Perfil de {queryResult.name}
       </Heading>
       <Box display="flex" flexDir="row">
 
@@ -165,11 +162,11 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
 
         <Formik
           initialValues={{
-            name: queryResult?.name,
-            lastName: queryResult?.lastName,
-            file: queryResult?.file,
-            notificationsEmail: queryResult?.notificationEmail,
-            githubId: queryResult?.githubId,
+            name: queryResult.name || '',
+            lastName: queryResult.lastName || '',
+            file: queryResult.file || '',
+            notificationEmail: queryResult.notificationEmail || '',
+            githubId: queryResult.githubId || '',
           }}
           validate={validateForm}
           onSubmit={onSubmit}
@@ -183,7 +180,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
                     <InputField
                       id="name"
                       isReadOnly={!isEditing}
-                      value={values.name ?? undefined}
+                      value={values.name}
                       onChange={handleChange}
                       placeholder="Ernesto"
                       type="text"
@@ -198,7 +195,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
                     <InputField
                       id="lastName"
                       isReadOnly={!isEditing}
-                      value={values.lastName ?? undefined}
+                      value={values.lastName}
                       onChange={handleChange}
                       placeholder="Perez"
                       type="text"
@@ -213,7 +210,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
                     <InputField
                       id="file"
                       isReadOnly={!isEditing}
-                      value={values.file ?? undefined}
+                      value={values.file}
                       onChange={handleChange}
                       placeholder="12345"
                       type="number"
@@ -223,17 +220,17 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
                 </Box>
 
                 <Box padding="10px">
-                  <FormControl isInvalid={!!errors.notificationsEmail}>
+                  <FormControl isInvalid={!!errors.notificationEmail}>
                     <FormLabel>Email (notificaciones)</FormLabel>
                     <InputField
                       id="notificationsEmail"
                       isReadOnly={!isEditing}
-                      value={values.notificationsEmail ?? undefined}
+                      value={values.notificationEmail}
                       onChange={handleChange}
                       placeholder="joseph@example.com"
                       type="email"
                     />
-                    <FormErrorMessage>{errors.notificationsEmail}</FormErrorMessage>
+                    <FormErrorMessage>{errors.notificationEmail}</FormErrorMessage>
                   </FormControl>
                 </Box>
 
@@ -243,7 +240,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
                     <InputField
                       id="githubId"
                       isReadOnly={!isEditing}
-                      value={values.githubId ?? undefined}
+                      value={values.githubId}
                       onChange={handleChange}
                       placeholder="michalescott"
                       type="text"
