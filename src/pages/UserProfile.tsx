@@ -1,15 +1,18 @@
+import { Formik } from 'formik';
 import { useState, ChangeEvent, Suspense } from 'react';
 import { useRelayEnvironment, commitMutation, useLazyLoadQuery } from 'react-relay';
 
 import { graphql } from 'babel-plugin-relay/macro';
 
-import { FormControl, FormLabel, Stack } from '@chakra-ui/react';
+import { FormControl, FormErrorMessage, FormLabel, Stack, Spinner } from '@chakra-ui/react';
 
 import AvatarImage from '../components/AvatarImage';
 import InputField from '../components/InputField';
 import Button from '../components/Button';
 import Box from '../components/Box';
 import Heading from '../components/Heading';
+
+import useToast from '../hooks/useToast';
 
 import type { UserProfileQuery, UserProfileQuery$data } from '../__generated__/UserProfileQuery.graphql';
 import type { UserProfileMutation } from '../__generated__/UserProfileMutation.graphql';
@@ -75,8 +78,10 @@ type Props = {
 
 const UserProfilePage = ({ user }: Props): JSX.Element => {
 
+  const toast = useToast();
   const [queryResult, setResult] = useState<UserProfileQuery$data['viewer'] | undefined>(user.viewer);
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   const relayEnv = useRelayEnvironment();
 
@@ -91,9 +96,25 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
   }
 
   const handleSubmit = (e: MouseEvent) => {
+    setShowSpinner(true);
     return commitMutation<UserProfileMutation>(
       relayEnv, {
         mutation,
+        onCompleted(response, errors) {
+          setShowSpinner(false);
+          toast({
+            title: "¡Usuario actualizado!",
+            description: "El usuario fue actualizado",
+            status: "success"
+          })
+        },
+        onError(error) {
+          toast({
+            title: "Error",
+            description: "El usuario no pudo ser actualizado",
+            status: "error"
+          })
+        },
         variables: {
           id: queryResult?.userId ?? '',
           name: queryResult?.name,
@@ -102,13 +123,27 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
           file: queryResult?.file,
           notificationEmail: queryResult?.notificationEmail
         }
-      }
-    )
+      },
+    );
   }
 
   const handleCancel = (e: MouseEvent) => {
     setIsEditing(false);
   }
+
+  const validateForm = (values: any) => {
+    console.log('Validating', values);
+    const errors = {};
+
+    if (!values.name) {
+      // @ts-expect-error
+      errors.name = 'Nombre no puede ser vacio';
+    }
+
+    return errors;
+  }
+
+  if (showSpinner) return <Spinner />;
 
   return (
     <Box padding="20%" paddingTop="50px">
@@ -119,63 +154,102 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
 
         <AvatarImage onEdit={() => setIsEditing(true)} url="https://bit.ly/sage-adebayo" />
 
-        <Box flex="1">
-          <FormControl padding="10px" isRequired>
-            <FormLabel>Nombre</FormLabel>
-            <InputField
-              isReadOnly={!isEditing}
-              value={queryResult?.name ?? undefined}
-              onChange={handleOnChangeField('name')}
-              placeholder="Ernesto"
-              type="text"
-            />
-          </FormControl>
+        <Formik
+          initialValues={{
+            name: queryResult?.name,
+            lastName: queryResult?.lastName,
+            file: queryResult?.file,
+            notificationsEmail: queryResult?.notificationEmail,
+            githubId: queryResult?.githubId,
+          }}
+          validate={validateForm}
+          onSubmit={() => {}}
+        >
+          {({ values, errors, touched, handleChange }) => {
+            console.log('errors', errors)
+            return (
+              <Box flex="1">
+                <Box padding="10px">
+                  <FormControl isInvalid={!!errors.name}>
+                    <FormLabel>Nombre</FormLabel>
+                    <InputField
+                      id="name"
+                      isReadOnly={!isEditing}
+                      value={values.name ?? undefined}
+                      onChange={handleChange}
+                      placeholder="Ernesto"
+                      type="text"
+                    />
+                    <FormErrorMessage>{errors.name}</FormErrorMessage>
+                  </FormControl>
+                </Box>
 
-          <FormControl padding="10px" isRequired>
-            <FormLabel>Apellido</FormLabel>
-            <InputField
-              isReadOnly={!isEditing}
-              value={queryResult?.lastName ?? undefined}
-              onChange={handleOnChangeField('lastName')}
-              placeholder="Perez"
-              type="text"
-            />
-          </FormControl>
+                <Box padding="10px">
+                  <FormControl isInvalid={!!errors.lastName}>
+                    <FormLabel>Apellido</FormLabel>
+                    <InputField
+                      id="lastName"
+                      isReadOnly={!isEditing}
+                      value={values.lastName ?? undefined}
+                      onChange={handleChange}
+                      placeholder="Perez"
+                      type="text"
+                    />
+                    <FormErrorMessage>{errors.lastName}</FormErrorMessage>
+                  </FormControl>
+                </Box>
 
-          <FormControl padding="10px" isRequired>
-            <FormLabel>Padron</FormLabel>
-            <InputField
-              isReadOnly={!isEditing}
-              value={queryResult?.file ?? undefined}
-              onChange={handleOnChangeField('file')}
-              placeholder="12345"
-              type="number"
-            />
-          </FormControl>
+                <Box padding="10px">
+                  <FormControl isInvalid={!!errors.file}>
+                    <FormLabel>Padron</FormLabel>
+                    <InputField
+                      id="file"
+                      isReadOnly={!isEditing}
+                      value={values.file ?? undefined}
+                      onChange={handleChange}
+                      placeholder="12345"
+                      type="number"
+                    />
+                    <FormErrorMessage>{errors.file}</FormErrorMessage>
+                  </FormControl>
+                </Box>
 
-          <FormControl padding="10px" isRequired>
-            <FormLabel>Email (notificaciones)</FormLabel>
-            <InputField
-              isReadOnly={!isEditing}
-              value={queryResult?.notificationEmail ?? undefined}
-              onChange={handleOnChangeField('noticationsEmail')}
-              placeholder="joseph@example.com"
-              type="email"
-            />
-          </FormControl>
+                <Box padding="10px">
+                  <FormControl isInvalid={!!errors.notificationsEmail}>
+                    <FormLabel>Email (notificaciones)</FormLabel>
+                    <InputField
+                      id="notificationsEmail"
+                      isReadOnly={!isEditing}
+                      value={values.notificationsEmail ?? undefined}
+                      onChange={handleChange}
+                      placeholder="joseph@example.com"
+                      type="email"
+                    />
+                    <FormErrorMessage>{errors.notificationsEmail}</FormErrorMessage>
+                  </FormControl>
+                </Box>
 
-          <FormControl padding="10px" isRequired>
-            <FormLabel>Usuario de Github</FormLabel>
-            <InputField
-              isReadOnly={!isEditing}
-              value={queryResult?.githubId ?? undefined}
-              onChange={handleOnChangeField('githubId')}
-              placeholder="michalescott"
-              type="text"
-            />
-          </FormControl>
-        </Box>
+                <Box padding="10px">
+                  <FormControl isInvalid={!!errors.githubId}>
+                    <FormLabel>Usuario de Github</FormLabel>
+                    <InputField
+                      id="githubId"
+                      isReadOnly={!isEditing}
+                      value={values.githubId ?? undefined}
+                      onChange={handleChange}
+                      placeholder="michalescott"
+                      type="text"
+                    />
+                    <FormErrorMessage>{errors.githubId}</FormErrorMessage>
+                  </FormControl>
+                </Box>
+
+              </Box>
+            )
+          }}
+        </Formik>
       </Box>
+
       {isEditing &&
         <Stack padding="10px" spacing={6} direction={['column', 'row']}>
           <CancelButton onClick={handleCancel} />
@@ -190,12 +264,14 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
 const UserProfilePageContainer = () => {
   const data = useLazyLoadQuery<UserProfileQuery>(Query, {});
 
+  if (!data.viewer) return null;
+
   return <UserProfilePage user={data} />;
 };
 
 export default () => {
   return (
-    <Suspense fallback={<div> Loading... </div>}>
+    <Suspense fallback={<div> Cargando... </div>}>
       <UserProfilePageContainer />
     </Suspense>
   );
