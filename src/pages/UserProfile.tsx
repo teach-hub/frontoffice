@@ -32,17 +32,9 @@ const Query = graphql`
   }
 `;
 
-const mutation = graphql`
-  mutation UserProfileMutation(
-    $id: ID!,
-    $name: String,
-    $lastName: String,
-    $file: String,
-    $githubId: String,
-    $notificationEmail: String
-  ) {
-    updateUser(userId: $id, file: $file, name: $name, lastName: $lastName, githubId: $githubId, notificationEmail: $notificationEmail) {
-      id
+const Mutation = graphql`
+  mutation UserProfileMutation($input: UserProfileMutationInput!) {
+    updateUser(data: $input) {
       name
       lastName
       file
@@ -89,37 +81,43 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
   const relayEnv = useRelayEnvironment();
 
   const onSubmit = (values: FormValues) => {
+    if (!queryResult?.userId) {
+      throw new Error('No user id!')
+    }
+
     setShowSpinner(true);
     commitMutation<UserProfileMutation>(
-      relayEnv, {
-        mutation,
-        onCompleted(response) {
-          setShowSpinner(false);
-          console.log(response.updateUser);
-          if (response.updateUser) {
-            setResult({ userId: (queryResult?.userId ?? null), ...(response.updateUser) })
-          }
-          toast({
-            title: "¡Usuario actualizado!",
-            description: "El usuario fue actualizado",
-            status: "success"
-          })
-        },
-        onError() {
-          toast({
-            title: "Error",
-            description: "El usuario no pudo ser actualizado",
-            status: "error"
-          })
-        },
+      relayEnv,
+      {
+        mutation: Mutation,
         variables: {
-          id: queryResult?.userId ?? '',
+          id: queryResult.userId,
           name: values.name,
           lastName: values.lastName,
           githubId: values.githubId,
           file: values.file,
           notificationEmail: values.notificationEmail
-        }
+        },
+        onCompleted: (response, errors) => {
+          setShowSpinner(false);
+
+          if (!errors?.length) {
+            if (response.updateUser) {
+              setResult({ userId: queryResult.userId, ...response.updateUser })
+            }
+            toast({
+              title: "¡Usuario actualizado!",
+              description: "El usuario fue actualizado",
+              status: "success"
+            })
+          } else {
+            toast({
+              title: "Error",
+              description: "El usuario no pudo ser actualizado",
+              status: "error"
+            })
+          }
+        },
       },
     );
   }
