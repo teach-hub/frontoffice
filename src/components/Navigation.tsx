@@ -17,12 +17,23 @@ const NavigationBarStyle = {
 const NavigationBar = () => {
   const navigate = useNavigate();
 
+  const handleGoToHome = () => navigate('/')
+  const handleGoToProjects = () => navigate('/projects')
   const handleGoToProfile = () => navigate('/profile')
 
   return (
     <Stack shadow='lg' direction='row' style={NavigationBarStyle} >
+      <Button h="100%" w="10%" colorScheme="blackAlpha">
+        Realizar entrega
+      </Button>
+      <Button h="100%" w="10%" colorScheme="blackAlpha" onClick={handleGoToProjects}>
+        TPS
+      </Button>
       <Button h="100%" w="10%" colorScheme="blackAlpha" onClick={handleGoToProfile}>
         Mi perfil
+      </Button>
+      <Button h="100%" w="10%" colorScheme="blackAlpha" onClick={handleGoToHome}>
+        Home
       </Button>
     </Stack>
   );
