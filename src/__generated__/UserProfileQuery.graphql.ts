@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<62dbdd66975d7b9924d0839367996288>>
+ * @generated SignedSource<<1999e60eb64d19bcb3097656259f555a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,12 +12,12 @@ import { ConcreteRequest, Query } from 'relay-runtime';
 export type UserProfileQuery$variables = {};
 export type UserProfileQuery$data = {
   readonly viewer: {
-    readonly file: string | null;
-    readonly githubId: string | null;
-    readonly lastName: string | null;
-    readonly name: string | null;
-    readonly notificationEmail: string | null;
-    readonly userId: string | null;
+    readonly file: string;
+    readonly githubId: string;
+    readonly lastName: string;
+    readonly name: string;
+    readonly notificationEmail: string;
+    readonly userId: string;
   } | null;
 };
 export type UserProfileQuery = {
@@ -30,7 +30,7 @@ var v0 = [
   {
     "alias": null,
     "args": null,
-    "concreteType": "User",
+    "concreteType": "ViewerType",
     "kind": "LinkedField",
     "name": "viewer",
     "plural": false,

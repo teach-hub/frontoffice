@@ -33,8 +33,22 @@ const Query = graphql`
 `;
 
 const Mutation = graphql`
-  mutation UserProfileMutation($input: UserProfileMutationInput!) {
-    updateUser(data: $input) {
+  mutation UserProfileMutation(
+    $userId: ID!,
+    $name: String!,
+    $lastName: String!,
+    $file: String!,
+    $githubId: String!,
+    $notificationEmail: String!
+  ) {
+    updateUser(
+      userId: $userId,
+  	  name: $name,
+  	  lastName: $lastName,
+  	  file: $file,
+  	  githubId: $githubId,
+  	  notificationEmail: $notificationEmail
+    ) {
       name
       lastName
       file
@@ -91,7 +105,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
       {
         mutation: Mutation,
         variables: {
-          id: queryResult.userId,
+          userId: queryResult.userId,
           name: values.name,
           lastName: values.lastName,
           githubId: values.githubId,
@@ -103,6 +117,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
 
           if (!errors?.length) {
             if (response.updateUser) {
+              // @ts-expect-error
               setResult({ userId: queryResult.userId, ...response.updateUser })
             }
             toast({

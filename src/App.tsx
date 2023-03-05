@@ -8,6 +8,7 @@ import HomePage from './pages/Home';
 import NotFoundPage from './pages/NotFound';
 import UserProfilePage from './pages/UserProfile';
 import UserProjects from './pages/Projects';
+import UserCoursesPage from './pages/UserCourses';
 
 import Navigation from './components/Navigation';
 
@@ -19,6 +20,7 @@ const App = () => {
           <Route index element={<HomePage />} />
           <Route path="profile" element={<UserProfilePage />} />
           <Route path="projects" element={<UserProjects />} />
+          <Route path="courses" element={<UserCoursesPage />} />
 
           {/* Using path="*"" means "match anything", so this route
               acts like a catch-all for URLs that we don't have explicit

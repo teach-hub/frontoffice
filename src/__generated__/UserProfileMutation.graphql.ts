@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8a3a15415f0bb172f5bb6cceab48aebd>>
+ * @generated SignedSource<<fac80b5db88fca7525926315e1fae7d4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,12 +10,12 @@
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type UserProfileMutation$variables = {
-  file?: string | null;
-  githubId?: string | null;
-  id: string;
-  lastName?: string | null;
-  name?: string | null;
-  notificationEmail?: string | null;
+  file: string;
+  githubId: string;
+  lastName: string;
+  name: string;
+  notificationEmail: string;
+  userId: string;
 };
 export type UserProfileMutation$data = {
   readonly updateUser: {
@@ -45,22 +45,22 @@ v1 = {
 v2 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "id"
+  "name": "lastName"
 },
 v3 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "lastName"
+  "name": "name"
 },
 v4 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "name"
+  "name": "notificationEmail"
 },
 v5 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "notificationEmail"
+  "name": "userId"
 },
 v6 = [
   {
@@ -94,7 +94,7 @@ v6 = [
       {
         "kind": "Variable",
         "name": "userId",
-        "variableName": "id"
+        "variableName": "userId"
       }
     ],
     "concreteType": "User",
@@ -161,28 +161,28 @@ return {
   "kind": "Request",
   "operation": {
     "argumentDefinitions": [
-      (v2/*: any*/),
-      (v4/*: any*/),
+      (v5/*: any*/),
       (v3/*: any*/),
+      (v2/*: any*/),
       (v0/*: any*/),
       (v1/*: any*/),
-      (v5/*: any*/)
+      (v4/*: any*/)
     ],
     "kind": "Operation",
     "name": "UserProfileMutation",
     "selections": (v6/*: any*/)
   },
   "params": {
-    "cacheID": "9f37c433c8afd3e1537477674e5ac1ca",
+    "cacheID": "77a45837bd1c3636e3ea742a866850ba",
     "id": null,
     "metadata": {},
     "name": "UserProfileMutation",
     "operationKind": "mutation",
-    "text": "mutation UserProfileMutation(\n  $id: ID!\n  $name: String\n  $lastName: String\n  $file: String\n  $githubId: String\n  $notificationEmail: String\n) {\n  updateUser(userId: $id, file: $file, name: $name, lastName: $lastName, githubId: $githubId, notificationEmail: $notificationEmail) {\n    name\n    lastName\n    file\n    githubId\n    notificationEmail\n  }\n}\n"
+    "text": "mutation UserProfileMutation(\n  $userId: ID!\n  $name: String!\n  $lastName: String!\n  $file: String!\n  $githubId: String!\n  $notificationEmail: String!\n) {\n  updateUser(userId: $userId, name: $name, lastName: $lastName, file: $file, githubId: $githubId, notificationEmail: $notificationEmail) {\n    name\n    lastName\n    file\n    githubId\n    notificationEmail\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "cfc5fef6894ed8185054f8bd394e448e";
+(node as any).hash = "a95f3e0c49efb24ad8a39b22e4456bf0";
 
 export default node;
