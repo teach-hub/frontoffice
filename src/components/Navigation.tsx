@@ -1,6 +1,8 @@
 import { ReactNode, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { graphql } from 'babel-plugin-relay/macro';
 import { Stack, Switch } from '@chakra-ui/react';
+import { useLazyLoadQuery } from 'react-relay';
 
 import Box from '../components/Box';
 import Button from '../components/Button';
@@ -101,6 +103,18 @@ const NavigationBar = ({  }) => {
 }
 
 const Navigation = ({ children }: { children : ReactNode }): JSX.Element => {
+  // const data = useLazyLoadQuery(
+  //   graphql`
+  //     query NavigationQuery {
+  //       viewer {
+  //         userId
+  //         name
+  //       }
+  //     }
+  //   `,
+  //   {}
+  // )
+
   return (
     <>
       <NavigationBar />

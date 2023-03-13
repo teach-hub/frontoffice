@@ -9,6 +9,7 @@ import NotFoundPage from './pages/NotFound';
 import UserProfilePage from './pages/UserProfile';
 import UserProjects from './pages/Projects';
 import UserCoursesPage from './pages/UserCourses';
+import CourseView from './pages/CourseView';
 
 import Navigation from './components/Navigation';
 
@@ -21,6 +22,7 @@ const App = () => {
           <Route path="profile" element={<UserProfilePage />} />
           <Route path="projects" element={<UserProjects />} />
           <Route path="courses" element={<UserCoursesPage />} />
+          <Route path="course/:courseId" element={<CourseView />} />
 
           {/* Using path="*"" means "match anything", so this route
               acts like a catch-all for URLs that we don't have explicit

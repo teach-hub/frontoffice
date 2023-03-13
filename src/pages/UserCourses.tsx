@@ -1,4 +1,5 @@
 import { MouseEvent, Suspense } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useLazyLoadQuery } from 'react-relay';
 import { graphql } from 'babel-plugin-relay/macro';
@@ -37,6 +38,7 @@ const Query = graphql`
 type Course = NonNullable<NonNullable<UserCoursesQuery$data['viewer']>['courses']>[number];
 
 const UserCourseCard = ({ course }: { course: Course }) => {
+  const navigate = useNavigate();
 
   if (!course) return null;
 
@@ -44,10 +46,11 @@ const UserCourseCard = ({ course }: { course: Course }) => {
   const subjectTitle = [subjectCode, subjectName].join(' - ');
 
   const handleCardClick = (e: MouseEvent<HTMLDivElement>) => {
+    navigate('/course')
   }
 
   return (
-    <Card margin="10px" borderColor="black" background="blue.50" variant='outline'>
+    <Card shadow="md" margin="10px" borderColor="black" background="blue.50" variant='outline'>
       <CardBody onClick={handleCardClick} display="flex" alignItems="center">
 
         <Heading flex="1" size="md">{course?.name}</Heading>
