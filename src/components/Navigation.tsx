@@ -103,17 +103,17 @@ const NavigationBar = ({  }) => {
 }
 
 const Navigation = ({ children }: { children : ReactNode }): JSX.Element => {
-  // const data = useLazyLoadQuery(
-  //   graphql`
-  //     query NavigationQuery {
-  //       viewer {
-  //         userId
-  //         name
-  //       }
-  //     }
-  //   `,
-  //   {}
-  // )
+  const _ = useLazyLoadQuery(
+    graphql`
+      query NavigationQuery {
+        viewer {
+          userId
+          name
+        }
+      }
+    `,
+    {}
+  )
 
   return (
     <>

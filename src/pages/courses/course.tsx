@@ -1,18 +1,17 @@
 import { Suspense } from 'react';
 import { graphql } from 'babel-plugin-relay/macro';
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from 'react-router-dom';
 import { useLazyLoadQuery, useFragment } from 'react-relay';
 
 import { Stack } from '@chakra-ui/react';
 
-import Box from '../components/Box';
+import Box from '../../components/Box';
 
-
-import type { CourseViewQuery, CourseViewQuery$data } from '__generated__/CourseViewQuery.graphql';
-import type { CourseView$key } from '__generated__/CourseView.graphql';
+import type { courseQuery } from '__generated__/courseQuery.graphql';
+import type { courseInfo$key } from '__generated__/courseInfo.graphql';
 
 const Fragment = graphql`
-  fragment CourseView on ViewerCourseType {
+  fragment courseInfo on ViewerCourseType {
     users {
       name
       lastName
@@ -39,10 +38,10 @@ const Fragment = graphql`
 `;
 
 type Props = {
-  findCourse: CourseView$key
+  findCourse: courseInfo$key
 }
 
-const CourseStatistics = ({}) => {
+const CourseStatistics = () => {
   return (
     <Stack direction="row">
       <Box background="red">Grafico 1</Box>
@@ -52,12 +51,21 @@ const CourseStatistics = ({}) => {
   )
 }
 
+const CourseUsers = () => {
+  const navigate = useNavigate();
+
+  return (
+    <Box onClick={() => navigate('users')}> Usuarios </Box>
+  )
+}
+
 const CourseInfo = ({ findCourse }: Props) => {
   const data = useFragment(Fragment, findCourse);
 
   return (
     <Box>
       <CourseStatistics />
+      <CourseUsers />
     </Box>
   )
 }
@@ -65,14 +73,14 @@ const CourseInfo = ({ findCourse }: Props) => {
 const CourseViewContainer = () => {
   const params = useParams();
 
-  const data = useLazyLoadQuery<CourseViewQuery>(
+  const data = useLazyLoadQuery<courseQuery>(
     graphql`
-      query CourseViewQuery($courseId: Int!) {
+      query courseQuery($courseId: Int!) {
         viewer {
           userId
           name
           findCourse(id: $courseId) {
-            ...CourseView
+            ...courseInfo
           }
         }
       }

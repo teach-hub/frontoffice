@@ -7,16 +7,17 @@ import { graphql } from 'babel-plugin-relay/macro';
 import { Card, CardBody, IconButton, Badge } from '@chakra-ui/react'
 import { CloseIcon } from '@chakra-ui/icons'
 
-import Text from '../components/Text';
-import Heading from '../components/Heading';
-import Box from '../components/Box';
+import Text from '../../components/Text';
+import Heading from '../../components/Heading';
+import Box from '../../components/Box';
 
-import type { UserCoursesQuery$data, UserCoursesQuery } from '__generated__/UserCoursesQuery.graphql';
+import type { coursesQuery$data, coursesQuery } from '__generated__/coursesQuery.graphql';
 
 const Query = graphql`
-  query UserCoursesQuery {
+  query coursesQuery {
     viewer {
       courses {
+        id
         name
         year
         period
@@ -35,7 +36,7 @@ const Query = graphql`
   }
 `;
 
-type Course = NonNullable<NonNullable<UserCoursesQuery$data['viewer']>['courses']>[number];
+type Course = NonNullable<NonNullable<coursesQuery$data['viewer']>['courses']>[number];
 
 const UserCourseCard = ({ course }: { course: Course }) => {
   const navigate = useNavigate();
@@ -45,8 +46,8 @@ const UserCourseCard = ({ course }: { course: Course }) => {
   const { role, subject: { code: subjectCode, name: subjectName } } = course;
   const subjectTitle = [subjectCode, subjectName].join(' - ');
 
-  const handleCardClick = (e: MouseEvent<HTMLDivElement>) => {
-    navigate('/course')
+  const handleCardClick = (_: MouseEvent<HTMLDivElement>) => {
+    navigate(`/courses/${course.id}`)
   }
 
   return (
@@ -73,7 +74,7 @@ const UserCourseCard = ({ course }: { course: Course }) => {
 }
 
 
-type Viewer = NonNullable<UserCoursesQuery$data['viewer']>;
+type Viewer = NonNullable<coursesQuery$data['viewer']>;
 
 const UserCoursesList = ({ data }: { data: Viewer }) => {
 
@@ -86,7 +87,7 @@ const UserCoursesList = ({ data }: { data: Viewer }) => {
 
 
 const UserCoursesContainer = () => {
-  const data = useLazyLoadQuery<UserCoursesQuery>(Query, {});
+  const data = useLazyLoadQuery<coursesQuery>(Query, {});
 
   if (!data.viewer) return null;
 

@@ -286,6 +286,8 @@ const UserProfilePageContainer = () => {
   return <UserProfilePage user={data} />;
 };
 
+UserProfilePageContainer.whyDidYouRender = true;
+
 export default () => {
   return (
     <Suspense fallback={<div> Cargando... </div>}>

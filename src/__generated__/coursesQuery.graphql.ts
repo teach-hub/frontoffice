@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<81eed703679d4fd13f48c369da63f2e8>>
+ * @generated SignedSource<<cde9d0bc8ed312f03cc191d570395941>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,10 +9,11 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type UserCoursesQuery$variables = {};
-export type UserCoursesQuery$data = {
+export type coursesQuery$variables = {};
+export type coursesQuery$data = {
   readonly viewer: {
     readonly courses: ReadonlyArray<{
+      readonly id: string;
       readonly name: string;
       readonly period: number;
       readonly role: {
@@ -29,9 +30,9 @@ export type UserCoursesQuery$data = {
     } | null>;
   } | null;
 };
-export type UserCoursesQuery = {
-  response: UserCoursesQuery$data;
-  variables: UserCoursesQuery$variables;
+export type coursesQuery = {
+  response: coursesQuery$data;
+  variables: coursesQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -39,10 +40,17 @@ var v0 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
   "name": "name",
   "storageKey": null
 },
-v1 = [
+v2 = [
   {
     "alias": null,
     "args": null,
@@ -60,6 +68,7 @@ v1 = [
         "plural": true,
         "selections": [
           (v0/*: any*/),
+          (v1/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -82,7 +91,7 @@ v1 = [
             "name": "role",
             "plural": false,
             "selections": [
-              (v0/*: any*/),
+              (v1/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -101,13 +110,7 @@ v1 = [
             "name": "subject",
             "plural": false,
             "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "id",
-                "storageKey": null
-              },
+              (v0/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -122,7 +125,7 @@ v1 = [
                 "name": "active",
                 "storageKey": null
               },
-              (v0/*: any*/)
+              (v1/*: any*/)
             ],
             "storageKey": null
           }
@@ -138,8 +141,8 @@ return {
     "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
-    "name": "UserCoursesQuery",
-    "selections": (v1/*: any*/),
+    "name": "coursesQuery",
+    "selections": (v2/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -147,20 +150,20 @@ return {
   "operation": {
     "argumentDefinitions": [],
     "kind": "Operation",
-    "name": "UserCoursesQuery",
-    "selections": (v1/*: any*/)
+    "name": "coursesQuery",
+    "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "39746aa434df85f20c3d7568f165780a",
+    "cacheID": "6db7b3b72b49b999655c133186d0c1d4",
     "id": null,
     "metadata": {},
-    "name": "UserCoursesQuery",
+    "name": "coursesQuery",
     "operationKind": "query",
-    "text": "query UserCoursesQuery {\n  viewer {\n    courses {\n      name\n      year\n      period\n      role {\n        name\n        permissions\n      }\n      subject {\n        id\n        code\n        active\n        name\n      }\n    }\n  }\n}\n"
+    "text": "query coursesQuery {\n  viewer {\n    courses {\n      id\n      name\n      year\n      period\n      role {\n        name\n        permissions\n      }\n      subject {\n        id\n        code\n        active\n        name\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "8a256179135f35152fc3525393e7686b";
+(node as any).hash = "d01bc58b4fea9a0345d6c5165aa713ed";
 
 export default node;

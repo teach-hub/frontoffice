@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6cb9e43b349b7ac2f10f5bc60dcd2c23>>
+ * @generated SignedSource<<934f70fbace42b5761725912eef24791>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,7 @@
 
 import { Fragment, ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type CourseView$data = {
+export type courseInfo$data = {
   readonly name: string;
   readonly period: number;
   readonly role: {
@@ -33,11 +33,11 @@ export type CourseView$data = {
     readonly name: string | null;
   } | null>;
   readonly year: number;
-  readonly " $fragmentType": "CourseView";
+  readonly " $fragmentType": "courseInfo";
 };
-export type CourseView$key = {
-  readonly " $data"?: CourseView$data;
-  readonly " $fragmentSpreads": FragmentRefs<"CourseView">;
+export type courseInfo$key = {
+  readonly " $data"?: courseInfo$data;
+  readonly " $fragmentSpreads": FragmentRefs<"courseInfo">;
 };
 
 const node: ReaderFragment = (function(){
@@ -59,7 +59,7 @@ return {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
-  "name": "CourseView",
+  "name": "courseInfo",
   "selections": [
     {
       "alias": null,
@@ -167,6 +167,6 @@ return {
 };
 })();
 
-(node as any).hash = "6c31a4d75e19ba93f5cde8fe6674d410";
+(node as any).hash = "a82170daaa571eb03eb1f8de466a2a49";
 
 export default node;

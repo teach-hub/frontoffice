@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<43f991dc0de23da7c31fbc5db75593db>>
+ * @generated SignedSource<<6c658ace7a07f9ba9f4b4d8c75ada699>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,21 +10,21 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type CourseViewQuery$variables = {
+export type courseQuery$variables = {
   courseId: number;
 };
-export type CourseViewQuery$data = {
+export type courseQuery$data = {
   readonly viewer: {
     readonly findCourse: {
-      readonly " $fragmentSpreads": FragmentRefs<"CourseView">;
+      readonly " $fragmentSpreads": FragmentRefs<"courseInfo">;
     } | null;
     readonly name: string;
     readonly userId: string;
   } | null;
 };
-export type CourseViewQuery = {
-  response: CourseViewQuery$data;
-  variables: CourseViewQuery$variables;
+export type courseQuery = {
+  response: courseQuery$data;
+  variables: courseQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -68,7 +68,7 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "CourseViewQuery",
+    "name": "courseQuery",
     "selections": [
       {
         "alias": null,
@@ -91,7 +91,7 @@ return {
               {
                 "args": null,
                 "kind": "FragmentSpread",
-                "name": "CourseView"
+                "name": "courseInfo"
               }
             ],
             "storageKey": null
@@ -107,7 +107,7 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "CourseViewQuery",
+    "name": "courseQuery",
     "selections": [
       {
         "alias": null,
@@ -236,16 +236,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "a599815c389be5974523fd56619db388",
+    "cacheID": "f7d5bbbd491f981f9779bf0907d7c1ab",
     "id": null,
     "metadata": {},
-    "name": "CourseViewQuery",
+    "name": "courseQuery",
     "operationKind": "query",
-    "text": "query CourseViewQuery(\n  $courseId: Int!\n) {\n  viewer {\n    userId\n    name\n    findCourse(id: $courseId) {\n      ...CourseView\n    }\n  }\n}\n\nfragment CourseView on ViewerCourseType {\n  users {\n    name\n    lastName\n    file\n  }\n  year\n  period\n  name\n  role {\n    name\n    parent {\n      id\n      name\n    }\n    permissions\n  }\n  subject {\n    id\n    code\n    active\n    name\n  }\n}\n"
+    "text": "query courseQuery(\n  $courseId: Int!\n) {\n  viewer {\n    userId\n    name\n    findCourse(id: $courseId) {\n      ...courseInfo\n    }\n  }\n}\n\nfragment courseInfo on ViewerCourseType {\n  users {\n    name\n    lastName\n    file\n  }\n  year\n  period\n  name\n  role {\n    name\n    parent {\n      id\n      name\n    }\n    permissions\n  }\n  subject {\n    id\n    code\n    active\n    name\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "5fe6f9e493f6d56d5c0143a1fbb18a2f";
+(node as any).hash = "cd1502c5865d9b7dd6fbbe89b17a3f22";
 
 export default node;
