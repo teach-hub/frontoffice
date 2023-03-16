@@ -22,7 +22,7 @@ type Mutable<T> = { -readonly [P in keyof T]: T[P] };
 const Query = graphql`
   query UserProfileQuery {
     viewer {
-      userId
+      id
       name
       lastName
       githubId
@@ -33,8 +33,22 @@ const Query = graphql`
 `;
 
 const Mutation = graphql`
-  mutation UserProfileMutation($input: UserProfileMutationInput!) {
-    updateUser(data: $input) {
+  mutation UserProfileMutation(
+    $userId: ID!,
+    $name: String!,
+    $lastName: String!,
+    $file: String!,
+    $githubId: String!,
+    $notificationEmail: String!
+  ) {
+    updateUser(
+      userId: $userId,
+  	  name: $name,
+  	  lastName: $lastName,
+  	  file: $file,
+  	  githubId: $githubId,
+  	  notificationEmail: $notificationEmail
+    ) {
       name
       lastName
       file
@@ -81,7 +95,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
   const relayEnv = useRelayEnvironment();
 
   const onSubmit = (values: FormValues) => {
-    if (!queryResult?.userId) {
+    if (!queryResult?.id) {
       throw new Error('No user id!')
     }
 
@@ -91,18 +105,19 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
       {
         mutation: Mutation,
         variables: {
-          id: queryResult.userId,
+          userId: queryResult.id,
           name: values.name,
           lastName: values.lastName,
           githubId: values.githubId,
           file: values.file,
-          notificationEmail: values.notificationEmail
+          notificationEmail: values.notificationEmail,
         },
         onCompleted: (response, errors) => {
           setShowSpinner(false);
 
           if (!errors?.length) {
             if (response.updateUser) {
+              // @ts-expect-error
               setResult({ userId: queryResult.userId, ...response.updateUser })
             }
             toast({
@@ -124,7 +139,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
 
   const handleCancel = () => setIsEditing(false);
 
-  type FormValues = Mutable<Omit<NonNullable<UserProfileQuery$data['viewer']>, 'userId'>>;
+  type FormValues = Mutable<Omit<NonNullable<UserProfileQuery$data['viewer']>, 'id'>>;
   type FormErrors = { [P in keyof Partial<FormValues>]: string };
 
   const validateForm = (values: FormValues): FormErrors => {
@@ -270,6 +285,8 @@ const UserProfilePageContainer = () => {
 
   return <UserProfilePage user={data} />;
 };
+
+UserProfilePageContainer.whyDidYouRender = true;
 
 export default () => {
   return (

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<62dbdd66975d7b9924d0839367996288>>
+ * @generated SignedSource<<43447d014c6d83ae265e58e75c63f846>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,12 +12,12 @@ import { ConcreteRequest, Query } from 'relay-runtime';
 export type UserProfileQuery$variables = {};
 export type UserProfileQuery$data = {
   readonly viewer: {
-    readonly file: string | null;
-    readonly githubId: string | null;
-    readonly lastName: string | null;
-    readonly name: string | null;
-    readonly notificationEmail: string | null;
-    readonly userId: string | null;
+    readonly file: string;
+    readonly githubId: string;
+    readonly id: string;
+    readonly lastName: string;
+    readonly name: string;
+    readonly notificationEmail: string;
   } | null;
 };
 export type UserProfileQuery = {
@@ -30,7 +30,7 @@ var v0 = [
   {
     "alias": null,
     "args": null,
-    "concreteType": "User",
+    "concreteType": "ViewerType",
     "kind": "LinkedField",
     "name": "viewer",
     "plural": false,
@@ -39,7 +39,7 @@ var v0 = [
         "alias": null,
         "args": null,
         "kind": "ScalarField",
-        "name": "userId",
+        "name": "id",
         "storageKey": null
       },
       {
@@ -99,16 +99,16 @@ return {
     "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "a7975fb56ae7148dd4928be923725ac5",
+    "cacheID": "0c8ab1c402ca514bb88ffd827a5d57e2",
     "id": null,
     "metadata": {},
     "name": "UserProfileQuery",
     "operationKind": "query",
-    "text": "query UserProfileQuery {\n  viewer {\n    userId\n    name\n    lastName\n    githubId\n    file\n    notificationEmail\n  }\n}\n"
+    "text": "query UserProfileQuery {\n  viewer {\n    id\n    name\n    lastName\n    githubId\n    file\n    notificationEmail\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "0f4325581d09ad23e30335df104191e2";
+(node as any).hash = "562de079d471216af1e5aa8056625876";
 
 export default node;

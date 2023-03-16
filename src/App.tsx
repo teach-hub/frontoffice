@@ -6,8 +6,14 @@ import environment from './relayEnvironment';
 
 import HomePage from './pages/Home';
 import NotFoundPage from './pages/NotFound';
+
 import UserProfilePage from './pages/UserProfile';
-import UserProjects from './pages/Projects';
+
+import UserCoursesPage from './pages/courses';
+import CoursePage from './pages/courses/course';
+import CourseUsersPage from './pages/courses/users';
+import CourseProjectsPage from './pages/courses/projects';
+import ProjectPage from './pages/courses/projects/project';
 
 import Navigation from './components/Navigation';
 
@@ -18,7 +24,17 @@ const App = () => {
         <Route path="/">
           <Route index element={<HomePage />} />
           <Route path="profile" element={<UserProfilePage />} />
-          <Route path="projects" element={<UserProjects />} />
+          <Route path="courses">
+            <Route index element={<UserCoursesPage />} />
+            <Route path=":courseId">
+              <Route index element={<CoursePage />} />
+              <Route path="users" element={<CourseUsersPage />} />
+              <Route path="projects">
+                <Route index element={<CourseProjectsPage/>} />
+                <Route path=":projectId" element={<ProjectPage/>} />
+              </Route>
+            </Route>
+          </Route>
 
           {/* Using path="*"" means "match anything", so this route
               acts like a catch-all for URLs that we don't have explicit
