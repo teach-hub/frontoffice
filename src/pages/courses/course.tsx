@@ -6,6 +6,7 @@ import { useLazyLoadQuery, useFragment } from 'react-relay';
 import { Stack } from '@chakra-ui/react';
 
 import Box from '../../components/Box';
+import Navigation from '../../components/Navigation';
 
 import type { courseQuery } from '__generated__/courseQuery.graphql';
 import type { courseInfo$key } from '__generated__/courseInfo.graphql';
@@ -100,8 +101,10 @@ const CourseViewContainer = () => {
 export default () => {
 
   return (
-    <Suspense fallback={<div>Cargando...</div>}>
-      <CourseViewContainer />
-    </Suspense>
+    <Navigation>
+      <Suspense fallback={<div>Cargando...</div>}>
+        <CourseViewContainer />
+      </Suspense>
+    </Navigation>
   )
 }

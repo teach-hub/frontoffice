@@ -10,35 +10,13 @@ import { CloseIcon } from '@chakra-ui/icons'
 import Text from '../../components/Text';
 import Heading from '../../components/Heading';
 import Box from '../../components/Box';
+import Navigation from '../../components/Navigation';
 
 import type { coursesQuery$data, coursesQuery } from '__generated__/coursesQuery.graphql';
 
-const Query = graphql`
-  query coursesQuery {
-    viewer {
-      courses {
-        id
-        name
-        year
-        period
-        role {
-          name
-          permissions
-        }
-        subject {
-          id
-          code
-          active
-          name
-        }
-      }
-    }
-  }
-`;
-
 type Course = NonNullable<NonNullable<coursesQuery$data['viewer']>['courses']>[number];
 
-const UserCourseCard = ({ course }: { course: Course }) => {
+const CourseCard = ({ course }: { course: Course }) => {
   const navigate = useNavigate();
 
   if (!course) return null;
@@ -76,28 +54,53 @@ const UserCourseCard = ({ course }: { course: Course }) => {
 
 type Viewer = NonNullable<coursesQuery$data['viewer']>;
 
-const UserCoursesList = ({ data }: { data: Viewer }) => {
+const CoursesList = ({ data }: { data: Viewer }) => {
 
   return <>
-    {data.courses.map(course =>
-      <UserCourseCard course={course} />
+    {data.courses.map((course, i) =>
+      <CourseCard key={i} course={course} />
     )}
   </>
 }
 
 
-const UserCoursesContainer = () => {
-  const data = useLazyLoadQuery<coursesQuery>(Query, {});
+const CoursesContainer = () => {
 
-  if (!data.viewer) return null;
+  console.log('****');
 
-  return <UserCoursesList data={data.viewer} />
+  const data = useLazyLoadQuery<coursesQuery>(
+    graphql`
+      query coursesQuery {
+        viewer {
+          courses {
+            id
+            name
+            year
+            period
+            role {
+              name
+              permissions
+            }
+            subject {
+              id
+              code
+              active
+              name
+            }
+          }
+        }
+      }
+    `, {});
+
+  if (!data.viewer || !data.viewer.courses) return null;
+
+  return <CoursesList data={data.viewer} />
 }
 
-export default () => {
-  return (
-    <Suspense fallback={<div> Cargando... </div>}>
-      <UserCoursesContainer />
-    </Suspense>
-  )
-}
+export default () => (
+  <Suspense fallback={<div> Cargando... </div>}>
+    <Navigation>
+      <CoursesContainer />
+    </Navigation>
+  </Suspense>
+)

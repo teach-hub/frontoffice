@@ -11,6 +11,7 @@ import InputField from '../components/InputField';
 import Button from '../components/Button';
 import Box from '../components/Box';
 import Heading from '../components/Heading';
+import Navigation from '../components/Navigation';
 
 import useToast from '../hooks/useToast';
 
@@ -286,12 +287,12 @@ const UserProfilePageContainer = () => {
   return <UserProfilePage user={data} />;
 };
 
-UserProfilePageContainer.whyDidYouRender = true;
-
 export default () => {
   return (
-    <Suspense fallback={<div> Cargando... </div>}>
-      <UserProfilePageContainer />
-    </Suspense>
+    <Navigation>
+      <Suspense fallback={<div> Cargando... </div>}>
+        <UserProfilePageContainer />
+      </Suspense>
+    </Navigation>
   );
 }

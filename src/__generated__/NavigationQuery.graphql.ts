@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ba196152e5b3f2863f29b3b5d4138205>>
+ * @generated SignedSource<<a67c39d39337053d778e66dc48cc3492>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,11 +9,16 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type NavigationQuery$variables = {};
+import { FragmentRefs } from "relay-runtime";
+export type NavigationQuery$variables = {
+  courseId: number;
+  shouldFetchCourseInfo: boolean;
+};
 export type NavigationQuery$data = {
   readonly viewer: {
     readonly id: string;
     readonly name: string;
+    readonly " $fragmentSpreads": FragmentRefs<"NavigationCourseInfo">;
   } | null;
 };
 export type NavigationQuery = {
@@ -24,59 +29,124 @@ export type NavigationQuery = {
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
-    "alias": null,
-    "args": null,
-    "concreteType": "ViewerType",
-    "kind": "LinkedField",
-    "name": "viewer",
-    "plural": false,
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "courseId"
+  },
+  {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "shouldFetchCourseInfo"
+  }
+],
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "name",
+  "storageKey": null
+};
+return {
+  "fragment": {
+    "argumentDefinitions": (v0/*: any*/),
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "NavigationQuery",
     "selections": [
       {
         "alias": null,
         "args": null,
-        "kind": "ScalarField",
-        "name": "id",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "name",
+        "concreteType": "ViewerType",
+        "kind": "LinkedField",
+        "name": "viewer",
+        "plural": false,
+        "selections": [
+          (v1/*: any*/),
+          (v2/*: any*/),
+          {
+            "condition": "shouldFetchCourseInfo",
+            "kind": "Condition",
+            "passingValue": true,
+            "selections": [
+              {
+                "args": null,
+                "kind": "FragmentSpread",
+                "name": "NavigationCourseInfo"
+              }
+            ]
+          }
+        ],
         "storageKey": null
       }
     ],
-    "storageKey": null
-  }
-];
-return {
-  "fragment": {
-    "argumentDefinitions": [],
-    "kind": "Fragment",
-    "metadata": null,
-    "name": "NavigationQuery",
-    "selections": (v0/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": [],
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "NavigationQuery",
-    "selections": (v0/*: any*/)
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": "ViewerType",
+        "kind": "LinkedField",
+        "name": "viewer",
+        "plural": false,
+        "selections": [
+          (v1/*: any*/),
+          (v2/*: any*/),
+          {
+            "condition": "shouldFetchCourseInfo",
+            "kind": "Condition",
+            "passingValue": true,
+            "selections": [
+              {
+                "alias": null,
+                "args": [
+                  {
+                    "kind": "Variable",
+                    "name": "id",
+                    "variableName": "courseId"
+                  }
+                ],
+                "concreteType": "CourseType",
+                "kind": "LinkedField",
+                "name": "findCourse",
+                "plural": false,
+                "selections": [
+                  (v1/*: any*/),
+                  (v2/*: any*/)
+                ],
+                "storageKey": null
+              }
+            ]
+          }
+        ],
+        "storageKey": null
+      }
+    ]
   },
   "params": {
-    "cacheID": "def5e2d70b78b08ae9ab0cea25d6dba9",
+    "cacheID": "7bdf03eaedee46b8b74bd5fe386619e0",
     "id": null,
     "metadata": {},
     "name": "NavigationQuery",
     "operationKind": "query",
-    "text": "query NavigationQuery {\n  viewer {\n    id\n    name\n  }\n}\n"
+    "text": "query NavigationQuery(\n  $courseId: Int!\n  $shouldFetchCourseInfo: Boolean!\n) {\n  viewer {\n    id\n    name\n    ...NavigationCourseInfo @include(if: $shouldFetchCourseInfo)\n  }\n}\n\nfragment NavigationCourseInfo on ViewerType {\n  findCourse(id: $courseId) {\n    id\n    name\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "63efda6722cd8cc7cfb6026ca14e4493";
+(node as any).hash = "06ac79ec67d7f3a67262b178ff2a296c";
 
 export default node;
