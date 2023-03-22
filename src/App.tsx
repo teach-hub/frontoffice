@@ -15,7 +15,7 @@ import CourseUsersPage from './pages/courses/users';
 import CourseProjectsPage from './pages/courses/projects';
 import ProjectPage from './pages/courses/projects/project';
 
-import Navigation from './components/Navigation';
+import { ContextProvider } from './hooks/useUserContext';
 
 const App = () => {
   return (
@@ -48,7 +48,9 @@ const AppRoot = () => (
   <ChakraProvider>
     <RelayEnvironmentProvider environment={environment}>
       <BrowserRouter>
-        <App />
+        <ContextProvider>
+          <App />
+        </ContextProvider>
       </BrowserRouter>
     </RelayEnvironmentProvider>
   </ChakraProvider>

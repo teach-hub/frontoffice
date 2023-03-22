@@ -1,4 +1,4 @@
-import { MouseEvent, Suspense } from 'react';
+import { MouseEvent, Suspense, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useLazyLoadQuery } from 'react-relay';
@@ -14,29 +14,37 @@ import Navigation from '../../components/Navigation';
 
 import type { coursesQuery$data, coursesQuery } from '__generated__/coursesQuery.graphql';
 
-type Course = NonNullable<NonNullable<coursesQuery$data['viewer']>['courses']>[number];
+type Viewer = NonNullable<coursesQuery$data['viewer']>;
 
-const CourseCard = ({ course }: { course: Course }) => {
+type UserRole = NonNullable<NonNullable<Viewer['userRoles']>[number]>;
+
+const CourseCard = ({ userRole }: { userRole: UserRole }) => {
   const navigate = useNavigate();
 
-  if (!course) return null;
+  if (!userRole) return null;
 
-  const { role, subject: { code: subjectCode, name: subjectName } } = course;
+  const { course, role } = userRole;
+
+  if (!course || !role) return null;
+
+  const { name: courseName, year: courseYear, subject: { code: subjectCode, name: subjectName } } = course;
+  const { name: roleName } = role;
+
   const subjectTitle = [subjectCode, subjectName].join(' - ');
 
   const handleCardClick = (_: MouseEvent<HTMLDivElement>) => {
-    navigate(`/courses/${course.id}`)
+    navigate(`/courses/${userRole.course?.id}`)
   }
 
   return (
     <Card shadow="md" margin="10px" borderColor="black" background="blue.50" variant='outline'>
       <CardBody onClick={handleCardClick} display="flex" alignItems="center">
 
-        <Heading flex="1" size="md">{course?.name}</Heading>
-        <Text flex="1">{course?.year}</Text>
+        <Heading flex="1" size="md">{courseName}</Heading>
+        <Text flex="1">{courseYear}</Text>
         <Text flex="1">{subjectTitle}</Text>
 
-        <Badge fontSize="md" variant="subtle" colorScheme="blue">{role.name}</Badge>
+        <Badge fontSize="md" variant="subtle" colorScheme="blue">{roleName}</Badge>
 
         <Box display="flex" flexDirection="row-reverse" alignItems="center" flex="1">
           <IconButton
@@ -51,54 +59,58 @@ const CourseCard = ({ course }: { course: Course }) => {
   );
 }
 
-
-type Viewer = NonNullable<coursesQuery$data['viewer']>;
-
-const CoursesList = ({ data }: { data: Viewer }) => {
-
-  return <>
-    {data.courses.map((course, i) =>
-      <CourseCard key={i} course={course} />
-    )}
-  </>
+const CoursesList = ({ userRoles }: { userRoles: UserRole[] }) => {
+  return (
+    <>
+      {userRoles.map((userRole, i) =>
+        <CourseCard key={i} userRole={userRole} />
+      )}
+    </>
+  )
 }
 
 
 const CoursesContainer = () => {
-
-  console.log('****');
-
   const data = useLazyLoadQuery<coursesQuery>(
     graphql`
       query coursesQuery {
         viewer {
-          courses {
+          id
+          userRoles {
             id
-            name
-            year
-            period
+            course {
+              id
+              name
+              year
+              period
+              subject {
+                id
+                code
+                active
+                name
+              }
+            }
             role {
+              id
               name
               permissions
-            }
-            subject {
-              id
-              code
-              active
-              name
             }
           }
         }
       }
     `, {});
 
-  if (!data.viewer || !data.viewer.courses) return null;
+  if (!data.viewer || !data.viewer.userRoles) {
+    return null;
+  }
 
-  return <CoursesList data={data.viewer} />
+  const viewerRoles = data.viewer.userRoles.filter(userRole => !!userRole) as UserRole[];
+
+  return <CoursesList userRoles={viewerRoles} />
 }
 
 export default () => (
-  <Suspense fallback={<div> Cargando... </div>}>
+  <Suspense fallback={<Box h="300px" w="900px" bgColor="black"> Cargando... </Box>}>
     <Navigation>
       <CoursesContainer />
     </Navigation>

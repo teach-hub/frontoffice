@@ -20,22 +20,9 @@ import type { UserProfileMutation } from '../__generated__/UserProfileMutation.g
 
 type Mutable<T> = { -readonly [P in keyof T]: T[P] };
 
-const Query = graphql`
-  query UserProfileQuery {
-    viewer {
-      id
-      name
-      lastName
-      githubId
-      file
-      notificationEmail
-    }
-  }
-`;
-
 const Mutation = graphql`
   mutation UserProfileMutation(
-    $userId: ID!,
+    $id: String!,
     $name: String!,
     $lastName: String!,
     $file: String!,
@@ -43,13 +30,14 @@ const Mutation = graphql`
     $notificationEmail: String!
   ) {
     updateUser(
-      userId: $userId,
+      userId: $id,
   	  name: $name,
   	  lastName: $lastName,
   	  file: $file,
   	  githubId: $githubId,
   	  notificationEmail: $notificationEmail
     ) {
+      id
       name
       lastName
       file
@@ -106,11 +94,11 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
       {
         mutation: Mutation,
         variables: {
-          userId: queryResult.id,
+          file: values.file,
+          id: queryResult.id,
           name: values.name,
           lastName: values.lastName,
           githubId: values.githubId,
-          file: values.file,
           notificationEmail: values.notificationEmail,
         },
         onCompleted: (response, errors) => {
@@ -280,7 +268,19 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
 
 
 const UserProfilePageContainer = () => {
-  const data = useLazyLoadQuery<UserProfileQuery>(Query, {});
+  const data = useLazyLoadQuery<UserProfileQuery>(
+    graphql`
+      query UserProfileQuery {
+        viewer {
+          id
+          name
+          lastName
+          githubId
+          file
+          notificationEmail
+        }
+      }
+    `, {});
 
   if (!data.viewer) return null;
 
@@ -289,10 +289,10 @@ const UserProfilePageContainer = () => {
 
 export default () => {
   return (
-    <Navigation>
-      <Suspense fallback={<div> Cargando... </div>}>
+    <Suspense fallback={<div> Cargando... </div>}>
+      <Navigation>
         <UserProfilePageContainer />
-      </Suspense>
-    </Navigation>
+      </Navigation>
+    </Suspense>
   );
 }

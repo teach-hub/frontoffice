@@ -13,22 +13,7 @@ import type { courseInfo$key } from '__generated__/courseInfo.graphql';
 
 const Fragment = graphql`
   fragment courseInfo on CourseType {
-    users {
-      name
-      lastName
-      file
-    }
-    year
-    period
-    name
-    role {
-      name
-      parent {
-        id
-        name
-      }
-      permissions
-    }
+    id
     subject {
       id
       code
@@ -76,7 +61,7 @@ const CourseViewContainer = () => {
 
   const data = useLazyLoadQuery<courseQuery>(
     graphql`
-      query courseQuery($courseId: Int!) {
+      query courseQuery($courseId: String!) {
         viewer {
           id
           name
@@ -86,25 +71,20 @@ const CourseViewContainer = () => {
         }
       }
     `,
-    { courseId: Number(params.courseId) }
+    { courseId: params.courseId || '' }
   );
 
   if (!data.viewer || !data.viewer.findCourse) return null;
 
-  return (
-    <>
-      <CourseInfo findCourse={data.viewer.findCourse}/>
-    </>
-  )
+  return <CourseInfo findCourse={data.viewer.findCourse}/>;
 }
 
 export default () => {
-
   return (
-    <Navigation>
-      <Suspense fallback={<div>Cargando...</div>}>
+    <Suspense fallback={<div>Cargando...</div>}>
+      <Navigation>
         <CourseViewContainer />
-      </Suspense>
-    </Navigation>
+      </Navigation>
+    </Suspense>
   )
 }

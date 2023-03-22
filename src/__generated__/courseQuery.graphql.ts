@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<03052991512e2d3a583db8fc7120910d>>
+ * @generated SignedSource<<a267c2666341f5d4b052bfe8f7b722b4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type courseQuery$variables = {
-  courseId: number;
+  courseId: string;
 };
 export type courseQuery$data = {
   readonly viewer: {
@@ -120,84 +120,11 @@ return {
             "name": "findCourse",
             "plural": false,
             "selections": [
+              (v1/*: any*/),
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "UserType",
-                "kind": "LinkedField",
-                "name": "users",
-                "plural": true,
-                "selections": [
-                  (v2/*: any*/),
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "lastName",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "file",
-                    "storageKey": null
-                  },
-                  (v1/*: any*/)
-                ],
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "year",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "period",
-                "storageKey": null
-              },
-              (v2/*: any*/),
-              {
-                "alias": null,
-                "args": null,
-                "concreteType": "RoleType",
-                "kind": "LinkedField",
-                "name": "role",
-                "plural": false,
-                "selections": [
-                  (v2/*: any*/),
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "RoleType",
-                    "kind": "LinkedField",
-                    "name": "parent",
-                    "plural": false,
-                    "selections": [
-                      (v1/*: any*/),
-                      (v2/*: any*/)
-                    ],
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "permissions",
-                    "storageKey": null
-                  }
-                ],
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "concreteType": "Subject",
+                "concreteType": "SubjectType",
                 "kind": "LinkedField",
                 "name": "subject",
                 "plural": false,
@@ -230,16 +157,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "752c6a9f7d444ed7d81557268af505a8",
+    "cacheID": "37adc5e1acf017d461231eeb6ebd37f6",
     "id": null,
     "metadata": {},
     "name": "courseQuery",
     "operationKind": "query",
-    "text": "query courseQuery(\n  $courseId: Int!\n) {\n  viewer {\n    id\n    name\n    findCourse(id: $courseId) {\n      ...courseInfo\n    }\n  }\n}\n\nfragment courseInfo on CourseType {\n  users {\n    name\n    lastName\n    file\n    id\n  }\n  year\n  period\n  name\n  role {\n    name\n    parent {\n      id\n      name\n    }\n    permissions\n  }\n  subject {\n    id\n    code\n    active\n    name\n  }\n}\n"
+    "text": "query courseQuery(\n  $courseId: String!\n) {\n  viewer {\n    id\n    name\n    findCourse(id: $courseId) {\n      ...courseInfo\n    }\n  }\n}\n\nfragment courseInfo on CourseType {\n  id\n  subject {\n    id\n    code\n    active\n    name\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "ec99481843bd8960543f1e7af37fd8fd";
+(node as any).hash = "44c1fd50cc1e727bc8cf5625266ba16f";
 
 export default node;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a67c39d39337053d778e66dc48cc3492>>
+ * @generated SignedSource<<881909966c8fcca4bd24327894d3f527>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type NavigationQuery$variables = {
-  courseId: number;
+  courseId: string;
   shouldFetchCourseInfo: boolean;
 };
 export type NavigationQuery$data = {
@@ -137,16 +137,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "7bdf03eaedee46b8b74bd5fe386619e0",
+    "cacheID": "1c23de9666d32ac8389d04aa564356f0",
     "id": null,
     "metadata": {},
     "name": "NavigationQuery",
     "operationKind": "query",
-    "text": "query NavigationQuery(\n  $courseId: Int!\n  $shouldFetchCourseInfo: Boolean!\n) {\n  viewer {\n    id\n    name\n    ...NavigationCourseInfo @include(if: $shouldFetchCourseInfo)\n  }\n}\n\nfragment NavigationCourseInfo on ViewerType {\n  findCourse(id: $courseId) {\n    id\n    name\n  }\n}\n"
+    "text": "query NavigationQuery(\n  $courseId: String!\n  $shouldFetchCourseInfo: Boolean!\n) {\n  viewer {\n    id\n    name\n    ...NavigationCourseInfo @include(if: $shouldFetchCourseInfo)\n  }\n}\n\nfragment NavigationCourseInfo on ViewerType {\n  findCourse(id: $courseId) {\n    id\n    name\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "06ac79ec67d7f3a67262b178ff2a296c";
+(node as any).hash = "4c9c817ea31cd223f3f81b9e3f604bdf";
 
 export default node;

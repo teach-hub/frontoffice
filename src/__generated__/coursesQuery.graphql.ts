@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d4940c1c3a0d3643b01a1ca1fcb0c646>>
+ * @generated SignedSource<<1c4f16d61ea612f3514d07b467b5a301>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,22 +12,27 @@ import { ConcreteRequest, Query } from 'relay-runtime';
 export type coursesQuery$variables = {};
 export type coursesQuery$data = {
   readonly viewer: {
-    readonly courses: ReadonlyArray<{
-      readonly id: string;
-      readonly name: string;
-      readonly period: number;
+    readonly id: string;
+    readonly userRoles: ReadonlyArray<{
+      readonly course: {
+        readonly id: string;
+        readonly name: string;
+        readonly period: number;
+        readonly subject: {
+          readonly active: boolean | null;
+          readonly code: string | null;
+          readonly id: string | null;
+          readonly name: string | null;
+        };
+        readonly year: number;
+      } | null;
+      readonly id: string | null;
       readonly role: {
+        readonly id: string | null;
         readonly name: string | null;
         readonly permissions: ReadonlyArray<string | null> | null;
-      };
-      readonly subject: {
-        readonly active: boolean | null;
-        readonly code: string;
-        readonly id: string | null;
-        readonly name: string;
-      };
-      readonly year: number;
-    } | null>;
+      } | null;
+    } | null> | null;
   } | null;
 };
 export type coursesQuery = {
@@ -59,28 +64,68 @@ v2 = [
     "name": "viewer",
     "plural": false,
     "selections": [
+      (v0/*: any*/),
       {
         "alias": null,
         "args": null,
-        "concreteType": "CourseSummaryType",
+        "concreteType": "UserRoleType",
         "kind": "LinkedField",
-        "name": "courses",
+        "name": "userRoles",
         "plural": true,
         "selections": [
           (v0/*: any*/),
-          (v1/*: any*/),
           {
             "alias": null,
             "args": null,
-            "kind": "ScalarField",
-            "name": "year",
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "period",
+            "concreteType": "CourseType",
+            "kind": "LinkedField",
+            "name": "course",
+            "plural": false,
+            "selections": [
+              (v0/*: any*/),
+              (v1/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "year",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "period",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "SubjectType",
+                "kind": "LinkedField",
+                "name": "subject",
+                "plural": false,
+                "selections": [
+                  (v0/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "code",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "active",
+                    "storageKey": null
+                  },
+                  (v1/*: any*/)
+                ],
+                "storageKey": null
+              }
+            ],
             "storageKey": null
           },
           {
@@ -91,6 +136,7 @@ v2 = [
             "name": "role",
             "plural": false,
             "selections": [
+              (v0/*: any*/),
               (v1/*: any*/),
               {
                 "alias": null,
@@ -99,33 +145,6 @@ v2 = [
                 "name": "permissions",
                 "storageKey": null
               }
-            ],
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "Subject",
-            "kind": "LinkedField",
-            "name": "subject",
-            "plural": false,
-            "selections": [
-              (v0/*: any*/),
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "code",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "active",
-                "storageKey": null
-              },
-              (v1/*: any*/)
             ],
             "storageKey": null
           }
@@ -154,16 +173,16 @@ return {
     "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "6db7b3b72b49b999655c133186d0c1d4",
+    "cacheID": "47aaec9e746690d22185ed016480cf35",
     "id": null,
     "metadata": {},
     "name": "coursesQuery",
     "operationKind": "query",
-    "text": "query coursesQuery {\n  viewer {\n    courses {\n      id\n      name\n      year\n      period\n      role {\n        name\n        permissions\n      }\n      subject {\n        id\n        code\n        active\n        name\n      }\n    }\n  }\n}\n"
+    "text": "query coursesQuery {\n  viewer {\n    id\n    userRoles {\n      id\n      course {\n        id\n        name\n        year\n        period\n        subject {\n          id\n          code\n          active\n          name\n        }\n      }\n      role {\n        id\n        name\n        permissions\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "d01bc58b4fea9a0345d6c5165aa713ed";
+(node as any).hash = "216560c1a59a8754b973ff9a887f8b31";
 
 export default node;

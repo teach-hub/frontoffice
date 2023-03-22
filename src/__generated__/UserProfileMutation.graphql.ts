@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1c4eaa77cfdf74e8a4977512ea9600e9>>
+ * @generated SignedSource<<60ddfaf90861669df248a78dd702b9bf>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,15 +12,16 @@ import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type UserProfileMutation$variables = {
   file: string;
   githubId: string;
+  id: string;
   lastName: string;
   name: string;
   notificationEmail: string;
-  userId: string;
 };
 export type UserProfileMutation$data = {
   readonly updateUser: {
     readonly file: string | null;
     readonly githubId: string | null;
+    readonly id: string | null;
     readonly lastName: string | null;
     readonly name: string | null;
     readonly notificationEmail: string | null;
@@ -45,90 +46,109 @@ v1 = {
 v2 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "lastName"
+  "name": "id"
 },
 v3 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "name"
+  "name": "lastName"
 },
 v4 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "notificationEmail"
+  "name": "name"
 },
 v5 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "userId"
+  "name": "notificationEmail"
 },
 v6 = [
   {
-    "kind": "Variable",
-    "name": "file",
-    "variableName": "file"
-  },
-  {
-    "kind": "Variable",
-    "name": "githubId",
-    "variableName": "githubId"
-  },
-  {
-    "kind": "Variable",
-    "name": "lastName",
-    "variableName": "lastName"
-  },
-  {
-    "kind": "Variable",
-    "name": "name",
-    "variableName": "name"
-  },
-  {
-    "kind": "Variable",
-    "name": "notificationEmail",
-    "variableName": "notificationEmail"
-  },
-  {
-    "kind": "Variable",
-    "name": "userId",
-    "variableName": "userId"
+    "alias": null,
+    "args": [
+      {
+        "kind": "Variable",
+        "name": "file",
+        "variableName": "file"
+      },
+      {
+        "kind": "Variable",
+        "name": "githubId",
+        "variableName": "githubId"
+      },
+      {
+        "kind": "Variable",
+        "name": "lastName",
+        "variableName": "lastName"
+      },
+      {
+        "kind": "Variable",
+        "name": "name",
+        "variableName": "name"
+      },
+      {
+        "kind": "Variable",
+        "name": "notificationEmail",
+        "variableName": "notificationEmail"
+      },
+      {
+        "kind": "Variable",
+        "name": "userId",
+        "variableName": "id"
+      }
+    ],
+    "concreteType": "UserType",
+    "kind": "LinkedField",
+    "name": "updateUser",
+    "plural": false,
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "id",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "name",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "lastName",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "file",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "githubId",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "notificationEmail",
+        "storageKey": null
+      }
+    ],
+    "storageKey": null
   }
-],
-v7 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "name",
-  "storageKey": null
-},
-v8 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "lastName",
-  "storageKey": null
-},
-v9 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "file",
-  "storageKey": null
-},
-v10 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "githubId",
-  "storageKey": null
-},
-v11 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "notificationEmail",
-  "storageKey": null
-};
+];
 return {
   "fragment": {
     "argumentDefinitions": [
@@ -142,76 +162,35 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "UserProfileMutation",
-    "selections": [
-      {
-        "alias": null,
-        "args": (v6/*: any*/),
-        "concreteType": "UserType",
-        "kind": "LinkedField",
-        "name": "updateUser",
-        "plural": false,
-        "selections": [
-          (v7/*: any*/),
-          (v8/*: any*/),
-          (v9/*: any*/),
-          (v10/*: any*/),
-          (v11/*: any*/)
-        ],
-        "storageKey": null
-      }
-    ],
+    "selections": (v6/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
     "argumentDefinitions": [
-      (v5/*: any*/),
-      (v3/*: any*/),
       (v2/*: any*/),
+      (v4/*: any*/),
+      (v3/*: any*/),
       (v0/*: any*/),
       (v1/*: any*/),
-      (v4/*: any*/)
+      (v5/*: any*/)
     ],
     "kind": "Operation",
     "name": "UserProfileMutation",
-    "selections": [
-      {
-        "alias": null,
-        "args": (v6/*: any*/),
-        "concreteType": "UserType",
-        "kind": "LinkedField",
-        "name": "updateUser",
-        "plural": false,
-        "selections": [
-          (v7/*: any*/),
-          (v8/*: any*/),
-          (v9/*: any*/),
-          (v10/*: any*/),
-          (v11/*: any*/),
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "id",
-            "storageKey": null
-          }
-        ],
-        "storageKey": null
-      }
-    ]
+    "selections": (v6/*: any*/)
   },
   "params": {
-    "cacheID": "d9e267e3575d0e49e269d24e1b4d5280",
+    "cacheID": "66fb62b208720217bc89f0b927463b64",
     "id": null,
     "metadata": {},
     "name": "UserProfileMutation",
     "operationKind": "mutation",
-    "text": "mutation UserProfileMutation(\n  $userId: ID!\n  $name: String!\n  $lastName: String!\n  $file: String!\n  $githubId: String!\n  $notificationEmail: String!\n) {\n  updateUser(userId: $userId, name: $name, lastName: $lastName, file: $file, githubId: $githubId, notificationEmail: $notificationEmail) {\n    name\n    lastName\n    file\n    githubId\n    notificationEmail\n    id\n  }\n}\n"
+    "text": "mutation UserProfileMutation(\n  $id: String!\n  $name: String!\n  $lastName: String!\n  $file: String!\n  $githubId: String!\n  $notificationEmail: String!\n) {\n  updateUser(userId: $id, name: $name, lastName: $lastName, file: $file, githubId: $githubId, notificationEmail: $notificationEmail) {\n    id\n    name\n    lastName\n    file\n    githubId\n    notificationEmail\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "a95f3e0c49efb24ad8a39b22e4456bf0";
+(node as any).hash = "f9c4f3a6d04e59a204cb0618934ef74b";
 
 export default node;

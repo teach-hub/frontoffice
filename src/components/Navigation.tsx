@@ -2,14 +2,12 @@ import { ReactNode, useState, Suspense } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { graphql } from 'babel-plugin-relay/macro';
 import { Stack, Switch } from '@chakra-ui/react';
-import { createFragmentContainer, useLazyLoadQuery, useFragment } from 'react-relay';
+import { useLazyLoadQuery, useFragment } from 'react-relay';
 
 import Box from '../components/Box';
 import Button from '../components/Button';
 import Text from '../components/Text';
 import Heading from '../components/Heading';
-
-import { ContextProvider } from '../hooks/useUserContext';
 
 import { NavigationQuery } from '__generated__/NavigationQuery.graphql';
 import { NavigationCourseInfo$key, NavigationCourseInfo$data } from '__generated__/NavigationCourseInfo.graphql';
@@ -54,6 +52,11 @@ const NavigationTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key })
   const { courseId } = useParams();
   const location = useLocation();
 
+  // @ts-expect-error
+  if (!viewerRef?.name) {
+    return null;
+  }
+
   let pageTitle = null;
 
   switch(location.pathname) {
@@ -73,14 +76,14 @@ const NavigationTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key })
 }
 
 const NavigationBar = () => {
+  const [isTeacher, setIsTeacher] = useState(false);
+
   const { courseId } = useParams();
   const navigate = useNavigate();
 
-  const [isTeacher, setIsTeacher] = useState(false);
-
   const viewerData = useLazyLoadQuery<NavigationQuery>(
     graphql`
-      query NavigationQuery($courseId: Int!, $shouldFetchCourseInfo: Boolean!) {
+      query NavigationQuery($courseId: String!, $shouldFetchCourseInfo: Boolean!) {
         viewer {
           id
           name
@@ -90,13 +93,11 @@ const NavigationBar = () => {
     `,
     {
       shouldFetchCourseInfo: !!courseId,
-      courseId: courseId? Number(courseId): -1,
+      courseId: courseId || '',
     }
   )
 
-  console.log('--->', viewerData);
-
-  if (!viewerData?.viewer) {
+  if (!viewerData?.viewer?.id) {
     return null;
   }
 
@@ -114,7 +115,9 @@ const NavigationBar = () => {
 
   return (
     <Stack shadow='lg' direction='row' style={NavigationBarStyle} >
-      <NavigationTitle viewerRef={viewerData.viewer} />
+      <Suspense>
+        <NavigationTitle viewerRef={viewerData.viewer} />
+      </Suspense>
       <DevControl />
 
       {isTeacher ?
@@ -146,14 +149,14 @@ const NavigationBar = () => {
   );
 }
 
-const Navigation = ({ children }: { children : ReactNode }): JSX.Element => {
+const Navigation = ({ children }: { children: ReactNode }): JSX.Element => {
   return (
-      <ContextProvider>
-        <NavigationBar />
-        <Box style={{ width:"100%", height:"100%", zIndex: '-1', position: 'absolute', top: '105px' }}>
-          {children}
-        </Box>
-      </ContextProvider>
+    <>
+      <NavigationBar />
+      <Box style={{ width:"100%", height:"100%", zIndex: '-1', position: 'absolute', top: '105px' }}>
+        {children}
+      </Box>
+    </>
   )
 }
 
