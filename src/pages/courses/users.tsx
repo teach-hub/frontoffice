@@ -95,8 +95,6 @@ const UsersContainer = () => {
 
   const course = data.viewer.findCourse;
 
-  console.log(course)
-
   return (
     // @ts-expect-error
     <UsersList userRoles={course?.userRoles} />

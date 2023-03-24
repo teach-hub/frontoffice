@@ -1,4 +1,4 @@
-import { MouseEvent, Suspense, useEffect } from 'react';
+import { MouseEvent, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useLazyLoadQuery } from 'react-relay';
