@@ -2,20 +2,20 @@ import { RelayEnvironmentProvider } from 'react-relay';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react';
 
-import environment from './relayEnvironment';
+import environment from 'relayEnvironment';
 
-import HomePage from './pages/Home';
-import NotFoundPage from './pages/NotFound';
+import HomePage from 'pages/Home';
+import NotFoundPage from 'pages/NotFound';
 
-import UserProfilePage from './pages/UserProfile';
+import UserProfilePage from 'pages/UserProfile';
 
-import UserCoursesPage from './pages/courses';
-import CoursePage from './pages/courses/course';
-import CourseUsersPage from './pages/courses/users';
-import CourseProjectsPage from './pages/courses/projects';
-import ProjectPage from './pages/courses/projects/project';
+import UserCoursesPage from 'pages/courses';
+import CoursePage from 'pages/courses/course';
+import CourseUsersPage from 'pages/courses/users';
+import CourseProjectsPage from 'pages/courses/projects';
+import ProjectPage from 'pages/courses/projects/project';
 
-import { ContextProvider } from './hooks/useUserContext';
+import { ContextProvider } from 'hooks/useUserContext';
 
 const App = () => {
   return (

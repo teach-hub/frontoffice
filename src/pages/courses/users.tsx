@@ -5,13 +5,13 @@ import { useLazyLoadQuery } from 'react-relay';
 import { Card, CardBody, IconButton, Badge } from '@chakra-ui/react'
 import { CloseIcon } from '@chakra-ui/icons'
 
-import Heading from '../../components/Heading';
-import Box from '../../components/Box';
-import Navigation from '../../components/Navigation';
+import Heading from 'components/Heading';
+import Box from 'components/Box';
+import Navigation from 'components/Navigation';
 
 import { CourseUsersQuery } from '__generated__/CourseUsersQuery.graphql';
 
-import CourseUsersQueryDef from '../../graphql/CourseUsersQuery'
+import CourseUsersQueryDef from 'graphql/CourseUsersQuery'
 
 type Course = NonNullable<NonNullable<CourseUsersQuery['response']['viewer']>['findCourse']>;
 type CourseUserRole = NonNullable<Course['userRoles']>[number];

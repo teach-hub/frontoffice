@@ -5,10 +5,10 @@ import { useLazyLoadQuery, useFragment } from 'react-relay';
 
 import { Stack } from '@chakra-ui/react';
 
-import Box from '../../components/Box';
-import Navigation from '../../components/Navigation';
+import Box from 'components/Box';
+import Navigation from 'components/Navigation';
 
-import CourseInfoQueryDef from '../../graphql/CourseInfoQuery';
+import CourseInfoQueryDef from 'graphql/CourseInfoQuery';
 
 import type { CourseInfoQuery } from '__generated__/CourseInfoQuery.graphql';
 import type { courseInfo$key } from '__generated__/courseInfo.graphql';

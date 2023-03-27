@@ -5,12 +5,12 @@ import { useLazyLoadQuery } from 'react-relay';
 import { Card, CardBody, IconButton, Badge } from '@chakra-ui/react'
 import { CloseIcon } from '@chakra-ui/icons'
 
-import Text from '../../components/Text';
-import Heading from '../../components/Heading';
-import Box from '../../components/Box';
-import Navigation from '../../components/Navigation';
+import Text from 'components/Text';
+import Heading from 'components/Heading';
+import Box from 'components/Box';
+import Navigation from 'components/Navigation';
 
-import UserCoursesQueryDef from '../../graphql/UserCoursesQuery'
+import UserCoursesQueryDef from 'graphql/UserCoursesQuery'
 import { UserCoursesQuery, UserCoursesQuery$data } from '__generated__/UserCoursesQuery.graphql';
 
 type Viewer = NonNullable<UserCoursesQuery$data['viewer']>;
