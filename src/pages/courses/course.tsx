@@ -31,7 +31,10 @@ const CourseUsers = () => {
   const navigate = useNavigate();
 
   return (
-    <Box onClick={() => navigate('users')}> Usuarios </Box>
+    <>
+      <Box onClick={() => navigate('users')}> Usuarios </Box>
+      <Box onClick={() => navigate('projects')}> Trabajos practicos </Box>
+    </>
   )
 }
 

@@ -2,13 +2,14 @@ import { MouseEvent, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
-import { Card, CardBody, IconButton, Badge } from '@chakra-ui/react'
+import { IconButton, Badge } from '@chakra-ui/react'
 import { CloseIcon } from '@chakra-ui/icons'
 
 import Text from 'components/Text';
 import Heading from 'components/Heading';
 import Box from 'components/Box';
 import Navigation from 'components/Navigation';
+import Card from 'components/Card';
 
 import UserCoursesQueryDef from 'graphql/UserCoursesQuery'
 import { UserCoursesQuery, UserCoursesQuery$data } from '__generated__/UserCoursesQuery.graphql';
@@ -36,24 +37,21 @@ const CourseCard = ({ userRole }: { userRole: UserRole }) => {
   }
 
   return (
-    <Card shadow="md" margin="10px" borderColor="black" background="blue.50" variant='outline'>
-      <CardBody onClick={handleCardClick} display="flex" alignItems="center">
+    <Card onClick={handleCardClick}>
+      <Heading flex="1" size="md">{courseName}</Heading>
+      <Text flex="1">{courseYear}</Text>
+      <Text flex="1">{subjectTitle}</Text>
 
-        <Heading flex="1" size="md">{courseName}</Heading>
-        <Text flex="1">{courseYear}</Text>
-        <Text flex="1">{subjectTitle}</Text>
+      <Badge fontSize="md" variant="subtle" colorScheme="blue">{roleName}</Badge>
 
-        <Badge fontSize="md" variant="subtle" colorScheme="blue">{roleName}</Badge>
-
-        <Box display="flex" flexDirection="row-reverse" alignItems="center" flex="1">
-          <IconButton
-            variant='ghost'
-            colorScheme='gray'
-            aria-label='See menu'
-            icon={<CloseIcon />}
-          />
-        </Box>
-      </CardBody>
+      <Box display="flex" flexDirection="row-reverse" alignItems="center" flex="1">
+        <IconButton
+          variant='ghost'
+          colorScheme='gray'
+          aria-label='See menu'
+          icon={<CloseIcon />}
+        />
+      </Box>
     </Card>
   );
 }

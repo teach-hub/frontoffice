@@ -103,6 +103,7 @@ const NavigationBar = () => {
 
   const handleGoToProfile = () => navigate('/profile')
   const handleGoToCourses = () => navigate('/courses')
+  const handleGoToProjects = () => navigate('/projects')
 
   const DevControl = () => {
     return (
@@ -139,7 +140,7 @@ const NavigationBar = () => {
       <Button h="100%" w="10%" colorScheme="blackAlpha" onClick={handleGoToCourses}>
         Cursos
       </Button>
-      <Button h="100%" w="10%" colorScheme="blackAlpha">
+      <Button h="100%" w="10%" colorScheme="blackAlpha" onClick={handleGoToProjects}>
         TPS
       </Button>
       <Button h="100%" w="10%" colorScheme="blackAlpha" onClick={handleGoToProfile}>
