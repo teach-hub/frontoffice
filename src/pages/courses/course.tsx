@@ -8,20 +8,10 @@ import { Stack } from '@chakra-ui/react';
 import Box from '../../components/Box';
 import Navigation from '../../components/Navigation';
 
-import type { courseQuery } from '__generated__/courseQuery.graphql';
-import type { courseInfo$key } from '__generated__/courseInfo.graphql';
+import CourseInfoQueryDef from '../../graphql/CourseInfoQuery';
 
-const Fragment = graphql`
-  fragment courseInfo on CourseType {
-    id
-    subject {
-      id
-      code
-      active
-      name
-    }
-  }
-`;
+import type { CourseInfoQuery } from '__generated__/CourseInfoQuery.graphql';
+import type { courseInfo$key } from '__generated__/courseInfo.graphql';
 
 type Props = {
   findCourse: courseInfo$key
@@ -46,10 +36,19 @@ const CourseUsers = () => {
 }
 
 const CourseInfo = ({ findCourse }: Props) => {
-  const data = useFragment(Fragment, findCourse);
+  const data = useFragment(
+    graphql`
+      fragment courseInfo on CourseType {
+        id
+        subject {
+          name
+        }
+      }
+    `, findCourse);
 
   return (
     <Box>
+      <Box>{data.subject.name}</Box>
       <CourseStatistics />
       <CourseUsers />
     </Box>
@@ -59,20 +58,7 @@ const CourseInfo = ({ findCourse }: Props) => {
 const CourseViewContainer = () => {
   const params = useParams();
 
-  const data = useLazyLoadQuery<courseQuery>(
-    graphql`
-      query courseQuery($courseId: String!) {
-        viewer {
-          id
-          name
-          findCourse(id: $courseId) {
-            ...courseInfo
-          }
-        }
-      }
-    `,
-    { courseId: params.courseId || '' }
-  );
+  const data = useLazyLoadQuery<CourseInfoQuery>(CourseInfoQueryDef, { courseId: params.courseId || '' });
 
   if (!data.viewer || !data.viewer.findCourse) return null;
 

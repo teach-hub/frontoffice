@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1c4f16d61ea612f3514d07b467b5a301>>
+ * @generated SignedSource<<02955729392dd5655e5a0d1ba29ccfdf>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,8 +9,8 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type coursesQuery$variables = {};
-export type coursesQuery$data = {
+export type UserCoursesQuery$variables = {};
+export type UserCoursesQuery$data = {
   readonly viewer: {
     readonly id: string;
     readonly userRoles: ReadonlyArray<{
@@ -35,9 +35,9 @@ export type coursesQuery$data = {
     } | null> | null;
   } | null;
 };
-export type coursesQuery = {
-  response: coursesQuery$data;
-  variables: coursesQuery$variables;
+export type UserCoursesQuery = {
+  response: UserCoursesQuery$data;
+  variables: UserCoursesQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -160,7 +160,7 @@ return {
     "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
-    "name": "coursesQuery",
+    "name": "UserCoursesQuery",
     "selections": (v2/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
@@ -169,20 +169,20 @@ return {
   "operation": {
     "argumentDefinitions": [],
     "kind": "Operation",
-    "name": "coursesQuery",
+    "name": "UserCoursesQuery",
     "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "47aaec9e746690d22185ed016480cf35",
+    "cacheID": "16ea9235e837a3d4792c470552a99887",
     "id": null,
     "metadata": {},
-    "name": "coursesQuery",
+    "name": "UserCoursesQuery",
     "operationKind": "query",
-    "text": "query coursesQuery {\n  viewer {\n    id\n    userRoles {\n      id\n      course {\n        id\n        name\n        year\n        period\n        subject {\n          id\n          code\n          active\n          name\n        }\n      }\n      role {\n        id\n        name\n        permissions\n      }\n    }\n  }\n}\n"
+    "text": "query UserCoursesQuery {\n  viewer {\n    id\n    userRoles {\n      id\n      course {\n        id\n        name\n        year\n        period\n        subject {\n          id\n          code\n          active\n          name\n        }\n      }\n      role {\n        id\n        name\n        permissions\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "216560c1a59a8754b973ff9a887f8b31";
+(node as any).hash = "4a8db4ee39c8ad43b0f71c4f195125bc";
 
 export default node;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<60ddfaf90861669df248a78dd702b9bf>>
+ * @generated SignedSource<<dc6837c6e7f33e80bc19a7dced78ca44>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,7 +9,7 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
-export type UserProfileMutation$variables = {
+export type UpdateProfileMutation$variables = {
   file: string;
   githubId: string;
   id: string;
@@ -17,7 +17,7 @@ export type UserProfileMutation$variables = {
   name: string;
   notificationEmail: string;
 };
-export type UserProfileMutation$data = {
+export type UpdateProfileMutation$data = {
   readonly updateUser: {
     readonly file: string | null;
     readonly githubId: string | null;
@@ -27,9 +27,9 @@ export type UserProfileMutation$data = {
     readonly notificationEmail: string | null;
   } | null;
 };
-export type UserProfileMutation = {
-  response: UserProfileMutation$data;
-  variables: UserProfileMutation$variables;
+export type UpdateProfileMutation = {
+  response: UpdateProfileMutation$data;
+  variables: UpdateProfileMutation$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -161,7 +161,7 @@ return {
     ],
     "kind": "Fragment",
     "metadata": null,
-    "name": "UserProfileMutation",
+    "name": "UpdateProfileMutation",
     "selections": (v6/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
@@ -177,20 +177,20 @@ return {
       (v5/*: any*/)
     ],
     "kind": "Operation",
-    "name": "UserProfileMutation",
+    "name": "UpdateProfileMutation",
     "selections": (v6/*: any*/)
   },
   "params": {
-    "cacheID": "66fb62b208720217bc89f0b927463b64",
+    "cacheID": "42dde4c5191acf47a75b381d3f0435f7",
     "id": null,
     "metadata": {},
-    "name": "UserProfileMutation",
+    "name": "UpdateProfileMutation",
     "operationKind": "mutation",
-    "text": "mutation UserProfileMutation(\n  $id: String!\n  $name: String!\n  $lastName: String!\n  $file: String!\n  $githubId: String!\n  $notificationEmail: String!\n) {\n  updateUser(userId: $id, name: $name, lastName: $lastName, file: $file, githubId: $githubId, notificationEmail: $notificationEmail) {\n    id\n    name\n    lastName\n    file\n    githubId\n    notificationEmail\n  }\n}\n"
+    "text": "mutation UpdateProfileMutation(\n  $id: String!\n  $name: String!\n  $lastName: String!\n  $file: String!\n  $githubId: String!\n  $notificationEmail: String!\n) {\n  updateUser(userId: $id, name: $name, lastName: $lastName, file: $file, githubId: $githubId, notificationEmail: $notificationEmail) {\n    id\n    name\n    lastName\n    file\n    githubId\n    notificationEmail\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f9c4f3a6d04e59a204cb0618934ef74b";
+(node as any).hash = "b6406cd3b817969a895ab6f58b14aafb";
 
 export default node;

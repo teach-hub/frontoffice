@@ -1,20 +1,19 @@
-import { MouseEvent, Suspense, useContext } from 'react';
+import { Suspense } from 'react';
 import { useParams } from 'react-router-dom';
-
-import { useFragment, useLazyLoadQuery } from 'react-relay';
-import { graphql } from 'babel-plugin-relay/macro';
+import { useLazyLoadQuery } from 'react-relay';
 
 import { Card, CardBody, IconButton, Badge } from '@chakra-ui/react'
 import { CloseIcon } from '@chakra-ui/icons'
 
-import Text from '../../components/Text';
 import Heading from '../../components/Heading';
 import Box from '../../components/Box';
 import Navigation from '../../components/Navigation';
 
-import { usersCourseQuery } from '__generated__/usersCourseQuery.graphql';
+import { CourseUsersQuery } from '__generated__/CourseUsersQuery.graphql';
 
-type Course = NonNullable<NonNullable<usersCourseQuery['response']['viewer']>['findCourse']>;
+import CourseUsersQueryDef from '../../graphql/CourseUsersQuery'
+
+type Course = NonNullable<NonNullable<CourseUsersQuery['response']['viewer']>['findCourse']>;
 type CourseUserRole = NonNullable<Course['userRoles']>[number];
 
 const RoleNameBadge = ({ roleName }: { roleName: string }) => {
@@ -61,35 +60,7 @@ const UsersList = ({ userRoles }: { userRoles: CourseUserRole[] }) => {
 const UsersContainer = () => {
   const { courseId } = useParams();
 
-  const data = useLazyLoadQuery<usersCourseQuery>(
-    graphql`
-      query usersCourseQuery($courseId: String!) {
-        viewer {
-          id
-          name
-          findCourse(id: $courseId) {
-            id
-            name
-            userRoles {
-              id
-              user {
-                id
-                name
-                lastName
-                file
-              }
-              role {
-                id
-                name
-                permissions
-              }
-            }
-          }
-        }
-      }
-    `,
-    { courseId: courseId || '' }
-  );
+  const data = useLazyLoadQuery<CourseUsersQuery>(CourseUsersQueryDef, { courseId: courseId || '' });
 
   if (!data?.viewer?.id) return null;
 

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<748a0456416f3c3f51e23a6106238159>>
+ * @generated SignedSource<<f3d2c2d6eb2fbfaa99b1c46202c9f83a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,9 +13,6 @@ import { FragmentRefs } from "relay-runtime";
 export type courseInfo$data = {
   readonly id: string;
   readonly subject: {
-    readonly active: boolean | null;
-    readonly code: string | null;
-    readonly id: string | null;
     readonly name: string | null;
   };
   readonly " $fragmentType": "courseInfo";
@@ -25,21 +22,19 @@ export type courseInfo$key = {
   readonly " $fragmentSpreads": FragmentRefs<"courseInfo">;
 };
 
-const node: ReaderFragment = (function(){
-var v0 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-};
-return {
+const node: ReaderFragment = {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
   "name": "courseInfo",
   "selections": [
-    (v0/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "id",
+      "storageKey": null
+    },
     {
       "alias": null,
       "args": null,
@@ -48,21 +43,6 @@ return {
       "name": "subject",
       "plural": false,
       "selections": [
-        (v0/*: any*/),
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "code",
-          "storageKey": null
-        },
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "active",
-          "storageKey": null
-        },
         {
           "alias": null,
           "args": null,
@@ -77,8 +57,7 @@ return {
   "type": "CourseType",
   "abstractKey": null
 };
-})();
 
-(node as any).hash = "049fcfce26bf878313ae293e6bdfb8b4";
+(node as any).hash = "5e3fb7a16963dbc4bdd80ec618a262f0";
 
 export default node;

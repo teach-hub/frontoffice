@@ -1,8 +1,6 @@
 import { MouseEvent, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { useLazyLoadQuery } from 'react-relay';
-import { graphql } from 'babel-plugin-relay/macro';
 
 import { Card, CardBody, IconButton, Badge } from '@chakra-ui/react'
 import { CloseIcon } from '@chakra-ui/icons'
@@ -12,9 +10,10 @@ import Heading from '../../components/Heading';
 import Box from '../../components/Box';
 import Navigation from '../../components/Navigation';
 
-import type { coursesQuery$data, coursesQuery } from '__generated__/coursesQuery.graphql';
+import UserCoursesQueryDef from '../../graphql/UserCoursesQuery'
+import { UserCoursesQuery, UserCoursesQuery$data } from '__generated__/UserCoursesQuery.graphql';
 
-type Viewer = NonNullable<coursesQuery$data['viewer']>;
+type Viewer = NonNullable<UserCoursesQuery$data['viewer']>;
 
 type UserRole = NonNullable<NonNullable<Viewer['userRoles']>[number]>;
 
@@ -71,34 +70,7 @@ const CoursesList = ({ userRoles }: { userRoles: UserRole[] }) => {
 
 
 const CoursesContainer = () => {
-  const data = useLazyLoadQuery<coursesQuery>(
-    graphql`
-      query coursesQuery {
-        viewer {
-          id
-          userRoles {
-            id
-            course {
-              id
-              name
-              year
-              period
-              subject {
-                id
-                code
-                active
-                name
-              }
-            }
-            role {
-              id
-              name
-              permissions
-            }
-          }
-        }
-      }
-    `, {});
+  const data = useLazyLoadQuery<UserCoursesQuery>(UserCoursesQueryDef, {});
 
   if (!data.viewer || !data.viewer.userRoles) {
     return null;

@@ -1,10 +1,10 @@
 import { Formik } from 'formik';
 import { useState, Suspense } from 'react';
-import { useRelayEnvironment, commitMutation, useLazyLoadQuery } from 'react-relay';
-
-import { graphql } from 'babel-plugin-relay/macro';
+import { useMutation, useLazyLoadQuery } from 'react-relay';
 
 import { FormControl, FormErrorMessage, FormLabel, Stack, Spinner } from '@chakra-ui/react';
+
+import { PayloadError } from 'relay-runtime';
 
 import AvatarImage from '../components/AvatarImage';
 import InputField from '../components/InputField';
@@ -15,37 +15,13 @@ import Navigation from '../components/Navigation';
 
 import useToast from '../hooks/useToast';
 
-import type { UserProfileQuery, UserProfileQuery$data } from '../__generated__/UserProfileQuery.graphql';
-import type { UserProfileMutation } from '../__generated__/UserProfileMutation.graphql';
+import UserProfileQueryDef from '../graphql/UserProfileQuery';
+import UpdateProfileMutationDef  from '../graphql/UpdateProfileMutation';
+
+import { UserProfileQuery, UserProfileQuery$data } from '__generated__/UserProfileQuery.graphql';
+import { UpdateProfileMutation, UpdateProfileMutation$data } from '__generated__/UpdateProfileMutation.graphql';
 
 type Mutable<T> = { -readonly [P in keyof T]: T[P] };
-
-const Mutation = graphql`
-  mutation UserProfileMutation(
-    $id: String!,
-    $name: String!,
-    $lastName: String!,
-    $file: String!,
-    $githubId: String!,
-    $notificationEmail: String!
-  ) {
-    updateUser(
-      userId: $id,
-  	  name: $name,
-  	  lastName: $lastName,
-  	  file: $file,
-  	  githubId: $githubId,
-  	  notificationEmail: $notificationEmail
-    ) {
-      id
-      name
-      lastName
-      file
-      githubId
-      notificationEmail
-    }
-  }
-`;
 
 const CancelButton = (rest: any) => {
   return (
@@ -77,11 +53,34 @@ type Props = {
 const UserProfilePage = ({ user }: Props): JSX.Element => {
 
   const toast = useToast();
+  const [commitMutation] = useMutation<UpdateProfileMutation>(UpdateProfileMutationDef);
+
   const [queryResult, setResult] = useState<UserProfileQuery$data['viewer']>(user.viewer);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
-  const relayEnv = useRelayEnvironment();
+  const onMutationComplete = (response: UpdateProfileMutation$data, errors: PayloadError[] | null) => {
+    setShowSpinner(false);
+
+    if (!errors?.length) {
+      if (response.updateUser) {
+
+        // @ts-expect-error
+        setResult({ ...response.updateUser, id: queryResult.id });
+      }
+      toast({
+        title: "¡Usuario actualizado!",
+        description: "El usuario fue actualizado",
+        status: "success"
+      })
+    } else {
+      toast({
+        title: "Error",
+        description: "El usuario no pudo ser actualizado",
+        status: "error"
+      })
+    }
+  }
 
   const onSubmit = (values: FormValues) => {
     if (!queryResult?.id) {
@@ -89,41 +88,18 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
     }
 
     setShowSpinner(true);
-    commitMutation<UserProfileMutation>(
-      relayEnv,
-      {
-        mutation: Mutation,
-        variables: {
-          file: values.file,
-          id: queryResult.id,
-          name: values.name,
-          lastName: values.lastName,
-          githubId: values.githubId,
-          notificationEmail: values.notificationEmail,
-        },
-        onCompleted: (response, errors) => {
-          setShowSpinner(false);
 
-          if (!errors?.length) {
-            if (response.updateUser) {
-              // @ts-expect-error
-              setResult({ userId: queryResult.userId, ...response.updateUser })
-            }
-            toast({
-              title: "¡Usuario actualizado!",
-              description: "El usuario fue actualizado",
-              status: "success"
-            })
-          } else {
-            toast({
-              title: "Error",
-              description: "El usuario no pudo ser actualizado",
-              status: "error"
-            })
-          }
-        },
+    commitMutation({
+      variables: {
+        id: queryResult.id,
+        file: values.file,
+        name: values.name,
+        lastName: values.lastName,
+        githubId: values.githubId,
+        notificationEmail: values.notificationEmail,
       },
-    );
+      onCompleted: onMutationComplete,
+    })
   }
 
   const handleCancel = () => setIsEditing(false);
@@ -268,19 +244,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
 
 
 const UserProfilePageContainer = () => {
-  const data = useLazyLoadQuery<UserProfileQuery>(
-    graphql`
-      query UserProfileQuery {
-        viewer {
-          id
-          name
-          lastName
-          githubId
-          file
-          notificationEmail
-        }
-      }
-    `, {});
+  const data = useLazyLoadQuery<UserProfileQuery>(UserProfileQueryDef, {});
 
   if (!data.viewer) return null;
 

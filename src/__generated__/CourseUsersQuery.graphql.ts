@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1073ca018b7f3e521f9a7573781b39a4>>
+ * @generated SignedSource<<f95443f884d7836971b2e0cc6f09a918>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,10 +9,10 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type usersCourseQuery$variables = {
+export type CourseUsersQuery$variables = {
   courseId: string;
 };
-export type usersCourseQuery$data = {
+export type CourseUsersQuery$data = {
   readonly viewer: {
     readonly findCourse: {
       readonly id: string;
@@ -36,9 +36,9 @@ export type usersCourseQuery$data = {
     readonly name: string;
   } | null;
 };
-export type usersCourseQuery = {
-  response: usersCourseQuery$data;
-  variables: usersCourseQuery$variables;
+export type CourseUsersQuery = {
+  response: CourseUsersQuery$data;
+  variables: CourseUsersQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -161,7 +161,7 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "usersCourseQuery",
+    "name": "CourseUsersQuery",
     "selections": (v3/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
@@ -170,20 +170,20 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "usersCourseQuery",
+    "name": "CourseUsersQuery",
     "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "5b1bb8ddf9b16e86d7b2ef72d2c7e0ae",
+    "cacheID": "6ca62d557a196d365093eb152cd05f5d",
     "id": null,
     "metadata": {},
-    "name": "usersCourseQuery",
+    "name": "CourseUsersQuery",
     "operationKind": "query",
-    "text": "query usersCourseQuery(\n  $courseId: String!\n) {\n  viewer {\n    id\n    name\n    findCourse(id: $courseId) {\n      id\n      name\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n        }\n        role {\n          id\n          name\n          permissions\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query CourseUsersQuery(\n  $courseId: String!\n) {\n  viewer {\n    id\n    name\n    findCourse(id: $courseId) {\n      id\n      name\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n        }\n        role {\n          id\n          name\n          permissions\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "3d31e9b7bd28ba16e2e14a50fe04e7c5";
+(node as any).hash = "29f366a243737cdba15a8ba54f904664";
 
 export default node;
