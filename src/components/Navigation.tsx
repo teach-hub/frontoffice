@@ -1,13 +1,16 @@
-import { ReactNode, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { ReactNode, useState, Suspense } from 'react';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { graphql } from 'babel-plugin-relay/macro';
 import { Stack, Switch } from '@chakra-ui/react';
-import { useLazyLoadQuery } from 'react-relay';
+import { useLazyLoadQuery, useFragment } from 'react-relay';
 
 import Box from '../components/Box';
 import Button from '../components/Button';
 import Text from '../components/Text';
 import Heading from '../components/Heading';
+
+import { NavigationQuery } from '__generated__/NavigationQuery.graphql';
+import { NavigationCourseInfo$key, NavigationCourseInfo$data } from '__generated__/NavigationCourseInfo.graphql';
 
 const NavigationBarStyle = {
   background: 'white',
@@ -31,9 +34,28 @@ const DevControlStyle = {
   display: "flex"
 }
 
+const CourseTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key }) => {
+  const result: NavigationCourseInfo$data = useFragment(
+    graphql`
+      fragment NavigationCourseInfo on ViewerType {
+        findCourse(id: $courseId) {
+          id
+          name
+        }
+      }
+    `, viewerRef)
 
-const NavigationTitle = () => {
+  return <Heading size="lg">{result?.findCourse?.name}</Heading>
+}
+
+const NavigationTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key }) => {
+  const { courseId } = useParams();
   const location = useLocation();
+
+  // @ts-expect-error
+  if (!viewerRef?.name) {
+    return null;
+  }
 
   let pageTitle = null;
 
@@ -47,14 +69,37 @@ const NavigationTitle = () => {
 
   return (
     <Box alignItems="center" display="flex" flexGrow="1">
+      {courseId && <CourseTitle viewerRef={viewerRef} />}
       <Heading size="lg">{pageTitle}</Heading>
     </Box>
   )
 }
 
-const NavigationBar = ({  }) => {
-  const navigate = useNavigate();
+const NavigationBar = () => {
   const [isTeacher, setIsTeacher] = useState(false);
+
+  const { courseId } = useParams();
+  const navigate = useNavigate();
+
+  const viewerData = useLazyLoadQuery<NavigationQuery>(
+    graphql`
+      query NavigationQuery($courseId: String!, $shouldFetchCourseInfo: Boolean!) {
+        viewer {
+          id
+          name
+          ...NavigationCourseInfo @include(if: $shouldFetchCourseInfo)
+        }
+      }
+    `,
+    {
+      shouldFetchCourseInfo: !!courseId,
+      courseId: courseId || '',
+    }
+  )
+
+  if (!viewerData?.viewer?.id) {
+    return null;
+  }
 
   const handleGoToProfile = () => navigate('/profile')
   const handleGoToCourses = () => navigate('/courses')
@@ -70,7 +115,9 @@ const NavigationBar = ({  }) => {
 
   return (
     <Stack shadow='lg' direction='row' style={NavigationBarStyle} >
-      <NavigationTitle />
+      <Suspense>
+        <NavigationTitle viewerRef={viewerData.viewer} />
+      </Suspense>
       <DevControl />
 
       {isTeacher ?
@@ -102,19 +149,7 @@ const NavigationBar = ({  }) => {
   );
 }
 
-const Navigation = ({ children }: { children : ReactNode }): JSX.Element => {
-  const _ = useLazyLoadQuery(
-    graphql`
-      query NavigationQuery {
-        viewer {
-          id
-          name
-        }
-      }
-    `,
-    {}
-  )
-
+const Navigation = ({ children }: { children: ReactNode }): JSX.Element => {
   return (
     <>
       <NavigationBar />
