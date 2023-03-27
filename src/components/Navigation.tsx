@@ -4,10 +4,10 @@ import { graphql } from 'babel-plugin-relay/macro';
 import { Stack, Switch } from '@chakra-ui/react';
 import { useLazyLoadQuery, useFragment } from 'react-relay';
 
-import Box from '../components/Box';
-import Button from '../components/Button';
-import Text from '../components/Text';
-import Heading from '../components/Heading';
+import Box from 'components/Box';
+import Button from 'components/Button';
+import Text from 'components/Text';
+import Heading from 'components/Heading';
 
 import { NavigationQuery } from '__generated__/NavigationQuery.graphql';
 import { NavigationCourseInfo$key, NavigationCourseInfo$data } from '__generated__/NavigationCourseInfo.graphql';
