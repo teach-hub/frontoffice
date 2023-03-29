@@ -1,5 +1,5 @@
 import { RelayEnvironmentProvider } from 'react-relay';
-import { Routes, Route, BrowserRouter } from 'react-router-dom';
+import { Routes, Route, BrowserRouter, Navigate } from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react';
 
 import environment from 'relayEnvironment';
@@ -16,25 +16,54 @@ import CourseProjectsPage from 'pages/courses/projects';
 import ProjectPage from 'pages/courses/projects/project';
 
 import { ContextProvider } from 'hooks/useUserContext';
+import LoginPage from './pages/Login';
+import { useLocalStorage } from './hooks/useLocalStorage';
+import { isAuthenticated } from './auth/utils';
+
+/*
+ * Way to solve protected routes, as routes can not
+ * be wrapped in other components
+ * */
+const ProtectedLayout = ({ children }: { children: any }) => {
+  const [token, _] = useLocalStorage('token', null);
+  return isAuthenticated(token) ? children : <Navigate to={'/login'} />;
+};
+
+const LoginLayout = () => {
+  const [token, _] = useLocalStorage('token', null);
+  return isAuthenticated(token) ? <Navigate to={'/'} /> : <LoginPage />;
+};
 
 const App = () => {
   return (
     <Routes>
+      <Route path="/login" element={<LoginLayout />} />
       <Route path="/">
-        <Route index element={<HomePage />} />
-        <Route path="profile" element={<UserProfilePage />} />
+        <Route index element={<ProtectedLayout children={<HomePage />} />} />
+        <Route
+          path="/profile"
+          element={<ProtectedLayout children={<UserProfilePage />} />}
+        />
         <Route path="courses">
-          <Route index element={<UserCoursesPage />} />
+          <Route index element={<ProtectedLayout children={<UserCoursesPage />} />} />
           <Route path=":courseId">
-            <Route index element={<CoursePage />} />
-            <Route path="users" element={<CourseUsersPage />} />
+            <Route index element={<ProtectedLayout children={<CoursePage />} />} />
+            <Route
+              path="users"
+              element={<ProtectedLayout children={<CourseUsersPage />} />}
+            />
             <Route path="projects">
-              <Route index element={<CourseProjectsPage/>} />
-              <Route path=":projectId" element={<ProjectPage/>} />
+              <Route
+                index
+                element={<ProtectedLayout children={<CourseProjectsPage />} />}
+              />
+              <Route
+                path=":projectId"
+                element={<ProtectedLayout children={<ProjectPage />} />}
+              />
             </Route>
           </Route>
         </Route>
-
         {/* Using path="*"" means "match anything", so this route
             acts like a catch-all for URLs that we don't have explicit
             routes for. */}
