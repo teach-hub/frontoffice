@@ -2,7 +2,7 @@ import { ReactNode, useState, Suspense } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { graphql } from 'babel-plugin-relay/macro';
 import { Stack, Switch } from '@chakra-ui/react';
-import { useLazyLoadQuery, useFragment } from 'react-relay';
+import { useLazyLoadQuery, useFragment, useMutation } from 'react-relay';
 
 import Box from 'components/Box';
 import Button from 'components/Button';
@@ -14,6 +14,15 @@ import {
   NavigationCourseInfo$key,
   NavigationCourseInfo$data,
 } from '__generated__/NavigationCourseInfo.graphql';
+import IconButton from './IconButton';
+import { MdLogout } from 'react-icons/md';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import {
+  LogoutMutation,
+  LogoutMutation$data,
+} from '__generated__/LogoutMutation.graphql';
+import LogoutMutationDef from '../graphql/LogoutMutation';
+import useToast from '../hooks/useToast';
 
 const NavigationBarStyle = {
   background: 'white',
@@ -81,7 +90,10 @@ const NavigationTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key })
 };
 
 const NavigationBar = () => {
+  const toast = useToast();
   const [isTeacher, setIsTeacher] = useState(false);
+  const [token, setToken] = useLocalStorage('token', null);
+  const [commitLogoutMutation, _] = useMutation<LogoutMutation>(LogoutMutationDef);
 
   const { courseId } = useParams();
   const navigate = useNavigate();
@@ -106,9 +118,27 @@ const NavigationBar = () => {
     return null;
   }
 
-  const handleGoToProfile = () => navigate('/profile');
+  const handleGoToProfile = () => navigate('/');
   const handleGoToCourses = () => navigate('/courses');
   const _handleGoToAssignments = () => navigate('/assignments');
+
+  const handleLogout = () => {
+    commitLogoutMutation({
+      variables: { token },
+      onCompleted: (response: LogoutMutation$data, errors) => {
+        if (!errors?.length) {
+          setToken(null);
+          navigate('/login');
+        } else {
+          toast({
+            title: 'Error',
+            description: 'No ha sido posible cerrar sesión, intenta de nuevo',
+            status: 'error',
+          });
+        }
+      },
+    });
+  };
 
   const DevControl = () => {
     return (
@@ -126,6 +156,8 @@ const NavigationBar = () => {
     );
   };
 
+  const BUTTON_COLOR_SCHEME = 'blue';
+
   return (
     <Stack shadow="lg" direction="row" style={NavigationBarStyle}>
       <Suspense>
@@ -135,26 +167,44 @@ const NavigationBar = () => {
 
       {isTeacher ? (
         <>
-          <Button h="100%" w="10%" colorScheme="blackAlpha">
+          <Button h="100%" w="10%" colorScheme={BUTTON_COLOR_SCHEME}>
             Asignar correctores
           </Button>
-          <Button h="100%" w="10%" colorScheme="blackAlpha">
+          <Button h="100%" w="10%" colorScheme={BUTTON_COLOR_SCHEME}>
             Crear repositorios
           </Button>
         </>
       ) : (
         <>
-          <Button h="100%" w="10%" colorScheme="blackAlpha">
+          <Button h="100%" w="10%" colorScheme={BUTTON_COLOR_SCHEME}>
             Realizar entrega
           </Button>
         </>
       )}
-      <Button h="100%" w="10%" colorScheme="blackAlpha" onClick={handleGoToCourses}>
+      <Button
+        h="100%"
+        w="10%"
+        colorScheme={BUTTON_COLOR_SCHEME}
+        onClick={handleGoToCourses}
+      >
         Cursos
       </Button>
-      <Button h="100%" w="10%" colorScheme="blackAlpha" onClick={handleGoToProfile}>
+      <Button
+        h="100%"
+        w="10%"
+        colorScheme={BUTTON_COLOR_SCHEME}
+        onClick={handleGoToProfile}
+      >
         Mi perfil
       </Button>
+      <IconButton
+        aria-label="Cerrar Sesión"
+        as={MdLogout}
+        colorScheme="transparent"
+        color="black"
+        onClick={handleLogout}
+        _hover={{ backgroundColor: 'lightGray', cursor: 'pointer' }}
+      />
     </Stack>
   );
 };
