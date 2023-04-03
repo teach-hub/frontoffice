@@ -33,7 +33,7 @@ const CourseUsers = () => {
   return (
     <>
       <Box onClick={() => navigate('users')}> Usuarios </Box>
-      <Box onClick={() => navigate('projects')}> Trabajos practicos </Box>
+      <Box onClick={() => navigate('assignments')}> Trabajos practicos </Box>
     </>
   )
 }
