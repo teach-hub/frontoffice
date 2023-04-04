@@ -2,12 +2,13 @@ import { Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
-import { Card, CardBody, IconButton, Badge } from '@chakra-ui/react'
+import { IconButton, Badge } from '@chakra-ui/react'
 import { CloseIcon } from '@chakra-ui/icons'
 
 import Heading from 'components/Heading';
 import Box from 'components/Box';
 import Navigation from 'components/Navigation';
+import Card from 'components/Card';
 
 import { CourseUsersQuery } from '__generated__/CourseUsersQuery.graphql';
 
@@ -28,23 +29,21 @@ const UserCard = ({ userRole }: { userRole: CourseUserRole }) => {
   const userFullName = `${user?.lastName}, ${user?.name}`
 
   return (
-    <Card shadow="md" margin="10px" borderColor="black" background="blue.50" variant='outline'>
-      <CardBody display="flex" alignItems="center">
-        <Heading flex="1" size="md">{userFullName}</Heading>
+    <Card>
+      <Heading flex="1" size="md">{userFullName}</Heading>
 
-        <Badge marginRight="40px" marginLeft="40px" fontSize="sm" variant="subtle" colorScheme="blue">{user?.file}</Badge>
+      <Badge marginRight="40px" marginLeft="40px" fontSize="sm" variant="subtle" colorScheme="blue">{user?.file}</Badge>
 
-        {role?.name && <RoleNameBadge roleName={role?.name} />}
+      {role?.name && <RoleNameBadge roleName={role?.name} />}
 
-        <Box display="flex" flexDirection="row-reverse" alignItems="center" flex="1">
-          <IconButton
-            variant='ghost'
-            colorScheme='gray'
-            aria-label='See menu'
-            icon={<CloseIcon />}
-          />
-        </Box>
-      </CardBody>
+      <Box display="flex" flexDirection="row-reverse" alignItems="center" flex="1">
+        <IconButton
+          variant='ghost'
+          colorScheme='gray'
+          aria-label='See menu'
+          icon={<CloseIcon />}
+        />
+      </Box>
     </Card>
   )
 }

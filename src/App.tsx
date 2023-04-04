@@ -12,8 +12,8 @@ import UserProfilePage from 'pages/UserProfile';
 import UserCoursesPage from 'pages/courses';
 import CoursePage from 'pages/courses/course';
 import CourseUsersPage from 'pages/courses/users';
-import CourseProjectsPage from 'pages/courses/projects';
-import ProjectPage from 'pages/courses/projects/project';
+import CourseAssignmentsPage from 'pages/courses/assignments';
+import AssignmentPage from 'pages/courses/assignments/assignment';
 
 import { ContextProvider } from 'hooks/useUserContext';
 import LoginPage from './pages/Login';
@@ -39,27 +39,65 @@ const App = () => {
     <Routes>
       <Route path="/login" element={<LoginLayout />} />
       <Route path="/">
-        <Route index element={<ProtectedLayout children={<HomePage />} />} />
+        <Route
+          index
+          element={
+            <ProtectedLayout>
+              <HomePage />
+            </ProtectedLayout>
+          }
+        />
         <Route
           path="/profile"
-          element={<ProtectedLayout children={<UserProfilePage />} />}
+          element={
+            <ProtectedLayout>
+              <UserProfilePage />
+            </ProtectedLayout>
+          }
         />
         <Route path="courses">
-          <Route index element={<ProtectedLayout children={<UserCoursesPage />} />} />
+          <Route
+            index
+            element={
+              <ProtectedLayout>
+                <UserCoursesPage />
+              </ProtectedLayout>
+            }
+          />
           <Route path=":courseId">
-            <Route index element={<ProtectedLayout children={<CoursePage />} />} />
+            <Route
+              index
+              element={
+                <ProtectedLayout>
+                  <CoursePage />
+                </ProtectedLayout>
+              }
+            />
             <Route
               path="users"
-              element={<ProtectedLayout children={<CourseUsersPage />} />}
+              element={
+                <ProtectedLayout>
+                  <CourseUsersPage />
+                </ProtectedLayout>
+              }
             />
-            <Route path="projects">
+            <Route path="assignments">
               <Route
                 index
-                element={<ProtectedLayout children={<CourseProjectsPage />} />}
+                element={
+                  <ProtectedLayout>
+                    <CourseAssignmentsPage />
+                  </ProtectedLayout>
+                }
               />
+
               <Route
-                path=":projectId"
-                element={<ProtectedLayout children={<ProjectPage />} />}
+                path=":assignmentId"
+                element={
+                  <ProtectedLayout>
+                    <AssignmentPage />
+                  </ProtectedLayout>
+                }
               />
             </Route>
           </Route>
