@@ -10,7 +10,10 @@ import Text from 'components/Text';
 import Heading from 'components/Heading';
 
 import { NavigationQuery } from '__generated__/NavigationQuery.graphql';
-import { NavigationCourseInfo$key, NavigationCourseInfo$data } from '__generated__/NavigationCourseInfo.graphql';
+import {
+  NavigationCourseInfo$key,
+  NavigationCourseInfo$data,
+} from '__generated__/NavigationCourseInfo.graphql';
 
 const NavigationBarStyle = {
   background: 'white',
@@ -22,17 +25,17 @@ const NavigationBarStyle = {
 } as const;
 
 const DevControlStyle = {
-  shadow: "md",
-  borderWidth: "thin",
-  borderColor: "black",
-  borderRadius: "5px",
-  background: "green.100",
-  bottom: "20px",
+  shadow: 'md',
+  borderWidth: 'thin',
+  borderColor: 'black',
+  borderRadius: '5px',
+  background: 'green.100',
+  bottom: '20px',
   position: 'fixed',
-  flex: "1",
-  alignItems: "center",
-  display: "flex"
-}
+  flex: '1',
+  alignItems: 'center',
+  display: 'flex',
+};
 
 const CourseTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key }) => {
   const result: NavigationCourseInfo$data = useFragment(
@@ -43,10 +46,12 @@ const CourseTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key }) => 
           name
         }
       }
-    `, viewerRef)
+    `,
+    viewerRef
+  );
 
-  return <Heading size="lg">{result?.findCourse?.name}</Heading>
-}
+  return <Heading size="lg">{result?.findCourse?.name}</Heading>;
+};
 
 const NavigationTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key }) => {
   const { courseId } = useParams();
@@ -59,7 +64,7 @@ const NavigationTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key })
 
   let pageTitle = null;
 
-  switch(location.pathname) {
+  switch (location.pathname) {
     case '/courses':
       pageTitle = 'Mis cátedras';
       break;
@@ -72,8 +77,8 @@ const NavigationTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key })
       {courseId && <CourseTitle viewerRef={viewerRef} />}
       <Heading size="lg">{pageTitle}</Heading>
     </Box>
-  )
-}
+  );
+};
 
 const NavigationBar = () => {
   const [isTeacher, setIsTeacher] = useState(false);
@@ -95,33 +100,40 @@ const NavigationBar = () => {
       shouldFetchCourseInfo: !!courseId,
       courseId: courseId || '',
     }
-  )
+  );
 
   if (!viewerData?.viewer?.id) {
     return null;
   }
 
-  const handleGoToProfile = () => navigate('/profile')
-  const handleGoToCourses = () => navigate('/courses')
-  const handleGoToProjects = () => navigate('/projects')
+  const handleGoToProfile = () => navigate('/profile');
+  const handleGoToCourses = () => navigate('/courses');
+  const _handleGoToAssignments = () => navigate('/assignments');
 
   const DevControl = () => {
     return (
       <Box sx={DevControlStyle}>
-        <Switch isChecked={!!isTeacher} onChange={() => setIsTeacher(c => !c)} padding="10px" size='lg' />
-        <Text padding="10px"><b>Soy profesor</b></Text>
+        <Switch
+          isChecked={!!isTeacher}
+          onChange={() => setIsTeacher(c => !c)}
+          padding="10px"
+          size="lg"
+        />
+        <Text padding="10px">
+          <b>Soy profesor</b>
+        </Text>
       </Box>
-    )
-  }
+    );
+  };
 
   return (
-    <Stack shadow='lg' direction='row' style={NavigationBarStyle} >
+    <Stack shadow="lg" direction="row" style={NavigationBarStyle}>
       <Suspense>
         <NavigationTitle viewerRef={viewerData.viewer} />
       </Suspense>
       <DevControl />
 
-      {isTeacher ?
+      {isTeacher ? (
         <>
           <Button h="100%" w="10%" colorScheme="blackAlpha">
             Asignar correctores
@@ -130,35 +142,40 @@ const NavigationBar = () => {
             Crear repositorios
           </Button>
         </>
-        :
+      ) : (
         <>
           <Button h="100%" w="10%" colorScheme="blackAlpha">
             Realizar entrega
           </Button>
         </>
-      }
+      )}
       <Button h="100%" w="10%" colorScheme="blackAlpha" onClick={handleGoToCourses}>
         Cursos
-      </Button>
-      <Button h="100%" w="10%" colorScheme="blackAlpha" onClick={handleGoToProjects}>
-        TPS
       </Button>
       <Button h="100%" w="10%" colorScheme="blackAlpha" onClick={handleGoToProfile}>
         Mi perfil
       </Button>
     </Stack>
   );
-}
+};
 
 const Navigation = ({ children }: { children: ReactNode }): JSX.Element => {
   return (
     <>
       <NavigationBar />
-      <Box style={{ width:"100%", height:"100%", zIndex: '-1', position: 'absolute', top: '105px' }}>
+      <Box
+        style={{
+          width: '100%',
+          height: '100%',
+          zIndex: '-1',
+          position: 'absolute',
+          top: '105px',
+        }}
+      >
         {children}
       </Box>
     </>
-  )
-}
+  );
+};
 
 export default Navigation;
