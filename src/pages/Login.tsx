@@ -19,8 +19,8 @@ const LoginPage = () => {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [data, setData] = useState({ errorMessage: '', isLoading: false });
 
-  const CLIENT_ID = process.env.GITHUB_CLIENT_ID || 'fake-id';
-  const SCOPE = process.env.GITHUB_SCOPE || 'repo';
+  const CLIENT_ID = process.env.REACT_APP_GITHUB_CLIENT_ID || 'fake-id';
+  const SCOPE = process.env.REACT_APP_GITHUB_SCOPE || 'repo';
 
   const handleGithubLogin = () => {
     setIsLoggingIn(true);
@@ -52,7 +52,6 @@ const LoginPage = () => {
             if (!errors?.length || response.login?.token) {
               setToken(response.login?.token);
               setIsLoggingIn(false);
-              console.log(response.login?.token);
               navigate('/');
             } else {
               toast({
