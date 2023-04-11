@@ -4,6 +4,7 @@ export default graphql`
   mutation LoginMutation($code: String!) {
     login(code: $code) {
       token
+      userRegistered
     }
   }
 `;

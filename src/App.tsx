@@ -1,5 +1,5 @@
 import { RelayEnvironmentProvider } from 'react-relay';
-import { Routes, Route, BrowserRouter, Navigate } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react';
 
 import environment from 'relayEnvironment';
