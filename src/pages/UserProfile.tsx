@@ -34,30 +34,6 @@ import {
 } from '__generated__/UpdateProfileMutation.graphql';
 import { FormErrors, Mutable } from 'types';
 
-const CancelButton = (rest: any) => {
-  return (
-    <Button {...rest} bg="red.400" color="white" w="full" _hover={{ bg: 'red.500' }}>
-      Cancelar
-    </Button>
-  );
-};
-
-const SubmitButton = (rest: any) => {
-  return (
-    <Button
-      {...rest}
-      bg={'blue.400'}
-      color={'white'}
-      w="full"
-      _hover={{
-        bg: 'blue.500',
-      }}
-    >
-      Guardar
-    </Button>
-  );
-};
-
 type Props = {
   user: UserProfileQuery$data;
 };
@@ -142,6 +118,14 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
 
   if (showSpinner || !queryResult) return <Spinner />;
 
+  const EditButton = ({ children, onClick }: { children: any; onClick?: () => void }) => {
+    return (
+      <Button w="full" onClick={onClick}>
+        {children}
+      </Button>
+    );
+  };
+
   return (
     <Box padding="20%" paddingTop="50px">
       <Heading lineHeight={1.1} fontSize={{ base: '2xl', sm: '3xl' }}>
@@ -149,6 +133,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
       </Heading>
       <Box display="flex" flexDir="row">
         <AvatarImage
+          isEditing={isEditing}
           onEdit={() => setIsEditing(true)}
           url="https://bit.ly/sage-adebayo" // TODO TH-67: Add avatar image to user
         />
@@ -207,7 +192,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
                       value={values.file}
                       onChange={handleChange}
                       placeholder="12345"
-                      type="text"
+                      type="number"
                     />
                     <FormErrorMessage>{errors.file}</FormErrorMessage>
                   </FormControl>
@@ -245,8 +230,8 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
 
                 {isEditing && (
                   <Stack paddingTop="40px" spacing={6} direction={['column', 'row']}>
-                    <CancelButton onClick={handleReset} />
-                    <SubmitButton onClick={handleSubmit} />
+                    <EditButton onClick={) => handleReset()}>Cancelar</EditButton>
+                    <EditButton onClick={() => handleSubmit()}>Guardar</EditButton>
                   </Stack>
                 )}
               </Box>

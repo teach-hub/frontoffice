@@ -244,16 +244,17 @@ const LoginPage = () => {
               </FormControl>
             </Box>
 
-            <Box display={'flex'} justifyContent={'flex-end'}>
-              <Button variant="ghost" mr={3} onClick={onClose} disabled={isSubmitting}>
+            <Box my={15} display={'flex'} justifyContent={'flex-end'}>
+              <Button
+                variant="ghost"
+                mr={'10%'}
+                onClick={onClose}
+                disabled={isSubmitting}
+              >
                 Cancelar
               </Button>
-              <Button
-                colorScheme="blue"
-                disabled={isSubmitting || !isValid}
-                onClick={() => handleSubmit()}
-              >
-                Registrar
+              <Button disabled={isSubmitting || !isValid} onClick={() => handleSubmit()}>
+                Registrarme
               </Button>
             </Box>
           </Form>
@@ -277,7 +278,7 @@ const LoginPage = () => {
       <Text fontSize={'2xl'} marginBottom={'5vh'}>
         Accede a través de tu cuenta de GitHub
       </Text>
-      <Button colorScheme={'blue'} onClick={handleGithubLogin} size={'lg'}>
+      <Button onClick={handleGithubLogin} size={'lg'}>
         Ingresar
       </Button>
 

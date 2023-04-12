@@ -19,6 +19,7 @@ import { ContextProvider } from 'hooks/useUserContext';
 import LoginPage from './pages/Login';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { isAuthenticated } from './auth/utils';
+import { theme } from './theme';
 
 /*
  * Way to solve protected routes, as routes can not
@@ -112,7 +113,7 @@ const App = () => {
 };
 
 const AppRoot = () => (
-  <ChakraProvider>
+  <ChakraProvider theme={theme}>
     <RelayEnvironmentProvider environment={environment}>
       <BrowserRouter>
         <ContextProvider>

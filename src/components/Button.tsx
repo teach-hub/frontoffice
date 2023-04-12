@@ -10,14 +10,14 @@ type Props = ButtonProps & {
   color?: string;
   colorScheme?: string;
   _hover?: Record<string, string>;
-}
+};
 
-const Button = ({children, onClick, colorScheme, ...rest}: Props): JSX.Element => {
+const Button = ({ children, onClick, colorScheme, ...rest }: Props): JSX.Element => {
   return (
     <ChakraButton {...rest} onClick={onClick} colorScheme={colorScheme}>
       {children}
     </ChakraButton>
   );
-}
+};
 
 export default Button;

@@ -1,8 +1,8 @@
-import { ReactNode, useState, Suspense } from 'react';
-import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { ReactNode, Suspense, useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { graphql } from 'babel-plugin-relay/macro';
 import { Stack, Switch } from '@chakra-ui/react';
-import { useLazyLoadQuery, useFragment, useMutation } from 'react-relay';
+import { useFragment, useLazyLoadQuery, useMutation } from 'react-relay';
 
 import Box from 'components/Box';
 import Button from 'components/Button';
@@ -11,8 +11,8 @@ import Heading from 'components/Heading';
 
 import { NavigationQuery } from '__generated__/NavigationQuery.graphql';
 import {
-  NavigationCourseInfo$key,
   NavigationCourseInfo$data,
+  NavigationCourseInfo$key,
 } from '__generated__/NavigationCourseInfo.graphql';
 import IconButton from './IconButton';
 import { MdLogout } from 'react-icons/md';
@@ -95,6 +95,22 @@ const NavigationBar = () => {
   const [token, setToken] = useLocalStorage('token', null);
   const [commitLogoutMutation, _] = useMutation<LogoutMutation>(LogoutMutationDef);
 
+  /* Set width of buttons to the biggest one */
+  const [maxWidth, setMaxWidth] = useState('auto');
+
+  useEffect(() => {
+    // Find the maximum width of the buttons
+    const buttons = document.querySelectorAll('button');
+    let maxWidth = 0;
+    buttons.forEach(button => {
+      const width = button.offsetWidth;
+      if (width > maxWidth) {
+        maxWidth = width;
+      }
+    });
+    setMaxWidth(`${maxWidth}px`);
+  }, []);
+
   const { courseId } = useParams();
   const navigate = useNavigate();
 
@@ -118,7 +134,7 @@ const NavigationBar = () => {
     return null;
   }
 
-  const handleGoToProfile = () => navigate('/');
+  const handleGoToProfile = () => navigate('/profile');
   const handleGoToCourses = () => navigate('/courses');
   const _handleGoToAssignments = () => navigate('/assignments');
 
@@ -156,10 +172,22 @@ const NavigationBar = () => {
     );
   };
 
-  const BUTTON_COLOR_SCHEME = 'blue';
+  const NavigatorButton = ({
+    children,
+    onClick,
+  }: {
+    children: any;
+    onClick?: () => void;
+  }) => {
+    return (
+      <Button w={maxWidth} onClick={onClick}>
+        {children}
+      </Button>
+    );
+  };
 
   return (
-    <Stack shadow="lg" direction="row" style={NavigationBarStyle}>
+    <Stack shadow="lg" direction="row" style={NavigationBarStyle} align="center">
       <Suspense>
         <NavigationTitle viewerRef={viewerData.viewer} />
       </Suspense>
@@ -167,41 +195,23 @@ const NavigationBar = () => {
 
       {isTeacher ? (
         <>
-          <Button h="100%" w="10%" colorScheme={BUTTON_COLOR_SCHEME}>
-            Asignar correctores
-          </Button>
-          <Button h="100%" w="10%" colorScheme={BUTTON_COLOR_SCHEME}>
-            Crear repositorios
-          </Button>
+          <NavigatorButton>Asignar correctores</NavigatorButton>
+          <NavigatorButton>Crear repositorios</NavigatorButton>
         </>
       ) : (
         <>
-          <Button h="100%" w="10%" colorScheme={BUTTON_COLOR_SCHEME}>
-            Realizar entrega
-          </Button>
+          <Button w={maxWidth}>Realizar entrega</Button>
         </>
       )}
-      <Button
-        h="100%"
-        w="10%"
-        colorScheme={BUTTON_COLOR_SCHEME}
-        onClick={handleGoToCourses}
-      >
-        Cursos
-      </Button>
-      <Button
-        h="100%"
-        w="10%"
-        colorScheme={BUTTON_COLOR_SCHEME}
-        onClick={handleGoToProfile}
-      >
-        Mi perfil
-      </Button>
+      <NavigatorButton onClick={handleGoToCourses}>Cursos</NavigatorButton>
+      <NavigatorButton onClick={handleGoToProfile}>Mi perfil</NavigatorButton>
       <IconButton
+        variant="ghost"
+        size="xs"
         aria-label="Cerrar Sesión"
         as={MdLogout}
-        colorScheme="transparent"
-        color="black"
+        // colorScheme="transparent"
+        // color="black"
         onClick={handleLogout}
         _hover={{ backgroundColor: 'lightGray', cursor: 'pointer' }}
       />
