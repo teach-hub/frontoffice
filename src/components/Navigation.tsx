@@ -23,15 +23,7 @@ import {
 } from '__generated__/LogoutMutation.graphql';
 import LogoutMutationDef from '../graphql/LogoutMutation';
 import useToast from '../hooks/useToast';
-
-const NavigationBarStyle = {
-  background: 'white',
-  position: 'fixed',
-  justifyContent: 'right',
-  padding: '25px',
-  width: '100%',
-  height: '10%',
-} as const;
+import { theme } from '../theme';
 
 const DevControlStyle = {
   shadow: 'md',
@@ -187,7 +179,21 @@ const NavigationBar = () => {
   };
 
   return (
-    <Stack shadow="lg" direction="row" style={NavigationBarStyle} align="center">
+    <Stack
+      bg={theme.colors.teachHub.white}
+      position="fixed"
+      shadow="lg"
+      direction="row"
+      align="center"
+      justifyContent="right"
+      paddingX="1%"
+      width="100%"
+      top={0}
+      left={0}
+      right={0}
+      zIndex={1}
+      height="10%"
+    >
       <Suspense>
         <NavigationTitle viewerRef={viewerData.viewer} />
       </Suspense>
@@ -227,9 +233,7 @@ const Navigation = ({ children }: { children: ReactNode }): JSX.Element => {
         style={{
           width: '100%',
           height: '100%',
-          zIndex: '-1',
-          position: 'absolute',
-          top: '105px',
+          paddingTop: '10%',
         }}
       >
         {children}

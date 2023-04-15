@@ -127,7 +127,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
   };
 
   return (
-    <Box padding="20%" paddingTop="50px">
+    <Box paddingX={'20%'}>
       <Heading lineHeight={1.1} fontSize={{ base: '2xl', sm: '3xl' }}>
         Perfil de {queryResult.name}
       </Heading>
@@ -137,7 +137,6 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
           onEdit={() => setIsEditing(true)}
           url="https://bit.ly/sage-adebayo" // TODO TH-67: Add avatar image to user
         />
-
         <Formik
           initialValues={{
             name: queryResult.name || '',
@@ -152,6 +151,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
         >
           {({ values, errors, handleReset, handleChange, handleSubmit }) => {
             return (
+              // todo: unify form styles
               <Box flex="1">
                 <Box padding="10px">
                   <FormControl isInvalid={!!errors.name}>

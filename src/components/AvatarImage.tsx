@@ -19,15 +19,17 @@ const AvatarImage = ({ url, name, onEdit, isEditing }: Props) => {
       </Center>
       {!isEditing && (
         <Box display="flex" position="relative" top="-90px">
+          {/* TODO: refactor edit button and avatar image*/}
           <IconButton
+            variant={'ghost'}
             onClick={onEdit}
-            bgColor="gray.300"
             w="auto"
             h="auto"
             rounded={30}
             marginLeft="auto"
             aria-label="edit photo icon"
-            icon={<EditIcon h="90px" w="90px" />}
+            icon={<EditIcon h="4vw" w="4vw" />}
+            _hover={{ backgroundColor: 'lightGray', cursor: 'pointer' }}
           />
         </Box>
       )}

@@ -29,6 +29,7 @@ export const theme = extendTheme({
           fontWeight: 'semibold',
           size: 'lg',
           _hover: { bg: 'teachHub.primaryLight' },
+          overflow: 'hidden',
         },
         ghost: {
           color: 'teachHub.black',
