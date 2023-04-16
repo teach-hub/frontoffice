@@ -13,12 +13,12 @@ type Props = {
 
 const AvatarImage = ({ url, name, onEdit, isEditing }: Props) => {
   return (
-    <Box boxSizing="border-box" padding="90px" flex="1">
+    <Box boxSizing="border-box" paddingX="40px">
       <Center>
-        <Avatar shadow="2xl" size="full" src={url} name={name} />
+        <Avatar shadow="2xl" width="20em" height="20em" src={url} name={name} />
       </Center>
       {!isEditing && (
-        <Box display="flex" position="relative" top="-90px">
+        <Box display="flex" position="relative">
           {/* TODO: refactor edit button and avatar image*/}
           <IconButton
             variant={'ghost'}
