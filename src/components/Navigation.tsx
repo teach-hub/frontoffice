@@ -81,6 +81,8 @@ const NavigationTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key })
   );
 };
 
+const NAVIGATION_HEIGHT_PX = 100;
+
 const NavigationBar = () => {
   const toast = useToast();
   const [isTeacher, setIsTeacher] = useState(false);
@@ -192,7 +194,7 @@ const NavigationBar = () => {
       left={0}
       right={0}
       zIndex={1}
-      height="10%"
+      height={`${NAVIGATION_HEIGHT_PX}px`}
     >
       <Suspense>
         <NavigationTitle viewerRef={viewerData.viewer} />
@@ -233,7 +235,7 @@ const Navigation = ({ children }: { children: ReactNode }): JSX.Element => {
         style={{
           width: '100%',
           height: '100%',
-          paddingTop: '10%',
+          paddingTop: `${NAVIGATION_HEIGHT_PX + 60}px`,
         }}
       >
         {children}
