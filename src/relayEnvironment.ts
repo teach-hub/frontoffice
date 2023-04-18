@@ -12,12 +12,21 @@ const fetchQuery = async (operation: any, variables: any) => {
 
   console.log('Fetching', { url, body });
 
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    Accept: '*/*',
+  };
+
+  const token = localStorage.getItem('token')
+    ? JSON.parse(localStorage.getItem('token') as string)
+    : null;
+  if (token) headers.Authorization = `Bearer ${token}`;
+
   return fetch(url, {
     method: 'POST',
     body,
     headers: {
-      'Content-Type': 'application/json',
-      Accept: '*/*',
+      ...headers,
     },
   }).then(response => {
     return response.json();

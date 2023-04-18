@@ -7,9 +7,16 @@ type Props = InputProps & {
   value?: string;
   isReadOnly?: boolean;
   onChange?: ChangeEventHandler<HTMLInputElement>;
-}
+};
 
-const InputField = ({ isReadOnly, placeholder, type, value, onChange, ...rest}: Props): JSX.Element => {
+const InputField = ({
+  isReadOnly,
+  placeholder,
+  type,
+  value,
+  onChange,
+  ...rest
+}: Props): JSX.Element => {
   return (
     <Input
       {...rest}
@@ -17,10 +24,10 @@ const InputField = ({ isReadOnly, placeholder, type, value, onChange, ...rest}: 
       isReadOnly={isReadOnly}
       value={value}
       placeholder={placeholder}
-      _placeholder={{ color: 'gray.500' }}
+      _placeholder={{ color: 'gray.400' }}
       type={type}
     />
-  )
+  );
 };
 
 export default InputField;

@@ -1,8 +1,14 @@
 import { Formik } from 'formik';
-import { useState, Suspense } from 'react';
-import { useMutation, useLazyLoadQuery } from 'react-relay';
+import { Suspense, useState } from 'react';
+import { useLazyLoadQuery, useMutation } from 'react-relay';
 
-import { FormControl, FormErrorMessage, FormLabel, Stack, Spinner } from '@chakra-ui/react';
+import {
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Spinner,
+  Stack,
+} from '@chakra-ui/react';
 
 import { PayloadError } from 'relay-runtime';
 
@@ -16,12 +22,17 @@ import Navigation from 'components/Navigation';
 import useToast from 'hooks/useToast';
 
 import UserProfileQueryDef from 'graphql/UserProfileQuery';
-import UpdateProfileMutationDef  from 'graphql/UpdateProfileMutation';
+import UpdateProfileMutationDef from 'graphql/UpdateProfileMutation';
 
-import { UserProfileQuery, UserProfileQuery$data } from '__generated__/UserProfileQuery.graphql';
-import { UpdateProfileMutation, UpdateProfileMutation$data } from '__generated__/UpdateProfileMutation.graphql';
-
-type Mutable<T> = { -readonly [P in keyof T]: T[P] };
+import {
+  UserProfileQuery,
+  UserProfileQuery$data,
+} from '__generated__/UserProfileQuery.graphql';
+import {
+  UpdateProfileMutation,
+  UpdateProfileMutation$data,
+} from '__generated__/UpdateProfileMutation.graphql';
+import { FormErrors, Mutable } from 'types';
 
 const CancelButton = (rest: any) => {
   return (
@@ -29,7 +40,7 @@ const CancelButton = (rest: any) => {
       Cancelar
     </Button>
   );
-}
+};
 
 const SubmitButton = (rest: any) => {
   return (
@@ -40,18 +51,18 @@ const SubmitButton = (rest: any) => {
       w="full"
       _hover={{
         bg: 'blue.500',
-      }}>
+      }}
+    >
       Guardar
     </Button>
-  )
+  );
 };
 
 type Props = {
   user: UserProfileQuery$data;
-}
+};
 
 const UserProfilePage = ({ user }: Props): JSX.Element => {
-
   const toast = useToast();
   const [commitMutation] = useMutation<UpdateProfileMutation>(UpdateProfileMutationDef);
 
@@ -59,32 +70,34 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
-  const onMutationComplete = (response: UpdateProfileMutation$data, errors: PayloadError[] | null) => {
+  const onMutationComplete = (
+    response: UpdateProfileMutation$data,
+    errors: PayloadError[] | null
+  ) => {
     setShowSpinner(false);
 
     if (!errors?.length) {
       if (response.updateUser) {
-
         // @ts-expect-error
         setResult({ ...response.updateUser, id: queryResult.id });
       }
       toast({
-        title: "¡Usuario actualizado!",
-        description: "El usuario fue actualizado",
-        status: "success"
-      })
+        title: '¡Usuario actualizado!',
+        description: 'El usuario fue actualizado',
+        status: 'success',
+      });
     } else {
       toast({
-        title: "Error",
-        description: "El usuario no pudo ser actualizado",
-        status: "error"
-      })
+        title: 'Error',
+        description: 'El usuario no pudo ser actualizado',
+        status: 'error',
+      });
     }
-  }
+  };
 
   const onSubmit = (values: FormValues) => {
     if (!queryResult?.id) {
-      throw new Error('No user id!')
+      throw new Error('No user id!');
     }
 
     setShowSpinner(true);
@@ -99,16 +112,15 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
         notificationEmail: values.notificationEmail,
       },
       onCompleted: onMutationComplete,
-    })
-  }
+    });
+  };
 
   const handleCancel = () => setIsEditing(false);
 
   type FormValues = Mutable<Omit<NonNullable<UserProfileQuery$data['viewer']>, 'id'>>;
-  type FormErrors = { [P in keyof Partial<FormValues>]: string };
 
-  const validateForm = (values: FormValues): FormErrors => {
-    const errors: FormErrors = {};
+  const validateForm = (values: FormValues): FormErrors<FormValues> => {
+    const errors: FormErrors<FormValues> = {};
 
     if (!values.name) {
       errors.name = 'Nombre no puede ser vacio';
@@ -125,7 +137,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
     // TODO. Validar que el email tenga forma de email.
 
     return errors;
-  }
+  };
 
   if (showSpinner || !queryResult) return <Spinner />;
 
@@ -135,8 +147,10 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
         Perfil de {queryResult.name}
       </Heading>
       <Box display="flex" flexDir="row">
-
-        <AvatarImage onEdit={() => setIsEditing(true)} url="https://bit.ly/sage-adebayo" />
+        <AvatarImage
+          onEdit={() => setIsEditing(true)}
+          url="https://bit.ly/sage-adebayo" // TODO TH-67: Add avatar image to user
+        />
 
         <Formik
           initialValues={{
@@ -227,21 +241,20 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
                   </FormControl>
                 </Box>
 
-                {isEditing &&
+                {isEditing && (
                   <Stack paddingTop="40px" spacing={6} direction={['column', 'row']}>
                     <CancelButton onClick={handleCancel} />
                     <SubmitButton onClick={handleSubmit} />
                   </Stack>
-                }
+                )}
               </Box>
-            )
+            );
           }}
         </Formik>
       </Box>
     </Box>
-  )
-}
-
+  );
+};
 
 const UserProfilePageContainer = () => {
   const data = useLazyLoadQuery<UserProfileQuery>(UserProfileQueryDef, {});
@@ -259,4 +272,4 @@ export default () => {
       </Navigation>
     </Suspense>
   );
-}
+};
