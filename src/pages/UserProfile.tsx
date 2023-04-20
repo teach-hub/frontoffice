@@ -205,7 +205,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
                       value={values.file}
                       onChange={handleChange}
                       placeholder="12345"
-                      type="number"
+                      type="text"
                     />
                     <FormErrorMessage>{errors.file}</FormErrorMessage>
                   </FormControl>
