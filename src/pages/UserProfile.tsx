@@ -75,6 +75,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
     errors: PayloadError[] | null
   ) => {
     setShowSpinner(false);
+    setIsEditing(false);
 
     if (!errors?.length) {
       if (response.updateUser) {
@@ -115,7 +116,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
     });
   };
 
-  const handleCancel = () => setIsEditing(false);
+  const onCancel = () => setIsEditing(false);
 
   type FormValues = Mutable<Omit<NonNullable<UserProfileQuery$data['viewer']>, 'id'>>;
 
@@ -162,8 +163,9 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
           }}
           validate={validateForm}
           onSubmit={onSubmit}
+          onReset={onCancel}
         >
-          {({ values, errors, handleChange, handleSubmit }) => {
+          {({ values, errors, handleReset, handleChange, handleSubmit }) => {
             return (
               <Box flex="1">
                 <Box padding="10px">
@@ -243,7 +245,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
 
                 {isEditing && (
                   <Stack paddingTop="40px" spacing={6} direction={['column', 'row']}>
-                    <CancelButton onClick={handleCancel} />
+                    <CancelButton onClick={handleReset} />
                     <SubmitButton onClick={handleSubmit} />
                   </Stack>
                 )}
