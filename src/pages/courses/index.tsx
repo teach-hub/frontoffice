@@ -2,8 +2,8 @@ import { MouseEvent, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
-import { IconButton, Badge } from '@chakra-ui/react'
-import { CloseIcon } from '@chakra-ui/icons'
+import { Badge, IconButton, Stack } from '@chakra-ui/react';
+import { CloseIcon } from '@chakra-ui/icons';
 
 import Text from 'components/Text';
 import Heading from 'components/Heading';
@@ -11,8 +11,12 @@ import Box from 'components/Box';
 import Navigation from 'components/Navigation';
 import Card from 'components/Card';
 
-import UserCoursesQueryDef from 'graphql/UserCoursesQuery'
-import { UserCoursesQuery, UserCoursesQuery$data } from '__generated__/UserCoursesQuery.graphql';
+import UserCoursesQueryDef from 'graphql/UserCoursesQuery';
+import {
+  UserCoursesQuery,
+  UserCoursesQuery$data,
+} from '__generated__/UserCoursesQuery.graphql';
+import { theme } from '../../theme';
 
 type Viewer = NonNullable<UserCoursesQuery$data['viewer']>;
 
@@ -27,45 +31,54 @@ const CourseCard = ({ userRole }: { userRole: UserRole }) => {
 
   if (!course || !role) return null;
 
-  const { name: courseName, year: courseYear, subject: { code: subjectCode, name: subjectName } } = course;
+  const {
+    name: courseName,
+    year: courseYear,
+    subject: { code: subjectCode, name: subjectName },
+  } = course;
   const { name: roleName } = role;
 
   const subjectTitle = [subjectCode, subjectName].join(' - ');
 
   const handleCardClick = (_: MouseEvent<HTMLDivElement>) => {
-    navigate(`/courses/${userRole.course?.id}`)
-  }
+    navigate(`/courses/${userRole.course?.id}`);
+  };
 
   return (
-    <Card onClick={handleCardClick}>
-      <Heading flex="1" size="md">{courseName}</Heading>
+    <Card onClick={handleCardClick} fontSize={'lg'}>
+      <Heading flex="1" size="md">
+        {courseName}
+      </Heading>
       <Text flex="1">{courseYear}</Text>
       <Text flex="1">{subjectTitle}</Text>
 
-      <Badge fontSize="md" variant="subtle" colorScheme="blue">{roleName}</Badge>
+      <Badge
+        fontSize="md"
+        variant="subtle"
+        backgroundColor={theme.colors.teachHub.white}
+        color={theme.colors.teachHub.black}
+        borderRadius={'5px'}
+      >
+        {roleName}
+      </Badge>
 
       <Box display="flex" flexDirection="row-reverse" alignItems="center" flex="1">
-        <IconButton
-          variant='ghost'
-          colorScheme='gray'
-          aria-label='See menu'
-          icon={<CloseIcon />}
-        />
+        <IconButton variant="ghost" aria-label="See menu" icon={<CloseIcon />} />
       </Box>
     </Card>
   );
-}
+};
 
 const CoursesList = ({ userRoles }: { userRoles: UserRole[] }) => {
+  const GAP = '15px';
   return (
-    <>
-      {userRoles.map((userRole, i) =>
+    <Stack gap={GAP} paddingX={'20vw'} paddingBottom={GAP}>
+      {userRoles.map((userRole, i) => (
         <CourseCard key={i} userRole={userRole} />
-      )}
-    </>
-  )
-}
-
+      ))}
+    </Stack>
+  );
+};
 
 const CoursesContainer = () => {
   const data = useLazyLoadQuery<UserCoursesQuery>(UserCoursesQueryDef, {});
@@ -76,13 +89,20 @@ const CoursesContainer = () => {
 
   const viewerRoles = data.viewer.userRoles.filter(userRole => !!userRole) as UserRole[];
 
-  return <CoursesList userRoles={viewerRoles} />
-}
+  return <CoursesList userRoles={viewerRoles} />;
+};
 
 export default () => (
-  <Suspense fallback={<Box h="300px" w="900px" bgColor="black"> Cargando... </Box>}>
+  <Suspense
+    fallback={
+      <Box h="300px" w="900px" bgColor="black">
+        {' '}
+        Cargando...{' '}
+      </Box>
+    }
+  >
     <Navigation>
       <CoursesContainer />
     </Navigation>
   </Suspense>
-)
+);

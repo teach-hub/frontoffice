@@ -1,8 +1,5 @@
 import {
   Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
   Heading,
   Image,
   Modal,
@@ -29,9 +26,7 @@ import {
   RegisterUserMutation$data,
 } from '../__generated__/RegisterUserMutation.graphql';
 import { FormErrors, Mutable } from '../types';
-import { Form, Formik } from 'formik';
-import Box from '../components/Box';
-import InputField from '../components/InputField';
+import { Form } from '../components/Form';
 
 type RegisterData = {
   name?: string;
@@ -162,103 +157,72 @@ const LoginPage = () => {
     };
 
     return (
-      <Formik
-        initialValues={{
-          name: initialValues.name || '',
-          lastName: initialValues.lastName || '',
-          file: initialValues.file || '',
-          notificationEmail: initialValues.notificationEmail || '',
-        }}
-        validate={validateForm}
-        onSubmit={onSubmit}
-      >
-        {({ values, errors, handleChange, isSubmitting, isValid, handleSubmit }) => (
-          <Form>
-            <Box padding="10px">
-              <FormControl display="flex">
-                <FormLabel fontWeight="bold">¿Tenes padrón?</FormLabel>
-                <Switch
-                  id="has-file"
-                  isChecked={hasFile}
-                  onChange={() => setHasFile(!hasFile)}
-                />
-              </FormControl>
-            </Box>
-            {hasFile && (
-              <Box padding="10px">
-                <FormControl fontWeight="bold" isInvalid={!!errors.file}>
-                  <FormLabel htmlFor="has-file" fontWeight="bold">
-                    Padron
-                  </FormLabel>
-                  <InputField
-                    id="file"
-                    value={values.file}
-                    onChange={handleChange}
-                    placeholder="12345"
-                    type="number"
-                    pattern="[0-9]*" // allow only digits
-                    inputMode="numeric" // show numeric keyboard on mobile devices
-                  />
-                  <FormErrorMessage>{errors.file}</FormErrorMessage>
-                </FormControl>
-              </Box>
-            )}
-            <Box padding="10px">
-              <FormControl isInvalid={!!errors.name}>
-                <FormLabel fontWeight="bold">Nombre</FormLabel>
-                <InputField
-                  id="name"
-                  value={values.name}
-                  onChange={handleChange}
-                  placeholder="Nombre"
-                  type="text"
-                />
-                <FormErrorMessage>{errors.name}</FormErrorMessage>
-              </FormControl>
-            </Box>
-            <Box padding="10px">
-              <FormControl fontWeight="bold" isInvalid={!!errors.lastName}>
-                <FormLabel fontWeight="bold">Apellido</FormLabel>
-                <InputField
-                  id="lastName"
-                  value={values.lastName}
-                  onChange={handleChange}
-                  placeholder="Apellido"
-                  type="text"
-                />
-                <FormErrorMessage>{errors.lastName}</FormErrorMessage>
-              </FormControl>
-            </Box>
-            <Box padding="10px">
-              <FormControl fontWeight="bold" isInvalid={!!errors.notificationEmail}>
-                <FormLabel fontWeight="bold">Email (para notificaciones)</FormLabel>
-                <InputField
-                  id="notificationEmail"
-                  name="notificationEmail"
-                  value={values.notificationEmail}
-                  onChange={handleChange}
-                  placeholder="mail@fi.uba.ar"
-                  type="email"
-                />
-                <FormErrorMessage>{errors.notificationEmail}</FormErrorMessage>
-              </FormControl>
-            </Box>
-
-            <Box display={'flex'} justifyContent={'flex-end'}>
-              <Button variant="ghost" mr={3} onClick={onClose} disabled={isSubmitting}>
-                Cancelar
-              </Button>
-              <Button
-                colorScheme="blue"
-                disabled={isSubmitting || !isValid}
-                onClick={() => handleSubmit()}
-              >
-                Registrar
-              </Button>
-            </Box>
-          </Form>
-        )}
-      </Formik>
+      <Flex direction="column" gap={'30px'}>
+        <Flex width={'full'} justifyContent={'flex-start'} gap={'20px'}>
+          <Text fontWeight="bold">¿Tenes padrón?</Text>
+          <Switch
+            id="has-file"
+            isChecked={hasFile}
+            onChange={() => setHasFile(!hasFile)}
+          />
+        </Flex>
+        <Form
+          buttonsEnabled={true}
+          areReadOnly={false}
+          initialValues={{
+            name: initialValues.name || '',
+            lastName: initialValues.lastName || '',
+            file: initialValues.file || '',
+            notificationEmail: initialValues.notificationEmail || '',
+          }}
+          validateForm={validateForm}
+          onCancelForm={{
+            text: 'Cancelar',
+            onClick: onClose,
+          }}
+          onSubmitForm={{
+            text: 'Registrarme',
+            onClick: onSubmit,
+          }}
+          inputFields={[
+            {
+              id: 'name',
+              label: 'Nombre',
+              placeholder: 'Nombre',
+              type: 'text',
+              readError: e => e.name as string,
+              readValue: v => v.name,
+            },
+            {
+              id: 'lastName',
+              label: 'Apellido',
+              placeholder: 'Apellido',
+              type: 'text',
+              readError: e => e.lastName as string,
+              readValue: v => v.lastName,
+            },
+            {
+              id: 'notificationEmail',
+              label: 'Email (notificaciones)',
+              placeholder: 'mail@mail.com',
+              type: 'email',
+              readError: e => e.notificationEmail as string,
+              readValue: v => v.notificationEmail,
+            },
+            {
+              id: 'file',
+              label: 'Padrón',
+              placeholder: '12345',
+              type: 'number',
+              pattern: '[0-9]*', // allow only digits
+              inputMode: 'numeric',
+              readError: e => e.file as string,
+              readValue: v => v.file,
+              isFieldEnabled: hasFile,
+            },
+          ]}
+        />
+      </Flex>
     );
   };
 
@@ -277,7 +241,7 @@ const LoginPage = () => {
       <Text fontSize={'2xl'} marginBottom={'5vh'}>
         Accede a través de tu cuenta de GitHub
       </Text>
-      <Button colorScheme={'blue'} onClick={handleGithubLogin} size={'lg'}>
+      <Button onClick={handleGithubLogin} size={'lg'}>
         Ingresar
       </Button>
 
