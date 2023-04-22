@@ -63,8 +63,17 @@ export const Form = (formData: FormData<any>) => {
       initialValues={initialValues}
       validate={validateForm}
       onSubmit={onSubmitForm.onClick}
+      onReset={onCancelForm.onClick}
     >
-      {({ values, errors, handleChange, isSubmitting, isValid, handleSubmit }) => (
+      {({
+        values,
+        errors,
+        handleChange,
+        handleReset,
+        isSubmitting,
+        isValid,
+        handleSubmit,
+      }) => (
         <Flex direction={'column'} justifyContent={'space-evenly '} gap={'20px'}>
           {inputFields
             .filter(({ isFieldEnabled }) => isFieldEnabled ?? true)
@@ -104,7 +113,7 @@ export const Form = (formData: FormData<any>) => {
                 variant="ghost"
                 w={'full'}
                 mr={'10%'}
-                onClick={onCancelForm.onClick}
+                onClick={handleReset}
                 disabled={isSubmitting}
               >
                 {onCancelForm.text}
