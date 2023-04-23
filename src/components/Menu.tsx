@@ -10,7 +10,10 @@ import {
 type Props = {
   content: {
     menuButton: MenuButtonProps['children'];
-    items: MenuItemProps['children'][];
+    items: {
+      content: MenuItemProps['children'];
+      props?: Omit<MenuItemProps, 'children'>;
+    }[];
   };
 };
 
@@ -19,7 +22,12 @@ const Menu = ({ content: { menuButton, items } }: Props) => {
     <ChakraMenu>
       <ChakraMenuButton>{menuButton}</ChakraMenuButton>
       <ChakraMenuList>
-        {items && items.map(item => <ChakraMenuItem>{item}</ChakraMenuItem>)}
+        {items &&
+          items.map((item, i) => (
+            <ChakraMenuItem key={i} {...item.props}>
+              {item.content}
+            </ChakraMenuItem>
+          ))}
       </ChakraMenuList>
     </ChakraMenu>
   );

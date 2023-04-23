@@ -3,7 +3,7 @@ import { Link as ReachLink, useLocation, useNavigate, useParams } from 'react-ro
 
 import { graphql } from 'babel-plugin-relay/macro';
 import { useFragment, useLazyLoadQuery, useMutation } from 'react-relay';
-import { Link, Divider, Image, HStack, Switch } from '@chakra-ui/react';
+import { Link, Image, HStack, Switch } from '@chakra-ui/react';
 import { AddIcon, ChevronDownIcon } from '@chakra-ui/icons';
 
 import Box from 'components/Box';
@@ -12,6 +12,8 @@ import Text from 'components/Text';
 import Heading from 'components/Heading';
 import Avatar from 'components/Avatar';
 import Menu from 'components/Menu';
+import Divider from 'components/Divider';
+import HomeButton from 'components/HomeButton';
 
 import { useLocalStorage } from 'hooks/useLocalStorage';
 import LogoutMutationDef from 'graphql/LogoutMutation';
@@ -84,7 +86,17 @@ const _NavigationTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key }
   );
 };
 
-const NAVIGATION_HEIGHT_PX = 100;
+const MainRoutes = () => {
+  return (
+    <HStack spacing="30px">
+      <Link as={ReachLink} to="/courses">
+        Cursos
+      </Link>
+    </HStack>
+  );
+};
+
+const NAVIGATION_HEIGHT_PX = 95;
 
 const NavigationBar = () => {
   const toast = useToast();
@@ -149,6 +161,10 @@ const NavigationBar = () => {
     });
   };
 
+  const handleGoToProfile = () => {
+    navigate('/profile');
+  };
+
   const DevControl = () => {
     return (
       <Box sx={DevControlStyle}>
@@ -180,33 +196,12 @@ const NavigationBar = () => {
       zIndex="1px"
       height={`${NAVIGATION_HEIGHT_PX}px`}
     >
-      <Suspense>{/* <NavigationTitle viewerRef={viewerData.viewer} /> */}</Suspense>
+      <HomeButton onClick={() => navigate('/')} />
 
-      <Box
-        _hover={{
-          transition: '.3s',
-          filter: 'blur(1px)',
-          cursor: 'pointer',
-        }}
-      >
-        <Image
-          h="70px"
-          w="65px"
-          src={require('../assets/logo_wo_text.png')}
-          onClick={() => navigate('/')}
-        />
-      </Box>
-
-      <Divider borderColor={'gray.700'} height={'75%'} orientation="vertical" />
+      <Divider borderColor={'gray.700'} h="75%" />
 
       <HStack flex="1" spacing="auto">
-        <HStack spacing="30px">
-          <Link as={ReachLink} to="/courses">
-            {' '}
-            Cursos
-          </Link>
-        </HStack>
-
+        <MainRoutes />
         <Menu
           content={{
             menuButton: (
@@ -215,8 +210,8 @@ const NavigationBar = () => {
               </Button>
             ),
             items: isTeacher
-              ? ['Asignar correctores', 'Crear repositorios']
-              : ['Realizar entrega'],
+              ? [{ content: 'Asignar correctores' }, { content: 'Crear repositorios' }]
+              : [{ content: 'Realizar entrega' }],
           }}
         />
       </HStack>
@@ -224,7 +219,10 @@ const NavigationBar = () => {
       <Menu
         content={{
           menuButton: <Avatar src="https://bit.ly/sage-adebayo" />,
-          items: ['Ver perfil', 'Salir'],
+          items: [
+            { content: 'Ver perfil', props: { onClick: handleGoToProfile } },
+            { content: 'Salir', props: { onClick: handleLogout } },
+          ],
         }}
       />
 
