@@ -1,8 +1,9 @@
 import { ReactNode, Suspense, useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link as ReachLink, useLocation, useNavigate, useParams } from 'react-router-dom';
+
 import { graphql } from 'babel-plugin-relay/macro';
 import { useFragment, useLazyLoadQuery, useMutation } from 'react-relay';
-import { Link, Divider, Image, Avatar, HStack, Stack, Switch } from '@chakra-ui/react';
+import { Link, Divider, Image, Avatar, HStack, Switch } from '@chakra-ui/react';
 
 import Box from 'components/Box';
 import Button from 'components/Button';
@@ -25,7 +26,6 @@ import {
   LogoutMutation$data,
 } from '__generated__/LogoutMutation.graphql';
 import { NavigationQuery } from '__generated__/NavigationQuery.graphql';
-
 
 const DevControlStyle = {
   shadow: 'md',
@@ -56,7 +56,7 @@ const CourseTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key }) => 
   return <Heading size="lg">{result?.findCourse?.name}</Heading>;
 };
 
-const NavigationTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key }) => {
+const _NavigationTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key }) => {
   const { courseId } = useParams();
   const location = useLocation();
 
@@ -130,14 +130,10 @@ const NavigationBar = () => {
     return null;
   }
 
-  const handleGoToProfile = () => navigate('/profile');
-  const handleGoToCourses = () => navigate('/courses');
-  const _handleGoToAssignments = () => navigate('/assignments');
-
   const handleLogout = () => {
     commitLogoutMutation({
       variables: { token },
-      onCompleted: (response: LogoutMutation$data, errors) => {
+      onCompleted: (_: LogoutMutation$data, errors) => {
         if (!errors?.length) {
           setToken(null);
           navigate('/login');
@@ -169,8 +165,11 @@ const NavigationBar = () => {
   };
 
   return (
-    <HStack spacing="20px" shadow="lg" direction="row"
-      bg={theme.colors.teachHub.white}
+    <HStack
+      spacing="20px"
+      shadow="lg"
+      direction="row"
+      bg={theme.colors.teachHub.secondary}
       position="fixed"
       paddingX="1%"
       width="100%"
@@ -179,28 +178,32 @@ const NavigationBar = () => {
       right="0px"
       zIndex="1px"
       height={`${NAVIGATION_HEIGHT_PX}px`}
+    >
+      <Suspense>{/* <NavigationTitle viewerRef={viewerData.viewer} /> */}</Suspense>
 
-    style={{
-      }}>
-      <Suspense>
-        { /* <NavigationTitle viewerRef={viewerData.viewer} /> */ }
-      </Suspense>
+      <Box
+        _hover={{
+          transition: '.3s',
+          filter: 'blur(1px)',
+          cursor: 'pointer',
+        }}
+      >
+        <Image
+          h="70px"
+          w="65px"
+          src={require('../assets/logo_wo_text.png')}
+          onClick={() => navigate('/')}
+        />
+      </Box>
 
-      <Image
-        h="70px"
-        w="65px"
-        src={require("../assets/logo_wo_text.png")}
-      />
+      <Divider borderColor={'gray.500'} height={'70%'} orientation="vertical" />
 
-      <Divider color={'black'} orientation='vertical' />
-
-      <HStack flex="1" spacing='auto'>
+      <HStack flex="1" spacing="auto">
         <HStack spacing="30px" direction={'row'}>
-          <Link onClick={handleGoToCourses}> Cursos</Link>
-          <Link onClick={handleGoToCourses}> Cursos 2</Link>
-          <Link onClick={handleGoToCourses}> Cursos 3</Link>
-          <Link onClick={handleGoToCourses}> Cursos </Link>
-          <Link onClick={handleGoToCourses}> Cursos </Link>
+          <Link as={ReachLink} to="/courses">
+            {' '}
+            Cursos
+          </Link>
         </HStack>
 
         <HStack direction={'row-reverse'}>
@@ -215,19 +218,18 @@ const NavigationBar = () => {
             </>
           )}
         </HStack>
-
       </HStack>
 
       <Avatar
         _hover={{
           transition: '.3s',
-          filter: 'blur(0.5px)',
+          filter: 'blur(1px)',
           cursor: 'pointer',
         }}
         borderWidth="1px"
         borderColor="black.100"
         onClick={() => navigate('/profile')}
-        src='https://bit.ly/sage-adebayo'
+        src="https://bit.ly/sage-adebayo"
       />
 
       <IconButton
@@ -239,7 +241,9 @@ const NavigationBar = () => {
         _hover={{ backgroundColor: 'lightGray', cursor: 'pointer' }}
       />
 
-      {/* Control temporal para emular roles, no queda en la entrega final */ }
+      {/**
+       * Control temporal para emular roles, no queda en la entrega final
+       */}
       <DevControl />
     </HStack>
   );
