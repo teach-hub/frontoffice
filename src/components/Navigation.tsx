@@ -1,29 +1,31 @@
 import { ReactNode, Suspense, useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { graphql } from 'babel-plugin-relay/macro';
-import { Stack, Switch } from '@chakra-ui/react';
 import { useFragment, useLazyLoadQuery, useMutation } from 'react-relay';
+import { Link, Divider, Image, Avatar, HStack, Stack, Switch } from '@chakra-ui/react';
 
 import Box from 'components/Box';
 import Button from 'components/Button';
 import Text from 'components/Text';
 import Heading from 'components/Heading';
 
-import { NavigationQuery } from '__generated__/NavigationQuery.graphql';
+import IconButton from './IconButton';
+import { MdLogout } from 'react-icons/md';
+import { useLocalStorage } from 'hooks/useLocalStorage';
+import LogoutMutationDef from 'graphql/LogoutMutation';
+import useToast from 'hooks/useToast';
+import { theme } from 'theme';
+
 import {
   NavigationCourseInfo$data,
   NavigationCourseInfo$key,
 } from '__generated__/NavigationCourseInfo.graphql';
-import IconButton from './IconButton';
-import { MdLogout } from 'react-icons/md';
-import { useLocalStorage } from '../hooks/useLocalStorage';
 import {
   LogoutMutation,
   LogoutMutation$data,
 } from '__generated__/LogoutMutation.graphql';
-import LogoutMutationDef from '../graphql/LogoutMutation';
-import useToast from '../hooks/useToast';
-import { theme } from '../theme';
+import { NavigationQuery } from '__generated__/NavigationQuery.graphql';
+
 
 const DevControlStyle = {
   shadow: 'md',
@@ -166,64 +168,80 @@ const NavigationBar = () => {
     );
   };
 
-  const NavigatorButton = ({
-    children,
-    onClick,
-  }: {
-    children: any;
-    onClick?: () => void;
-  }) => {
-    return (
-      <Button w={maxWidth} onClick={onClick}>
-        {children}
-      </Button>
-    );
-  };
-
   return (
-    <Stack
+    <HStack spacing="20px" shadow="lg" direction="row"
       bg={theme.colors.teachHub.white}
       position="fixed"
-      shadow="lg"
-      direction="row"
-      align="center"
-      justifyContent="right"
       paddingX="1%"
       width="100%"
-      top={0}
-      left={0}
-      right={0}
-      zIndex={1}
+      top="0px"
+      left="0px"
+      right="0px"
+      zIndex="1px"
       height={`${NAVIGATION_HEIGHT_PX}px`}
-    >
-      <Suspense>
-        <NavigationTitle viewerRef={viewerData.viewer} />
-      </Suspense>
-      <DevControl />
 
-      {isTeacher ? (
-        <>
-          <NavigatorButton>Asignar correctores</NavigatorButton>
-          <NavigatorButton>Crear repositorios</NavigatorButton>
-        </>
-      ) : (
-        <>
-          <Button w={maxWidth}>Realizar entrega</Button>
-        </>
-      )}
-      <NavigatorButton onClick={handleGoToCourses}>Cursos</NavigatorButton>
-      <NavigatorButton onClick={handleGoToProfile}>Mi perfil</NavigatorButton>
+    style={{
+      }}>
+      <Suspense>
+        { /* <NavigationTitle viewerRef={viewerData.viewer} /> */ }
+      </Suspense>
+
+      <Image
+        h="70px"
+        w="65px"
+        src={require("../assets/logo_wo_text.png")}
+      />
+
+      <Divider color={'black'} orientation='vertical' />
+
+      <HStack flex="1" spacing='auto'>
+        <HStack spacing="30px" direction={'row'}>
+          <Link onClick={handleGoToCourses}> Cursos</Link>
+          <Link onClick={handleGoToCourses}> Cursos 2</Link>
+          <Link onClick={handleGoToCourses}> Cursos 3</Link>
+          <Link onClick={handleGoToCourses}> Cursos </Link>
+          <Link onClick={handleGoToCourses}> Cursos </Link>
+        </HStack>
+
+        <HStack direction={'row-reverse'}>
+          {isTeacher ? (
+            <>
+              <Button> Asignar correctores </Button>
+              <Button> Crear repositorios </Button>
+            </>
+          ) : (
+            <>
+              <Button> Realizar entrega </Button>
+            </>
+          )}
+        </HStack>
+
+      </HStack>
+
+      <Avatar
+        _hover={{
+          transition: '.3s',
+          filter: 'blur(0.5px)',
+          cursor: 'pointer',
+        }}
+        borderWidth="1px"
+        borderColor="black.100"
+        onClick={() => navigate('/profile')}
+        src='https://bit.ly/sage-adebayo'
+      />
+
       <IconButton
         variant="ghost"
         size="xs"
         aria-label="Cerrar Sesión"
         as={MdLogout}
-        // colorScheme="transparent"
-        // color="black"
         onClick={handleLogout}
         _hover={{ backgroundColor: 'lightGray', cursor: 'pointer' }}
       />
-    </Stack>
+
+      {/* Control temporal para emular roles, no queda en la entrega final */ }
+      <DevControl />
+    </HStack>
   );
 };
 
@@ -232,11 +250,11 @@ const Navigation = ({ children }: { children: ReactNode }): JSX.Element => {
     <>
       <NavigationBar />
       <Box
-        style={{
-          width: '100%',
-          height: '100%',
-          paddingTop: `${NAVIGATION_HEIGHT_PX + 60}px`,
-        }}
+        w="100%"
+        h="100%"
+        zIndex="-1"
+        position="absolute"
+        top={`${NAVIGATION_HEIGHT_PX + 30}px`}
       >
         {children}
       </Box>

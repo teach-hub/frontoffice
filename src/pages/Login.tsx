@@ -14,19 +14,19 @@ import {
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import Button from '../components/Button';
-import logo from '../assets/logo_wo_text.png';
+import Button from 'components/Button';
+import logo from 'assets/logo_wo_text.png';
 import { useMutation } from 'react-relay';
 import LoginMutationDef from 'graphql/LoginMutation';
 import RegisterMutationDef from 'graphql/RegisterUserMutation';
-import useToast from '../hooks/useToast';
+import useToast from 'hooks/useToast';
 import { LoginMutation, LoginMutation$data } from '__generated__/LoginMutation.graphql';
 import {
   RegisterUserMutation,
   RegisterUserMutation$data,
-} from '../__generated__/RegisterUserMutation.graphql';
+} from '__generated__/RegisterUserMutation.graphql';
 import { FormErrors, Mutable } from '../types';
-import { Form } from '../components/Form';
+import { Form } from 'components/Form';
 
 type RegisterData = {
   name?: string;
