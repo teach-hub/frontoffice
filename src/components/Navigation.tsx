@@ -1,15 +1,14 @@
-import { ReactNode, Suspense, useEffect, useState } from 'react';
-import { Link as ReachLink, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { ReactNode, useEffect, useState } from 'react';
+import { Link as ReachLink, useNavigate } from 'react-router-dom';
 
 import { graphql } from 'babel-plugin-relay/macro';
-import { useFragment, useLazyLoadQuery, useMutation } from 'react-relay';
-import { Link, Image, HStack, Switch } from '@chakra-ui/react';
+import { useLazyLoadQuery, useMutation } from 'react-relay';
+import { Link, HStack, Switch } from '@chakra-ui/react';
 import { AddIcon, ChevronDownIcon } from '@chakra-ui/icons';
 
 import Box from 'components/Box';
 import Button from 'components/Button';
 import Text from 'components/Text';
-import Heading from 'components/Heading';
 import Avatar from 'components/Avatar';
 import Menu from 'components/Menu';
 import Divider from 'components/Divider';
@@ -20,10 +19,6 @@ import LogoutMutationDef from 'graphql/LogoutMutation';
 import useToast from 'hooks/useToast';
 import { theme } from 'theme';
 
-import {
-  NavigationCourseInfo$data,
-  NavigationCourseInfo$key,
-} from '__generated__/NavigationCourseInfo.graphql';
 import {
   LogoutMutation,
   LogoutMutation$data,
@@ -41,49 +36,6 @@ const DevControlStyle = {
   flex: '1',
   alignItems: 'center',
   display: 'flex',
-};
-
-const CourseTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key }) => {
-  const result: NavigationCourseInfo$data = useFragment(
-    graphql`
-      fragment NavigationCourseInfo on ViewerType {
-        findCourse(id: $courseId) {
-          id
-          name
-        }
-      }
-    `,
-    viewerRef
-  );
-
-  return <Heading size="lg">{result?.findCourse?.name}</Heading>;
-};
-
-const _NavigationTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key }) => {
-  const { courseId } = useParams();
-  const location = useLocation();
-
-  // @ts-expect-error
-  if (!viewerRef?.name) {
-    return null;
-  }
-
-  let pageTitle = null;
-
-  switch (location.pathname) {
-    case '/courses':
-      pageTitle = 'Mis cátedras';
-      break;
-    default:
-      pageTitle = null;
-  }
-
-  return (
-    <Box alignItems="center" display="flex" flexGrow="1">
-      {courseId && <CourseTitle viewerRef={viewerRef} />}
-      <Heading size="lg">{pageTitle}</Heading>
-    </Box>
-  );
 };
 
 const MainRoutes = () => {
@@ -120,23 +72,18 @@ const NavigationBar = () => {
     setMaxWidth(`${maxWidth}px`);
   }, []);
 
-  const { courseId } = useParams();
   const navigate = useNavigate();
 
   const viewerData = useLazyLoadQuery<NavigationQuery>(
     graphql`
-      query NavigationQuery($courseId: String!, $shouldFetchCourseInfo: Boolean!) {
+      query NavigationQuery {
         viewer {
           id
           name
-          ...NavigationCourseInfo @include(if: $shouldFetchCourseInfo)
         }
       }
     `,
-    {
-      shouldFetchCourseInfo: !!courseId,
-      courseId: courseId || '',
-    }
+    {}
   );
 
   if (!viewerData?.viewer?.id) {
@@ -227,7 +174,7 @@ const NavigationBar = () => {
       />
 
       {/**
-       * Control temporal para emular roles, no queda en la entrega final
+       * (TODO TH-68) Control temporal para emular roles, no queda en la entrega final
        */}
       <DevControl />
     </HStack>
