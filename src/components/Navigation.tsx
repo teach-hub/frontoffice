@@ -3,15 +3,16 @@ import { Link as ReachLink, useLocation, useNavigate, useParams } from 'react-ro
 
 import { graphql } from 'babel-plugin-relay/macro';
 import { useFragment, useLazyLoadQuery, useMutation } from 'react-relay';
-import { Link, Divider, Image, Avatar, HStack, Switch } from '@chakra-ui/react';
+import { Link, Divider, Image, HStack, Switch } from '@chakra-ui/react';
+import { AddIcon, ChevronDownIcon } from '@chakra-ui/icons';
 
 import Box from 'components/Box';
 import Button from 'components/Button';
 import Text from 'components/Text';
 import Heading from 'components/Heading';
+import Avatar from 'components/Avatar';
+import Menu from 'components/Menu';
 
-import IconButton from './IconButton';
-import { MdLogout } from 'react-icons/md';
 import { useLocalStorage } from 'hooks/useLocalStorage';
 import LogoutMutationDef from 'graphql/LogoutMutation';
 import useToast from 'hooks/useToast';
@@ -166,12 +167,12 @@ const NavigationBar = () => {
 
   return (
     <HStack
-      spacing="20px"
+      spacing="25px"
       shadow="lg"
       direction="row"
       bg={theme.colors.teachHub.secondary}
       position="fixed"
-      paddingX="1%"
+      paddingX="1.5%"
       width="100%"
       top="0px"
       left="0px"
@@ -196,49 +197,35 @@ const NavigationBar = () => {
         />
       </Box>
 
-      <Divider borderColor={'gray.500'} height={'70%'} orientation="vertical" />
+      <Divider borderColor={'gray.700'} height={'75%'} orientation="vertical" />
 
       <HStack flex="1" spacing="auto">
-        <HStack spacing="30px" direction={'row'}>
+        <HStack spacing="30px">
           <Link as={ReachLink} to="/courses">
             {' '}
             Cursos
           </Link>
         </HStack>
 
-        <HStack direction={'row-reverse'}>
-          {isTeacher ? (
-            <>
-              <Button> Asignar correctores </Button>
-              <Button> Crear repositorios </Button>
-            </>
-          ) : (
-            <>
-              <Button> Realizar entrega </Button>
-            </>
-          )}
-        </HStack>
+        <Menu
+          content={{
+            menuButton: (
+              <Button variant="ghost" rightIcon={<ChevronDownIcon />}>
+                <AddIcon />
+              </Button>
+            ),
+            items: isTeacher
+              ? ['Asignar correctores', 'Crear repositorios']
+              : ['Realizar entrega'],
+          }}
+        />
       </HStack>
 
-      <Avatar
-        _hover={{
-          transition: '.3s',
-          filter: 'blur(1px)',
-          cursor: 'pointer',
+      <Menu
+        content={{
+          menuButton: <Avatar src="https://bit.ly/sage-adebayo" />,
+          items: ['Ver perfil', 'Salir'],
         }}
-        borderWidth="1px"
-        borderColor="black.100"
-        onClick={() => navigate('/profile')}
-        src="https://bit.ly/sage-adebayo"
-      />
-
-      <IconButton
-        variant="ghost"
-        size="xs"
-        aria-label="Cerrar Sesión"
-        as={MdLogout}
-        onClick={handleLogout}
-        _hover={{ backgroundColor: 'lightGray', cursor: 'pointer' }}
       />
 
       {/**
