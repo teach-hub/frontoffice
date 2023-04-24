@@ -1,10 +1,13 @@
-import { Image as ChakraImage, ImageProps, Link as ChakraLink } from '@chakra-ui/react';
+import {
+  BoxProps,
+  Image as ChakraImage,
+  ImageProps,
+  Link as ChakraLink,
+} from '@chakra-ui/react';
 
 import Box from 'components/Box';
 
-type Props = {
-  onClick: ImageProps['onClick'];
-};
+type Props = BoxProps;
 
 export default (props: Props) => {
   return (
@@ -14,13 +17,9 @@ export default (props: Props) => {
         filter: 'blur(1px)',
         cursor: 'pointer',
       }}
+      {...props}
     >
-      <ChakraImage
-        onClick={props.onClick}
-        h="70px"
-        w="60px"
-        src={require('../assets/logo_wo_text.png')}
-      />
+      <ChakraImage src={require('../assets/logo_wo_text.png')} />
     </Box>
   );
 };

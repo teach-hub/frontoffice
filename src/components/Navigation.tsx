@@ -143,9 +143,9 @@ const NavigationBar = () => {
       zIndex="1px"
       height={`${NAVIGATION_HEIGHT_PX}px`}
     >
-      <HomeButton onClick={() => navigate('/')} />
+      <HomeButton w="60px" h="70px" onClick={() => navigate('/')} />
 
-      <Divider borderColor={'gray.700'} h="75%" />
+      <Divider borderColor={theme.colors.teachHub.primary} h="75%" />
 
       <HStack flex="1" spacing="auto">
         <MainRoutes />
@@ -165,7 +165,10 @@ const NavigationBar = () => {
 
       <Menu
         content={{
-          menuButton: <Avatar src="https://bit.ly/sage-adebayo" />,
+          menuButton: (
+            // TODO: TH-67
+            <Avatar src="https://bit.ly/sage-adebayo" />
+          ),
           items: [
             { content: 'Ver perfil', props: { onClick: handleGoToProfile } },
             { content: 'Salir', props: { onClick: handleLogout } },
