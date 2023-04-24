@@ -1,29 +1,29 @@
-import { ReactNode, Suspense, useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { ReactNode, useEffect, useState } from 'react';
+import { Link as ReachLink, useNavigate } from 'react-router-dom';
+
 import { graphql } from 'babel-plugin-relay/macro';
-import { Stack, Switch } from '@chakra-ui/react';
-import { useFragment, useLazyLoadQuery, useMutation } from 'react-relay';
+import { useLazyLoadQuery, useMutation } from 'react-relay';
+import { Link, HStack, Switch } from '@chakra-ui/react';
+import { AddIcon, ChevronDownIcon } from '@chakra-ui/icons';
 
 import Box from 'components/Box';
 import Button from 'components/Button';
 import Text from 'components/Text';
-import Heading from 'components/Heading';
+import Avatar from 'components/Avatar';
+import Menu from 'components/Menu';
+import Divider from 'components/Divider';
+import HomeButton from 'components/HomeButton';
 
-import { NavigationQuery } from '__generated__/NavigationQuery.graphql';
-import {
-  NavigationCourseInfo$data,
-  NavigationCourseInfo$key,
-} from '__generated__/NavigationCourseInfo.graphql';
-import IconButton from './IconButton';
-import { MdLogout } from 'react-icons/md';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useLocalStorage } from 'hooks/useLocalStorage';
+import LogoutMutationDef from 'graphql/LogoutMutation';
+import useToast from 'hooks/useToast';
+import { theme } from 'theme';
+
 import {
   LogoutMutation,
   LogoutMutation$data,
 } from '__generated__/LogoutMutation.graphql';
-import LogoutMutationDef from '../graphql/LogoutMutation';
-import useToast from '../hooks/useToast';
-import { theme } from '../theme';
+import { NavigationQuery } from '__generated__/NavigationQuery.graphql';
 
 const DevControlStyle = {
   shadow: 'md',
@@ -38,50 +38,17 @@ const DevControlStyle = {
   display: 'flex',
 };
 
-const CourseTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key }) => {
-  const result: NavigationCourseInfo$data = useFragment(
-    graphql`
-      fragment NavigationCourseInfo on ViewerType {
-        findCourse(id: $courseId) {
-          id
-          name
-        }
-      }
-    `,
-    viewerRef
-  );
-
-  return <Heading size="lg">{result?.findCourse?.name}</Heading>;
-};
-
-const NavigationTitle = ({ viewerRef }: { viewerRef: NavigationCourseInfo$key }) => {
-  const { courseId } = useParams();
-  const location = useLocation();
-
-  // @ts-expect-error
-  if (!viewerRef?.name) {
-    return null;
-  }
-
-  let pageTitle = null;
-
-  switch (location.pathname) {
-    case '/courses':
-      pageTitle = 'Mis cátedras';
-      break;
-    default:
-      pageTitle = null;
-  }
-
+const MainRoutes = () => {
   return (
-    <Box alignItems="center" display="flex" flexGrow="1">
-      {courseId && <CourseTitle viewerRef={viewerRef} />}
-      <Heading size="lg">{pageTitle}</Heading>
-    </Box>
+    <HStack spacing="30px">
+      <Link as={ReachLink} to="/courses">
+        Cursos
+      </Link>
+    </HStack>
   );
 };
 
-const NAVIGATION_HEIGHT_PX = 100;
+const NAVIGATION_HEIGHT_PX = 95;
 
 const NavigationBar = () => {
   const toast = useToast();
@@ -105,37 +72,28 @@ const NavigationBar = () => {
     setMaxWidth(`${maxWidth}px`);
   }, []);
 
-  const { courseId } = useParams();
   const navigate = useNavigate();
 
   const viewerData = useLazyLoadQuery<NavigationQuery>(
     graphql`
-      query NavigationQuery($courseId: String!, $shouldFetchCourseInfo: Boolean!) {
+      query NavigationQuery {
         viewer {
           id
           name
-          ...NavigationCourseInfo @include(if: $shouldFetchCourseInfo)
         }
       }
     `,
-    {
-      shouldFetchCourseInfo: !!courseId,
-      courseId: courseId || '',
-    }
+    {}
   );
 
   if (!viewerData?.viewer?.id) {
     return null;
   }
 
-  const handleGoToProfile = () => navigate('/profile');
-  const handleGoToCourses = () => navigate('/courses');
-  const _handleGoToAssignments = () => navigate('/assignments');
-
   const handleLogout = () => {
     commitLogoutMutation({
       variables: { token },
-      onCompleted: (response: LogoutMutation$data, errors) => {
+      onCompleted: (_: LogoutMutation$data, errors) => {
         if (!errors?.length) {
           setToken(null);
           navigate('/login');
@@ -148,6 +106,10 @@ const NavigationBar = () => {
         }
       },
     });
+  };
+
+  const handleGoToProfile = () => {
+    navigate('/profile');
   };
 
   const DevControl = () => {
@@ -166,64 +128,59 @@ const NavigationBar = () => {
     );
   };
 
-  const NavigatorButton = ({
-    children,
-    onClick,
-  }: {
-    children: any;
-    onClick?: () => void;
-  }) => {
-    return (
-      <Button w={maxWidth} onClick={onClick}>
-        {children}
-      </Button>
-    );
-  };
-
   return (
-    <Stack
-      bg={theme.colors.teachHub.white}
-      position="fixed"
+    <HStack
+      spacing="25px"
       shadow="lg"
       direction="row"
-      align="center"
-      justifyContent="right"
-      paddingX="1%"
+      bg={theme.colors.teachHub.secondary}
+      position="fixed"
+      paddingX="1.5%"
       width="100%"
-      top={0}
-      left={0}
-      right={0}
-      zIndex={1}
+      top="0px"
+      left="0px"
+      right="0px"
+      zIndex="1px"
       height={`${NAVIGATION_HEIGHT_PX}px`}
     >
-      <Suspense>
-        <NavigationTitle viewerRef={viewerData.viewer} />
-      </Suspense>
-      <DevControl />
+      <HomeButton w="60px" h="70px" onClick={() => navigate('/')} />
 
-      {isTeacher ? (
-        <>
-          <NavigatorButton>Asignar correctores</NavigatorButton>
-          <NavigatorButton>Crear repositorios</NavigatorButton>
-        </>
-      ) : (
-        <>
-          <Button w={maxWidth}>Realizar entrega</Button>
-        </>
-      )}
-      <NavigatorButton onClick={handleGoToCourses}>Cursos</NavigatorButton>
-      <NavigatorButton onClick={handleGoToProfile}>Mi perfil</NavigatorButton>
-      <IconButton
-        variant="ghost"
-        size="xs"
-        aria-label="Cerrar Sesión"
-        as={MdLogout}
-        // colorScheme="transparent"
-        // color="black"
-        onClick={handleLogout}
-        _hover={{ backgroundColor: 'lightGray', cursor: 'pointer' }}
+      <Divider borderColor={theme.colors.teachHub.primary} h="75%" />
+
+      <HStack flex="1" spacing="auto">
+        <MainRoutes />
+        <Menu
+          content={{
+            menuButton: (
+              <Button variant="ghost" rightIcon={<ChevronDownIcon />}>
+                <AddIcon />
+              </Button>
+            ),
+            items: isTeacher
+              ? [{ content: 'Asignar correctores' }, { content: 'Crear repositorios' }]
+              : [{ content: 'Realizar entrega' }],
+          }}
+        />
+      </HStack>
+
+      <Menu
+        content={{
+          menuButton: (
+            // TODO: TH-67
+            <Avatar src="https://bit.ly/sage-adebayo" />
+          ),
+          items: [
+            { content: 'Ver perfil', props: { onClick: handleGoToProfile } },
+            { content: 'Salir', props: { onClick: handleLogout } },
+          ],
+        }}
       />
-    </Stack>
+
+      {/**
+       * (TODO TH-68) Control temporal para emular roles, no queda en la entrega final
+       */}
+      <DevControl />
+    </HStack>
   );
 };
 
@@ -232,11 +189,11 @@ const Navigation = ({ children }: { children: ReactNode }): JSX.Element => {
     <>
       <NavigationBar />
       <Box
-        style={{
-          width: '100%',
-          height: '100%',
-          paddingTop: `${NAVIGATION_HEIGHT_PX + 60}px`,
-        }}
+        w="100%"
+        h="100%"
+        zIndex="-1"
+        position="absolute"
+        top={`${NAVIGATION_HEIGHT_PX + 30}px`}
       >
         {children}
       </Box>

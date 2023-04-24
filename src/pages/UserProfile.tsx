@@ -24,7 +24,7 @@ import {
   UpdateProfileMutation$data,
 } from '__generated__/UpdateProfileMutation.graphql';
 import { FormErrors, Mutable } from 'types';
-import { Form } from '../components/Form';
+import { Form } from 'components/Form';
 
 type Props = {
   user: UserProfileQuery$data;

@@ -13,13 +13,13 @@ import UserCoursesPage from 'pages/courses';
 import CoursePage from 'pages/courses/course';
 import CourseUsersPage from 'pages/courses/users';
 import CourseAssignmentsPage from 'pages/courses/assignments';
+import LoginPage from 'pages/Login';
 import AssignmentPage from 'pages/courses/assignments/assignment';
 
 import { ContextProvider } from 'hooks/useUserContext';
-import LoginPage from './pages/Login';
-import { useLocalStorage } from './hooks/useLocalStorage';
-import { isAuthenticated } from './auth/utils';
-import { theme } from './theme';
+import { useLocalStorage } from 'hooks/useLocalStorage';
+import { isAuthenticated } from 'auth/utils';
+import { theme } from 'theme';
 
 /*
  * Way to solve protected routes, as routes can not

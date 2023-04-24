@@ -13,9 +13,9 @@ export const theme = extendTheme({
     teachHub: {
       primary: '#004e89',
       primaryLight: '#1a659e',
-      secondary: '#d1495b',
-      black: '#29262B',
-      white: '#F7FFF6',
+      secondary: '#ebe9e7',
+      black: '#29262b',
+      white: '#f7fff6',
       green: '#00798c',
     },
   },

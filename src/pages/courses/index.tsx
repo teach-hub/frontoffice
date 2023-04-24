@@ -2,7 +2,7 @@ import { MouseEvent, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
-import { Badge, IconButton, Stack } from '@chakra-ui/react';
+import { Badge, IconButton, Stack, Skeleton } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
 
 import Text from 'components/Text';
@@ -93,16 +93,9 @@ const CoursesContainer = () => {
 };
 
 export default () => (
-  <Suspense
-    fallback={
-      <Box h="300px" w="900px" bgColor="black">
-        {' '}
-        Cargando...{' '}
-      </Box>
-    }
-  >
-    <Navigation>
+  <Navigation>
+    <Suspense fallback={<Skeleton height={'30px'} />}>
       <CoursesContainer />
-    </Navigation>
-  </Suspense>
+    </Suspense>
+  </Navigation>
 );
