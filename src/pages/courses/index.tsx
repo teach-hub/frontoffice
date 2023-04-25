@@ -2,7 +2,7 @@ import { MouseEvent, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
-import { Badge, IconButton, Stack, Skeleton } from '@chakra-ui/react';
+import { Flex, Badge, IconButton, Stack, Skeleton } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
 
 import Text from 'components/Text';
@@ -45,12 +45,12 @@ const CourseCard = ({ userRole }: { userRole: UserRole }) => {
   };
 
   return (
-    <Card onClick={handleCardClick} fontSize={'lg'}>
-      <Heading flex="1" size="md">
-        {courseName}
-      </Heading>
-      <Text flex="1">{courseYear}</Text>
+    <Card display="flex" flex="1" onClick={handleCardClick} fontSize={'lg'}>
       <Text flex="1">{subjectTitle}</Text>
+      <Text flex="1" size="md">
+        {courseName}
+      </Text>
+      <Text flex="1">{courseYear}</Text>
 
       <Badge
         fontSize="md"
@@ -62,17 +62,17 @@ const CourseCard = ({ userRole }: { userRole: UserRole }) => {
         {roleName}
       </Badge>
 
-      <Box display="flex" flexDirection="row-reverse" alignItems="center" flex="1">
+      <Flex flexDirection="row-reverse" alignItems="center" flex="1">
         <IconButton variant="ghost" aria-label="See menu" icon={<CloseIcon />} />
-      </Box>
+      </Flex>
     </Card>
   );
 };
 
 const CoursesList = ({ userRoles }: { userRoles: UserRole[] }) => {
-  const GAP = '15px';
+  const GAP = '10px';
   return (
-    <Stack gap={GAP} paddingX={'20vw'} paddingBottom={GAP}>
+    <Stack gap={GAP}>
       {userRoles.map((userRole, i) => (
         <CourseCard key={i} userRole={userRole} />
       ))}
@@ -89,7 +89,14 @@ const CoursesContainer = () => {
 
   const viewerRoles = data.viewer.userRoles.filter(userRole => !!userRole) as UserRole[];
 
-  return <CoursesList userRoles={viewerRoles} />;
+  return (
+    <Box padding="5px 35px">
+      <Heading>Mis cursos</Heading>
+      <Box padding="30px 0px">
+        <CoursesList userRoles={viewerRoles} />
+      </Box>
+    </Box>
+  );
 };
 
 export default () => (
