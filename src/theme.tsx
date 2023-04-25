@@ -19,6 +19,14 @@ export const theme = extendTheme({
       green: '#00798c',
     },
   },
+  styles: {
+    global: () => ({
+      body: {
+        color: 'default',
+        bg: 'teachHub.secondary',
+      },
+    }),
+  },
   components: {
     Button: {
       variants: {
