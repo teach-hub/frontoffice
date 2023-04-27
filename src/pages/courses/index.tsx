@@ -36,6 +36,7 @@ const CourseCard = ({ userRole }: { userRole: UserRole }) => {
     year: courseYear,
     subject: { code: subjectCode, name: subjectName },
   } = course;
+
   const { name: roleName } = role;
 
   const subjectTitle = [subjectCode, subjectName].join(' - ');

@@ -1,12 +1,24 @@
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import { graphql } from 'babel-plugin-relay/macro';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLazyLoadQuery, useFragment } from 'react-relay';
 
-import { Stack } from '@chakra-ui/react';
+import { HStack, StatLabel, StatNumber, Flex, Stat, Stack } from '@chakra-ui/react';
+// import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
+import {
+  CheckCircleIcon as CheckIcon,
+  AlertIcon as CloseIcon,
+  MortarBoardIcon,
+  PersonIcon,
+  MarkGithubIcon,
+  TerminalIcon,
+} from '@primer/octicons-react';
 
 import Box from 'components/Box';
 import Navigation from 'components/Navigation';
+import Heading from 'components/Heading';
+import Divider from 'components/Divider';
+import StatCard from 'components/StatCard';
 
 import CourseInfoQueryDef from 'graphql/CourseInfoQuery';
 
@@ -14,18 +26,46 @@ import type { CourseInfoQuery } from '__generated__/CourseInfoQuery.graphql';
 import type { courseInfo$key } from '__generated__/courseInfo.graphql';
 
 type Props = {
-  findCourse: courseInfo$key
-}
+  findCourse: courseInfo$key;
+};
 
 const CourseStatistics = () => {
+  const [currentIcon, setCurrentIcon] = useState(<CheckIcon size="large" />);
+
   return (
-    <Stack direction="row">
-      <Box background="red">Grafico 1</Box>
-      <Box background="blue">Grafico 2</Box>
-      <Box background="green">Grafico 3</Box>
-    </Stack>
-  )
-}
+    <HStack padding="30px 0px" spacing="30px">
+      <StatCard title="Profesores" stat="1" icon={<MortarBoardIcon size="large" />} />
+      <StatCard title="Alumnos" stat="3" icon={<PersonIcon size="large" />} />
+      <StatCard title="Enunciados" stat="3" icon={<TerminalIcon size="large" />} />
+      {/* <StatCard title='Github' stat='3' icon={<MarkGithubIcon size="large" />} /> */}
+      <Stat
+        _hover={{ color: 'red' }}
+        color="green"
+        onMouseOver={() => setCurrentIcon(<CloseIcon size="large" />)}
+        onMouseLeave={() => setCurrentIcon(<CheckIcon size="large" />)}
+        px={{ base: 2, md: 4 }}
+        py={'5'}
+        shadow={'xl'}
+        border={'3px solid'}
+        rounded={'lg'}
+      >
+        <Flex>
+          <Box my={'auto'} alignContent={'center'}>
+            <MarkGithubIcon size="large" />
+            <StatLabel fontSize={'xl'} fontWeight={'medium'} isTruncated>
+              Github
+            </StatLabel>
+          </Box>
+          <Box padding="10px" flex="1" pl={{ base: 2, md: 4 }}>
+            <StatNumber textAlign={'right'} fontSize={'5xl'} fontWeight={'bold'}>
+              {currentIcon}
+            </StatNumber>
+          </Box>
+        </Flex>
+      </Stat>
+    </HStack>
+  );
+};
 
 const CourseUsers = () => {
   const navigate = useNavigate();
@@ -35,8 +75,8 @@ const CourseUsers = () => {
       <Box onClick={() => navigate('users')}> Usuarios </Box>
       <Box onClick={() => navigate('assignments')}> Trabajos practicos </Box>
     </>
-  )
-}
+  );
+};
 
 const CourseInfo = ({ findCourse }: Props) => {
   const data = useFragment(
@@ -47,26 +87,30 @@ const CourseInfo = ({ findCourse }: Props) => {
           name
         }
       }
-    `, findCourse);
+    `,
+    findCourse
+  );
 
   return (
-    <Box>
-      <Box>{data.subject.name}</Box>
+    <Box padding="0px 30px">
+      <Heading>{data.subject.name}</Heading>
+      <Divider orientation="horizontal" />
       <CourseStatistics />
-      <CourseUsers />
     </Box>
-  )
-}
+  );
+};
 
 const CourseViewContainer = () => {
   const params = useParams();
 
-  const data = useLazyLoadQuery<CourseInfoQuery>(CourseInfoQueryDef, { courseId: params.courseId || '' });
+  const data = useLazyLoadQuery<CourseInfoQuery>(CourseInfoQueryDef, {
+    courseId: params.courseId || '',
+  });
 
   if (!data.viewer || !data.viewer.findCourse) return null;
 
-  return <CourseInfo findCourse={data.viewer.findCourse}/>;
-}
+  return <CourseInfo findCourse={data.viewer.findCourse} />;
+};
 
 export default () => {
   return (
@@ -75,5 +119,5 @@ export default () => {
         <CourseViewContainer />
       </Navigation>
     </Suspense>
-  )
-}
+  );
+};
