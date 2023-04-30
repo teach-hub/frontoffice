@@ -12,7 +12,7 @@ type Props = {
     menuButton: MenuButtonProps['children'];
     items: {
       content: MenuItemProps['children'];
-      props?: Omit<MenuItemProps, 'children'>;
+      action?: MenuItemProps['onClick'];
     }[];
   };
 };
@@ -24,7 +24,7 @@ const Menu = ({ content: { menuButton, items } }: Props) => {
       <ChakraMenuList>
         {items &&
           items.map((item, i) => (
-            <ChakraMenuItem key={i} {...item.props}>
+            <ChakraMenuItem key={i} onClick={item.action}>
               {item.content}
             </ChakraMenuItem>
           ))}

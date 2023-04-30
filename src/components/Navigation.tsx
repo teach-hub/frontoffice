@@ -13,6 +13,7 @@ import Avatar from 'components/Avatar';
 import Menu from 'components/Menu';
 import Divider from 'components/Divider';
 import HomeButton from 'components/HomeButton';
+import InviteUserModal from 'components/InviteUserModal';
 
 import { useLocalStorage } from 'hooks/useLocalStorage';
 import LogoutMutationDef from 'graphql/LogoutMutation';
@@ -58,6 +59,7 @@ const NavigationBar = () => {
 
   /* Set width of buttons to the biggest one */
   const [maxWidth, setMaxWidth] = useState('auto');
+  const [inviteUserOpen, setInviteUserOpen] = useState(false);
 
   useEffect(() => {
     // Find the maximum width of the buttons
@@ -157,7 +159,14 @@ const NavigationBar = () => {
               </Button>
             ),
             items: isTeacher
-              ? [{ content: 'Asignar correctores' }, { content: 'Crear repositorios' }]
+              ? [
+                  { content: 'Asignar correctores' },
+                  { content: 'Crear repositorios' },
+                  {
+                    content: 'Invitar usuario',
+                    action: () => setInviteUserOpen(v => !v),
+                  },
+                ]
               : [{ content: 'Realizar entrega' }],
           }}
         />
@@ -170,11 +179,14 @@ const NavigationBar = () => {
             <Avatar src="https://bit.ly/sage-adebayo" />
           ),
           items: [
-            { content: 'Ver perfil', props: { onClick: handleGoToProfile } },
-            { content: 'Salir', props: { onClick: handleLogout } },
+            { content: 'Ver perfil', action: handleGoToProfile },
+            { content: 'Salir', action: handleLogout },
           ],
         }}
       />
+
+      {/* @ts-expect-error */}
+      <InviteUserModal isOpen={inviteUserOpen} onClose={() => setInviteUserOpen(false)} />
 
       {/**
        * (TODO TH-68) Control temporal para emular roles, no queda en la entrega final
