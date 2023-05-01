@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from 'react';
-import { Link as ReachLink, useNavigate } from 'react-router-dom';
+import { Link as ReachLink, useNavigate, useLocation } from 'react-router-dom';
 
 import { graphql } from 'babel-plugin-relay/macro';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
@@ -16,14 +16,20 @@ import HomeButton from 'components/HomeButton';
 import InviteUserModal from 'components/InviteUserModal';
 
 import { useLocalStorage } from 'hooks/useLocalStorage';
-import LogoutMutationDef from 'graphql/LogoutMutation';
 import useToast from 'hooks/useToast';
 import { theme } from 'theme';
+
+import LogoutMutationDef from 'graphql/LogoutMutation';
+import GenerateInviteMutationDef from 'graphql/GenerateInviteMutation';
 
 import {
   LogoutMutation,
   LogoutMutation$data,
 } from '__generated__/LogoutMutation.graphql';
+import {
+  GenerateInviteMutation,
+  GenerateInviteMutation$data,
+} from '__generated__/GenerateInviteMutation.graphql';
 import { NavigationQuery } from '__generated__/NavigationQuery.graphql';
 
 const DevControlStyle = {
@@ -55,10 +61,16 @@ const NavigationBar = () => {
   const toast = useToast();
   const [isTeacher, setIsTeacher] = useState(false);
   const [token, setToken] = useLocalStorage('token', null);
-  const [commitLogoutMutation, _] = useMutation<LogoutMutation>(LogoutMutationDef);
+  const [commitLogoutMutation] = useMutation<LogoutMutation>(LogoutMutationDef);
+  const [commitGenerateInviteMutation] = useMutation<GenerateInviteMutation>(
+    GenerateInviteMutationDef
+  );
 
   /* Set width of buttons to the biggest one */
   const [maxWidth, setMaxWidth] = useState('auto');
+
+  const location = useLocation();
+
   const [inviteUserOpen, setInviteUserOpen] = useState(false);
 
   useEffect(() => {
@@ -108,6 +120,27 @@ const NavigationBar = () => {
         }
       },
     });
+  };
+
+  const handleGenerateInviteLink = async ({ roleId }: { roleId: string }) => {
+    return new Promise<string>((resolve, reject) =>
+      commitGenerateInviteMutation({
+        variables: { courseId: 'Y291cnNlOjI=', roleId },
+        onCompleted: (result, errors) => {
+          if (errors?.length) {
+            toast({
+              title: 'Error',
+              description: 'No se pudo generar link de invitacion correctamente',
+              status: 'error',
+            });
+          }
+
+          console.log(location);
+
+          return resolve(`http://localhost:3000/invites/${result.generateInviteCode}`);
+        },
+      })
+    );
   };
 
   const handleGoToProfile = () => {
@@ -185,8 +218,11 @@ const NavigationBar = () => {
         }}
       />
 
-      {/* @ts-expect-error */}
-      <InviteUserModal isOpen={inviteUserOpen} onClose={() => setInviteUserOpen(false)} />
+      <InviteUserModal
+        onGenerateLink={handleGenerateInviteLink}
+        isOpen={inviteUserOpen}
+        onClose={() => setInviteUserOpen(false)}
+      />
 
       {/**
        * (TODO TH-68) Control temporal para emular roles, no queda en la entrega final
