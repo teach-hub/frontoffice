@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  ButtonProps,
   useClipboard,
   Stack,
   Flex,
@@ -18,21 +17,15 @@ import { CopyIcon } from '@chakra-ui/icons';
 import Button from 'components/Button';
 import Text from 'components/Text';
 import Input from 'components/InputField';
-import { Form } from 'components/Form';
 
 type Props = {
   onGenerateLink: (_: { roleId: string }) => Promise<string>;
   isOpen: ModalProps['isOpen'];
   onClose: ModalProps['onClose'];
+  roles: { name: string; value: string }[];
 };
 
-const AVAILABLE_ROLES = [
-  { name: 'Profesor', value: 'profesor' },
-  { name: 'JTP', value: 'jtp' },
-  { name: 'Alumno', value: 'alumno' },
-];
-
-export default ({ isOpen, onClose, onGenerateLink }: Props) => {
+export default ({ roles, isOpen, onClose, onGenerateLink }: Props) => {
   const { onCopy, value, setValue, hasCopied } = useClipboard('', 5000);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
 
@@ -40,13 +33,17 @@ export default ({ isOpen, onClose, onGenerateLink }: Props) => {
     if (!selectedRole) {
       return;
     }
-
     const link = await onGenerateLink({ roleId: selectedRole });
     setValue(link);
   };
 
+  const _onClose = () => {
+    setValue('');
+    return onClose();
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={_onClose}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Invitar nuevo usuario</ModalHeader>
@@ -57,13 +54,10 @@ export default ({ isOpen, onClose, onGenerateLink }: Props) => {
               clickea en "Generar link de invitacion"
             </Text>
             <Select
-              onChange={v => {
-                console.log('Seleccionaste role', v.target.value);
-                return setSelectedRole('cm9sZToz');
-              }}
+              onChange={v => setSelectedRole(v.target.value)}
               placeholder="Seleccionar rol"
             >
-              {AVAILABLE_ROLES.map((role, i) => (
+              {roles.map((role, i) => (
                 <option key={i} value={role.value}>
                   {role.name}
                 </option>

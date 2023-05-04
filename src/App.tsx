@@ -13,6 +13,7 @@ import CourseUsersPage from 'pages/courses/users';
 import CourseAssignmentsPage from 'pages/courses/assignments';
 import LoginPage from 'pages/Login';
 import AssignmentPage from 'pages/courses/assignments/assignment';
+import InvitePage from 'pages/Invite';
 
 import { ContextProvider } from 'hooks/useUserContext';
 import { useLocalStorage } from 'hooks/useLocalStorage';
@@ -56,6 +57,14 @@ const App = () => {
   return (
     <Routes>
       <Route path="/login" element={<LoginLayout />} />
+      <Route
+        path="/invites/:inviteId"
+        element={
+          <ProtectedLayout>
+            <InvitePage />
+          </ProtectedLayout>
+        }
+      />
       <Route path="/">
         <Route
           index

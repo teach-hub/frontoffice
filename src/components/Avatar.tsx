@@ -5,7 +5,6 @@ type Props = AvatarProps;
 const Avatar = (props: Props) => {
   return (
     <ChakraAvatar
-      {...props}
       _hover={{
         transition: '.3s',
         filter: 'blur(1px)',
@@ -13,6 +12,7 @@ const Avatar = (props: Props) => {
       }}
       borderWidth="1px"
       borderColor="black.900"
+      {...props}
     />
   );
 };

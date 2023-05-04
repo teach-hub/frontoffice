@@ -17,7 +17,7 @@ type Props = {
   };
 };
 
-const Menu = ({ content: { menuButton, items } }: Props) => {
+const Menu = ({ content: { menuButton, items } }: Props): JSX.Element => {
   return (
     <ChakraMenu>
       <ChakraMenuButton>{menuButton}</ChakraMenuButton>

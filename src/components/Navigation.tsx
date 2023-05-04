@@ -122,8 +122,10 @@ const NavigationBar = () => {
     });
   };
 
-  const handleGenerateInviteLink = async ({ roleId }: { roleId: string }) => {
-    return new Promise<string>((resolve, reject) =>
+  // TODO. Ver donde mandar esto, porque es logica que ni tiene que
+  // ver con la navegacion.
+  const handleGenerateInviteLink = async ({ roleId }: { roleId: string }) =>
+    new Promise<string>((resolve, reject) =>
       commitGenerateInviteMutation({
         variables: { courseId: 'Y291cnNlOjI=', roleId },
         onCompleted: (result, errors) => {
@@ -133,15 +135,13 @@ const NavigationBar = () => {
               description: 'No se pudo generar link de invitacion correctamente',
               status: 'error',
             });
+            return reject(null);
           }
-
-          console.log(location);
 
           return resolve(`http://localhost:3000/invites/${result.generateInviteCode}`);
         },
       })
     );
-  };
 
   const handleGoToProfile = () => {
     navigate('/profile');
@@ -187,7 +187,7 @@ const NavigationBar = () => {
         <Menu
           content={{
             menuButton: (
-              <Button variant="ghost" rightIcon={<ChevronDownIcon />}>
+              <Button as="div" variant="ghost" rightIcon={<ChevronDownIcon />}>
                 <AddIcon />
               </Button>
             ),
@@ -221,6 +221,11 @@ const NavigationBar = () => {
       <InviteUserModal
         onGenerateLink={handleGenerateInviteLink}
         isOpen={inviteUserOpen}
+        roles={[
+          { name: 'Profesor', value: 'profesor' },
+          { name: 'JTP', value: 'jtp' },
+          { name: 'Alumno', value: 'alumno' },
+        ]}
         onClose={() => setInviteUserOpen(false)}
       />
 
