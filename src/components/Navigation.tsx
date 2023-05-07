@@ -119,8 +119,6 @@ const NavigationBar = () => {
     });
   };
 
-  // TODO. Ver donde mandar esto, porque es logica que ni tiene que
-  // ver con la navegacion.
   const handleGoToProfile = () => {
     navigate('/profile');
   };
