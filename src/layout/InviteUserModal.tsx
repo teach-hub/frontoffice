@@ -13,9 +13,10 @@ type Props = {
   rootQueryRef: AvailableRolesFragment$key;
   isOpen: boolean;
   onClose: ModalProps['onClose'];
+  courseId: string;
 };
 
-const InviteModal = ({ rootQueryRef, isOpen, onClose }: Props) => {
+const InviteModal = ({ courseId, rootQueryRef, isOpen, onClose }: Props) => {
   const fragment = useFragment(AvailableRolesFragmentDef, rootQueryRef);
   const [commitGenerateInviteMutation] = useMutation<GenerateInviteMutation>(
     GenerateInviteMutationDef
@@ -25,7 +26,7 @@ const InviteModal = ({ rootQueryRef, isOpen, onClose }: Props) => {
   const handleGenerateInviteLink = async ({ roleId }: { roleId: string }) =>
     new Promise<string>((resolve, reject) =>
       commitGenerateInviteMutation({
-        variables: { courseId: 'Y291cnNlOjI=', roleId },
+        variables: { courseId, roleId },
         onCompleted: (result, errors) => {
           if (errors?.length) {
             toast({

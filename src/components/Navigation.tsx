@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from 'react';
-import { Link as ReachLink, useNavigate, useLocation } from 'react-router-dom';
+import { Link as ReachLink, useNavigate, useLocation, useParams } from 'react-router-dom';
 
 import { graphql } from 'babel-plugin-relay/macro';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
@@ -60,12 +60,10 @@ const NavigationBar = () => {
   const [commitLogoutMutation] = useMutation<LogoutMutation>(LogoutMutationDef);
 
   /* Set width of buttons to the biggest one */
-  const [maxWidth, setMaxWidth] = useState('auto');
+  const [, setMaxWidth] = useState('auto');
 
-  const location = useLocation();
-  const locationSlices = location.pathname.split('/courses/');
-  console.log(locationSlices);
-  const userIsWithinCourse = location.pathname.startsWith('/courses/');
+  const { courseId } = useParams();
+  const userIsWithinCourse = !!courseId;
 
   const [inviteUserOpen, setInviteUserOpen] = useState(false);
 
@@ -203,6 +201,7 @@ const NavigationBar = () => {
         isOpen={inviteUserOpen}
         rootQueryRef={viewerData}
         onClose={() => setInviteUserOpen(false)}
+        courseId={courseId!}
       />
 
       {/**
