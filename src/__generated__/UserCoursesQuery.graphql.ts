@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<02955729392dd5655e5a0d1ba29ccfdf>>
+ * @generated SignedSource<<f93fb310cdca99d59d63102f00554d65>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -28,7 +28,7 @@ export type UserCoursesQuery$data = {
       } | null;
       readonly id: string | null;
       readonly role: {
-        readonly id: string | null;
+        readonly id: string;
         readonly name: string | null;
         readonly permissions: ReadonlyArray<string | null> | null;
       } | null;

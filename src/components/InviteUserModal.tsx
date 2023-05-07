@@ -18,7 +18,7 @@ import Button from 'components/Button';
 import Text from 'components/Text';
 import Input from 'components/InputField';
 
-type Props = {
+export type Props = {
   onGenerateLink: (_: { roleId: string }) => Promise<string>;
   isOpen: ModalProps['isOpen'];
   onClose: ModalProps['onClose'];

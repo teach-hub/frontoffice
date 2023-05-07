@@ -7,7 +7,7 @@ import {
   MenuButtonProps,
 } from '@chakra-ui/react';
 
-type Props = {
+export type Props = {
   content: {
     menuButton: MenuButtonProps['children'];
     items: {
