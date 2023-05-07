@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+// TODO. Mover a default export
+
 export const useLocalStorage = (keyName: string, defaultValue: object | null) => {
   const [storedValue, setStoredValue] = useState(() => {
     try {

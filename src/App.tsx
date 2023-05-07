@@ -1,44 +1,70 @@
 import { RelayEnvironmentProvider } from 'react-relay';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { useLocation, BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react';
 
 import environment from 'relayEnvironment';
 
 import HomePage from 'pages/Home';
 import NotFoundPage from 'pages/NotFound';
-
 import UserProfilePage from 'pages/UserProfile';
-
 import UserCoursesPage from 'pages/courses';
 import CoursePage from 'pages/courses/course';
 import CourseUsersPage from 'pages/courses/users';
 import CourseAssignmentsPage from 'pages/courses/assignments';
 import LoginPage from 'pages/Login';
 import AssignmentPage from 'pages/courses/assignments/assignment';
+import InvitePage from 'pages/Invite';
 
 import { ContextProvider } from 'hooks/useUserContext';
 import { useLocalStorage } from 'hooks/useLocalStorage';
 import { isAuthenticated } from 'auth/utils';
+
 import { theme } from 'theme';
 
 /*
  * Way to solve protected routes, as routes can not
  * be wrapped in other components
  * */
-const ProtectedLayout = ({ children }: { children: any }) => {
-  const [token, _] = useLocalStorage('token', null);
-  return isAuthenticated(token) ? children : <Navigate to={'/login'} />;
+const ProtectedLayout = ({ children }: { children: JSX.Element }): JSX.Element => {
+  const [token] = useLocalStorage('token', null);
+  const location = useLocation();
+
+  return isAuthenticated(token) ? (
+    children
+  ) : (
+    <Navigate to="/login" state={{ redirectTo: location.pathname }} />
+  );
 };
 
-const LoginLayout = () => {
-  const [token, _] = useLocalStorage('token', null);
-  return isAuthenticated(token) ? <Navigate to={'/'} /> : <LoginPage />;
+const LoginLayout = (): JSX.Element => {
+  const [token] = useLocalStorage('token', null);
+  const { state: locationState } = useLocation();
+
+  if (!isAuthenticated(token)) {
+    return (
+      <LoginPage redirectTo={locationState ? locationState.redirectTo : undefined} />
+    );
+  }
+
+  /*
+   * Si el usuario ya esta logueado /login devuelve a Home.
+   *
+   */
+  return <Navigate to={'/'} />;
 };
 
 const App = () => {
   return (
     <Routes>
       <Route path="/login" element={<LoginLayout />} />
+      <Route
+        path="/invites/:inviteId"
+        element={
+          <ProtectedLayout>
+            <InvitePage />
+          </ProtectedLayout>
+        }
+      />
       <Route path="/">
         <Route
           index

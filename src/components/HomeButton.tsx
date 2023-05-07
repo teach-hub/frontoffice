@@ -1,9 +1,4 @@
-import {
-  BoxProps,
-  Image as ChakraImage,
-  ImageProps,
-  Link as ChakraLink,
-} from '@chakra-ui/react';
+import { BoxProps, Image as ChakraImage } from '@chakra-ui/react';
 
 import Box from 'components/Box';
 

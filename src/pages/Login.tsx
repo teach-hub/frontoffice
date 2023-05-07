@@ -40,14 +40,19 @@ type Props = {
   initialValues: RegisterData;
 };
 
-const LoginPage = () => {
+type LoginPageProps = {
+  redirectTo?: string;
+};
+
+const LoginPage = (props: LoginPageProps) => {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [commitLoginMutation, isLoginMutationInFlight] =
     useMutation<LoginMutation>(LoginMutationDef);
   const navigate = useNavigate();
 
-  const [_, setToken] = useLocalStorage('token', null);
+  const [, setToken] = useLocalStorage('token', null);
+  const [redirectTo, setRedirectTo] = useLocalStorage('redirectTo', null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [data, setData] = useState({ errorMessage: '', isLoading: false });
 
@@ -55,6 +60,7 @@ const LoginPage = () => {
   const SCOPE = process.env.REACT_APP_GITHUB_SCOPE || 'repo';
 
   const handleGithubLogin = () => {
+    setRedirectTo(props.redirectTo);
     setIsLoggingIn(true);
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=${SCOPE}`;
   };
@@ -70,7 +76,7 @@ const LoginPage = () => {
 
           if (userRegistered) {
             setIsLoggingIn(false);
-            navigate('/');
+            navigate(redirectTo ? redirectTo : '/');
           } else {
             onOpen(); // Open register form
           }
@@ -137,7 +143,7 @@ const LoginPage = () => {
           if (!errors?.length) {
             setToken(token);
             onClose(); // Close modal
-            navigate('/');
+            navigate(redirectTo ? redirectTo : '/');
             toast({
               title: 'Usuario registrado!',
               description: 'Usuario registrado',

@@ -7,24 +7,24 @@ import {
   MenuButtonProps,
 } from '@chakra-ui/react';
 
-type Props = {
+export type Props = {
   content: {
     menuButton: MenuButtonProps['children'];
     items: {
       content: MenuItemProps['children'];
-      props?: Omit<MenuItemProps, 'children'>;
+      action?: MenuItemProps['onClick'];
     }[];
   };
 };
 
-const Menu = ({ content: { menuButton, items } }: Props) => {
+const Menu = ({ content: { menuButton, items } }: Props): JSX.Element => {
   return (
     <ChakraMenu>
       <ChakraMenuButton>{menuButton}</ChakraMenuButton>
       <ChakraMenuList>
         {items &&
           items.map((item, i) => (
-            <ChakraMenuItem key={i} {...item.props}>
+            <ChakraMenuItem key={i} onClick={item.action}>
               {item.content}
             </ChakraMenuItem>
           ))}

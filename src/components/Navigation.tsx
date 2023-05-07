@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from 'react';
-import { Link as ReachLink, useNavigate } from 'react-router-dom';
+import { Link as ReachLink, useNavigate, useLocation, useParams } from 'react-router-dom';
 
 import { graphql } from 'babel-plugin-relay/macro';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
@@ -10,14 +10,17 @@ import Box from 'components/Box';
 import Button from 'components/Button';
 import Text from 'components/Text';
 import Avatar from 'components/Avatar';
-import Menu from 'components/Menu';
+import Menu, { Props as MenuProps } from 'components/Menu';
 import Divider from 'components/Divider';
 import HomeButton from 'components/HomeButton';
 
 import { useLocalStorage } from 'hooks/useLocalStorage';
-import LogoutMutationDef from 'graphql/LogoutMutation';
 import useToast from 'hooks/useToast';
 import { theme } from 'theme';
+
+import InviteUserModal from 'layout/InviteUserModal';
+
+import LogoutMutationDef from 'graphql/LogoutMutation';
 
 import {
   LogoutMutation,
@@ -54,10 +57,15 @@ const NavigationBar = () => {
   const toast = useToast();
   const [isTeacher, setIsTeacher] = useState(false);
   const [token, setToken] = useLocalStorage('token', null);
-  const [commitLogoutMutation, _] = useMutation<LogoutMutation>(LogoutMutationDef);
+  const [commitLogoutMutation] = useMutation<LogoutMutation>(LogoutMutationDef);
 
   /* Set width of buttons to the biggest one */
-  const [maxWidth, setMaxWidth] = useState('auto');
+  const [, setMaxWidth] = useState('auto');
+
+  const { courseId } = useParams();
+  const userIsWithinCourse = !!courseId;
+
+  const [inviteUserOpen, setInviteUserOpen] = useState(false);
 
   useEffect(() => {
     // Find the maximum width of the buttons
@@ -81,6 +89,7 @@ const NavigationBar = () => {
           id
           name
         }
+        ...AvailableRolesFragment
       }
     `,
     {}
@@ -128,6 +137,20 @@ const NavigationBar = () => {
     );
   };
 
+  const teacherActions: MenuProps['content']['items'] = [
+    { content: 'Asignar correctores' },
+    { content: 'Crear repositorios' },
+  ];
+
+  if (userIsWithinCourse) {
+    teacherActions.push({
+      content: 'Invitar usuario',
+      action: () => setInviteUserOpen(v => !v),
+    });
+  }
+
+  const studentActions = [{ content: 'Realizar entrega' }];
+
   return (
     <HStack
       spacing="25px"
@@ -152,13 +175,11 @@ const NavigationBar = () => {
         <Menu
           content={{
             menuButton: (
-              <Button variant="ghost" rightIcon={<ChevronDownIcon />}>
+              <Button as="div" variant="ghost" rightIcon={<ChevronDownIcon />}>
                 <AddIcon />
               </Button>
             ),
-            items: isTeacher
-              ? [{ content: 'Asignar correctores' }, { content: 'Crear repositorios' }]
-              : [{ content: 'Realizar entrega' }],
+            items: isTeacher ? teacherActions : studentActions,
           }}
         />
       </HStack>
@@ -170,10 +191,17 @@ const NavigationBar = () => {
             <Avatar src="https://bit.ly/sage-adebayo" />
           ),
           items: [
-            { content: 'Ver perfil', props: { onClick: handleGoToProfile } },
-            { content: 'Salir', props: { onClick: handleLogout } },
+            { content: 'Ver perfil', action: handleGoToProfile },
+            { content: 'Salir', action: handleLogout },
           ],
         }}
+      />
+
+      <InviteUserModal
+        isOpen={inviteUserOpen}
+        rootQueryRef={viewerData}
+        onClose={() => setInviteUserOpen(false)}
+        courseId={courseId!}
       />
 
       {/**
