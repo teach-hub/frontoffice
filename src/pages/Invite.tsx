@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useMutation } from 'react-relay';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import UseInviteMutationDef from 'graphql/UseInviteMutation';
 import {
@@ -10,17 +10,18 @@ import {
 
 const InvitePage = () => {
   const [commitUseInviteMutation] = useMutation<UseInviteMutation>(UseInviteMutationDef);
+
   const navigate = useNavigate();
-  const location = useLocation();
+  const { inviteId } = useParams();
 
-  console.log(location.pathname.split('/')[2]);
+  if (!inviteId) {
+    return null;
+  }
 
-  useEffect(() => {
+  const handleAcceptInvite = async () => {
     commitUseInviteMutation({
-      variables: { inviteId: location.pathname.split('/')[2] },
+      variables: { inviteId },
       onCompleted: (response: UseInviteMutation$data) => {
-        console.log('Response was', response);
-
         if (response.useInvite.courseId) {
           console.log(`Redirecting to /courses/${response.useInvite.courseId}`);
 
@@ -28,9 +29,14 @@ const InvitePage = () => {
         }
       },
     });
-  });
+  };
 
-  return <h1> Missing page </h1>;
+  return (
+    <>
+      Te invitaron al curso
+      <button onClick={handleAcceptInvite}> </button>
+    </>
+  );
 };
 
 export default InvitePage;
