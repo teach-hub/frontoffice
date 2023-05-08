@@ -2,13 +2,12 @@ import { Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
-import { Stack, IconButton, Badge } from '@chakra-ui/react';
-import { CloseIcon } from '@chakra-ui/icons';
+import { Stack, Badge } from '@chakra-ui/react';
 
 import Heading from 'components/Heading';
 import Box from 'components/Box';
 import Navigation from 'components/Navigation';
-import Card from 'components/Card';
+import UserCard from 'components/UserCard';
 
 import { CourseUsersQuery } from '__generated__/CourseUsersQuery.graphql';
 
@@ -19,57 +18,24 @@ type Course = NonNullable<
 >;
 type CourseUserRole = NonNullable<Course['userRoles']>[number];
 
-const RoleNameBadge = ({ roleName }: { roleName: string }) => {
-  return (
-    <Badge fontSize="md" variant="solid" colorScheme="green">
-      {roleName}
-    </Badge>
-  );
-};
-
-const UserCard = ({ userRole }: { userRole: CourseUserRole }) => {
-  if (!userRole) return null;
-
-  const { user, role } = userRole;
-
-  const userFullName = `${user?.lastName}, ${user?.name}`;
-
-  return (
-    <Card>
-      <Heading flex="1" size="md">
-        {userFullName}
-      </Heading>
-
-      <Badge
-        marginRight="40px"
-        marginLeft="40px"
-        fontSize="sm"
-        variant="subtle"
-        colorScheme="blue"
-      >
-        {user?.file}
-      </Badge>
-
-      {role?.name && <RoleNameBadge roleName={role?.name} />}
-
-      <Box display="flex" flexDirection="row-reverse" alignItems="center" flex="1">
-        <IconButton
-          variant="ghost"
-          colorScheme="gray"
-          aria-label="See menu"
-          icon={<CloseIcon />}
-        />
-      </Box>
-    </Card>
-  );
-};
-
 const UsersList = ({ userRoles }: { userRoles: CourseUserRole[] }) => {
   return (
     <Stack gap="10px">
-      {userRoles.map((userRole, i) => (
-        <UserCard key={i} userRole={userRole} />
-      ))}
+      {userRoles.map(
+        (userRole, i) =>
+          userRole?.user &&
+          userRole?.role && (
+            <UserCard
+              key={i}
+              user={{
+                roleName: userRole.role.name,
+                name: userRole.user.name,
+                lastName: userRole.user.lastName,
+                file: userRole.user.file,
+              }}
+            />
+          )
+      )}
     </Stack>
   );
 };
@@ -87,7 +53,7 @@ const UsersContainer = () => {
 
   return (
     <Box padding="5px 35px">
-      <Heading>Usuarios</Heading>
+      <Heading size="md">Usuarios</Heading>
       <Box padding="30px 0px">
         {/* @ts-expect-error */}
         <UsersList userRoles={course?.userRoles} />

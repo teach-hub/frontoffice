@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a82f05a59987c58b6a607f0f15e7baa7>>
+ * @generated SignedSource<<de3f6f3b7f9d7bbeb4cefbc97de9096f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,17 +18,17 @@ export type CourseUsersQuery$data = {
       readonly id: string;
       readonly name: string;
       readonly userRoles: ReadonlyArray<{
-        readonly id: string | null;
+        readonly id: string;
         readonly role: {
           readonly id: string;
-          readonly name: string | null;
+          readonly name: string;
           readonly permissions: ReadonlyArray<string | null> | null;
         } | null;
         readonly user: {
-          readonly file: string | null;
-          readonly id: string | null;
-          readonly lastName: string | null;
-          readonly name: string | null;
+          readonly file: string;
+          readonly id: string;
+          readonly lastName: string;
+          readonly name: string;
         } | null;
       } | null> | null;
     } | null;

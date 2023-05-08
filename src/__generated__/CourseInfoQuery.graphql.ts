@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<755cba2ffc98055a25b757313c4f834e>>
+ * @generated SignedSource<<a1b0388a2822789329eef1e81d1ff17d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,14 +9,23 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-import { FragmentRefs } from "relay-runtime";
 export type CourseInfoQuery$variables = {
   courseId: string;
 };
 export type CourseInfoQuery$data = {
   readonly viewer: {
     readonly findCourse: {
-      readonly " $fragmentSpreads": FragmentRefs<"courseInfo">;
+      readonly assignments: ReadonlyArray<{
+        readonly id: string;
+      }>;
+      readonly id: string;
+      readonly name: string;
+      readonly studentsCount: number;
+      readonly subject: {
+        readonly id: string;
+        readonly name: string;
+      };
+      readonly teachersCount: number;
     } | null;
     readonly id: string;
     readonly name: string;
@@ -51,9 +60,75 @@ v2 = {
 },
 v3 = [
   {
-    "kind": "Variable",
-    "name": "id",
-    "variableName": "courseId"
+    "alias": null,
+    "args": null,
+    "concreteType": "ViewerType",
+    "kind": "LinkedField",
+    "name": "viewer",
+    "plural": false,
+    "selections": [
+      (v1/*: any*/),
+      (v2/*: any*/),
+      {
+        "alias": null,
+        "args": [
+          {
+            "kind": "Variable",
+            "name": "id",
+            "variableName": "courseId"
+          }
+        ],
+        "concreteType": "CourseType",
+        "kind": "LinkedField",
+        "name": "findCourse",
+        "plural": false,
+        "selections": [
+          (v1/*: any*/),
+          (v2/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "studentsCount",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "teachersCount",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "AssignmentType",
+            "kind": "LinkedField",
+            "name": "assignments",
+            "plural": true,
+            "selections": [
+              (v1/*: any*/)
+            ],
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "SubjectType",
+            "kind": "LinkedField",
+            "name": "subject",
+            "plural": false,
+            "selections": [
+              (v1/*: any*/),
+              (v2/*: any*/)
+            ],
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
+      }
+    ],
+    "storageKey": null
   }
 ];
 return {
@@ -62,37 +137,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "CourseInfoQuery",
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "ViewerType",
-        "kind": "LinkedField",
-        "name": "viewer",
-        "plural": false,
-        "selections": [
-          (v1/*: any*/),
-          (v2/*: any*/),
-          {
-            "alias": null,
-            "args": (v3/*: any*/),
-            "concreteType": "CourseType",
-            "kind": "LinkedField",
-            "name": "findCourse",
-            "plural": false,
-            "selections": [
-              {
-                "args": null,
-                "kind": "FragmentSpread",
-                "name": "courseInfo"
-              }
-            ],
-            "storageKey": null
-          }
-        ],
-        "storageKey": null
-      }
-    ],
+    "selections": (v3/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -101,57 +146,19 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "CourseInfoQuery",
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "ViewerType",
-        "kind": "LinkedField",
-        "name": "viewer",
-        "plural": false,
-        "selections": [
-          (v1/*: any*/),
-          (v2/*: any*/),
-          {
-            "alias": null,
-            "args": (v3/*: any*/),
-            "concreteType": "CourseType",
-            "kind": "LinkedField",
-            "name": "findCourse",
-            "plural": false,
-            "selections": [
-              (v1/*: any*/),
-              {
-                "alias": null,
-                "args": null,
-                "concreteType": "SubjectType",
-                "kind": "LinkedField",
-                "name": "subject",
-                "plural": false,
-                "selections": [
-                  (v2/*: any*/)
-                ],
-                "storageKey": null
-              }
-            ],
-            "storageKey": null
-          }
-        ],
-        "storageKey": null
-      }
-    ]
+    "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "0268d7281e89ed0d796ab25f6232492b",
+    "cacheID": "a2e6fe1fa8edc676ff02cac98445cf45",
     "id": null,
     "metadata": {},
     "name": "CourseInfoQuery",
     "operationKind": "query",
-    "text": "query CourseInfoQuery(\n  $courseId: String!\n) {\n  viewer {\n    id\n    name\n    findCourse(id: $courseId) {\n      ...courseInfo\n    }\n  }\n}\n\nfragment courseInfo on CourseType {\n  id\n  subject {\n    name\n  }\n}\n"
+    "text": "query CourseInfoQuery(\n  $courseId: String!\n) {\n  viewer {\n    id\n    name\n    findCourse(id: $courseId) {\n      id\n      name\n      studentsCount\n      teachersCount\n      assignments {\n        id\n      }\n      subject {\n        id\n        name\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f7d30d1807424a9b2ee9865f7df2ada6";
+(node as any).hash = "2ee77dd76ed1376ccf26c655a150fdd8";
 
 export default node;

@@ -15,34 +15,36 @@ import GithubStatusCard from 'components/GithubStatusCard';
 
 import CourseInfoQueryDef from 'graphql/CourseInfoQuery';
 
-import type { CourseInfoQuery } from '__generated__/CourseInfoQuery.graphql';
-import type { courseInfo$key } from '__generated__/courseInfo.graphql';
+import type {
+  CourseInfoQuery,
+  CourseInfoQuery$data,
+} from '__generated__/CourseInfoQuery.graphql';
 
 type Props = {
-  findCourse: courseInfo$key;
+  course: NonNullable<NonNullable<CourseInfoQuery$data['viewer']>['findCourse']>;
 };
 
-const CourseStatistics = () => {
+const CourseStatistics = ({ course }: Props) => {
   const navigate = useNavigate();
 
   return (
-    <HStack padding="30px 0px" spacing="30px">
+    <HStack padding="20px 0px" spacing="30px">
       <StatCard
         onClick={() => navigate('users')}
         title="Profesores"
-        stat="1"
+        stat={String(course.studentsCount)}
         icon={<MortarBoardIcon size="large" />}
       />
       <StatCard
         onClick={() => navigate('users')}
         title="Alumnos"
-        stat="3"
+        stat={String(course.teachersCount)}
         icon={<PersonIcon size="large" />}
       />
       <StatCard
         onClick={() => navigate('assignments')}
         title="Enunciados"
-        stat="3"
+        stat={String(course.assignments.length)}
         icon={<TerminalIcon size="large" />}
       />
       <GithubStatusCard />
@@ -50,38 +52,30 @@ const CourseStatistics = () => {
   );
 };
 
-const CourseInfo = ({ findCourse }: Props) => {
-  const data = useFragment(
-    graphql`
-      fragment courseInfo on CourseType {
-        id
-        subject {
-          name
-        }
-      }
-    `,
-    findCourse
-  );
-
+const CourseDashboard = ({ course }: Props) => {
   return (
     <Box padding="0px 30px">
-      <Heading>{data.subject.name}</Heading>
+      <Heading size="md">
+        {course.name} - {course.subject.name}
+      </Heading>
       <Divider orientation="horizontal" />
-      <CourseStatistics />
+      <CourseStatistics course={course} />
     </Box>
   );
 };
 
 const CourseViewContainer = () => {
-  const params = useParams();
+  const { courseId } = useParams();
 
   const data = useLazyLoadQuery<CourseInfoQuery>(CourseInfoQueryDef, {
-    courseId: params.courseId || '',
+    courseId: courseId || '',
   });
 
-  if (!data.viewer || !data.viewer.findCourse) return null;
+  if (!data.viewer || !data.viewer.findCourse) {
+    return null;
+  }
 
-  return <CourseInfo findCourse={data.viewer.findCourse} />;
+  return <CourseDashboard course={data.viewer.findCourse} />;
 };
 
 export default () => {

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<dc6837c6e7f33e80bc19a7dced78ca44>>
+ * @generated SignedSource<<74544eb2857fd3caf57ee6fdd2cce813>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,12 +19,12 @@ export type UpdateProfileMutation$variables = {
 };
 export type UpdateProfileMutation$data = {
   readonly updateUser: {
-    readonly file: string | null;
-    readonly githubId: string | null;
-    readonly id: string | null;
-    readonly lastName: string | null;
-    readonly name: string | null;
-    readonly notificationEmail: string | null;
+    readonly file: string;
+    readonly githubId: string;
+    readonly id: string;
+    readonly lastName: string;
+    readonly name: string;
+    readonly notificationEmail: string;
   } | null;
 };
 export type UpdateProfileMutation = {
