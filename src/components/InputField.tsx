@@ -1,4 +1,4 @@
-import { forwardRef, ChangeEventHandler } from 'react';
+import { ChangeEventHandler } from 'react';
 import { Input, InputProps } from '@chakra-ui/react';
 
 type Props = InputProps & {

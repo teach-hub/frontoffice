@@ -2,7 +2,7 @@ import { Suspense, useState } from 'react';
 import { useSearchParams, useParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
-import { KebabHorizontalIcon, PersonIcon } from '@primer/octicons-react';
+import { KebabHorizontalIcon, PersonIcon, AlertIcon } from '@primer/octicons-react';
 
 import { SearchIcon } from '@chakra-ui/icons';
 import { Input, InputLeftElement, HStack, InputGroup } from '@chakra-ui/react';
@@ -12,6 +12,7 @@ import Box from 'components/Box';
 import Navigation from 'components/Navigation';
 import Button from 'components/Button';
 import Table from 'components/Table';
+import Text from 'components/Text';
 
 import { CourseUsersQuery } from '__generated__/CourseUsersQuery.graphql';
 
@@ -55,23 +56,38 @@ const UsersList = ({
     });
   }
 
+  const emptyState = (
+    <Box margin="90px" textAlign={'center'}>
+      <Box margin="30px">
+        <AlertIcon size={70} />
+      </Box>
+      <Heading size="md">No pudimos encontrar ningun usuario</Heading>
+      <Text>
+        Revisá los filtros y asegurate de que existan usuarios con esas caracteristicas
+      </Text>
+    </Box>
+  );
+
   return (
-    <Table
-      headers={['', 'Nombre', 'Padron', 'Email', 'Rol', 'Fecha de creacion', '']}
-      cellsContent={filteredUserRoles.map(userRole => {
-        return [
-          <PersonIcon size="medium" />,
-          `${userRole?.user?.name} ${userRole?.user?.lastName}`,
-          userRole?.user?.file,
-          userRole?.user?.notificationEmail,
-          userRole?.role?.name,
-          new Date().toDateString(),
-          <Button variant={'ghost'}>
-            <KebabHorizontalIcon />
-          </Button>,
-        ];
-      })}
-    />
+    <>
+      <Table
+        headers={['', 'Nombre', 'Padrón', 'Email', 'Rol', 'Fecha de creación', '']}
+        cellsContent={filteredUserRoles.map(userRole => {
+          return [
+            <PersonIcon size="medium" />,
+            `${userRole?.user?.name} ${userRole?.user?.lastName}`,
+            userRole?.user?.file,
+            userRole?.user?.notificationEmail,
+            userRole?.role?.name,
+            new Date().toLocaleString(),
+            <Button variant={'ghost'}>
+              <KebabHorizontalIcon />
+            </Button>,
+          ];
+        })}
+      />
+      {!filteredUserRoles.length && emptyState}
+    </>
   );
 };
 
@@ -103,7 +119,7 @@ const UsersContainer = () => {
             <SearchIcon />
           </InputLeftElement>
           <Input
-            placeholder="Juan Pepe"
+            placeholder="Juan Perez"
             borderColor="black"
             bgColor="white"
             onChange={event => setSearchTerm(event.target.value)}
