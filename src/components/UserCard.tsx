@@ -4,6 +4,7 @@ import { CloseIcon } from '@chakra-ui/icons';
 import Heading from 'components/Heading';
 import Box from 'components/Box';
 import Card from 'components/Card';
+import Text from 'components/Text';
 
 type Props = {
   user: {
@@ -31,6 +32,7 @@ export default ({ user }: Props) => {
     <Card>
       <Heading flex="1" size="md">
         {userFullName}
+        <Heading size="xs">What</Heading>
       </Heading>
 
       <Badge

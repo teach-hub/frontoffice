@@ -15,6 +15,7 @@ export default graphql`
             name
             lastName
             file
+            notificationEmail
           }
           role {
             id

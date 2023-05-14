@@ -1,7 +1,6 @@
-import { Suspense, useState } from 'react';
-import { graphql } from 'babel-plugin-relay/macro';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useLazyLoadQuery, useFragment } from 'react-relay';
+import { Suspense } from 'react';
+import { useParams, useNavigate, createSearchParams } from 'react-router-dom';
+import { useLazyLoadQuery } from 'react-relay';
 
 import { HStack } from '@chakra-ui/react';
 import { MortarBoardIcon, PersonIcon, TerminalIcon } from '@primer/octicons-react';
@@ -27,18 +26,28 @@ type Props = {
 const CourseStatistics = ({ course }: Props) => {
   const navigate = useNavigate();
 
+  const handleGoToTeachers = () => {
+    const search = `?${createSearchParams({ role: 'professor' })}`;
+    navigate({ pathname: 'users', search });
+  };
+
+  const handleGoToStudents = () => {
+    const search = `?${createSearchParams({ role: 'student' })}`;
+    navigate({ pathname: 'users', search });
+  };
+
   return (
     <HStack padding="20px 0px" spacing="30px">
       <StatCard
-        onClick={() => navigate('users')}
+        onClick={handleGoToTeachers}
         title="Profesores"
-        stat={String(course.studentsCount)}
+        stat={String(course.teachersCount)}
         icon={<MortarBoardIcon size="large" />}
       />
       <StatCard
-        onClick={() => navigate('users')}
+        onClick={handleGoToStudents}
         title="Alumnos"
-        stat={String(course.teachersCount)}
+        stat={String(course.studentsCount)}
         icon={<PersonIcon size="large" />}
       />
       <StatCard
