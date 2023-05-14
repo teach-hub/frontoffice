@@ -1,4 +1,4 @@
-import { ChangeEventHandler } from 'react';
+import { forwardRef, ChangeEventHandler } from 'react';
 import { Input, InputProps } from '@chakra-ui/react';
 
 type Props = InputProps & {
@@ -19,13 +19,13 @@ const InputField = ({
 }: Props): JSX.Element => {
   return (
     <Input
-      {...rest}
       onChange={onChange}
       isReadOnly={isReadOnly}
       value={value}
       placeholder={placeholder}
       _placeholder={{ color: 'gray.400' }}
       type={type}
+      {...rest}
     />
   );
 };

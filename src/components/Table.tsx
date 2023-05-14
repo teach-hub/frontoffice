@@ -19,15 +19,21 @@ export default (props: Props) => {
           background={theme.colors.teachHub.primaryLight}
           fontWeight="bold"
         >
-          {props.headers.map(h => (
-            <Td textAlign="center">{h}</Td>
-          ))}
+          <Tr>
+            {props.headers.map((h, i) => (
+              <Td key={`${i}`} textAlign="center">
+                {h}
+              </Td>
+            ))}
+          </Tr>
         </Thead>
         <Tbody>
-          {props.cellsContent.map(cellContent => (
-            <Tr>
-              {cellContent.map(cell => (
-                <Td textAlign={'center'}>{cell}</Td>
+          {props.cellsContent.map((cellContent, k) => (
+            <Tr key={k}>
+              {cellContent.map((cell, i) => (
+                <Td key={`${i}`} textAlign={'center'}>
+                  {cell}
+                </Td>
               ))}
             </Tr>
           ))}
