@@ -19,13 +19,13 @@ const InputField = ({
 }: Props): JSX.Element => {
   return (
     <Input
+      {...rest}
       onChange={onChange}
       isReadOnly={isReadOnly}
       value={value}
       placeholder={placeholder}
       _placeholder={{ color: 'gray.400' }}
       type={type}
-      {...rest}
     />
   );
 };

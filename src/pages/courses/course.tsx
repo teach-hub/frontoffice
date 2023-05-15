@@ -27,7 +27,7 @@ const CourseStatistics = ({ course }: Props) => {
   const navigate = useNavigate();
 
   const handleGoToTeachers = () => {
-    const search = `?${createSearchParams({ role: 'professor' })}`;
+    const search = `?${createSearchParams({ role: 'teacher' })}`;
     navigate({ pathname: 'users', search });
   };
 

@@ -33,11 +33,16 @@ const UsersList = ({
   roleFilter: string;
   nameFilter: string | null;
 }): JSX.Element => {
+  console.log('hey');
+  console.log(roleFilter);
+
   let filteredUserRoles = userRoles.filter(userRole => {
+    const roleName: string = userRole?.role.name || '';
+
     if (roleFilter === 'student') {
-      return userRole?.role.name === 'Alumno';
+      return ['Alumno'].includes(roleName);
     } else if (roleFilter === 'teacher') {
-      return ['Profesor', 'JTP'].includes(userRole?.role.name || '');
+      return ['Profesor', 'JTP', 'Ayudante'].includes(roleName);
     }
     return true;
   });
@@ -63,7 +68,7 @@ const UsersList = ({
       </Box>
       <Heading size="md">No pudimos encontrar ningun usuario</Heading>
       <Text>
-        Revisá los filtros y asegurate de que existan usuarios con esas caracteristicas
+        Revisá los filtros y asegurate de que existan usuarios con esas características
       </Text>
     </Box>
   );
@@ -110,10 +115,26 @@ const UsersContainer = () => {
     return null;
   }
 
+  const getDisplayableFilter = () => {
+    switch (roleFilter) {
+      case 'all':
+        return '(Todos)';
+      case 'teacher':
+        return '(Profesores)';
+      case 'student':
+        return '(Alumnos)';
+      default:
+        return '';
+    }
+  };
+
   return (
     <Box padding="5px 35px">
       <HStack spacing="auto">
-        <Heading size="md">Usuarios</Heading>
+        <HStack spacing="10px">
+          <Heading size="md">Usuarios</Heading>
+          <Text>{getDisplayableFilter()}</Text>
+        </HStack>
         <InputGroup w="300px">
           <InputLeftElement pointerEvents="none">
             <SearchIcon />
