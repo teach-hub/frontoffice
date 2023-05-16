@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9879ec93b8673e76e6ab373d30c6669e>>
+ * @generated SignedSource<<d78121a8a0001c900d3d96dd40a28ad0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,8 +13,8 @@ import { FragmentRefs } from "relay-runtime";
 export type AvailableRolesFragment$data = {
   readonly availableRoles: ReadonlyArray<{
     readonly id: string;
-    readonly name: string | null;
-  }> | null;
+    readonly name: string;
+  }>;
   readonly " $fragmentType": "AvailableRolesFragment";
 };
 export type AvailableRolesFragment$key = {

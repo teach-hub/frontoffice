@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a82f05a59987c58b6a607f0f15e7baa7>>
+ * @generated SignedSource<<665ea277d6a397aed5a8f91f203f89e5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,18 +18,19 @@ export type CourseUsersQuery$data = {
       readonly id: string;
       readonly name: string;
       readonly userRoles: ReadonlyArray<{
-        readonly id: string | null;
+        readonly id: string;
         readonly role: {
           readonly id: string;
-          readonly name: string | null;
+          readonly name: string;
           readonly permissions: ReadonlyArray<string | null> | null;
-        } | null;
+        };
         readonly user: {
-          readonly file: string | null;
-          readonly id: string | null;
-          readonly lastName: string | null;
-          readonly name: string | null;
-        } | null;
+          readonly file: string;
+          readonly id: string;
+          readonly lastName: string;
+          readonly name: string;
+          readonly notificationEmail: string;
+        };
       } | null> | null;
     } | null;
     readonly id: string;
@@ -122,6 +123,13 @@ v3 = [
                     "kind": "ScalarField",
                     "name": "file",
                     "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "notificationEmail",
+                    "storageKey": null
                   }
                 ],
                 "storageKey": null
@@ -174,16 +182,16 @@ return {
     "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "6ca62d557a196d365093eb152cd05f5d",
+    "cacheID": "245d1bacd788e5d9c6309e8f8880a3c7",
     "id": null,
     "metadata": {},
     "name": "CourseUsersQuery",
     "operationKind": "query",
-    "text": "query CourseUsersQuery(\n  $courseId: String!\n) {\n  viewer {\n    id\n    name\n    findCourse(id: $courseId) {\n      id\n      name\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n        }\n        role {\n          id\n          name\n          permissions\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query CourseUsersQuery(\n  $courseId: String!\n) {\n  viewer {\n    id\n    name\n    findCourse(id: $courseId) {\n      id\n      name\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          permissions\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "29f366a243737cdba15a8ba54f904664";
+(node as any).hash = "f6bccbe4fbdf1064d5492d6686361146";
 
 export default node;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f93fb310cdca99d59d63102f00554d65>>
+ * @generated SignedSource<<e2324fb6068efb9a95ae553b66c58201>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,19 +19,19 @@ export type UserCoursesQuery$data = {
         readonly name: string;
         readonly period: number;
         readonly subject: {
-          readonly active: boolean | null;
-          readonly code: string | null;
-          readonly id: string | null;
-          readonly name: string | null;
+          readonly active: boolean;
+          readonly code: string;
+          readonly id: string;
+          readonly name: string;
         };
         readonly year: number;
-      } | null;
-      readonly id: string | null;
+      };
+      readonly id: string;
       readonly role: {
         readonly id: string;
-        readonly name: string | null;
+        readonly name: string;
         readonly permissions: ReadonlyArray<string | null> | null;
-      } | null;
+      };
     } | null> | null;
   } | null;
 };

@@ -1,72 +1,91 @@
 import { Suspense } from 'react';
-import { graphql } from 'babel-plugin-relay/macro';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useLazyLoadQuery, useFragment } from 'react-relay';
+import { useParams, useNavigate, createSearchParams } from 'react-router-dom';
+import { useLazyLoadQuery } from 'react-relay';
 
-import { Stack } from '@chakra-ui/react';
+import { HStack } from '@chakra-ui/react';
+import { MortarBoardIcon, PersonIcon, TerminalIcon } from '@primer/octicons-react';
 
 import Box from 'components/Box';
 import Navigation from 'components/Navigation';
+import Heading from 'components/Heading';
+import Divider from 'components/Divider';
+import StatCard from 'components/StatCard';
+import GithubStatusCard from 'components/GithubStatusCard';
 
 import CourseInfoQueryDef from 'graphql/CourseInfoQuery';
 
-import type { CourseInfoQuery } from '__generated__/CourseInfoQuery.graphql';
-import type { courseInfo$key } from '__generated__/courseInfo.graphql';
+import type {
+  CourseInfoQuery,
+  CourseInfoQuery$data,
+} from '__generated__/CourseInfoQuery.graphql';
 
 type Props = {
-  findCourse: courseInfo$key
-}
+  course: NonNullable<NonNullable<CourseInfoQuery$data['viewer']>['findCourse']>;
+};
 
-const CourseStatistics = () => {
-  return (
-    <Stack direction="row">
-      <Box background="red">Grafico 1</Box>
-      <Box background="blue">Grafico 2</Box>
-      <Box background="green">Grafico 3</Box>
-    </Stack>
-  )
-}
-
-const CourseUsers = () => {
+const CourseStatistics = ({ course }: Props) => {
   const navigate = useNavigate();
 
-  return (
-    <>
-      <Box onClick={() => navigate('users')}> Usuarios </Box>
-      <Box onClick={() => navigate('assignments')}> Trabajos practicos </Box>
-    </>
-  )
-}
+  const handleGoToTeachers = () => {
+    const search = `?${createSearchParams({ role: 'teacher' })}`;
+    navigate({ pathname: 'users', search });
+  };
 
-const CourseInfo = ({ findCourse }: Props) => {
-  const data = useFragment(
-    graphql`
-      fragment courseInfo on CourseType {
-        id
-        subject {
-          name
-        }
-      }
-    `, findCourse);
+  const handleGoToStudents = () => {
+    const search = `?${createSearchParams({ role: 'student' })}`;
+    navigate({ pathname: 'users', search });
+  };
 
   return (
-    <Box>
-      <Box>{data.subject.name}</Box>
-      <CourseStatistics />
-      <CourseUsers />
+    <HStack margin="20px 0px" spacing="30px">
+      <StatCard
+        onClick={handleGoToTeachers}
+        title="Profesores"
+        stat={String(course.teachersCount)}
+        icon={<MortarBoardIcon size="large" />}
+      />
+      <StatCard
+        onClick={handleGoToStudents}
+        title="Alumnos"
+        stat={String(course.studentsCount)}
+        icon={<PersonIcon size="large" />}
+      />
+      <StatCard
+        onClick={() => navigate('assignments')}
+        title="Enunciados"
+        stat={String(course.assignments.length)}
+        icon={<TerminalIcon size="large" />}
+      />
+      <GithubStatusCard />
+    </HStack>
+  );
+};
+
+const CourseDashboard = ({ course }: Props) => {
+  return (
+    <Box margin="0px 30px">
+      <Heading size="md">
+        {course.name} - {course.subject.name}
+      </Heading>
+      <Divider orientation="horizontal" />
+      <CourseStatistics course={course} />
     </Box>
-  )
-}
+  );
+};
 
 const CourseViewContainer = () => {
-  const params = useParams();
+  const { courseId } = useParams();
 
-  const data = useLazyLoadQuery<CourseInfoQuery>(CourseInfoQueryDef, { courseId: params.courseId || '' });
+  const data = useLazyLoadQuery<CourseInfoQuery>(CourseInfoQueryDef, {
+    courseId: courseId || '',
+  });
 
-  if (!data.viewer || !data.viewer.findCourse) return null;
+  if (!data.viewer || !data.viewer.findCourse) {
+    return null;
+  }
 
-  return <CourseInfo findCourse={data.viewer.findCourse}/>;
-}
+  return <CourseDashboard course={data.viewer.findCourse} />;
+};
 
 export default () => {
   return (
@@ -75,5 +94,5 @@ export default () => {
         <CourseViewContainer />
       </Navigation>
     </Suspense>
-  )
-}
+  );
+};
