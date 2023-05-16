@@ -33,9 +33,6 @@ const UsersList = ({
   roleFilter: string;
   nameFilter: string | null;
 }): JSX.Element => {
-  console.log('hey');
-  console.log(roleFilter);
-
   let filteredUserRoles = userRoles.filter(userRole => {
     const roleName: string = userRole?.role.name || '';
 

@@ -9,8 +9,6 @@ type Props = {
 };
 
 export default (props: Props) => {
-  // TODO. Parametrizar estilos, etc.
-
   return (
     <TableContainer borderRadius="10px">
       <Table colorScheme="black" variant="simple">

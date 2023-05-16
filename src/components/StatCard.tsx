@@ -9,15 +9,8 @@ type Props = {
 
 export default ({ title, stat, icon, ...rest }: Props) => {
   return (
-    <Stat
-      px={{ base: 2, md: 4 }}
-      py={'5'}
-      shadow={'xl'}
-      border={'1px solid'}
-      rounded={'lg'}
-      {...rest}
-    >
-      <Flex>
+    <Stat shadow={'xl'} border={'1px solid'} rounded={'lg'} {...rest}>
+      <Flex marginX={{ base: 2, md: 4 }} marginY={5}>
         <Box my={'auto'} alignContent={'center'}>
           {icon}
           <StatLabel fontSize={'xl'} fontWeight={'medium'} isTruncated>

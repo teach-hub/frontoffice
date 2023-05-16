@@ -37,7 +37,7 @@ const CourseStatistics = ({ course }: Props) => {
   };
 
   return (
-    <HStack padding="20px 0px" spacing="30px">
+    <HStack margin="20px 0px" spacing="30px">
       <StatCard
         onClick={handleGoToTeachers}
         title="Profesores"
@@ -63,7 +63,7 @@ const CourseStatistics = ({ course }: Props) => {
 
 const CourseDashboard = ({ course }: Props) => {
   return (
-    <Box padding="0px 30px">
+    <Box margin="0px 30px">
       <Heading size="md">
         {course.name} - {course.subject.name}
       </Heading>
