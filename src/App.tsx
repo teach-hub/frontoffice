@@ -20,6 +20,7 @@ import { useLocalStorage } from 'hooks/useLocalStorage';
 import { isAuthenticated } from 'auth/utils';
 
 import { theme } from 'theme';
+import CreateOrUpdateAssignmentsPage from './pages/courses/assignments/CreateOrUpdateAssingments';
 
 /*
  * Way to solve protected routes, as routes can not
@@ -123,6 +124,22 @@ const App = () => {
                 element={
                   <ProtectedLayout>
                     <AssignmentPage />
+                  </ProtectedLayout>
+                }
+              />
+              <Route
+                path="create"
+                element={
+                  <ProtectedLayout>
+                    <CreateOrUpdateAssignmentsPage />
+                  </ProtectedLayout>
+                }
+              />
+              <Route
+                path=":assignmentId/edit"
+                element={
+                  <ProtectedLayout>
+                    <CreateOrUpdateAssignmentsPage />
                   </ProtectedLayout>
                 }
               />

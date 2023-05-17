@@ -27,6 +27,7 @@ import {
 } from '__generated__/RegisterUserMutation.graphql';
 import { FormErrors, Mutable } from '../types';
 import { Form } from 'components/Form';
+import InputField from '../components/InputField';
 
 type RegisterData = {
   name?: string;
@@ -125,9 +126,9 @@ const LoginPage = (props: LoginPageProps) => {
     const validateForm = (values: FormValues): FormErrors<FormValues> => {
       const errors: FormErrors<FormValues> = {};
 
-      if (!values.name) errors.name = 'Obligatorio';
-      if (!values.lastName) errors.lastName = 'Obligatorio';
-      if (!values.file && hasFile) errors.file = 'Obligatorio';
+      if (!values?.name) errors.name = 'Obligatorio';
+      if (!values?.lastName) errors.lastName = 'Obligatorio';
+      if (!values?.file && hasFile) errors.file = 'Obligatorio';
 
       return errors;
     };
@@ -174,7 +175,6 @@ const LoginPage = (props: LoginPageProps) => {
         </Flex>
         <Form
           buttonsEnabled={true}
-          areReadOnly={false}
           initialValues={{
             name: initialValues.name || '',
             lastName: initialValues.lastName || '',
@@ -192,39 +192,58 @@ const LoginPage = (props: LoginPageProps) => {
           }}
           inputFields={[
             {
-              id: 'name',
+              inputComponent: (values, handleChange) => (
+                <InputField
+                  id={'name'}
+                  value={values?.name}
+                  onChange={handleChange}
+                  placeholder={'Nombre'}
+                  type={'text'}
+                />
+              ),
               label: 'Nombre',
-              placeholder: 'Nombre',
-              type: 'text',
               readError: e => e.name as string,
-              readValue: v => v.name,
             },
             {
-              id: 'lastName',
+              inputComponent: (values, handleChange) => (
+                <InputField
+                  id={'lastName'}
+                  value={values?.lastName}
+                  onChange={handleChange}
+                  placeholder={'Apellido'}
+                  type={'text'}
+                />
+              ),
               label: 'Apellido',
-              placeholder: 'Apellido',
-              type: 'text',
               readError: e => e.lastName as string,
-              readValue: v => v.lastName,
             },
             {
-              id: 'notificationEmail',
+              inputComponent: (values, handleChange) => (
+                <InputField
+                  id={'notificationEmail'}
+                  value={values?.notificationEmail}
+                  onChange={handleChange}
+                  placeholder={'mail@mail.com'}
+                  type={'email'}
+                />
+              ),
               label: 'Email (notificaciones)',
-              placeholder: 'mail@mail.com',
-              type: 'email',
               readError: e => e.notificationEmail as string,
-              readValue: v => v.notificationEmail,
             },
             {
-              id: 'file',
+              inputComponent: (values, handleChange) => (
+                <InputField
+                  id={'file'}
+                  value={values?.file}
+                  onChange={handleChange}
+                  placeholder={'12345'}
+                  type={'number'}
+                  pattern={'[0-9]*'} // allow only digits
+                  inputMode={'numeric'}
+                />
+              ),
               label: 'Padrón',
-              placeholder: '12345',
-              type: 'number',
-              pattern: '[0-9]*', // allow only digits
-              inputMode: 'numeric',
               readError: e => e.file as string,
-              readValue: v => v.file,
-              isFieldEnabled: hasFile,
             },
           ]}
         />

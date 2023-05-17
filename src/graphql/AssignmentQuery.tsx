@@ -1,20 +1,17 @@
 import { graphql } from 'babel-plugin-relay/macro';
 
 export default graphql`
-  query AssignmentQuery($courseId: String!, $assignmentId: String!) {
-    viewer {
+  query AssignmentQuery($id: String!) {
+    findAssignment(id: $id) {
+      allowLateSubmissions
+      courseId
+      description
+      endDate
       id
-      name
-      findCourse(id: $courseId) {
-        id
-        findAssignment(id: $assignmentId) {
-          id
-          title
-          startDate
-          endDate
-          link
-        }
-      }
+      link
+      startDate
+      title
+      active
     }
   }
 `;

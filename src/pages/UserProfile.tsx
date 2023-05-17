@@ -25,6 +25,7 @@ import {
 } from '__generated__/UpdateProfileMutation.graphql';
 import { FormErrors, Mutable } from 'types';
 import { Form } from 'components/Form';
+import InputField from '../components/InputField';
 
 type Props = {
   user: UserProfileQuery$data;
@@ -74,11 +75,11 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
     commitMutation({
       variables: {
         id: queryResult.id,
-        file: values.file,
-        name: values.name,
-        lastName: values.lastName,
-        githubId: values.githubId,
-        notificationEmail: values.notificationEmail,
+        file: values?.file,
+        name: values?.name,
+        lastName: values?.lastName,
+        githubId: values?.githubId,
+        notificationEmail: values?.notificationEmail,
       },
       onCompleted: onMutationComplete,
     });
@@ -91,15 +92,15 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
   const validateForm = (values: FormValues): FormErrors<FormValues> => {
     const errors: FormErrors<FormValues> = {};
 
-    if (!values.name) {
+    if (!values?.name) {
       errors.name = 'Nombre no puede ser vacio';
     }
 
-    if (!values.lastName) {
+    if (!values?.lastName) {
       errors.lastName = 'Nombre no puede ser vacio';
     }
 
-    if (!values.file) {
+    if (!values?.file) {
       errors.lastName = 'El padron no puede estar vacio';
     }
 
@@ -126,7 +127,6 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
           url="https://bit.ly/sage-adebayo" // TODO TH-67: Add avatar image to user?
         />
         <Form
-          areReadOnly={!isEditing}
           buttonsEnabled={isEditing}
           initialValues={{
             name: queryResult.name || '',
@@ -146,47 +146,76 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
           }}
           inputFields={[
             {
-              id: 'name',
+              inputComponent: (values, handleChange) => (
+                <InputField
+                  id={'name'}
+                  value={values?.name}
+                  onChange={handleChange}
+                  placeholder={'Nombre'}
+                  type={'text'}
+                  isReadOnly={!isEditing}
+                />
+              ),
               label: 'Nombre',
-              placeholder: 'Nombre',
-              type: 'text',
               readError: e => e.name as string,
-              readValue: v => v.name,
             },
             {
-              id: 'lastName',
+              inputComponent: (values, handleChange) => (
+                <InputField
+                  id={'lastName'}
+                  value={values?.lastName}
+                  onChange={handleChange}
+                  placeholder={'Apellido'}
+                  type={'text'}
+                  isReadOnly={!isEditing}
+                />
+              ),
               label: 'Apellido',
-              placeholder: 'Apellido',
-              type: 'text',
               readError: e => e.lastName as string,
-              readValue: v => v.lastName,
             },
             {
-              id: 'file',
+              inputComponent: (values, handleChange) => (
+                <InputField
+                  id={'file'}
+                  value={values?.file}
+                  onChange={handleChange}
+                  placeholder={'12345'}
+                  type={'number'}
+                  pattern={'[0-9]*'} // allow only digits
+                  inputMode={'numeric'}
+                  isReadOnly={!isEditing}
+                />
+              ),
               label: 'Padrón',
-              placeholder: '12345',
-              type: 'number',
-              pattern: '[0-9]*', // allow only digits
-              inputMode: 'numeric',
               readError: e => e.file as string,
-              readValue: v => v.file,
             },
             {
-              id: 'notificationEmail',
+              inputComponent: (values, handleChange) => (
+                <InputField
+                  id={'notificationEmail'}
+                  value={values?.notificationEmail}
+                  onChange={handleChange}
+                  placeholder={'mail@mail.com'}
+                  type={'email'}
+                  isReadOnly={!isEditing}
+                />
+              ),
               label: 'Email (notificaciones)',
-              placeholder: 'mail@mail.com',
-              type: 'email',
               readError: e => e.notificationEmail as string,
-              readValue: v => v.notificationEmail,
             },
             {
-              id: 'githubId',
+              inputComponent: (values, handleChange) => (
+                <InputField
+                  id={'githubId'}
+                  value={values?.githubId}
+                  onChange={handleChange}
+                  placeholder={'12345'}
+                  type={'text'}
+                  isReadOnly={true}
+                />
+              ),
               label: 'Usuario de Github',
-              placeholder: '12345',
-              type: 'text',
               readError: e => e.githubId as string,
-              readValue: v => v.githubId,
-              isReadOnly: true,
             },
           ]}
         />

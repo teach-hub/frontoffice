@@ -15,7 +15,8 @@ export const theme = extendTheme({
       primaryLight: '#1a659e',
       secondary: '#ebe9e7',
       black: '#29262b',
-      white: '#f7fff6',
+      white: '#F5F5F5',
+      gray: '#BDBDBD',
       green: '#00798c',
     },
   },
@@ -41,6 +42,7 @@ export const theme = extendTheme({
         },
         ghost: {
           color: 'teachHub.black',
+          _hover: { bg: 'teachHub.white' },
         },
       },
     },
