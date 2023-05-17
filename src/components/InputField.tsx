@@ -1,5 +1,6 @@
 import { ChangeEventHandler } from 'react';
 import { Input, InputProps } from '@chakra-ui/react';
+import { theme } from '../theme';
 
 type Props = InputProps & {
   placeholder?: string;
@@ -24,7 +25,8 @@ const InputField = ({
       isReadOnly={isReadOnly}
       value={value}
       placeholder={placeholder}
-      _placeholder={{ color: 'gray.400' }}
+      _placeholder={{ color: theme.colors.teachHub.gray }}
+      bg={theme.colors.teachHub.white}
       type={type}
     />
   );
