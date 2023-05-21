@@ -1,5 +1,12 @@
 import { RelayEnvironmentProvider } from 'react-relay';
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import {
+  Outlet,
+  useLocation,
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+} from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react';
 
 import environment from 'relayEnvironment';
@@ -30,6 +37,8 @@ const ProtectedLayout = ({ children }: { children: JSX.Element }): JSX.Element =
   const [token] = useLocalStorage('token', null);
   const location = useLocation();
 
+  console.log(`User not authenticated, redirecting to ${location.pathname}`);
+
   return isAuthenticated(token) ? (
     children
   ) : (
@@ -42,9 +51,9 @@ const LoginLayout = (): JSX.Element => {
   const { state: locationState } = useLocation();
 
   if (!isAuthenticated(token)) {
-    return (
-      <LoginPage redirectTo={locationState ? locationState.redirectTo : undefined} />
-    );
+    const redirectTo = locationState ? locationState.redirectTo : undefined;
+
+    return <LoginPage redirectTo={redirectTo} />;
   }
 
   /*
@@ -57,93 +66,29 @@ const LoginLayout = (): JSX.Element => {
 const App = () => {
   return (
     <Routes>
-      <Route path="/login" element={<LoginLayout />} />
+      <Route path="login" element={<LoginLayout />} />
       <Route
-        path="/invites/:inviteId"
+        path="/"
         element={
           <ProtectedLayout>
-            <InvitePage />
+            <Outlet />
           </ProtectedLayout>
         }
-      />
-      <Route path="/">
-        <Route
-          index
-          element={
-            <ProtectedLayout>
-              <HomePage />
-            </ProtectedLayout>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedLayout>
-              <UserProfilePage />
-            </ProtectedLayout>
-          }
-        />
+      >
+        <Route index element={<HomePage />} />
+        <Route path="invites/:inviteId" element={<InvitePage />} />
+        <Route path="profile" element={<UserProfilePage />} />
         <Route path="courses">
-          <Route
-            index
-            element={
-              <ProtectedLayout>
-                <UserCoursesPage />
-              </ProtectedLayout>
-            }
-          />
+          <Route index element={<UserCoursesPage />} />
           <Route path=":courseId">
-            <Route
-              index
-              element={
-                <ProtectedLayout>
-                  <CoursePage />
-                </ProtectedLayout>
-              }
-            />
-            <Route
-              path="users"
-              element={
-                <ProtectedLayout>
-                  <CourseUsersPage />
-                </ProtectedLayout>
-              }
-            />
+            <Route index element={<CoursePage />} />
+            <Route path="users" element={<CourseUsersPage />} />
             <Route path="assignments">
-              <Route
-                index
-                element={
-                  <ProtectedLayout>
-                    <CourseAssignmentsPage />
-                  </ProtectedLayout>
-                }
-              />
-
-              <Route
-                path="create"
-                element={
-                  <ProtectedLayout>
-                    <CreateOrUpdateAssignmentsPage />
-                  </ProtectedLayout>
-                }
-              />
+              <Route index element={<CourseAssignmentsPage />} />
+              <Route path="create" element={<CreateOrUpdateAssignmentsPage />} />
               <Route path=":assignmentId">
-                <Route
-                  index
-                  element={
-                    <ProtectedLayout>
-                      <AssignmentPage />
-                    </ProtectedLayout>
-                  }
-                />
-                <Route
-                  path="edit"
-                  element={
-                    <ProtectedLayout>
-                      <CreateOrUpdateAssignmentsPage />
-                    </ProtectedLayout>
-                  }
-                />
+                <Route index element={<AssignmentPage />} />
+                <Route path="edit" element={<CreateOrUpdateAssignmentsPage />} />
               </Route>
             </Route>
           </Route>
