@@ -10,6 +10,8 @@ import Divider from 'components/Divider';
 import StatCard from 'components/StatCard';
 import GithubStatusCard from 'components/GithubStatusCard';
 
+import { useUserContext } from 'hooks/useUserContext';
+
 import CourseInfoQueryDef from 'graphql/CourseInfoQuery';
 
 import type {
@@ -74,6 +76,7 @@ const CourseDashboard = ({ course }: Props) => {
 
 const CourseViewContainer = () => {
   const { courseId } = useParams();
+  const courseContext = useUserContext();
 
   const data = useLazyLoadQuery<CourseInfoQuery>(CourseInfoQueryDef, {
     courseId: courseId || '',
@@ -83,7 +86,9 @@ const CourseViewContainer = () => {
     return null;
   }
 
-  return <CourseDashboard course={data.viewer.findCourse} />;
+  const course = data.viewer.findCourse;
+
+  return <CourseDashboard course={course} />;
 };
 
 export default () => {

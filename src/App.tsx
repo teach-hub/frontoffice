@@ -37,13 +37,13 @@ const ProtectedLayout = ({ children }: { children: JSX.Element }): JSX.Element =
   const [token] = useLocalStorage('token', null);
   const location = useLocation();
 
+  if (isAuthenticated(token)) {
+    return children;
+  }
+
   console.log(`User not authenticated, redirecting to ${location.pathname}`);
 
-  return isAuthenticated(token) ? (
-    children
-  ) : (
-    <Navigate to="/login" state={{ redirectTo: location.pathname }} />
-  );
+  return <Navigate to="/login" state={{ redirectTo: location.pathname }} />;
 };
 
 const LoginLayout = (): JSX.Element => {
@@ -80,7 +80,7 @@ const App = () => {
         <Route path="profile" element={<UserProfilePage />} />
         <Route path="courses">
           <Route index element={<UserCoursesPage />} />
-          <Route path=":courseId">
+          <Route path=":courseId" element={<ContextProvider />}>
             <Route index element={<CoursePage />} />
             <Route path="users" element={<CourseUsersPage />} />
             <Route path="assignments">
@@ -106,9 +106,7 @@ const AppRoot = () => (
   <ChakraProvider theme={theme}>
     <RelayEnvironmentProvider environment={environment}>
       <BrowserRouter>
-        <ContextProvider>
-          <App />
-        </ContextProvider>
+        <App />
       </BrowserRouter>
     </RelayEnvironmentProvider>
   </ChakraProvider>

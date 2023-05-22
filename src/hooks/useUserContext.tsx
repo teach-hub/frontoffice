@@ -1,62 +1,72 @@
-import { ReactNode, createContext, useContext, useState } from 'react';
+import {
+  Suspense,
+  ReactNode,
+  createContext,
+  useEffect,
+  useContext,
+  useState,
+} from 'react';
+import { useParams, Outlet } from 'react-router';
+import { useLazyLoadQuery } from 'react-relay';
 
-// todo: meter el user en el context probablemente no sea necesario
-type CourseContext = {
-  courseId: string | null;
-  setCourseId(_: string): void;
-  clearCourseId(): void;
-};
+import CourseContextQuery from 'graphql/CourseContextQuery';
 
-type UserContext = {
-  user: string | null;
-  setUser(_: string): void;
-  clearUser(): void;
-};
+import type { CourseContextQuery as CourseContextQueryData } from '__generated__/CourseContextQuery.graphql';
 
-const noop = () => {};
+type CourseContext =
+  | {
+      userPermissions: string[];
+      userIsTeacher: boolean;
+    }
+  | {
+      userPermissions: never[];
+      userIsTeacher: null;
+    };
 
 // Valor usado solamente cuando no esta el provider (UserContext.Provider)
 // https://legacy.reactjs.org/docs/context.html#reactcreatecontext
-const defaultCourseContext: CourseContext = {
-  courseId: null,
-  setCourseId: noop,
-  clearCourseId: noop,
+const defaultUserContext: CourseContext = {
+  userIsTeacher: null,
+  userPermissions: [],
 };
 
-const defaultUserContext: UserContext = {
-  user: null,
-  setUser: noop,
-  clearUser: noop,
-};
+const CourseContext = createContext<CourseContext>({ ...defaultUserContext });
 
-const UserContext = createContext({
-  course: defaultCourseContext,
-  user: defaultUserContext,
-});
-
-const ContextProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState(defaultCourseContext.courseId);
-  const [courseId, setCourseId] = useState(defaultCourseContext.courseId);
-
-  const courseContextValue: CourseContext = {
-    setCourseId,
-    clearCourseId: () => setCourseId(null),
+const Provider = ({ courseId }: { courseId: string }) => {
+  const courseContextData = useLazyLoadQuery<CourseContextQueryData>(CourseContextQuery, {
     courseId,
-  };
+  });
 
-  const userContextValue: UserContext = {
-    setUser,
-    clearUser: () => setUser(null),
-    user,
-  };
+  const viewerCourseContext = courseContextData.viewer?.findCourse?.viewerRole;
+  const viewerCoursePermissions = viewerCourseContext?.permissions?.filter(
+    (p): p is string => !!p
+  );
+
+  const [courseContext] = useState<CourseContext>({
+    userIsTeacher: viewerCourseContext?.isTeacher ?? false,
+    userPermissions: viewerCoursePermissions ?? [],
+  });
+
+  return <Outlet context={courseContext} />;
+};
+
+const ContextProvider = () => {
+  const { courseId } = useParams();
+
+  if (!courseId) {
+    console.error('Failed to load course context, course ID not found');
+    return <></>;
+  }
+
+  console.log(`Provider for course ${courseId} loaded!`);
 
   return (
-    <UserContext.Provider value={{ course: courseContextValue, user: userContextValue }}>
-      {children}
-    </UserContext.Provider>
+    <Suspense fallback={<h1> Loading context ...</h1>}>
+      <Provider courseId={courseId} />
+    </Suspense>
   );
 };
 
-const useUserContext = () => useContext(UserContext);
+const useUserContext = () => useContext(CourseContext);
 
 export { ContextProvider, useUserContext };
