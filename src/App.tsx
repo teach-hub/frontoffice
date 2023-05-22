@@ -1,5 +1,5 @@
 import { RelayEnvironmentProvider } from 'react-relay';
-import { useLocation, BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react';
 
 import environment from 'relayEnvironment';
@@ -12,7 +12,7 @@ import CoursePage from 'pages/courses/course';
 import CourseUsersPage from 'pages/courses/users';
 import CourseAssignmentsPage from 'pages/courses/assignments';
 import LoginPage from 'pages/Login';
-import AssignmentPage from 'pages/courses/assignments/assignment';
+import AssignmentPage from 'pages/courses/assignments/AssignmentDashboard';
 import InvitePage from 'pages/Invite';
 
 import { ContextProvider } from 'hooks/useUserContext';
@@ -120,14 +120,6 @@ const App = () => {
               />
 
               <Route
-                path=":assignmentId"
-                element={
-                  <ProtectedLayout>
-                    <AssignmentPage />
-                  </ProtectedLayout>
-                }
-              />
-              <Route
                 path="create"
                 element={
                   <ProtectedLayout>
@@ -135,14 +127,24 @@ const App = () => {
                   </ProtectedLayout>
                 }
               />
-              <Route
-                path=":assignmentId/edit"
-                element={
-                  <ProtectedLayout>
-                    <CreateOrUpdateAssignmentsPage />
-                  </ProtectedLayout>
-                }
-              />
+              <Route path=":assignmentId">
+                <Route
+                  index
+                  element={
+                    <ProtectedLayout>
+                      <AssignmentPage />
+                    </ProtectedLayout>
+                  }
+                />
+                <Route
+                  path="edit"
+                  element={
+                    <ProtectedLayout>
+                      <CreateOrUpdateAssignmentsPage />
+                    </ProtectedLayout>
+                  }
+                />
+              </Route>
             </Route>
           </Route>
         </Route>

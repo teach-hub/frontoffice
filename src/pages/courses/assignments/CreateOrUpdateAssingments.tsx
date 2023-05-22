@@ -22,6 +22,7 @@ import useToast from '../../../hooks/useToast';
 import DateInputField from '../../../components/DateInputField';
 import { formatDateAsLocaleIsoString } from '../../../utils/dates';
 import { getAssignment } from '../../../graphql/utils/assignments';
+import { PageDataContainer } from '../../../components/PageDataContainer';
 
 type AssignmentData = {
   id?: Nullable<string>;
@@ -69,7 +70,11 @@ const CreateOrUpdateAssignmentsPage = () => {
   };
 
   const onCancel = () => {
-    navigate(`/courses/${courseId}/assignments`);
+    if (assignmentId) {
+      navigate(`/courses/${courseId}/assignments/${assignmentId}`);
+    } else {
+      navigate(`/courses/${courseId}/assignments`);
+    }
   };
 
   const onSubmit = (values: FormValues) => {
@@ -91,6 +96,10 @@ const CreateOrUpdateAssignmentsPage = () => {
           onCompleted: (response: UpdateAssignmentMutation$data, errors) => {
             const data = response.updateAssignment;
             if (!errors?.length && data) {
+              toast({
+                title: 'Trabajo práctico guardado!',
+                status: 'info',
+              });
               navigate(`/courses/${courseId}/assignments/${assignmentId}`);
             } else {
               const errorMessage = errors ? errors[0].message : null;
@@ -120,6 +129,10 @@ const CreateOrUpdateAssignmentsPage = () => {
           onCompleted: (response: CreateAssignmentMutation$data, errors) => {
             const data = response.createAssignment;
             if (!errors?.length && data) {
+              toast({
+                title: 'Trabajo práctico guardado!',
+                status: 'info',
+              });
               navigate(`/courses/${courseId}/assignments/${data.id}`);
             } else {
               const errorMessage = errors ? errors[0].message : null;
@@ -141,7 +154,7 @@ const CreateOrUpdateAssignmentsPage = () => {
   };
 
   return (
-    <Flex paddingX={'50px'} direction={'column'}>
+    <PageDataContainer>
       {assignmentId ? (
         <Heading>Editar Trabajo Práctico</Heading>
       ) : (
@@ -238,6 +251,7 @@ const CreateOrUpdateAssignmentsPage = () => {
                   size={'lg'}
                   borderColor={theme.colors.teachHub.black}
                   bg={theme.colors.teachHub.white}
+                  isChecked={values?.allowLateSubmissions}
                   value={values?.allowLateSubmissions}
                   onChange={handleChange}
                 />
@@ -249,7 +263,7 @@ const CreateOrUpdateAssignmentsPage = () => {
           ]}
         />
       </Flex>
-    </Flex>
+    </PageDataContainer>
   );
 };
 
