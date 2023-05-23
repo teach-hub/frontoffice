@@ -70,11 +70,7 @@ const CreateOrUpdateAssignmentsPage = () => {
   };
 
   const onCancel = () => {
-    if (assignmentId) {
-      navigate(`/courses/${courseId}/assignments/${assignmentId}`);
-    } else {
-      navigate(`/courses/${courseId}/assignments`);
-    }
+    navigate(`..`);
   };
 
   const onSubmit = (values: FormValues) => {
@@ -100,7 +96,7 @@ const CreateOrUpdateAssignmentsPage = () => {
                 title: 'Trabajo práctico guardado!',
                 status: 'info',
               });
-              navigate(`/courses/${courseId}/assignments/${assignmentId}`);
+              navigate(`..`);
             } else {
               const errorMessage = errors ? errors[0].message : null;
               toast({
@@ -133,7 +129,7 @@ const CreateOrUpdateAssignmentsPage = () => {
                 title: 'Trabajo práctico guardado!',
                 status: 'info',
               });
-              navigate(`/courses/${courseId}/assignments/${data.id}`);
+              navigate(`../${data.id}`);
             } else {
               const errorMessage = errors ? errors[0].message : null;
               toast({

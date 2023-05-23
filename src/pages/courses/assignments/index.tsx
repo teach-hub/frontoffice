@@ -1,51 +1,66 @@
-import { MouseEvent, Suspense } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Suspense } from 'react';
+import { Link as ReachLink, useNavigate, useParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
-
-import { IconButton, Badge } from '@chakra-ui/react'
-import { CloseIcon } from '@chakra-ui/icons'
 
 import Navigation from 'components/Navigation';
 import Box from 'components/Box';
-import Card from 'components/Card';
 
 import CourseAssignmentsQueryDef from 'graphql/CourseAssignmentsQuery';
-import type { CourseAssignmentsQuery, CourseAssignmentsQuery$data } from '__generated__/CourseAssignmentsQuery.graphql';
-
-type Assignment = NonNullable<NonNullable<CourseAssignmentsQuery$data['viewer']>['findCourse']>['assignments'][number];
-
-const AssignmentOverviewCard = ({ assignment }: { assignment: Assignment }) => {
-  const navigate = useNavigate();
-
-  const handleCardClick = (_: MouseEvent<HTMLDivElement>) => {
-    navigate(`${assignment.id}`)
-  }
-
-  return (
-    <Card onClick={handleCardClick}>
-      <Box>
-        {assignment.title}
-      </Box>
-    </Card>
-  )
-}
+import type { CourseAssignmentsQuery } from '__generated__/CourseAssignmentsQuery.graphql';
+import { PageDataContainer } from '../../../components/PageDataContainer';
+import { List } from '../../../components/List';
+import { Flex, Heading, Link, ListItem } from '@chakra-ui/react';
+import { TasklistIcon } from '@primer/octicons-react';
+import { formatAsSimpleDate } from 'utils/dates';
+import IconButton from '../../../components/IconButton';
+import { AddIcon } from '@chakra-ui/icons';
+import { ListIcon } from '../../../components/ListIcon';
+import Text from '../../../components/Text';
 
 const AssignmentsPage = () => {
+  const navigate = useNavigate();
   const params = useParams();
 
-  const data = useLazyLoadQuery<CourseAssignmentsQuery>(
-    CourseAssignmentsQueryDef,
-    { courseId: params.courseId || '' }
-  );
+  const data = useLazyLoadQuery<CourseAssignmentsQuery>(CourseAssignmentsQueryDef, {
+    courseId: params.courseId || '',
+  });
+
+  const assignments = data.viewer?.findCourse?.assignments || [];
+  const hasAssignments = assignments.length !== 0;
 
   return (
-    <>
-      {data.viewer?.findCourse?.assignments.map(
-        data => <AssignmentOverviewCard assignment={data} />
-      )}
-    </>
-  )
-}
+    <PageDataContainer>
+      <Heading>{'Trabajos Prácticos'}</Heading>
+      <Flex paddingY={'30px'}>
+        {hasAssignments ? (
+          <List>
+            {assignments.map(data => (
+              <ListItem key={data.id}>
+                <ListIcon icon={TasklistIcon} />
+                <Link as={ReachLink} to={`${data.id}`}>
+                  <span style={{ fontWeight: 'bold' }}>{data.title}</span>
+                </Link>
+                {data.endDate ? ` (${formatAsSimpleDate(data.endDate)})` : ''}
+              </ListItem>
+            ))}
+          </List>
+        ) : (
+          <Text>{'Aún no se ha creado ningún trabajo práctico'}</Text>
+        )}
+      </Flex>
+
+      <Box position="fixed" bottom="30px" right="30px">
+        <IconButton
+          icon={<AddIcon boxSize={'50%'} />}
+          boxSize={'65px'}
+          borderRadius={'full'}
+          aria-label="Add"
+          onClick={() => navigate(`create`)} /* TODO: TH-114 show based on permissions */
+        />
+      </Box>
+    </PageDataContainer>
+  );
+};
 
 export default () => {
   return (
@@ -54,5 +69,5 @@ export default () => {
         <AssignmentsPage />
       </Navigation>
     </Suspense>
-  )
-}
+  );
+};

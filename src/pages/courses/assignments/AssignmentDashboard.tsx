@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import Navigation from 'components/Navigation';
 import type { AssignmentQuery$data } from '__generated__/AssignmentQuery.graphql';
-import { Flex, Heading, Link, ListIcon, ListItem, Text } from '@chakra-ui/react';
+import { Flex, Heading, Link, ListItem, Text } from '@chakra-ui/react';
 import { getAssignment } from '../../../graphql/utils/assignments';
 import {
   AlertIcon,
@@ -14,26 +14,16 @@ import {
 } from '@primer/octicons-react';
 import { formatAsSimpleDateTime } from '../../../utils/dates';
 import { theme } from '../../../theme';
-import { Icon } from '@primer/octicons-react/dist/icons';
 import { Nullable } from '../../../types';
 import IconButton from '../../../components/IconButton';
 import { PageDataContainer } from '../../../components/PageDataContainer';
 import { List } from '../../../components/List';
+import { ListIcon } from '../../../components/ListIcon';
 
 type AssignmentDashboard = NonNullable<AssignmentQuery$data['findAssignment']>;
 
-const AssignmentDashboardPage = ({
-  assignment,
-  courseId,
-}: {
-  assignment: AssignmentDashboard;
-  courseId: string;
-}) => {
+const AssignmentDashboardPage = ({ assignment }: { assignment: AssignmentDashboard }) => {
   const navigate = useNavigate();
-
-  const AssignmentListIcon = ({ icon }: { icon: Icon }) => (
-    <ListIcon as={icon} color={theme.colors.teachHub.primary} boxSize={'5'} />
-  );
 
   const DateListItem = ({
     date,
@@ -45,7 +35,7 @@ const AssignmentDashboardPage = ({
     itemKey: string;
   }) => (
     <ListItem key={itemKey}>
-      <AssignmentListIcon icon={CalendarIcon} />
+      <ListIcon icon={CalendarIcon} />
       <span style={{ fontWeight: 'bold' }}>{text}</span>
       {date ? formatAsSimpleDateTime(date) : '-'}
     </ListItem>
@@ -59,7 +49,7 @@ const AssignmentDashboardPage = ({
           <IconButton
             onClick={() =>
               /*TODO: TH-93 Delete assignments (with a confirmation pop up) */
-              navigate(`/courses/${courseId}/assignments/${assignment.id}/edit`)
+              navigate(`edit`)
             }
             aria-label={'Edit'}
             icon={<PencilIcon size={'medium'} />}
@@ -67,9 +57,7 @@ const AssignmentDashboardPage = ({
             color={theme.colors.teachHub.black}
           />
           <IconButton /* TODO: TH-114 show based on permissions */
-            onClick={() =>
-              navigate(`/courses/${courseId}/assignments/${assignment.id}/edit`)
-            }
+            onClick={() => navigate(`edit`)}
             aria-label={'Delete'}
             icon={<TrashIcon size={'medium'} />}
             variant={'ghost'}
@@ -78,7 +66,7 @@ const AssignmentDashboardPage = ({
         </Flex>
       </Flex>
       <Flex direction={'column'} gap={'30px'} width={'50%'} paddingY={'30px'}>
-        <Text width={'25vw'} whiteSpace="pre-wrap">
+        <Text width={'600px'} whiteSpace="pre-wrap">
           {assignment.description}
         </Text>
         <List>
@@ -94,13 +82,13 @@ const AssignmentDashboardPage = ({
           />
           <ListItem key={'allowLateSubmissions'}>
             {/* TODO: TH-114 show based on permissions */}
-            <AssignmentListIcon icon={AlertIcon} />
+            <ListIcon icon={AlertIcon} />
             <span style={{ fontWeight: 'bold' }}>{'Entregas fuera de fecha: '}</span>
             {assignment.allowLateSubmissions == true ? 'Permitidas' : 'No Permitidas'}
           </ListItem>
           {assignment.link ? (
             <ListItem key={'link'}>
-              <AssignmentListIcon icon={LinkExternalIcon} />
+              <ListIcon icon={LinkExternalIcon} />
               <Link href={assignment.link} isExternal>
                 Ver enunciado
               </Link>
@@ -116,15 +104,14 @@ const AssignmentDashboardPage = ({
 
 const AssignmentPageContainer = () => {
   const params = useParams();
-  const courseId = params.courseId;
 
   const assignment = getAssignment({
     assignmentId: params.assignmentId || '',
   });
 
-  if (!assignment || !courseId) return null;
+  if (!assignment) return null;
 
-  return <AssignmentDashboardPage assignment={assignment} courseId={courseId} />;
+  return <AssignmentDashboardPage assignment={assignment} />;
 };
 
 export default () => {
