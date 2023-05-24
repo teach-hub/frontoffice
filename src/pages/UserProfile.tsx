@@ -26,6 +26,7 @@ import {
 import { FormErrors, Mutable } from 'types';
 import { Form } from 'components/Form';
 import InputField from '../components/InputField';
+import { PageDataContainer } from '../components/PageDataContainer';
 
 type Props = {
   user: UserProfileQuery$data;
@@ -112,14 +113,8 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
   if (showSpinner || !queryResult) return <Spinner />;
 
   return (
-    <Box paddingX={'20%'} justifyContent={'space-around'}>
-      <Heading
-        lineHeight={1.1}
-        fontSize={{ base: '2xl', sm: '3xl' }}
-        paddingBottom={'5vh'}
-      >
-        Perfil de {queryResult.name}
-      </Heading>
+    <PageDataContainer>
+      <Heading paddingBottom={'5vh'}>Perfil de {queryResult.name}</Heading>
       <Box display="flex" flexDir="row" justifyContent="space-evenly">
         <AvatarImage
           isEditing={isEditing}
@@ -220,7 +215,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
           ]}
         />
       </Box>
-    </Box>
+    </PageDataContainer>
   );
 };
 

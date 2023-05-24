@@ -18,6 +18,7 @@ export const theme = extendTheme({
       white: '#F5F5F5',
       gray: '#BDBDBD',
       green: '#00798c',
+      red: '#D1103A',
     },
   },
   styles: {
@@ -25,6 +26,7 @@ export const theme = extendTheme({
       body: {
         color: 'default',
         bg: 'teachHub.secondary',
+        fontSize: 'xl',
       },
     }),
   },

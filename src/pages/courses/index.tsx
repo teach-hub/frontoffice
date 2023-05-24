@@ -2,7 +2,7 @@ import { MouseEvent, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
-import { Flex, Badge, IconButton, Stack, Skeleton } from '@chakra-ui/react';
+import { Badge, Flex, IconButton, Skeleton, Stack } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
 
 import Text from 'components/Text';
@@ -17,6 +17,7 @@ import {
   UserCoursesQuery$data,
 } from '__generated__/UserCoursesQuery.graphql';
 import { theme } from '../../theme';
+import { PageDataContainer } from '../../components/PageDataContainer';
 
 type Viewer = NonNullable<UserCoursesQuery$data['viewer']>;
 
@@ -91,12 +92,12 @@ const CoursesContainer = () => {
   const viewerRoles = data.viewer.userRoles.filter(userRole => !!userRole) as UserRole[];
 
   return (
-    <Box padding="5px 35px">
+    <PageDataContainer>
       <Heading>Mis cursos</Heading>
       <Box padding="30px 0px">
         <CoursesList userRoles={viewerRoles} />
       </Box>
-    </Box>
+    </PageDataContainer>
   );
 };
 

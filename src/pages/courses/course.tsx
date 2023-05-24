@@ -1,11 +1,9 @@
 import { Suspense } from 'react';
-import { useParams, useNavigate, createSearchParams } from 'react-router-dom';
+import { createSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
 import { HStack } from '@chakra-ui/react';
 import { MortarBoardIcon, PersonIcon, TerminalIcon } from '@primer/octicons-react';
-
-import Box from 'components/Box';
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
 import Divider from 'components/Divider';
@@ -18,6 +16,7 @@ import type {
   CourseInfoQuery,
   CourseInfoQuery$data,
 } from '__generated__/CourseInfoQuery.graphql';
+import { PageDataContainer } from '../../components/PageDataContainer';
 
 type Props = {
   course: NonNullable<NonNullable<CourseInfoQuery$data['viewer']>['findCourse']>;
@@ -63,13 +62,13 @@ const CourseStatistics = ({ course }: Props) => {
 
 const CourseDashboard = ({ course }: Props) => {
   return (
-    <Box margin="0px 30px">
-      <Heading size="md">
+    <PageDataContainer>
+      <Heading>
         {course.name} - {course.subject.name}
       </Heading>
       <Divider orientation="horizontal" />
       <CourseStatistics course={course} />
-    </Box>
+    </PageDataContainer>
   );
 };
 
