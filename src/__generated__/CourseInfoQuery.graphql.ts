@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a1b0388a2822789329eef1e81d1ff17d>>
+ * @generated SignedSource<<c1c84381f2e6f5b6016f7e7dafad7321>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,12 +14,16 @@ export type CourseInfoQuery$variables = {
 };
 export type CourseInfoQuery$data = {
   readonly viewer: {
+    readonly availableOrganizations: {
+      readonly names: ReadonlyArray<string> | null;
+    } | null;
     readonly findCourse: {
       readonly assignments: ReadonlyArray<{
         readonly id: string;
       }>;
       readonly id: string;
       readonly name: string;
+      readonly organization: string | null;
       readonly studentsCount: number;
       readonly subject: {
         readonly id: string;
@@ -89,6 +93,13 @@ v3 = [
             "alias": null,
             "args": null,
             "kind": "ScalarField",
+            "name": "organization",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "studentsCount",
             "storageKey": null
           },
@@ -126,6 +137,24 @@ v3 = [
           }
         ],
         "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": "ViewerOrganizations",
+        "kind": "LinkedField",
+        "name": "availableOrganizations",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "names",
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
       }
     ],
     "storageKey": null
@@ -149,16 +178,16 @@ return {
     "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "a2e6fe1fa8edc676ff02cac98445cf45",
+    "cacheID": "5365403be4ca84ffc2db7c45722ee15e",
     "id": null,
     "metadata": {},
     "name": "CourseInfoQuery",
     "operationKind": "query",
-    "text": "query CourseInfoQuery(\n  $courseId: String!\n) {\n  viewer {\n    id\n    name\n    findCourse(id: $courseId) {\n      id\n      name\n      studentsCount\n      teachersCount\n      assignments {\n        id\n      }\n      subject {\n        id\n        name\n      }\n    }\n  }\n}\n"
+    "text": "query CourseInfoQuery(\n  $courseId: String!\n) {\n  viewer {\n    id\n    name\n    findCourse(id: $courseId) {\n      id\n      name\n      organization\n      studentsCount\n      teachersCount\n      assignments {\n        id\n      }\n      subject {\n        id\n        name\n      }\n    }\n    availableOrganizations {\n      names\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "2ee77dd76ed1376ccf26c655a150fdd8";
+(node as any).hash = "677aa354d22a0b6c3e8bdcf1489e1642";
 
 export default node;

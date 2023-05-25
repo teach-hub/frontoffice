@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ed269e744e2b7c8133d24ba9efcbc4ba>>
+ * @generated SignedSource<<350e8c97e01012ebb638076234f110f8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -21,7 +21,7 @@ export type CreateAssignmentMutation$variables = {
 export type CreateAssignmentMutation$data = {
   readonly createAssignment: {
     readonly allowLateSubmissions: boolean | null;
-    readonly courseId: string | null;
+    readonly courseId: string;
     readonly description: string | null;
     readonly endDate: string | null;
     readonly id: string;
