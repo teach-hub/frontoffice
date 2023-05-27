@@ -1,22 +1,23 @@
-import { ReactNode, useEffect, useState } from 'react';
-import { Link as ReachLink, useNavigate, useLocation, useParams } from 'react-router-dom';
+import { ReactNode, useState } from 'react';
+import { Link as ReachLink, useNavigate, useParams } from 'react-router-dom';
 
 import { graphql } from 'babel-plugin-relay/macro';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
-import { Link, HStack, Switch } from '@chakra-ui/react';
+import { Link, HStack } from '@chakra-ui/react';
 import { AddIcon, ChevronDownIcon } from '@chakra-ui/icons';
 
 import Box from 'components/Box';
 import Button from 'components/Button';
-import Text from 'components/Text';
 import Avatar from 'components/Avatar';
 import Menu, { Props as MenuProps } from 'components/Menu';
 import Divider from 'components/Divider';
 import HomeButton from 'components/HomeButton';
 
-import { useLocalStorage } from 'hooks/useLocalStorage';
-import useToast from 'hooks/useToast';
 import { theme } from 'theme';
+
+import { useLocalStorage } from 'hooks/useLocalStorage';
+import { useUserContext, Permission } from 'hooks/useUserContext';
+import useToast from 'hooks/useToast';
 
 import InviteUserModal from 'layout/InviteUserModal';
 
@@ -27,19 +28,6 @@ import {
   LogoutMutation$data,
 } from '__generated__/LogoutMutation.graphql';
 import { NavigationQuery } from '__generated__/NavigationQuery.graphql';
-
-const DevControlStyle = {
-  shadow: 'md',
-  borderWidth: 'thin',
-  borderColor: 'black',
-  borderRadius: '5px',
-  background: 'green.100',
-  bottom: '20px',
-  position: 'fixed',
-  flex: '1',
-  alignItems: 'center',
-  display: 'flex',
-};
 
 const MainRoutes = () => {
   return (
@@ -55,32 +43,13 @@ const NAVIGATION_HEIGHT_PX = 95;
 
 const NavigationBar = () => {
   const toast = useToast();
-  const [isTeacher, setIsTeacher] = useState(false);
   const [token, setToken] = useLocalStorage('token', null);
   const [commitLogoutMutation] = useMutation<LogoutMutation>(LogoutMutationDef);
 
-  /* Set width of buttons to the biggest one */
-  const [, setMaxWidth] = useState('auto');
-
-  const { courseId } = useParams();
-  const userIsWithinCourse = !!courseId;
+  const courseContext = useUserContext();
+  const navigate = useNavigate();
 
   const [inviteUserOpen, setInviteUserOpen] = useState(false);
-
-  useEffect(() => {
-    // Find the maximum width of the buttons
-    const buttons = document.querySelectorAll('button');
-    let maxWidth = 0;
-    buttons.forEach(button => {
-      const width = button.offsetWidth;
-      if (width > maxWidth) {
-        maxWidth = width;
-      }
-    });
-    setMaxWidth(`${maxWidth}px`);
-  }, []);
-
-  const navigate = useNavigate();
 
   const viewerData = useLazyLoadQuery<NavigationQuery>(
     graphql`
@@ -121,35 +90,23 @@ const NavigationBar = () => {
     navigate('/profile');
   };
 
-  const DevControl = () => {
-    return (
-      <Box sx={DevControlStyle}>
-        <Switch
-          isChecked={!!isTeacher}
-          onChange={() => setIsTeacher(c => !c)}
-          padding="10px"
-          size="lg"
-        />
-        <Text padding="10px">
-          <b>Soy profesor</b>
-        </Text>
-      </Box>
-    );
-  };
-
   const teacherActions: MenuProps['content']['items'] = [
     { content: 'Asignar correctores' },
     { content: 'Crear repositorios' },
   ];
 
-  if (userIsWithinCourse) {
+  if (courseContext.userHasPermission(Permission.InviteUser)) {
     teacherActions.push({
       content: 'Invitar usuario',
       action: () => setInviteUserOpen(v => !v),
     });
   }
 
-  const studentActions = [{ content: 'Realizar entrega' }];
+  const studentActions = [];
+
+  if (courseContext.userHasPermission(Permission.SubmitAssignment)) {
+    studentActions.push({ content: 'Realizar entrega' });
+  }
 
   return (
     <HStack
@@ -179,7 +136,7 @@ const NavigationBar = () => {
                 <AddIcon />
               </Button>
             ),
-            items: isTeacher ? teacherActions : studentActions,
+            items: courseContext.userIsTeacher ? teacherActions : studentActions,
           }}
         />
       </HStack>
@@ -197,17 +154,14 @@ const NavigationBar = () => {
         }}
       />
 
-      <InviteUserModal
-        isOpen={inviteUserOpen}
-        rootQueryRef={viewerData}
-        onClose={() => setInviteUserOpen(false)}
-        courseId={courseId!}
-      />
-
-      {/**
-       * (TODO TH-68) Control temporal para emular roles, no queda en la entrega final
-       */}
-      <DevControl />
+      {courseContext.courseId && (
+        <InviteUserModal
+          isOpen={inviteUserOpen}
+          rootQueryRef={viewerData}
+          onClose={() => setInviteUserOpen(false)}
+          courseId={courseContext.courseId}
+        />
+      )}
     </HStack>
   );
 };

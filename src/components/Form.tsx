@@ -5,7 +5,7 @@ import Button from './Button';
 import { theme } from '../theme';
 import { FormErrors } from '../types';
 
-export interface FormInputFieldData<T> {
+export interface FormInputFieldData {
   label: string;
   readError: (errors: FormikErrors<FormikValues>) => string | undefined;
   isFieldEnabled?: boolean;
@@ -29,7 +29,7 @@ export interface OnCancelFormData {
 export interface FormData<T> {
   initialValues: T;
   validateForm: (values: T) => FormErrors<T>;
-  inputFields: FormInputFieldData<any>[];
+  inputFields: FormInputFieldData[];
   onSubmitForm: OnSubmitFormData;
   onCancelForm: OnCancelFormData;
   buttonsEnabled: boolean;

@@ -9,8 +9,7 @@ import Heading from 'components/Heading';
 import Divider from 'components/Divider';
 import StatCard from 'components/StatCard';
 import GithubStatusCard from 'components/GithubStatusCard';
-
-import { useUserContext } from 'hooks/useUserContext';
+import PageDataContainer from 'components/PageDataContainer';
 
 import CourseInfoQueryDef from 'graphql/CourseInfoQuery';
 
@@ -18,7 +17,6 @@ import type {
   CourseInfoQuery,
   CourseInfoQuery$data,
 } from '__generated__/CourseInfoQuery.graphql';
-import { PageDataContainer } from '../../components/PageDataContainer';
 
 type Props = {
   course: NonNullable<NonNullable<CourseInfoQuery$data['viewer']>['findCourse']>;
@@ -76,7 +74,6 @@ const CourseDashboard = ({ course }: Props) => {
 
 const CourseViewContainer = () => {
   const { courseId } = useParams();
-  const courseContext = useUserContext();
 
   const data = useLazyLoadQuery<CourseInfoQuery>(CourseInfoQueryDef, {
     courseId: courseId || '',

@@ -80,7 +80,14 @@ const App = () => {
         <Route path="profile" element={<UserProfilePage />} />
         <Route path="courses">
           <Route index element={<UserCoursesPage />} />
-          <Route path=":courseId" element={<ContextProvider />}>
+          <Route
+            path=":courseId"
+            element={
+              <ContextProvider>
+                <Outlet />
+              </ContextProvider>
+            }
+          >
             <Route index element={<CoursePage />} />
             <Route path="users" element={<CourseUsersPage />} />
             <Route path="assignments">

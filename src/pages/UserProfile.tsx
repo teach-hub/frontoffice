@@ -9,6 +9,9 @@ import AvatarImage from 'components/AvatarImage';
 import Box from 'components/Box';
 import Heading from 'components/Heading';
 import Navigation from 'components/Navigation';
+import { Form } from 'components/Form';
+import InputField from 'components/InputField';
+import PageDataContainer from 'components/PageDataContainer';
 
 import useToast from 'hooks/useToast';
 
@@ -23,10 +26,8 @@ import {
   UpdateProfileMutation,
   UpdateProfileMutation$data,
 } from '__generated__/UpdateProfileMutation.graphql';
-import { FormErrors, Mutable } from 'types';
-import { Form } from 'components/Form';
-import InputField from '../components/InputField';
-import { PageDataContainer } from '../components/PageDataContainer';
+
+import type { FormErrors, Mutable } from 'types';
 
 type Props = {
   user: UserProfileQuery$data;

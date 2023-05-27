@@ -1,10 +1,9 @@
 import { Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import Navigation from 'components/Navigation';
 import type { AssignmentQuery$data } from '__generated__/AssignmentQuery.graphql';
 import { Flex, Heading, Link, ListItem, Text } from '@chakra-ui/react';
-import { getAssignment } from '../../../graphql/utils/assignments';
+import { getAssignment } from 'graphql/utils/assignments';
 import {
   AlertIcon,
   CalendarIcon,
@@ -12,13 +11,15 @@ import {
   PencilIcon,
   TrashIcon,
 } from '@primer/octicons-react';
-import { formatAsSimpleDateTime } from '../../../utils/dates';
-import { theme } from '../../../theme';
-import { Nullable } from '../../../types';
-import IconButton from '../../../components/IconButton';
-import { PageDataContainer } from '../../../components/PageDataContainer';
-import { List } from '../../../components/List';
-import { ListIcon } from '../../../components/ListIcon';
+import { formatAsSimpleDateTime } from 'utils/dates';
+import { theme } from 'theme';
+import { Nullable } from 'types';
+
+import Navigation from 'components/Navigation';
+import IconButton from 'components/IconButton';
+import PageDataContainer from 'components/PageDataContainer';
+import List from 'components/List';
+import ListIcon from 'components/ListIcon';
 
 type AssignmentDashboard = NonNullable<AssignmentQuery$data['findAssignment']>;
 
