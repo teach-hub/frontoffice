@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import type { AssignmentQuery$data } from '__generated__/AssignmentQuery.graphql';
 import { Flex, Heading, Link, ListItem, Text } from '@chakra-ui/react';
 import { getAssignment } from 'graphql/utils/assignments';
 import {
@@ -15,16 +14,21 @@ import { formatAsSimpleDateTime } from 'utils/dates';
 import { theme } from 'theme';
 import { Nullable } from 'types';
 
+import { useUserContext, Permission } from 'hooks/useUserCourseContext';
+
 import Navigation from 'components/Navigation';
 import IconButton from 'components/IconButton';
 import PageDataContainer from 'components/PageDataContainer';
 import List from 'components/List';
 import ListIcon from 'components/ListIcon';
 
+import type { AssignmentQuery$data } from '__generated__/AssignmentQuery.graphql';
+
 type AssignmentDashboard = NonNullable<AssignmentQuery$data['findAssignment']>;
 
 const AssignmentDashboardPage = ({ assignment }: { assignment: AssignmentDashboard }) => {
   const navigate = useNavigate();
+  const courseContext = useUserContext();
 
   const DateListItem = ({
     date,
@@ -57,13 +61,15 @@ const AssignmentDashboardPage = ({ assignment }: { assignment: AssignmentDashboa
             variant={'ghost'}
             color={theme.colors.teachHub.black}
           />
-          <IconButton /* TODO: TH-114 show based on permissions */
-            onClick={() => navigate(`edit`)}
-            aria-label={'Delete'}
-            icon={<TrashIcon size={'medium'} />}
-            variant={'ghost'}
-            color={theme.colors.teachHub.red}
-          />
+          {courseContext.userHasPermission(Permission.EditAssignment) && (
+            <IconButton
+              onClick={() => navigate(`edit`)}
+              aria-label={'Delete'}
+              icon={<TrashIcon size={'medium'} />}
+              variant={'ghost'}
+              color={theme.colors.teachHub.red}
+            />
+          )}
         </Flex>
       </Flex>
       <Flex direction={'column'} gap={'30px'} width={'50%'} paddingY={'30px'}>
@@ -81,12 +87,13 @@ const AssignmentDashboardPage = ({ assignment }: { assignment: AssignmentDashboa
             text={'Límite de entregas: '}
             itemKey={'endDate'}
           />
-          <ListItem key={'allowLateSubmissions'}>
-            {/* TODO: TH-114 show based on permissions */}
-            <ListIcon icon={AlertIcon} />
-            <span style={{ fontWeight: 'bold' }}>{'Entregas fuera de fecha: '}</span>
-            {assignment.allowLateSubmissions == true ? 'Permitidas' : 'No Permitidas'}
-          </ListItem>
+          {courseContext.userIsTeacher && (
+            <ListItem key={'allowLateSubmissions'}>
+              <ListIcon icon={AlertIcon} />
+              <span style={{ fontWeight: 'bold' }}>{'Entregas fuera de fecha: '}</span>
+              {assignment.allowLateSubmissions == true ? 'Permitidas' : 'No Permitidas'}
+            </ListItem>
+          )}
           {assignment.link ? (
             <ListItem key={'link'}>
               <ListIcon icon={LinkExternalIcon} />

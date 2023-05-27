@@ -62,9 +62,7 @@ const AssignmentsPage = () => {
             boxSize={'65px'}
             borderRadius={'full'}
             aria-label="Add"
-            onClick={() =>
-              navigate(`create`)
-            } /* TODO: TH-114 show based on permissions */
+            onClick={() => navigate(`create`)}
           />
         </Box>
       )}

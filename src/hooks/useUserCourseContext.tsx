@@ -12,6 +12,7 @@ export enum Permission {
   InviteUser = 'inviteUser',
   SubmitAssignment = 'submitAssignment',
   CreateAssignment = 'createAssignment',
+  EditAssignment = 'editAssignment',
 }
 
 type EmptyContext = {
