@@ -30,6 +30,8 @@ const ProtectedLayout = ({ children }: { children: JSX.Element }): JSX.Element =
   const [token] = useLocalStorage('token', null);
   const location = useLocation();
 
+  console.log('hey');
+
   return isAuthenticated(token) ? (
     children
   ) : (
