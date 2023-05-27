@@ -70,7 +70,7 @@ const Provider = ({
   });
 
   return (
-    <CourseContext.Provider value={courseContext}>;{children}</CourseContext.Provider>
+    <CourseContext.Provider value={courseContext}>{children}</CourseContext.Provider>
   );
 };
 
