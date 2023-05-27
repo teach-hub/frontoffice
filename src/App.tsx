@@ -22,7 +22,7 @@ import LoginPage from 'pages/Login';
 import AssignmentPage from 'pages/courses/assignments/AssignmentDashboard';
 import InvitePage from 'pages/Invite';
 
-import { ContextProvider } from 'hooks/useUserContext';
+import { ContextProvider } from 'hooks/useUserCourseContext';
 import { useLocalStorage } from 'hooks/useLocalStorage';
 import { isAuthenticated } from 'auth/utils';
 

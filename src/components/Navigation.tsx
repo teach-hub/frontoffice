@@ -16,7 +16,7 @@ import HomeButton from 'components/HomeButton';
 import { theme } from 'theme';
 
 import { useLocalStorage } from 'hooks/useLocalStorage';
-import { useUserContext, Permission } from 'hooks/useUserContext';
+import { useUserContext, Permission } from 'hooks/useUserCourseContext';
 import useToast from 'hooks/useToast';
 
 import InviteUserModal from 'layout/InviteUserModal';
