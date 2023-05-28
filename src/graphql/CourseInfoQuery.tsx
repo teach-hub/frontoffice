@@ -8,6 +8,7 @@ export default graphql`
       findCourse(id: $courseId) {
         id
         name
+        organization
         studentsCount
         teachersCount
         assignments {
@@ -17,6 +18,9 @@ export default graphql`
           id
           name
         }
+      }
+      availableOrganizations {
+        names
       }
     }
   }

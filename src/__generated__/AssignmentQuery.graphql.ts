@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4b26ae039c4b72209bca23fafabad5e5>>
+ * @generated SignedSource<<203224aa79a367efcd5a8156c74095fd>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,7 +16,7 @@ export type AssignmentQuery$data = {
   readonly findAssignment: {
     readonly active: boolean | null;
     readonly allowLateSubmissions: boolean | null;
-    readonly courseId: string | null;
+    readonly courseId: string;
     readonly description: string | null;
     readonly endDate: string | null;
     readonly id: string;

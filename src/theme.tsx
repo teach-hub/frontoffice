@@ -1,4 +1,4 @@
-import { extendTheme } from '@chakra-ui/react'; // const solid = defineStyle({
+import { extendTheme } from '@chakra-ui/react';
 
 export const theme = extendTheme({
   config: {
@@ -8,6 +8,7 @@ export const theme = extendTheme({
   fonts: {
     heading: `'Lato', sans-serif`,
     body: `'Lato', sans-serif`,
+    defaultSize: 'xl',
   },
   colors: {
     teachHub: {
@@ -22,13 +23,13 @@ export const theme = extendTheme({
     },
   },
   styles: {
-    global: () => ({
+    global: {
       body: {
         color: 'default',
         bg: 'teachHub.secondary',
         fontSize: 'xl',
       },
-    }),
+    },
   },
   components: {
     Button: {

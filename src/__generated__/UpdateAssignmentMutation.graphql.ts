@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a185af4f954fcbb51332491ebc76b9dd>>
+ * @generated SignedSource<<ad71b6d8f836df5833b7d96df563457f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -24,7 +24,7 @@ export type UpdateAssignmentMutation$data = {
   readonly updateAssignment: {
     readonly active: boolean | null;
     readonly allowLateSubmissions: boolean | null;
-    readonly courseId: string | null;
+    readonly courseId: string;
     readonly description: string | null;
     readonly endDate: string | null;
     readonly id: string;
