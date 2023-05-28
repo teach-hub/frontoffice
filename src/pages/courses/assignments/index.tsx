@@ -2,24 +2,30 @@ import { Suspense } from 'react';
 import { Link as ReachLink, useNavigate, useParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
-import Navigation from 'components/Navigation';
-import Box from 'components/Box';
+import { AddIcon } from '@chakra-ui/icons';
 
 import CourseAssignmentsQueryDef from 'graphql/CourseAssignmentsQuery';
-import type { CourseAssignmentsQuery } from '__generated__/CourseAssignmentsQuery.graphql';
-import { PageDataContainer } from '../../../components/PageDataContainer';
-import { List } from '../../../components/List';
 import { Flex, Heading, Link, ListItem } from '@chakra-ui/react';
 import { TasklistIcon } from '@primer/octicons-react';
+
 import { formatAsSimpleDate } from 'utils/dates';
-import IconButton from '../../../components/IconButton';
-import { AddIcon } from '@chakra-ui/icons';
-import { ListIcon } from '../../../components/ListIcon';
-import Text from '../../../components/Text';
+
+import { useUserContext, Permission } from 'hooks/useUserCourseContext';
+
+import PageDataContainer from 'components/PageDataContainer';
+import List from 'components/List';
+import Navigation from 'components/Navigation';
+import Box from 'components/Box';
+import IconButton from 'components/IconButton';
+import ListIcon from 'components/ListIcon';
+import Text from 'components/Text';
+
+import type { CourseAssignmentsQuery } from '__generated__/CourseAssignmentsQuery.graphql';
 
 const AssignmentsPage = () => {
   const navigate = useNavigate();
   const params = useParams();
+  const courseContext = useUserContext();
 
   const data = useLazyLoadQuery<CourseAssignmentsQuery>(CourseAssignmentsQueryDef, {
     courseId: params.courseId || '',
@@ -49,15 +55,17 @@ const AssignmentsPage = () => {
         )}
       </Flex>
 
-      <Box position="fixed" bottom="30px" right="30px">
-        <IconButton
-          icon={<AddIcon boxSize={'50%'} />}
-          boxSize={'65px'}
-          borderRadius={'full'}
-          aria-label="Add"
-          onClick={() => navigate(`create`)} /* TODO: TH-114 show based on permissions */
-        />
-      </Box>
+      {courseContext.userHasPermission(Permission.CreateAssignment) && (
+        <Box position="fixed" bottom="30px" right="30px">
+          <IconButton
+            icon={<AddIcon boxSize={'50%'} />}
+            boxSize={'65px'}
+            borderRadius={'full'}
+            aria-label="Add"
+            onClick={() => navigate(`create`)}
+          />
+        </Box>
+      )}
     </PageDataContainer>
   );
 };

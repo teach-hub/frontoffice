@@ -10,14 +10,15 @@ import Heading from 'components/Heading';
 import Box from 'components/Box';
 import Navigation from 'components/Navigation';
 import Card from 'components/Card';
+import PageDataContainer from 'components/PageDataContainer';
 
 import UserCoursesQueryDef from 'graphql/UserCoursesQuery';
 import {
   UserCoursesQuery,
   UserCoursesQuery$data,
 } from '__generated__/UserCoursesQuery.graphql';
-import { theme } from '../../theme';
-import { PageDataContainer } from '../../components/PageDataContainer';
+
+import { theme } from 'theme';
 
 type Viewer = NonNullable<UserCoursesQuery$data['viewer']>;
 

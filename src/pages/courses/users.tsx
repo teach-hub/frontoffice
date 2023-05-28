@@ -34,12 +34,12 @@ const UsersList = ({
   nameFilter: string | null;
 }): JSX.Element => {
   let filteredUserRoles = userRoles.filter(userRole => {
-    const roleName: string = userRole?.role.name || '';
+    const userIsTeacher: boolean = userRole?.role.isTeacher || false;
 
     if (roleFilter === 'student') {
-      return ['Alumno'].includes(roleName);
+      return !userIsTeacher;
     } else if (roleFilter === 'teacher') {
-      return ['Profesor', 'JTP', 'Ayudante'].includes(roleName);
+      return userIsTeacher;
     }
     return true;
   });

@@ -9,6 +9,7 @@ import Heading from 'components/Heading';
 import Divider from 'components/Divider';
 import StatCard from 'components/StatCard';
 import GithubStatusCard from 'components/GithubStatusCard';
+import PageDataContainer from 'components/PageDataContainer';
 
 import CourseInfoQueryDef from 'graphql/CourseInfoQuery';
 
@@ -16,7 +17,6 @@ import type {
   CourseInfoQuery,
   CourseInfoQuery$data,
 } from '__generated__/CourseInfoQuery.graphql';
-import { PageDataContainer } from '../../components/PageDataContainer';
 
 type Props = {
   course: NonNullable<NonNullable<CourseInfoQuery$data['viewer']>['findCourse']>;
@@ -83,7 +83,9 @@ const CourseViewContainer = () => {
     return null;
   }
 
-  return <CourseDashboard course={data.viewer.findCourse} />;
+  const course = data.viewer.findCourse;
+
+  return <CourseDashboard course={course} />;
 };
 
 export default () => {

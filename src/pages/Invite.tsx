@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useMutation } from 'react-relay';
 import { useNavigate, useParams } from 'react-router-dom';
 

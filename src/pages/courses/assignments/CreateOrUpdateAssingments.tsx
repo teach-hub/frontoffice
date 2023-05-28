@@ -1,28 +1,32 @@
+import { Suspense } from 'react';
+import { useMutation } from 'react-relay';
 import { Checkbox, Flex, Textarea } from '@chakra-ui/react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Form } from 'components/Form';
-import { FormErrors, Mutable, Nullable } from '../../../types';
-import { Suspense } from 'react';
-import Navigation from '../../../components/Navigation';
-import Heading from '../../../components/Heading';
-import InputField from '../../../components/InputField';
-import { theme } from '../../../theme';
-import CreateAssignmentMutationDef from '../../../graphql/CreateAssignmentMutation';
-import UpdateAssignmentMutationDef from '../../../graphql/UpdateAssignmentMutation';
+
+import { FormErrors, Mutable, Nullable } from 'types';
+import { theme } from 'theme';
+
+import CreateAssignmentMutationDef from 'graphql/CreateAssignmentMutation';
+import UpdateAssignmentMutationDef from 'graphql/UpdateAssignmentMutation';
+import { getAssignment } from 'graphql/utils/assignments';
 import {
   CreateAssignmentMutation,
   CreateAssignmentMutation$data,
-} from '../../../__generated__/CreateAssignmentMutation.graphql';
+} from '__generated__/CreateAssignmentMutation.graphql';
 import {
   UpdateAssignmentMutation,
   UpdateAssignmentMutation$data,
-} from '../../../__generated__/UpdateAssignmentMutation.graphql';
-import { useMutation } from 'react-relay';
-import useToast from '../../../hooks/useToast';
-import DateInputField from '../../../components/DateInputField';
-import { formatDateAsLocaleIsoString } from '../../../utils/dates';
-import { getAssignment } from '../../../graphql/utils/assignments';
-import { PageDataContainer } from '../../../components/PageDataContainer';
+} from '__generated__/UpdateAssignmentMutation.graphql';
+
+import useToast from 'hooks/useToast';
+import { formatDateAsLocaleIsoString } from 'utils/dates';
+
+import { Form } from 'components/Form';
+import DateInputField from 'components/DateInputField';
+import Navigation from 'components/Navigation';
+import Heading from 'components/Heading';
+import InputField from 'components/InputField';
+import PageDataContainer from 'components/PageDataContainer';
 
 type AssignmentData = {
   id?: Nullable<string>;
@@ -39,10 +43,12 @@ const CreateOrUpdateAssignmentsPage = () => {
   const { assignmentId, courseId } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
-  const [commitCreateAssignment, isCreateAssignmentMutationInFlight] =
-    useMutation<CreateAssignmentMutation>(CreateAssignmentMutationDef);
-  const [commitUpdateAssignment, isUpdateAssignmentMutationInFlight] =
-    useMutation<UpdateAssignmentMutation>(UpdateAssignmentMutationDef);
+  const [commitCreateAssignment] = useMutation<CreateAssignmentMutation>(
+    CreateAssignmentMutationDef
+  );
+  const [commitUpdateAssignment] = useMutation<UpdateAssignmentMutation>(
+    UpdateAssignmentMutationDef
+  );
 
   const initialValues: AssignmentData = {};
 

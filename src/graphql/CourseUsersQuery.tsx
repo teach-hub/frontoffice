@@ -20,6 +20,7 @@ export default graphql`
           role {
             id
             name
+            isTeacher
             permissions
           }
         }

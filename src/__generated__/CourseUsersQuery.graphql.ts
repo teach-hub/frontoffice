@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<665ea277d6a397aed5a8f91f203f89e5>>
+ * @generated SignedSource<<f38fe401bdd2890cf22d8b5e74ff1183>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -21,6 +21,7 @@ export type CourseUsersQuery$data = {
         readonly id: string;
         readonly role: {
           readonly id: string;
+          readonly isTeacher: boolean;
           readonly name: string;
           readonly permissions: ReadonlyArray<string | null> | null;
         };
@@ -148,6 +149,13 @@ v3 = [
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
+                    "name": "isTeacher",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
                     "name": "permissions",
                     "storageKey": null
                   }
@@ -182,16 +190,16 @@ return {
     "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "245d1bacd788e5d9c6309e8f8880a3c7",
+    "cacheID": "f449f39dbf08837575905f33721c63e9",
     "id": null,
     "metadata": {},
     "name": "CourseUsersQuery",
     "operationKind": "query",
-    "text": "query CourseUsersQuery(\n  $courseId: String!\n) {\n  viewer {\n    id\n    name\n    findCourse(id: $courseId) {\n      id\n      name\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          permissions\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query CourseUsersQuery(\n  $courseId: String!\n) {\n  viewer {\n    id\n    name\n    findCourse(id: $courseId) {\n      id\n      name\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          isTeacher\n          permissions\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f6bccbe4fbdf1064d5492d6686361146";
+(node as any).hash = "b672836d3fa31c00c37b9577fd65d321";
 
 export default node;
