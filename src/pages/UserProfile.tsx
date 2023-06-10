@@ -50,7 +50,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
 
     if (!errors?.length) {
       if (response.updateUser) {
-        // @ts-expect-error
+        // @ts-expect-error: FIXME
         setResult({ ...response.updateUser, id: queryResult.id });
       }
       toast({
