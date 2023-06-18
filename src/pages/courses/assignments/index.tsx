@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Link as ReachLink, useNavigate, useParams } from 'react-router-dom';
+import { Link as ReachLink, useNavigate } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
 import { AddIcon } from '@chakra-ui/icons';

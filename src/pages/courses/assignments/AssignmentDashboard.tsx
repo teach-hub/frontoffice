@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
+import { Link as RRLink, useNavigate, useParams } from 'react-router-dom';
 
 import { Flex, Link, ListItem } from '@chakra-ui/react';
 import {
@@ -125,6 +125,10 @@ const AssignmentDashboardPage = ({
           ) : (
             <></>
           )}
+          <ListItem>
+            <ListIcon icon={LinkExternalIcon} />
+            <RRLink to={'submissions'}>Ver entregas</RRLink>
+          </ListItem>
         </List>
       </Flex>
     </PageDataContainer>
