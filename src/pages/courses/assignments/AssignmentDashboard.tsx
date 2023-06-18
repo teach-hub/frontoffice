@@ -51,20 +51,22 @@ const AssignmentDashboardPage = ({ assignment }: { assignment: AssignmentDashboa
       <Flex align={'center'}>
         <Heading>{assignment.title}</Heading>
         <Flex marginLeft={'40px'} gap={'20px'}>
-          <IconButton
-            onClick={() =>
-              /*TODO: TH-93 Delete assignments (with a confirmation pop up) */
-              navigate(`edit`)
-            }
-            aria-label={'Edit'}
-            icon={<PencilIcon size={'medium'} />}
-            variant={'ghost'}
-            color={theme.colors.teachHub.black}
-          />
+          {courseContext.userHasPermission(Permission.DeleteAssignment) && (
+            <IconButton
+              onClick={() =>
+                /*TODO: TH-93 Delete assignments (with a confirmation pop up) */
+                navigate(`edit`)
+              }
+              aria-label={'Delete'}
+              icon={<PencilIcon size={'medium'} />}
+              variant={'ghost'}
+              color={theme.colors.teachHub.black}
+            />
+          )}
           {courseContext.userHasPermission(Permission.EditAssignment) && (
             <IconButton
               onClick={() => navigate(`edit`)}
-              aria-label={'Delete'}
+              aria-label={'Edit'}
               icon={<TrashIcon size={'medium'} />}
               variant={'ghost'}
               color={theme.colors.teachHub.red}
@@ -124,10 +126,10 @@ const AssignmentPageContainer = () => {
 
 export default () => {
   return (
-    <Suspense fallback={<div>Cargando...</div>}>
-      <Navigation>
+    <Navigation>
+      <Suspense fallback={'Cargando datos'}>
         <AssignmentPageContainer />
-      </Navigation>
-    </Suspense>
+      </Suspense>
+    </Navigation>
   );
 };

@@ -1,5 +1,5 @@
 import { ChangeEvent, Suspense, useState } from 'react';
-import { createSearchParams, useNavigate, useParams } from 'react-router-dom';
+import { createSearchParams, useNavigate } from 'react-router-dom';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 
 import {
@@ -24,26 +24,30 @@ import {
   PersonIcon,
   TerminalIcon,
 } from '@primer/octicons-react';
+
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
 import Divider from 'components/Divider';
 import StatCard from 'components/StatCard';
+import Button from 'components/Button';
+import Box from 'components/Box';
+import PageDataContainer from 'components/PageDataContainer';
 
+import CourseSetOrganizationMutationDef from 'graphql/CourseSetOrganizationMutation';
 import CourseInfoQueryDef from 'graphql/CourseInfoQuery';
+
+import useToast from 'hooks/useToast';
+import { useUserContext } from 'hooks/useUserCourseContext';
 
 import type {
   CourseInfoQuery,
   CourseInfoQuery$data,
 } from '__generated__/CourseInfoQuery.graphql';
-import PageDataContainer from 'components/PageDataContainer';
-import Button from '../../components/Button';
-import {
+
+import type {
   CourseSetOrganizationMutation,
   CourseSetOrganizationMutation$data,
-} from '../../__generated__/CourseSetOrganizationMutation.graphql';
-import CourseSetOrganizationMutationDef from '../../graphql/CourseSetOrganizationMutation';
-import useToast from '../../hooks/useToast';
-import Box from '../../components/Box';
+} from '__generated__/CourseSetOrganizationMutation.graphql';
 
 type Props = {
   course: NonNullable<NonNullable<CourseInfoQuery$data['viewer']>['findCourse']>;
@@ -58,8 +62,9 @@ const CourseStatistics = ({ course, availableOrganizations }: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const defaultOrganizationName = () => course.organization || '';
   const [organizationName, setOrganizationName] = useState(defaultOrganizationName());
-  const [commitCourseSetOrganization, isCourseSetOrganizationInFlight] =
-    useMutation<CourseSetOrganizationMutation>(CourseSetOrganizationMutationDef);
+  const [commitCourseSetOrganization] = useMutation<CourseSetOrganizationMutation>(
+    CourseSetOrganizationMutationDef
+  );
 
   const handleOrganizationChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setOrganizationName(event.target.value);
@@ -195,7 +200,7 @@ const CourseStatistics = ({ course, availableOrganizations }: Props) => {
 };
 
 const CourseViewContainer = () => {
-  const { courseId } = useParams();
+  const { courseId } = useUserContext();
 
   const data = useLazyLoadQuery<CourseInfoQuery>(CourseInfoQueryDef, {
     courseId: courseId || '',
@@ -221,10 +226,10 @@ const CourseViewContainer = () => {
 
 export default () => {
   return (
-    <Suspense fallback={<div>Cargando...</div>}>
-      <Navigation>
+    <Navigation>
+      <Suspense>
         <CourseViewContainer />
-      </Navigation>
-    </Suspense>
+      </Suspense>
+    </Navigation>
   );
 };

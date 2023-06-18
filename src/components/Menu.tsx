@@ -21,14 +21,15 @@ const Menu = ({ content: { menuButton, items } }: Props): JSX.Element => {
   return (
     <ChakraMenu>
       <ChakraMenuButton>{menuButton}</ChakraMenuButton>
-      <ChakraMenuList>
-        {items &&
-          items.map((item, i) => (
+      {items.length > 0 && (
+        <ChakraMenuList>
+          {items.map((item, i) => (
             <ChakraMenuItem key={i} onClick={item.action}>
               {item.content}
             </ChakraMenuItem>
           ))}
-      </ChakraMenuList>
+        </ChakraMenuList>
+      )}
     </ChakraMenu>
   );
 };

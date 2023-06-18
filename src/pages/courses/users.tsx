@@ -14,9 +14,11 @@ import Button from 'components/Button';
 import Table from 'components/Table';
 import Text from 'components/Text';
 
-import { CourseUsersQuery } from '__generated__/CourseUsersQuery.graphql';
+import { useUserContext } from 'hooks/useUserCourseContext';
 
 import CourseUsersQueryDef from 'graphql/CourseUsersQuery';
+
+import type { CourseUsersQuery } from '__generated__/CourseUsersQuery.graphql';
 
 type Course = NonNullable<
   NonNullable<CourseUsersQuery['response']['viewer']>['findCourse']
@@ -94,7 +96,8 @@ const UsersList = ({
 };
 
 const UsersContainer = () => {
-  const { courseId } = useParams();
+  const { courseId } = useUserContext();
+
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
 
@@ -157,10 +160,10 @@ const UsersContainer = () => {
 
 export default () => {
   return (
-    <Suspense fallback={<div>Cargando...</div>}>
-      <Navigation>
+    <Navigation>
+      <Suspense>
         <UsersContainer />
-      </Navigation>
-    </Suspense>
+      </Suspense>
+    </Navigation>
   );
 };

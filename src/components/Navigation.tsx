@@ -1,9 +1,9 @@
-import { ReactNode, useState } from 'react';
+import { Suspense, ReactNode, useState } from 'react';
 import { Link as ReachLink, useNavigate, useParams } from 'react-router-dom';
 
 import { graphql } from 'babel-plugin-relay/macro';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
-import { Link, HStack } from '@chakra-ui/react';
+import { Skeleton, SkeletonCircle, Link, HStack } from '@chakra-ui/react';
 import { AddIcon, ChevronDownIcon } from '@chakra-ui/icons';
 
 import Box from 'components/Box';
@@ -166,10 +166,47 @@ const NavigationBar = () => {
   );
 };
 
+const LoadingNavigationBar = () => {
+  return (
+    <HStack
+      spacing="25px"
+      shadow="lg"
+      direction="row"
+      bg={theme.colors.teachHub.secondary}
+      position="fixed"
+      paddingX="1.5%"
+      width="100%"
+      top="0px"
+      left="0px"
+      right="0px"
+      zIndex="1px"
+      height={`${NAVIGATION_HEIGHT_PX}px`}
+    >
+      <HomeButton w="60px" h="70px" />
+      <Divider borderColor={theme.colors.teachHub.primary} h="75%" />
+
+      <HStack flex="1">
+        <Skeleton flex="1" height={'30px'} />
+        <Skeleton flex="1" height={'30px'} />
+        <Skeleton flex="1" height={'30px'} />
+      </HStack>
+
+      <Menu
+        content={{
+          menuButton: <SkeletonCircle />,
+          items: [],
+        }}
+      />
+    </HStack>
+  );
+};
+
 const Navigation = ({ children }: { children: ReactNode }): JSX.Element => {
   return (
     <>
-      <NavigationBar />
+      <Suspense fallback={<LoadingNavigationBar />}>
+        <NavigationBar />
+      </Suspense>
       <Box
         w="100%"
         h="100%"
