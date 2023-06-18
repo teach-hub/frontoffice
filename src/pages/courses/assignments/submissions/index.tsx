@@ -41,6 +41,9 @@ const SubmissionsPage = () => {
           headers={['Alumno', 'Email', 'Fecha entrega', '']}
           rowOptions={submissions.map(s => {
             return {
+              rowProps: {
+                onClick: () => navigate(s.id),
+              },
               content: [
                 `${s.user.name} ${s.user.lastName}`,
                 s.description,
