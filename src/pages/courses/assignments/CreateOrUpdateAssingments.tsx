@@ -271,10 +271,10 @@ const CreateOrUpdateAssignmentsPage = () => {
 
 export default () => {
   return (
-    <Suspense fallback={<div> Cargando... </div>}>
-      <Navigation>
+    <Navigation>
+      <Suspense>
         <CreateOrUpdateAssignmentsPage />
-      </Navigation>
-    </Suspense>
+      </Suspense>
+    </Navigation>
   );
 };

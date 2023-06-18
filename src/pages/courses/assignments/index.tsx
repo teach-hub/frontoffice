@@ -31,7 +31,7 @@ const AssignmentsPage = () => {
     courseId: courseContext.courseId || '',
   });
 
-  const assignments = data.viewer?.findCourse?.assignments || [];
+  const assignments = data.viewer?.course?.assignments || [];
   const hasAssignments = assignments.length !== 0;
 
   return (

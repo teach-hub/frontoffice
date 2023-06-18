@@ -1,11 +1,11 @@
 import { graphql } from 'babel-plugin-relay/macro';
 
 export default graphql`
-  query CourseUsersQuery($courseId: String!) {
+  query CourseUsersQuery($courseId: ID!) {
     viewer {
       id
       name
-      findCourse(id: $courseId) {
+      course(id: $courseId) {
         id
         name
         userRoles {

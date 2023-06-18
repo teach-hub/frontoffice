@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ad71b6d8f836df5833b7d96df563457f>>
+ * @generated SignedSource<<78dded678316a7eff4e5c7313e54715f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -244,16 +244,16 @@ return {
     "selections": (v9/*: any*/)
   },
   "params": {
-    "cacheID": "6a9a11a490e58d658fa2c40634d83eda",
+    "cacheID": "af15acad126a2214533566120a8b8f56",
     "id": null,
     "metadata": {},
     "name": "UpdateAssignmentMutation",
     "operationKind": "mutation",
-    "text": "mutation UpdateAssignmentMutation(\n  $id: ID!\n  $title: String\n  $description: String\n  $startDate: String\n  $endDate: String\n  $link: String\n  $allowLateSubmissions: Boolean\n  $active: Boolean\n  $courseId: String!\n) {\n  updateAssignment(id: $id, title: $title, description: $description, startDate: $startDate, endDate: $endDate, link: $link, allowLateSubmissions: $allowLateSubmissions, active: $active, courseId: $courseId) {\n    id\n    title\n    description\n    startDate\n    endDate\n    link\n    allowLateSubmissions\n    courseId\n    active\n  }\n}\n"
+    "text": "mutation UpdateAssignmentMutation(\n  $id: ID!\n  $title: String\n  $description: String\n  $startDate: String\n  $endDate: String\n  $link: String\n  $allowLateSubmissions: Boolean\n  $active: Boolean\n  $courseId: ID!\n) {\n  updateAssignment(id: $id, title: $title, description: $description, startDate: $startDate, endDate: $endDate, link: $link, allowLateSubmissions: $allowLateSubmissions, active: $active, courseId: $courseId) {\n    id\n    title\n    description\n    startDate\n    endDate\n    link\n    allowLateSubmissions\n    courseId\n    active\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "92dfa5bd31cead6ec64f359ec6f5bee9";
+(node as any).hash = "04974e3f2a28eb92c29ae69c2484e1bd";
 
 export default node;

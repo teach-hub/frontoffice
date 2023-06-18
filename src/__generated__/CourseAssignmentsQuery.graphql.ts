@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ee2cb18dbc417c208e2fb9da1a30582c>>
+ * @generated SignedSource<<59b04848b828cc49e75d08e9da9a6554>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,7 @@ export type CourseAssignmentsQuery$variables = {
 };
 export type CourseAssignmentsQuery$data = {
   readonly viewer: {
-    readonly findCourse: {
+    readonly course: {
       readonly assignments: ReadonlyArray<{
         readonly endDate: string | null;
         readonly id: string;
@@ -74,7 +74,7 @@ v2 = [
         ],
         "concreteType": "CourseType",
         "kind": "LinkedField",
-        "name": "findCourse",
+        "name": "course",
         "plural": false,
         "selections": [
           (v1/*: any*/),
@@ -129,16 +129,16 @@ return {
     "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "e391dee5b5841c49ff9fa92c1372c102",
+    "cacheID": "9c31873fa02da03b0dae6a3996779b21",
     "id": null,
     "metadata": {},
     "name": "CourseAssignmentsQuery",
     "operationKind": "query",
-    "text": "query CourseAssignmentsQuery(\n  $courseId: String!\n) {\n  viewer {\n    id\n    name\n    findCourse(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n        endDate\n      }\n    }\n  }\n}\n"
+    "text": "query CourseAssignmentsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n        endDate\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "459df1abf77023940ef30d1bec8fc2ed";
+(node as any).hash = "251a1b101c5abce66b49a72fa68a96aa";
 
 export default node;

@@ -8,7 +8,7 @@ export default graphql`
     $endDate: String
     $link: String
     $allowLateSubmissions: Boolean
-    $courseId: String!
+    $courseId: ID!
   ) {
     createAssignment(
       title: $title

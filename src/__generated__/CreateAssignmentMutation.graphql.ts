@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<350e8c97e01012ebb638076234f110f8>>
+ * @generated SignedSource<<944837e8a9ad131c9493222451741fc5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -210,16 +210,16 @@ return {
     "selections": (v7/*: any*/)
   },
   "params": {
-    "cacheID": "eaed1b3758d074b11184b253db1db90f",
+    "cacheID": "5091a6cfbcb17d90812d243f83f1a195",
     "id": null,
     "metadata": {},
     "name": "CreateAssignmentMutation",
     "operationKind": "mutation",
-    "text": "mutation CreateAssignmentMutation(\n  $title: String\n  $description: String\n  $startDate: String\n  $endDate: String\n  $link: String\n  $allowLateSubmissions: Boolean\n  $courseId: String!\n) {\n  createAssignment(title: $title, description: $description, startDate: $startDate, endDate: $endDate, link: $link, allowLateSubmissions: $allowLateSubmissions, courseId: $courseId) {\n    id\n    title\n    description\n    startDate\n    endDate\n    link\n    allowLateSubmissions\n    courseId\n  }\n}\n"
+    "text": "mutation CreateAssignmentMutation(\n  $title: String\n  $description: String\n  $startDate: String\n  $endDate: String\n  $link: String\n  $allowLateSubmissions: Boolean\n  $courseId: ID!\n) {\n  createAssignment(title: $title, description: $description, startDate: $startDate, endDate: $endDate, link: $link, allowLateSubmissions: $allowLateSubmissions, courseId: $courseId) {\n    id\n    title\n    description\n    startDate\n    endDate\n    link\n    allowLateSubmissions\n    courseId\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f1e89e8e4e8ee420b1c24a38e304be93";
+(node as any).hash = "9b2a852b5e21c542dc14b3f07afdd4e3";
 
 export default node;

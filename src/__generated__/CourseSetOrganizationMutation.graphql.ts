@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<17f6ceae91f0de8ac2520b95a105961a>>
+ * @generated SignedSource<<f0d404e74b7c40020baaec665ee0f14b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -97,16 +97,16 @@ return {
     "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "b6685ef2855f3b7fbc9cc6745caf5d09",
+    "cacheID": "40f5e3d77df5184e1487a240fe302871",
     "id": null,
     "metadata": {},
     "name": "CourseSetOrganizationMutation",
     "operationKind": "mutation",
-    "text": "mutation CourseSetOrganizationMutation(\n  $organizationName: String!\n  $courseId: String!\n) {\n  setOrganization(organizationName: $organizationName, courseId: $courseId) {\n    id\n    organization\n  }\n}\n"
+    "text": "mutation CourseSetOrganizationMutation(\n  $organizationName: String!\n  $courseId: ID!\n) {\n  setOrganization(organizationName: $organizationName, courseId: $courseId) {\n    id\n    organization\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "ecb4a582588b68e99b449ad671be2edd";
+(node as any).hash = "80d2badb7c322b62b71726cd412e5d6b";
 
 export default node;

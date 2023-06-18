@@ -50,7 +50,7 @@ import type {
 } from '__generated__/CourseSetOrganizationMutation.graphql';
 
 type Props = {
-  course: NonNullable<NonNullable<CourseInfoQuery$data['viewer']>['findCourse']>;
+  course: NonNullable<NonNullable<CourseInfoQuery$data['viewer']>['course']>;
   availableOrganizations: NonNullable<
     CourseInfoQuery$data['viewer']
   >['availableOrganizations'];
@@ -206,11 +206,11 @@ const CourseViewContainer = () => {
     courseId: courseId || '',
   });
 
-  if (!data.viewer || !data.viewer.findCourse) {
+  if (!data.viewer || !data.viewer.course) {
     return null;
   }
 
-  const course = data.viewer.findCourse;
+  const course = data.viewer.course;
   const availableOrganizations = data.viewer.availableOrganizations;
 
   return (

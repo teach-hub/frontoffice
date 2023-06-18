@@ -10,7 +10,7 @@ export default graphql`
     $link: String
     $allowLateSubmissions: Boolean
     $active: Boolean
-    $courseId: String!
+    $courseId: ID!
   ) {
     updateAssignment(
       id: $id

@@ -1,5 +1,5 @@
 import { Suspense, useState } from 'react';
-import { useSearchParams, useParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
 import { KebabHorizontalIcon, PersonIcon, AlertIcon } from '@primer/octicons-react';
@@ -20,9 +20,7 @@ import CourseUsersQueryDef from 'graphql/CourseUsersQuery';
 
 import type { CourseUsersQuery } from '__generated__/CourseUsersQuery.graphql';
 
-type Course = NonNullable<
-  NonNullable<CourseUsersQuery['response']['viewer']>['findCourse']
->;
+type Course = NonNullable<NonNullable<CourseUsersQuery['response']['viewer']>['course']>;
 
 type CourseUserRole = NonNullable<Course['userRoles']>[number];
 
@@ -109,7 +107,7 @@ const UsersContainer = () => {
 
   if (!data?.viewer?.id) return null;
 
-  const course = data.viewer.findCourse;
+  const course = data.viewer.course;
 
   if (!course?.userRoles) {
     return null;

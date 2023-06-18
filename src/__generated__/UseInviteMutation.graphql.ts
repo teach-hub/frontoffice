@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9b1bbeb0f030793ebfee246f38bab35a>>
+ * @generated SignedSource<<64defcb25f3b64a4121c9f866584d68d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -74,16 +74,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "1d3380fe076820a251ebc8220efc3fa3",
+    "cacheID": "5a245c6af5d28aeefb4ef55829dbfce2",
     "id": null,
     "metadata": {},
     "name": "UseInviteMutation",
     "operationKind": "mutation",
-    "text": "mutation UseInviteMutation(\n  $inviteId: String!\n) {\n  useInvite(inviteId: $inviteId) {\n    courseId\n  }\n}\n"
+    "text": "mutation UseInviteMutation(\n  $inviteId: ID!\n) {\n  useInvite(inviteId: $inviteId) {\n    courseId\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "0fa47801fa181f69a85c758125c1b31b";
+(node as any).hash = "a0bd24b74685bdceaf9cb68657813f2b";
 
 export default node;
