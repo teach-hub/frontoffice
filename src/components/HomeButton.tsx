@@ -1,8 +1,12 @@
-import { BoxProps, Image as ChakraImage } from '@chakra-ui/react';
+import { SkeletonCircle, BoxProps, Image as ChakraImage } from '@chakra-ui/react';
 
 import Box from 'components/Box';
 
 type Props = BoxProps;
+
+const HomeIconFallback = () => {
+  return <SkeletonCircle boxSize={'60px'} />;
+};
 
 export default (props: Props) => {
   return (
@@ -14,7 +18,10 @@ export default (props: Props) => {
       }}
       {...props}
     >
-      <ChakraImage src={require('../assets/logo_wo_text.png')} />
+      <ChakraImage
+        fallback={<HomeIconFallback />}
+        src={require('../assets/logo_wo_text.png')}
+      />
     </Box>
   );
 };
