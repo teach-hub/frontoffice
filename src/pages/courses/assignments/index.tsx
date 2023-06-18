@@ -5,7 +5,7 @@ import { useLazyLoadQuery } from 'react-relay';
 import { AddIcon } from '@chakra-ui/icons';
 
 import CourseAssignmentsQueryDef from 'graphql/CourseAssignmentsQuery';
-import { Flex, Heading, Link, ListItem } from '@chakra-ui/react';
+import { Flex, Link, ListItem } from '@chakra-ui/react';
 import { TasklistIcon } from '@primer/octicons-react';
 
 import { formatAsSimpleDate } from 'utils/dates';
@@ -19,16 +19,16 @@ import Box from 'components/Box';
 import IconButton from 'components/IconButton';
 import ListIcon from 'components/ListIcon';
 import Text from 'components/Text';
+import Heading from 'components/Heading';
 
 import type { CourseAssignmentsQuery } from '__generated__/CourseAssignmentsQuery.graphql';
 
 const AssignmentsPage = () => {
   const navigate = useNavigate();
-  const params = useParams();
   const courseContext = useUserContext();
 
   const data = useLazyLoadQuery<CourseAssignmentsQuery>(CourseAssignmentsQueryDef, {
-    courseId: params.courseId || '',
+    courseId: courseContext.courseId || '',
   });
 
   const assignments = data.viewer?.findCourse?.assignments || [];
@@ -72,10 +72,10 @@ const AssignmentsPage = () => {
 
 export default () => {
   return (
-    <Suspense fallback={<div>Cargando...</div>}>
-      <Navigation>
+    <Navigation>
+      <Suspense>
         <AssignmentsPage />
-      </Navigation>
-    </Suspense>
+      </Suspense>
+    </Navigation>
   );
 };

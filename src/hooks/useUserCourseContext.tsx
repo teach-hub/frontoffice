@@ -2,6 +2,8 @@ import { Suspense, createContext, useContext, useState } from 'react';
 import { useParams } from 'react-router';
 import { useLazyLoadQuery } from 'react-relay';
 
+import { Stack, Flex, Center, AbsoluteCenter, Spinner } from '@chakra-ui/react';
+
 import CourseContextQuery from 'graphql/CourseContextQuery';
 
 import type { CourseContextQuery as CourseContextQueryData } from '__generated__/CourseContextQuery.graphql';
@@ -13,6 +15,7 @@ export enum Permission {
   SubmitAssignment = 'submitAssignment',
   CreateAssignment = 'createAssignment',
   EditAssignment = 'editAssignment',
+  DeleteAssignment = 'deleteAssignment',
 }
 
 type EmptyContext = {
@@ -74,6 +77,14 @@ const Provider = ({
   );
 };
 
+const LoadingContextFallback = () => {
+  return (
+    <Center margin="100px">
+      <Spinner boxSize="50px" />
+    </Center>
+  );
+};
+
 const ContextProvider = ({ children }: { children: JSX.Element }) => {
   const { courseId } = useParams();
 
@@ -85,7 +96,7 @@ const ContextProvider = ({ children }: { children: JSX.Element }) => {
   console.log(`Provider for course ${courseId} loaded!`);
 
   return (
-    <Suspense fallback={<h1> Loading context ...</h1>}>
+    <Suspense fallback={<LoadingContextFallback />}>
       <Provider courseId={courseId}>{children}</Provider>
     </Suspense>
   );

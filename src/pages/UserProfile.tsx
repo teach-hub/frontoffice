@@ -230,10 +230,10 @@ const UserProfilePageContainer = () => {
 
 export default () => {
   return (
-    <Suspense fallback={<div> Cargando... </div>}>
-      <Navigation>
+    <Navigation>
+      <Suspense>
         <UserProfilePageContainer />
-      </Navigation>
-    </Suspense>
+      </Suspense>
+    </Navigation>
   );
 };
