@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1958fc0083d84bb49010953052f8cb91>>
+ * @generated SignedSource<<e77e158b4c39f399d3913234867ff0fe>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,8 +16,8 @@ export type SubmissionQuery$variables = {
 };
 export type SubmissionQuery$data = {
   readonly viewer: {
-    readonly findCourse: {
-      readonly findAssignment: {
+    readonly course: {
+      readonly assignment: {
         readonly id: string;
         readonly submission: {
           readonly description: string | null;
@@ -94,7 +94,7 @@ v5 = [
         ],
         "concreteType": "CourseType",
         "kind": "LinkedField",
-        "name": "findCourse",
+        "name": "course",
         "plural": false,
         "selections": [
           (v3/*: any*/),
@@ -109,7 +109,7 @@ v5 = [
             ],
             "concreteType": "AssignmentType",
             "kind": "LinkedField",
-            "name": "findAssignment",
+            "name": "assignment",
             "plural": false,
             "selections": [
               (v3/*: any*/),
@@ -208,16 +208,16 @@ return {
     "selections": (v5/*: any*/)
   },
   "params": {
-    "cacheID": "46111a2741bd227f01243a96f4b15db4",
+    "cacheID": "d532b6170cd28558c3c4bc56a0633f10",
     "id": null,
     "metadata": {},
     "name": "SubmissionQuery",
     "operationKind": "query",
-    "text": "query SubmissionQuery(\n  $courseId: String!\n  $assignmentId: String!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    findCourse(id: $courseId) {\n      id\n      findAssignment(id: $assignmentId) {\n        id\n        submission(id: $submissionId) {\n          id\n          description\n          submittedAt\n          user {\n            id\n            file\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        submission(id: $submissionId) {\n          id\n          description\n          submittedAt\n          user {\n            id\n            file\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "12db735b4d1a05734112449adc7b5c83";
+(node as any).hash = "90bd5ee1852d2a394b2ee0783f3efd72";
 
 export default node;
