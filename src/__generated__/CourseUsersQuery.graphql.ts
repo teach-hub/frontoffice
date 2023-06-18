@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f38fe401bdd2890cf22d8b5e74ff1183>>
+ * @generated SignedSource<<656d22e0bc450ed8cef4a0fa44878bf5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,7 @@ export type CourseUsersQuery$variables = {
 };
 export type CourseUsersQuery$data = {
   readonly viewer: {
-    readonly findCourse: {
+    readonly course: {
       readonly id: string;
       readonly name: string;
       readonly userRoles: ReadonlyArray<{
@@ -87,7 +87,7 @@ v3 = [
         ],
         "concreteType": "CourseType",
         "kind": "LinkedField",
-        "name": "findCourse",
+        "name": "course",
         "plural": false,
         "selections": [
           (v1/*: any*/),
@@ -190,16 +190,16 @@ return {
     "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "f449f39dbf08837575905f33721c63e9",
+    "cacheID": "00cac6ec0e68ea118600769a4a4e66cd",
     "id": null,
     "metadata": {},
     "name": "CourseUsersQuery",
     "operationKind": "query",
-    "text": "query CourseUsersQuery(\n  $courseId: String!\n) {\n  viewer {\n    id\n    name\n    findCourse(id: $courseId) {\n      id\n      name\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          isTeacher\n          permissions\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query CourseUsersQuery(\n  $courseId: String!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          isTeacher\n          permissions\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b672836d3fa31c00c37b9577fd65d321";
+(node as any).hash = "cc67e18bfdc78830fd9a5322f88b09ad";
 
 export default node;

@@ -4,7 +4,7 @@ export default graphql`
   query CourseContextQuery($courseId: String!) {
     viewer {
       id
-      findCourse(id: $courseId) {
+      course(id: $courseId) {
         id
         viewerRole {
           id

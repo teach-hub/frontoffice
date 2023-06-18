@@ -5,7 +5,7 @@ export default graphql`
     viewer {
       id
       name
-      findCourse(id: $courseId) {
+      course(id: $courseId) {
         id
         name
         userRoles {

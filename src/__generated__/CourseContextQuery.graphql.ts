@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<50513ac7162fd4facf846a6918a847ed>>
+ * @generated SignedSource<<5f0a7c6234d718ad44c8435134fd0b8c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,7 @@ export type CourseContextQuery$variables = {
 };
 export type CourseContextQuery$data = {
   readonly viewer: {
-    readonly findCourse: {
+    readonly course: {
       readonly id: string;
       readonly viewerRole: {
         readonly id: string;
@@ -23,6 +23,7 @@ export type CourseContextQuery$data = {
         readonly permissions: ReadonlyArray<string | null> | null;
       };
     } | null;
+    readonly id: string;
   } | null;
 };
 export type CourseContextQuery = {
@@ -54,6 +55,7 @@ v2 = [
     "name": "viewer",
     "plural": false,
     "selections": [
+      (v1/*: any*/),
       {
         "alias": null,
         "args": [
@@ -65,7 +67,7 @@ v2 = [
         ],
         "concreteType": "CourseType",
         "kind": "LinkedField",
-        "name": "findCourse",
+        "name": "course",
         "plural": false,
         "selections": [
           (v1/*: any*/),
@@ -127,16 +129,16 @@ return {
     "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "a2930cdba8fbf41f5761af75eefcb6e0",
+    "cacheID": "f8749420be915916050eac771a723ae4",
     "id": null,
     "metadata": {},
     "name": "CourseContextQuery",
     "operationKind": "query",
-    "text": "query CourseContextQuery(\n  $courseId: String!\n) {\n  viewer {\n    findCourse(id: $courseId) {\n      id\n      viewerRole {\n        id\n        name\n        permissions\n        isTeacher\n      }\n    }\n  }\n}\n"
+    "text": "query CourseContextQuery(\n  $courseId: String!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      viewerRole {\n        id\n        name\n        permissions\n        isTeacher\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b186a7eeb1f87e5c1c4c62b4982db62d";
+(node as any).hash = "60034ddb9c63f80c13e39fdab8f87737";
 
 export default node;

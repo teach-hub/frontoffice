@@ -58,7 +58,7 @@ const Provider = ({
     courseId,
   });
 
-  const viewerCourseContext = courseContextData.viewer?.findCourse?.viewerRole;
+  const viewerCourseContext = courseContextData.viewer?.course?.viewerRole;
   const viewerCoursePermissions = viewerCourseContext?.permissions?.filter(
     (p): p is string => !!p
   );

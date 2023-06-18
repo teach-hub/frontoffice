@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<203224aa79a367efcd5a8156c74095fd>>
+ * @generated SignedSource<<fd4e694f0cce0dc92f997ce07c41326d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,7 +13,7 @@ export type AssignmentQuery$variables = {
   id: string;
 };
 export type AssignmentQuery$data = {
-  readonly findAssignment: {
+  readonly assignment: {
     readonly active: boolean | null;
     readonly allowLateSubmissions: boolean | null;
     readonly courseId: string;
@@ -50,7 +50,7 @@ v1 = [
     ],
     "concreteType": "AssignmentType",
     "kind": "LinkedField",
-    "name": "findAssignment",
+    "name": "assignment",
     "plural": false,
     "selections": [
       {
@@ -138,16 +138,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "fdc31262446e38254feb1f1cf560a1f6",
+    "cacheID": "c201b4ac4a907cffc8a07d8e1d826f77",
     "id": null,
     "metadata": {},
     "name": "AssignmentQuery",
     "operationKind": "query",
-    "text": "query AssignmentQuery(\n  $id: String!\n) {\n  findAssignment(id: $id) {\n    allowLateSubmissions\n    courseId\n    description\n    endDate\n    id\n    link\n    startDate\n    title\n    active\n  }\n}\n"
+    "text": "query AssignmentQuery(\n  $id: String!\n) {\n  assignment(id: $id) {\n    allowLateSubmissions\n    courseId\n    description\n    endDate\n    id\n    link\n    startDate\n    title\n    active\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "dcdacddd106f37585cd69e2ca0e2be49";
+(node as any).hash = "c7b1abb1401e582610cd387ecf7bb03f";
 
 export default node;

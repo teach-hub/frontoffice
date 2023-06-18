@@ -2,7 +2,7 @@ import { graphql } from 'babel-plugin-relay/macro';
 
 export default graphql`
   query AssignmentQuery($id: String!) {
-    findAssignment(id: $id) {
+    assignment(id: $id) {
       allowLateSubmissions
       courseId
       description

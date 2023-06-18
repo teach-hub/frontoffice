@@ -24,7 +24,7 @@ import ListIcon from 'components/ListIcon';
 
 import type { AssignmentQuery$data } from '__generated__/AssignmentQuery.graphql';
 
-type AssignmentDashboard = NonNullable<AssignmentQuery$data['findAssignment']>;
+type AssignmentDashboard = NonNullable<AssignmentQuery$data['assignment']>;
 
 const AssignmentDashboardPage = ({ assignment }: { assignment: AssignmentDashboard }) => {
   const navigate = useNavigate();

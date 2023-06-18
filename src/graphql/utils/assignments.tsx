@@ -7,5 +7,5 @@ export const getAssignment = ({ assignmentId }: { assignmentId: string }) => {
     id: assignmentId,
   });
 
-  return data?.findAssignment;
+  return data?.assignment;
 };
