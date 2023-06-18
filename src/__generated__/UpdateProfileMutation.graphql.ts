@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<74544eb2857fd3caf57ee6fdd2cce813>>
+ * @generated SignedSource<<2674085ebb694133ed6dd4a7da4fcdd8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -181,16 +181,16 @@ return {
     "selections": (v6/*: any*/)
   },
   "params": {
-    "cacheID": "42dde4c5191acf47a75b381d3f0435f7",
+    "cacheID": "ab629f1d72dc087b24db0f74cfe74d69",
     "id": null,
     "metadata": {},
     "name": "UpdateProfileMutation",
     "operationKind": "mutation",
-    "text": "mutation UpdateProfileMutation(\n  $id: String!\n  $name: String!\n  $lastName: String!\n  $file: String!\n  $githubId: String!\n  $notificationEmail: String!\n) {\n  updateUser(userId: $id, name: $name, lastName: $lastName, file: $file, githubId: $githubId, notificationEmail: $notificationEmail) {\n    id\n    name\n    lastName\n    file\n    githubId\n    notificationEmail\n  }\n}\n"
+    "text": "mutation UpdateProfileMutation(\n  $id: ID!\n  $name: String!\n  $lastName: String!\n  $file: String!\n  $githubId: String!\n  $notificationEmail: String!\n) {\n  updateUser(userId: $id, name: $name, lastName: $lastName, file: $file, githubId: $githubId, notificationEmail: $notificationEmail) {\n    id\n    name\n    lastName\n    file\n    githubId\n    notificationEmail\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b6406cd3b817969a895ab6f58b14aafb";
+(node as any).hash = "71451c17f7bcc7b872ca64a6ab79da6d";
 
 export default node;
