@@ -2,9 +2,14 @@ import { Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
+import { FileCodeIcon } from '@primer/octicons-react';
+import { HStack } from '@chakra-ui/react';
+
 import PageDataContainer from 'components/PageDataContainer';
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
+import Box from 'components/Box';
+import Divider from 'components/Divider';
 
 import { useUserContext } from 'hooks/useUserCourseContext';
 
@@ -20,8 +25,6 @@ const SubmissionPage = () => {
     return null;
   }
 
-  console.log(assignmentId, submissionId);
-
   const data = useLazyLoadQuery<SubmissionQuery>(SubmissionQueryDef, {
     courseId: courseContext.courseId,
     assignmentId,
@@ -36,9 +39,21 @@ const SubmissionPage = () => {
 
   return (
     <PageDataContainer>
-      <Heading>Entrega</Heading>
-      <Heading size="sm">{submission.description}</Heading>
-      <Heading size="sm">{submission.submittedAt}</Heading>
+      <HStack spacing="auto">
+        <HStack margin="20px 0">
+          <FileCodeIcon size="large" />
+          <Heading>Entrega</Heading>
+        </HStack>
+        <Divider />
+        <Box>
+          <Heading size="sm">Descripcion: {submission.description}</Heading>
+          <Heading size="sm">Enviado: {submission.submittedAt}</Heading>
+          <Heading size="sm">
+            Alumno: {submission.user.file} - {submission.user.name}{' '}
+            {submission.user.lastName}
+          </Heading>
+        </Box>
+      </HStack>
     </PageDataContainer>
   );
 };
