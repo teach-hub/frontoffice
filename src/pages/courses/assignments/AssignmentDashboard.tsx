@@ -28,13 +28,7 @@ import AssignmentQueryDef from 'graphql/AssignmentQuery';
 
 import type { AssignmentQuery } from '__generated__/AssignmentQuery.graphql';
 
-const AssignmentDashboardPage = ({
-  assignmentId,
-  courseId,
-}: {
-  assignmentId: string;
-  courseId: string;
-}) => {
+const AssignmentDashboardPage = ({ assignmentId, courseId }: { assignmentId: string, courseId: string }) => {
   const navigate = useNavigate();
   const courseContext = useUserContext();
 

@@ -31,7 +31,7 @@ const SubmissionsPage = () => {
     courseId: courseContext.courseId,
   });
 
-  const submissions = data.viewer?.findCourse?.findAssignment?.submissions || [];
+  const submissions = data.viewer?.course?.assignment?.submissions || [];
 
   return (
     <PageDataContainer>
