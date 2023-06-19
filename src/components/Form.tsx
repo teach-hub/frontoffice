@@ -71,7 +71,9 @@ export const Form = (formData: FormData<any>) => {
                 isInvalid={!!readError(errors)}
                 key={label}
               >
-                <FormLabel fontWeight="bold">{label}</FormLabel>
+                <FormLabel fontWeight="bold" fontSize={theme.styles.global.body.fontSize}>
+                  {label}
+                </FormLabel>
                 {inputComponent(values, handleChange)}
                 <FormErrorMessage>{readError(errors)}</FormErrorMessage>
               </FormControl>

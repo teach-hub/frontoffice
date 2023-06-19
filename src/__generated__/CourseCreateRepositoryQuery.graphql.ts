@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<86a4adfa6dae12861c374853380e24b5>>
+ * @generated SignedSource<<c4c83210f110df0aa4c738dd7b77a1de>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,14 +9,15 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type CourseUsersQuery$variables = {
+export type CourseCreateRepositoryQuery$variables = {
   courseId: string;
 };
-export type CourseUsersQuery$data = {
+export type CourseCreateRepositoryQuery$data = {
   readonly viewer: {
     readonly course: {
       readonly id: string;
       readonly name: string;
+      readonly organization: string | null;
       readonly userRoles: ReadonlyArray<{
         readonly id: string;
         readonly role: {
@@ -38,9 +39,9 @@ export type CourseUsersQuery$data = {
     readonly name: string;
   } | null;
 };
-export type CourseUsersQuery = {
-  response: CourseUsersQuery$data;
-  variables: CourseUsersQuery$variables;
+export type CourseCreateRepositoryQuery = {
+  response: CourseCreateRepositoryQuery$data;
+  variables: CourseCreateRepositoryQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -92,6 +93,13 @@ v3 = [
         "selections": [
           (v1/*: any*/),
           (v2/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "organization",
+            "storageKey": null
+          },
           {
             "alias": null,
             "args": null,
@@ -149,14 +157,14 @@ v3 = [
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
-                    "name": "isTeacher",
+                    "name": "permissions",
                     "storageKey": null
                   },
                   {
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
-                    "name": "permissions",
+                    "name": "isTeacher",
                     "storageKey": null
                   }
                 ],
@@ -177,7 +185,7 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "CourseUsersQuery",
+    "name": "CourseCreateRepositoryQuery",
     "selections": (v3/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
@@ -186,20 +194,20 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "CourseUsersQuery",
+    "name": "CourseCreateRepositoryQuery",
     "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "49ecd5d983b989167256cfe6c5e921b3",
+    "cacheID": "c7cdc1f10ce4e45c1504c8d4a84dfdc3",
     "id": null,
     "metadata": {},
-    "name": "CourseUsersQuery",
+    "name": "CourseCreateRepositoryQuery",
     "operationKind": "query",
-    "text": "query CourseUsersQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          isTeacher\n          permissions\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query CourseCreateRepositoryQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      organization\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          permissions\n          isTeacher\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "8f84a46156ae3b271b20564271b0c77c";
+(node as any).hash = "73880cd394ebf27df146cdc94ba8fec8";
 
 export default node;

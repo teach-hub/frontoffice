@@ -2,10 +2,10 @@ import { Suspense, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
-import { KebabHorizontalIcon, PersonIcon, AlertIcon } from '@primer/octicons-react';
+import { AlertIcon, KebabHorizontalIcon, PersonIcon } from '@primer/octicons-react';
 
 import { SearchIcon } from '@chakra-ui/icons';
-import { Input, InputLeftElement, HStack, InputGroup } from '@chakra-ui/react';
+import { HStack, Input, InputGroup, InputLeftElement } from '@chakra-ui/react';
 
 import Heading from 'components/Heading';
 import Box from 'components/Box';
@@ -15,7 +15,7 @@ import Table from 'components/Table';
 import Text from 'components/Text';
 
 import { useUserContext } from 'hooks/useUserCourseContext';
-
+import { filterUsers, UserRoleFilter } from 'app/users';
 import CourseUsersQueryDef from 'graphql/CourseUsersQuery';
 
 import type { CourseUsersQuery } from '__generated__/CourseUsersQuery.graphql';
@@ -33,15 +33,9 @@ const UsersList = ({
   roleFilter: string;
   nameFilter: string | null;
 }): JSX.Element => {
-  let filteredUserRoles = userRoles.filter(userRole => {
-    const userIsTeacher: boolean = userRole?.role.isTeacher || false;
-
-    if (roleFilter === 'student') {
-      return !userIsTeacher;
-    } else if (roleFilter === 'teacher') {
-      return userIsTeacher;
-    }
-    return true;
+  let filteredUserRoles = filterUsers({
+    users: userRoles,
+    roleFilter: roleFilter as UserRoleFilter,
   });
 
   if (nameFilter) {

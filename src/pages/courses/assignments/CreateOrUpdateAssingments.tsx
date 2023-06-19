@@ -250,9 +250,6 @@ const CreateOrUpdateAssignmentsPage = () => {
               inputComponent: (values, handleChange) => (
                 <Checkbox
                   id={'allowLateSubmissions'}
-                  size={'lg'}
-                  borderColor={theme.colors.teachHub.black}
-                  bg={theme.colors.teachHub.white}
                   isChecked={values?.allowLateSubmissions}
                   value={values?.allowLateSubmissions}
                   onChange={handleChange}
