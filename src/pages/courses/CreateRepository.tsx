@@ -330,10 +330,10 @@ const CreateRepositoryPage = () => {
 
 export default () => {
   return (
-    <Suspense fallback={<div> Cargando... </div>}>
       <Navigation>
-        <CreateRepositoryPage />
-      </Navigation>
-    </Suspense>
+        <Suspense fallback={<div> Cargando... </div>}>
+          <CreateRepositoryPage />
+      </Suspense>
+    </Navigation>
   );
 };
