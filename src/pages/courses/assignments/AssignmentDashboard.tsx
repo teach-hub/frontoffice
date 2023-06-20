@@ -14,7 +14,7 @@ import { formatAsSimpleDateTime } from 'utils/dates';
 import { theme } from 'theme';
 import { Nullable } from 'types';
 
-import { useUserContext, Permission } from 'hooks/useUserCourseContext';
+import { Permission, useUserContext } from 'hooks/useUserCourseContext';
 
 import Navigation from 'components/Navigation';
 import IconButton from 'components/IconButton';
@@ -25,7 +25,7 @@ import ListIcon from 'components/ListIcon';
 import type { AssignmentQuery$data } from '__generated__/AssignmentQuery.graphql';
 
 type AssignmentDashboard = NonNullable<
-  NonNullable<AssignmentQuery$data['viewer']>['assignment']
+  NonNullable<NonNullable<AssignmentQuery$data['viewer']>['course']>['assignment']
 >;
 
 const AssignmentDashboardPage = ({ assignment }: { assignment: AssignmentDashboard }) => {
@@ -116,9 +116,11 @@ const AssignmentDashboardPage = ({ assignment }: { assignment: AssignmentDashboa
 
 const AssignmentPageContainer = () => {
   const params = useParams();
+  const courseContext = useUserContext();
 
   const assignment = getAssignment({
     assignmentId: params.assignmentId || '',
+    courseId: courseContext.courseId || '',
   });
 
   if (!assignment) return null;

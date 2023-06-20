@@ -55,6 +55,7 @@ const CreateOrUpdateAssignmentsPage = () => {
   if (assignmentId) {
     const assignment = getAssignment({
       assignmentId,
+      courseId: courseId || '',
     });
     initialValues.id = assignmentId;
     initialValues.title = assignment?.title;
