@@ -1,8 +1,8 @@
-import { Suspense, createContext, useContext, useState } from 'react';
+import { createContext, Suspense, useContext, useState } from 'react';
 import { useParams } from 'react-router';
 import { useLazyLoadQuery } from 'react-relay';
 
-import { Stack, Flex, Center, AbsoluteCenter, Spinner } from '@chakra-ui/react';
+import { Center, Spinner } from '@chakra-ui/react';
 
 import CourseContextQuery from 'graphql/CourseContextQuery';
 
@@ -16,6 +16,7 @@ export enum Permission {
   CreateAssignment = 'createAssignment',
   EditAssignment = 'editAssignment',
   DeleteAssignment = 'deleteAssignment',
+  CreateRepository = 'createRepository',
 }
 
 type EmptyContext = {

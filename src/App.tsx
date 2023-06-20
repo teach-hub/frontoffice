@@ -22,6 +22,7 @@ import LoginPage from 'pages/Login';
 import AssignmentPage from 'pages/courses/assignments/AssignmentDashboard';
 import InvitePage from 'pages/Invite';
 import CreateOrUpdateAssignmentsPage from 'pages/courses/assignments/CreateOrUpdateAssingments';
+import CreateRepository from 'pages/courses/CreateRepository';
 
 import { ContextProvider } from 'hooks/useUserCourseContext';
 import { useLocalStorage } from 'hooks/useLocalStorage';
@@ -90,6 +91,7 @@ const App = () => {
           >
             <Route index element={<CoursePage />} />
             <Route path="users" element={<CourseUsersPage />} />
+            <Route path="new-repo" element={<CreateRepository />} />
             <Route path="assignments">
               <Route index element={<CourseAssignmentsPage />} />
               <Route path="create" element={<CreateOrUpdateAssignmentsPage />} />

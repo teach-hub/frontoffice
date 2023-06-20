@@ -1,9 +1,9 @@
-import { Suspense, ReactNode, useState } from 'react';
-import { Link as ReachLink, useNavigate, useParams } from 'react-router-dom';
+import { ReactNode, Suspense, useState } from 'react';
+import { Link as ReachLink, useNavigate } from 'react-router-dom';
 
 import { graphql } from 'babel-plugin-relay/macro';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
-import { Skeleton, SkeletonCircle, Link, HStack } from '@chakra-ui/react';
+import { HStack, Link, Skeleton, SkeletonCircle } from '@chakra-ui/react';
 import { AddIcon, ChevronDownIcon } from '@chakra-ui/icons';
 
 import Box from 'components/Box';
@@ -16,7 +16,7 @@ import HomeButton from 'components/HomeButton';
 import { theme } from 'theme';
 
 import { useLocalStorage } from 'hooks/useLocalStorage';
-import { useUserContext, Permission } from 'hooks/useUserCourseContext';
+import { Permission, useUserContext } from 'hooks/useUserCourseContext';
 import useToast from 'hooks/useToast';
 
 import InviteUserModal from 'layout/InviteUserModal';
@@ -90,15 +90,21 @@ const NavigationBar = () => {
     navigate('/profile');
   };
 
-  const teacherActions: MenuProps['content']['items'] = [
-    { content: 'Asignar correctores' },
-    { content: 'Crear repositorios' },
-  ];
+  const teacherActions: MenuProps['content']['items'] = [];
 
   if (courseContext.userHasPermission(Permission.InviteUser)) {
     teacherActions.push({
       content: 'Invitar usuario',
       action: () => setInviteUserOpen(v => !v),
+    });
+  }
+
+  if (courseContext.userHasPermission(Permission.CreateRepository)) {
+    teacherActions.push({
+      content: 'Crear repositorios',
+      action: () => {
+        navigate(`/courses/${courseContext.courseId}/new-repo`);
+      },
     });
   }
 

@@ -27,6 +27,7 @@ const InputField = ({
       placeholder={placeholder}
       _placeholder={{ color: theme.colors.teachHub.gray }}
       bg={theme.colors.teachHub.white}
+      fontSize={theme.styles.global.body.fontSize}
       type={type}
     />
   );
