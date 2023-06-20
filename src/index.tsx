@@ -8,6 +8,8 @@ import reportWebVitals from 'reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
+const boom = () => {}
+
 root.render(
   <React.StrictMode>
     <App />
