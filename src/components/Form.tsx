@@ -1,9 +1,11 @@
 import { Formik, FormikErrors, FormikValues } from 'formik';
-import Box from './Box';
 import { Flex, FormControl, FormErrorMessage, FormLabel } from '@chakra-ui/react';
-import Button from './Button';
-import { theme } from '../theme';
-import { FormErrors } from '../types';
+
+import Box from 'components/Box';
+import Button from 'components/Button';
+
+import { theme } from 'theme';
+import { FormErrors } from 'types';
 
 export interface FormInputFieldData {
   label: string;

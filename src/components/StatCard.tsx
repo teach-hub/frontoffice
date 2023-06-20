@@ -8,8 +8,9 @@ import {
   StatProps,
   Tooltip,
 } from '@chakra-ui/react';
-import { Nullable } from '../types';
-import { theme } from '../theme';
+
+import { Nullable } from 'types';
+import { theme } from 'theme';
 
 type Props = {
   title: string;

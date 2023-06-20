@@ -1,6 +1,6 @@
 import { ChangeEventHandler } from 'react';
 import { Input, InputProps } from '@chakra-ui/react';
-import { theme } from '../theme';
+import { theme } from 'theme';
 
 type Props = InputProps & {
   placeholder?: string;

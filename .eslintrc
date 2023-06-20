@@ -1,6 +1,13 @@
 {
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
-  "plugins": ["@typescript-eslint"],
+  "ignorePatterns": ["build/**"],
+  "extends": ["react-app", "react-app/jest", "eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  "plugins": ["@typescript-eslint", "no-relative-import-paths"],
   "parser": "@typescript-eslint/parser",
-  "root": true
+  "root": true,
+  "rules": {
+    "no-relative-import-paths/no-relative-import-paths": [
+      "error",
+      { "allowSameFolder": false, "rootDir": "src", "prefix": "" }
+    ]
+  }
 }

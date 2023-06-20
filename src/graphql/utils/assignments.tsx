@@ -1,8 +1,12 @@
 import { useLazyLoadQuery } from 'react-relay';
-import { AssignmentQuery } from '../../__generated__/AssignmentQuery.graphql';
-import AssignmentQueryDef from '../AssignmentQuery';
+
+import AssignmentQueryDef from 'graphql/AssignmentQuery';
+
+import type { AssignmentQuery } from '__generated__/AssignmentQuery.graphql';
 
 export const getAssignment = ({ assignmentId }: { assignmentId: string }) => {
+  // FIXME
+  // eslint-disable-next-line
   const data = useLazyLoadQuery<AssignmentQuery>(AssignmentQueryDef, {
     id: assignmentId,
   });

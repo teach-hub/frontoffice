@@ -1,7 +1,9 @@
 import { ChangeEventHandler } from 'react';
 import { InputProps } from '@chakra-ui/react';
-import InputField from './InputField';
-import { formatDateString } from '../utils/dates';
+
+import InputField from 'components/InputField';
+
+import { formatDateString } from 'utils/dates';
 
 type Props = InputProps & {
   placeholder?: string;

@@ -1,5 +1,5 @@
 import { Card as ChakraCard, CardBody as ChakraBody, CardProps } from '@chakra-ui/react';
-import { theme } from '../theme';
+import { theme } from 'theme';
 
 const CardStyle = {
   shadow: 'md',

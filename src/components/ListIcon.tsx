@@ -1,5 +1,5 @@
 import { Icon } from '@primer/octicons-react/dist/icons';
-import { theme } from '../theme';
+import { theme } from 'theme';
 import { ListIcon as ChakraListIcon } from '@chakra-ui/react';
 
 const ListIcon = ({ icon }: { icon: Icon }) => (

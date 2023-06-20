@@ -13,21 +13,30 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLocalStorage } from '../hooks/useLocalStorage';
-import Button from 'components/Button';
-import logo from 'assets/logo_wo_text.png';
 import { useMutation } from 'react-relay';
+
+import logo from 'assets/logo_wo_text.png';
+
 import LoginMutationDef from 'graphql/LoginMutation';
 import RegisterMutationDef from 'graphql/RegisterUserMutation';
+
+import { useLocalStorage } from 'hooks/useLocalStorage';
 import useToast from 'hooks/useToast';
-import { LoginMutation, LoginMutation$data } from '__generated__/LoginMutation.graphql';
-import {
+
+import { FormErrors, Mutable } from 'types';
+
+import Button from 'components/Button';
+import { Form } from 'components/Form';
+import InputField from 'components/InputField';
+
+import type {
+  LoginMutation,
+  LoginMutation$data,
+} from '__generated__/LoginMutation.graphql';
+import type {
   RegisterUserMutation,
   RegisterUserMutation$data,
 } from '__generated__/RegisterUserMutation.graphql';
-import { FormErrors, Mutable } from '../types';
-import { Form } from 'components/Form';
-import InputField from '../components/InputField';
 
 type RegisterData = {
   name?: string;
