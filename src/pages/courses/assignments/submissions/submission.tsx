@@ -11,22 +11,23 @@ import Heading from 'components/Heading';
 import Box from 'components/Box';
 import Divider from 'components/Divider';
 
-import { useUserContext } from 'hooks/useUserCourseContext';
+import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
 
 import SubmissionQueryDef from 'graphql/SubmissionQuery';
 
 import type { SubmissionQuery } from '__generated__/SubmissionQuery.graphql';
 
-const SubmissionPage = () => {
-  const courseContext = useUserContext();
-  const { assignmentId, submissionId } = useParams();
-
-  if (!assignmentId || !courseContext.courseId || !submissionId) {
-    return null;
-  }
-
+const SubmissionPage = ({
+  context,
+  assignmentId,
+  submissionId,
+}: {
+  context: FetchedContext;
+  assignmentId: string;
+  submissionId: string;
+}) => {
   const data = useLazyLoadQuery<SubmissionQuery>(SubmissionQueryDef, {
-    courseId: courseContext.courseId,
+    courseId: context.courseId,
     assignmentId,
     submissionId,
   });
@@ -58,12 +59,29 @@ const SubmissionPage = () => {
   );
 };
 
+const SubmissionPageContainer = () => {
+  const courseContext = useUserContext();
+  const { assignmentId, submissionId } = useParams();
+
+  if (!assignmentId || !courseContext.courseId || !submissionId) {
+    return null;
+  }
+
+  return (
+    <SubmissionPage
+      context={courseContext}
+      assignmentId={assignmentId}
+      submissionId={submissionId}
+    />
+  );
+};
+
 // Pantalla de entregas de un TP en particular.
 export default () => {
   return (
     <Navigation>
       <Suspense>
-        <SubmissionPage />
+        <SubmissionPageContainer />
       </Suspense>
     </Navigation>
   );

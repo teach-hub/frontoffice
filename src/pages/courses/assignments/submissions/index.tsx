@@ -11,20 +11,20 @@ import Table from 'components/Table';
 import Button from 'components/Button';
 import Box from 'components/Box';
 
-import { useUserContext } from 'hooks/useUserCourseContext';
+import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
 
 import SubmissionsQuery from 'graphql/AssignmentSubmissionsQuery';
 
 import type { AssignmentSubmissionsQuery } from '__generated__/AssignmentSubmissionsQuery.graphql';
 
-const SubmissionsPage = () => {
-  const courseContext = useUserContext();
-  const { assignmentId } = useParams();
+const SubmissionsPage = ({
+  courseContext,
+  assignmentId,
+}: {
+  courseContext: FetchedContext;
+  assignmentId: string;
+}) => {
   const navigate = useNavigate();
-
-  if (!assignmentId || !courseContext.courseId) {
-    return null;
-  }
 
   const data = useLazyLoadQuery<AssignmentSubmissionsQuery>(SubmissionsQuery, {
     assignmentId,
@@ -60,12 +60,23 @@ const SubmissionsPage = () => {
   );
 };
 
+const SubmissionsPageContainer = () => {
+  const courseContext = useUserContext();
+  const { assignmentId } = useParams();
+
+  if (!assignmentId || !courseContext.courseId) {
+    return null;
+  }
+
+  return <SubmissionsPage courseContext={courseContext} assignmentId={assignmentId} />;
+};
+
 // Pantalla de entregas de un TP en particular.
 export default () => {
   return (
     <Navigation>
       <Suspense>
-        <SubmissionsPage />
+        <SubmissionsPageContainer />
       </Suspense>
     </Navigation>
   );

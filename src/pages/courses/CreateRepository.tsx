@@ -142,15 +142,17 @@ const CreateRepositoryPage = () => {
             onChange={handleCheckAll}
           />,
         ]}
-        cellsContent={tableData.map(({ checked, userId, lastName, name, file }) => [
-          lastName + `, ${name}`, // FullName
-          file, // File
-          <Checkbox
-            id={'file'}
-            isChecked={checked}
-            onChange={() => handleRowCheck(file, !checked)}
-          />,
-        ])}
+        rowOptions={tableData.map(({ checked, userId, lastName, name, file }) => ({
+          content: [
+            lastName + `, ${name}`, // FullName
+            file, // File
+            <Checkbox
+              id={'file'}
+              isChecked={checked}
+              onChange={() => handleRowCheck(file, !checked)}
+            />,
+          ],
+        }))}
       />
     );
   };

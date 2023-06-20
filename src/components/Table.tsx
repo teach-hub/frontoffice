@@ -1,5 +1,14 @@
 import { ReactNode } from 'react';
-import { Box, Table, TableRowProps, TableContainer, Tbody, Td, Thead, Tr } from '@chakra-ui/react';
+import {
+  Box,
+  Table,
+  TableRowProps,
+  TableContainer,
+  Tbody,
+  Td,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
 
 import { theme } from 'theme';
 
@@ -9,7 +18,7 @@ type RowOptions = {
 };
 
 type Props = {
-  headers: string[];
+  headers: ReactNode[];
   rowOptions: RowOptions[];
   tableWidth?: string;
   tableHeight?: string;
