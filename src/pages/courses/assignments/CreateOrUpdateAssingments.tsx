@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { useMutation } from 'react-relay';
+import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { Checkbox, Flex, Textarea } from '@chakra-ui/react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -8,15 +8,7 @@ import { theme } from 'theme';
 
 import CreateAssignmentMutationDef from 'graphql/CreateAssignmentMutation';
 import UpdateAssignmentMutationDef from 'graphql/UpdateAssignmentMutation';
-import { getAssignment } from 'graphql/utils/assignments';
-import {
-  CreateAssignmentMutation,
-  CreateAssignmentMutation$data,
-} from '__generated__/CreateAssignmentMutation.graphql';
-import {
-  UpdateAssignmentMutation,
-  UpdateAssignmentMutation$data,
-} from '__generated__/UpdateAssignmentMutation.graphql';
+import AssignmentQueryDef from 'graphql/AssignmentQuery';
 
 import useToast from 'hooks/useToast';
 import { formatDateAsLocaleIsoString } from 'utils/dates';
@@ -27,6 +19,16 @@ import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
 import InputField from 'components/InputField';
 import PageDataContainer from 'components/PageDataContainer';
+
+import type {
+  CreateAssignmentMutation,
+  CreateAssignmentMutation$data,
+} from '__generated__/CreateAssignmentMutation.graphql';
+import type {
+  UpdateAssignmentMutation,
+  UpdateAssignmentMutation$data,
+} from '__generated__/UpdateAssignmentMutation.graphql';
+import type { AssignmentQuery } from '__generated__/AssignmentQuery.graphql';
 
 type AssignmentData = {
   id?: Nullable<string>;
@@ -53,10 +55,15 @@ const CreateOrUpdateAssignmentsPage = () => {
   const initialValues: AssignmentData = {};
 
   if (assignmentId) {
-    const assignment = getAssignment({
-      assignmentId,
+    // FIXME. Los hooks no se pueden llamar condicionalmente.
+    // eslint-disable-next-line
+    const data = useLazyLoadQuery<AssignmentQuery>(AssignmentQueryDef, {
+      id: assignmentId,
       courseId: courseId || '',
     });
+
+    const assignment = data.viewer?.course?.assignment;
+
     initialValues.id = assignmentId;
     initialValues.title = assignment?.title;
     initialValues.description = assignment?.description;
