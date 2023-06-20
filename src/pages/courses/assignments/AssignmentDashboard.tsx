@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useLazyLoadQuery } from 'react-relay';
 
-import { Flex, Heading, Link, ListItem, Text } from '@chakra-ui/react';
-import { getAssignment } from 'graphql/utils/assignments';
+import { Flex, Link, ListItem } from '@chakra-ui/react';
 import {
   AlertIcon,
   CalendarIcon,
@@ -14,23 +14,40 @@ import { formatAsSimpleDateTime } from 'utils/dates';
 import { theme } from 'theme';
 import { Nullable } from 'types';
 
-import { useUserContext, Permission } from 'hooks/useUserCourseContext';
+import { Permission, useUserContext } from 'hooks/useUserCourseContext';
 
 import Navigation from 'components/Navigation';
 import IconButton from 'components/IconButton';
 import PageDataContainer from 'components/PageDataContainer';
+import Heading from 'components/Heading';
 import List from 'components/List';
+import Text from 'components/Text';
 import ListIcon from 'components/ListIcon';
 
-import type { AssignmentQuery$data } from '__generated__/AssignmentQuery.graphql';
+import AssignmentQueryDef from 'graphql/AssignmentQuery';
 
-type AssignmentDashboard = NonNullable<
-  NonNullable<AssignmentQuery$data['viewer']>['assignment']
->;
+import type { AssignmentQuery } from '__generated__/AssignmentQuery.graphql';
 
-const AssignmentDashboardPage = ({ assignment }: { assignment: AssignmentDashboard }) => {
+const AssignmentDashboardPage = ({
+  assignmentId,
+  courseId,
+}: {
+  assignmentId: string;
+  courseId: string;
+}) => {
   const navigate = useNavigate();
   const courseContext = useUserContext();
+
+  const data = useLazyLoadQuery<AssignmentQuery>(AssignmentQueryDef, {
+    id: assignmentId,
+    courseId,
+  });
+
+  const assignment = data.viewer?.course?.assignment;
+
+  if (!assignment) {
+    return null;
+  }
 
   const DateListItem = ({
     date,
@@ -115,15 +132,14 @@ const AssignmentDashboardPage = ({ assignment }: { assignment: AssignmentDashboa
 };
 
 const AssignmentPageContainer = () => {
-  const params = useParams();
+  const { assignmentId } = useParams();
+  const { courseId } = useUserContext();
 
-  const assignment = getAssignment({
-    assignmentId: params.assignmentId || '',
-  });
+  if (!assignmentId || !courseId) {
+    return null;
+  }
 
-  if (!assignment) return null;
-
-  return <AssignmentDashboardPage assignment={assignment} />;
+  return <AssignmentDashboardPage assignmentId={assignmentId} courseId={courseId} />;
 };
 
 export default () => {
