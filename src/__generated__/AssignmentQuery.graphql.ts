@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0831511597a992706874b6057171be3a>>
+ * @generated SignedSource<<96965dd4aae5a03807e68a060885f94f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -27,7 +27,9 @@ export type AssignmentQuery$data = {
         readonly startDate: string | null;
         readonly title: string | null;
       } | null;
+      readonly id: string;
     } | null;
+    readonly id: string;
   } | null;
 };
 export type AssignmentQuery = {
@@ -46,94 +48,119 @@ v1 = {
   "kind": "LocalArgument",
   "name": "id"
 },
-v2 = [
-  {
-    "kind": "Variable",
-    "name": "id",
-    "variableName": "courseId"
-  }
-],
-v3 = {
+v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v4 = {
-  "alias": null,
-  "args": [
-    {
-      "kind": "Variable",
-      "name": "id",
-      "variableName": "id"
-    }
-  ],
-  "concreteType": "AssignmentType",
-  "kind": "LinkedField",
-  "name": "assignment",
-  "plural": false,
-  "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "allowLateSubmissions",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "courseId",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "description",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "endDate",
-      "storageKey": null
-    },
-    (v3/*: any*/),
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "link",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "startDate",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "title",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "active",
-      "storageKey": null
-    }
-  ],
-  "storageKey": null
-};
+v3 = [
+  {
+    "alias": null,
+    "args": null,
+    "concreteType": "ViewerType",
+    "kind": "LinkedField",
+    "name": "viewer",
+    "plural": false,
+    "selections": [
+      (v2/*: any*/),
+      {
+        "alias": null,
+        "args": [
+          {
+            "kind": "Variable",
+            "name": "id",
+            "variableName": "courseId"
+          }
+        ],
+        "concreteType": "CourseType",
+        "kind": "LinkedField",
+        "name": "course",
+        "plural": false,
+        "selections": [
+          (v2/*: any*/),
+          {
+            "alias": null,
+            "args": [
+              {
+                "kind": "Variable",
+                "name": "id",
+                "variableName": "id"
+              }
+            ],
+            "concreteType": "AssignmentType",
+            "kind": "LinkedField",
+            "name": "assignment",
+            "plural": false,
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "allowLateSubmissions",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "courseId",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "description",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "endDate",
+                "storageKey": null
+              },
+              (v2/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "link",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "startDate",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "title",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "active",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
+      }
+    ],
+    "storageKey": null
+  }
+];
 return {
   "fragment": {
     "argumentDefinitions": [
@@ -143,31 +170,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "AssignmentQuery",
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "ViewerType",
-        "kind": "LinkedField",
-        "name": "viewer",
-        "plural": false,
-        "selections": [
-          {
-            "alias": null,
-            "args": (v2/*: any*/),
-            "concreteType": "CourseType",
-            "kind": "LinkedField",
-            "name": "course",
-            "plural": false,
-            "selections": [
-              (v4/*: any*/)
-            ],
-            "storageKey": null
-          }
-        ],
-        "storageKey": null
-      }
-    ],
+    "selections": (v3/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -179,44 +182,19 @@ return {
     ],
     "kind": "Operation",
     "name": "AssignmentQuery",
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "ViewerType",
-        "kind": "LinkedField",
-        "name": "viewer",
-        "plural": false,
-        "selections": [
-          {
-            "alias": null,
-            "args": (v2/*: any*/),
-            "concreteType": "CourseType",
-            "kind": "LinkedField",
-            "name": "course",
-            "plural": false,
-            "selections": [
-              (v4/*: any*/),
-              (v3/*: any*/)
-            ],
-            "storageKey": null
-          }
-        ],
-        "storageKey": null
-      }
-    ]
+    "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "e2393c80f9fd6cb8393cdbba7777fdbd",
+    "cacheID": "39f39f7903ff5c65891adfbe4da8006a",
     "id": null,
     "metadata": {},
     "name": "AssignmentQuery",
     "operationKind": "query",
-    "text": "query AssignmentQuery(\n  $id: ID!\n  $courseId: ID!\n) {\n  viewer {\n    course(id: $courseId) {\n      assignment(id: $id) {\n        allowLateSubmissions\n        courseId\n        description\n        endDate\n        id\n        link\n        startDate\n        title\n        active\n      }\n      id\n    }\n  }\n}\n"
+    "text": "query AssignmentQuery(\n  $id: ID!\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignment(id: $id) {\n        allowLateSubmissions\n        courseId\n        description\n        endDate\n        id\n        link\n        startDate\n        title\n        active\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "be64a6135c38ad26520a0d0e5b16c7d8";
+(node as any).hash = "6a064d42ff38cf089b35eadc496ae65e";
 
 export default node;
