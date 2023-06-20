@@ -25,16 +25,21 @@ import ListIcon from 'components/ListIcon';
 
 import AssignmentQueryDef from 'graphql/AssignmentQuery';
 
-import type { AssignmentQuery$data } from '__generated__/AssignmentQuery.graphql';
 import type { AssignmentQuery } from '__generated__/AssignmentQuery.graphql';
 
-type AssignmentDashboard = NonNullable<
-  NonNullable<AssignmentQuery$data['viewer']>['assignment']
->;
-
-const AssignmentDashboardPage = ({ assignment }: { assignment: AssignmentDashboard }) => {
+const AssignmentDashboardPage = ({ assignmentId }: { assignmentId: string }) => {
   const navigate = useNavigate();
   const courseContext = useUserContext();
+
+  const data = useLazyLoadQuery<AssignmentQuery>(AssignmentQueryDef, {
+    id: assignmentId,
+  });
+
+  const assignment = data?.viewer?.assignment;
+
+  if (!assignment) {
+    return null;
+  }
 
   const DateListItem = ({
     date,
@@ -119,20 +124,13 @@ const AssignmentDashboardPage = ({ assignment }: { assignment: AssignmentDashboa
 };
 
 const AssignmentPageContainer = () => {
-  const params = useParams();
+  const { assignmentId } = useParams();
 
-  const data = useLazyLoadQuery<AssignmentQuery>(AssignmentQueryDef, {
-    // @ts-expect-error testing
-    id: params.assignmentId,
-  });
-
-  const assignment = data?.viewer?.assignment;
-
-  if (!assignment) {
+  if (!assignmentId) {
     return null;
   }
 
-  return <AssignmentDashboardPage assignment={assignment} />;
+  return <AssignmentDashboardPage assignmentId={assignmentId} />;
 };
 
 export default () => {
