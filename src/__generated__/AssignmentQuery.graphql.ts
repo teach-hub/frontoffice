@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<69f744a03244b7383af71ae217e16168>>
+ * @generated SignedSource<<67ec3b8deb475e2429984b5a80cdd325>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -25,6 +25,7 @@ export type AssignmentQuery$data = {
       readonly startDate: string | null;
       readonly title: string | null;
     } | null;
+    readonly id: string;
   } | null;
 };
 export type AssignmentQuery = {
@@ -40,7 +41,14 @@ var v0 = [
     "name": "id"
   }
 ],
-v1 = [
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v2 = [
   {
     "alias": null,
     "args": null,
@@ -49,6 +57,7 @@ v1 = [
     "name": "viewer",
     "plural": false,
     "selections": [
+      (v1/*: any*/),
       {
         "alias": null,
         "args": [
@@ -63,6 +72,7 @@ v1 = [
         "name": "assignment",
         "plural": false,
         "selections": [
+          (v1/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -89,13 +99,6 @@ v1 = [
             "args": null,
             "kind": "ScalarField",
             "name": "endDate",
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "id",
             "storageKey": null
           },
           {
@@ -139,7 +142,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "AssignmentQuery",
-    "selections": (v1/*: any*/),
+    "selections": (v2/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -148,19 +151,19 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "AssignmentQuery",
-    "selections": (v1/*: any*/)
+    "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "5b274fb3d6a322232f1a0f2e3ebd9f23",
+    "cacheID": "74146bf1ad7c18998bf282b02119c85c",
     "id": null,
     "metadata": {},
     "name": "AssignmentQuery",
     "operationKind": "query",
-    "text": "query AssignmentQuery(\n  $id: ID!\n) {\n  viewer {\n    assignment(id: $id) {\n      allowLateSubmissions\n      courseId\n      description\n      endDate\n      id\n      link\n      startDate\n      title\n      active\n    }\n  }\n}\n"
+    "text": "query AssignmentQuery(\n  $id: ID!\n) {\n  viewer {\n    id\n    assignment(id: $id) {\n      id\n      allowLateSubmissions\n      courseId\n      description\n      endDate\n      link\n      startDate\n      title\n      active\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b333e69269720712abcffd97d79bf231";
+(node as any).hash = "7ab332a50f35f5a86267aa0acfada370";
 
 export default node;

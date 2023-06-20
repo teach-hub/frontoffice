@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { useLazyLoadQuery } from 'react-relay';
 import { Flex, Heading, Link, ListItem, Text } from '@chakra-ui/react';
 import { getAssignment } from 'graphql/utils/assignments';
 import {
@@ -22,7 +23,10 @@ import PageDataContainer from 'components/PageDataContainer';
 import List from 'components/List';
 import ListIcon from 'components/ListIcon';
 
+import AssignmentQueryDef from 'graphql/AssignmentQuery';
+
 import type { AssignmentQuery$data } from '__generated__/AssignmentQuery.graphql';
+import type { AssignmentQuery } from '__generated__/AssignmentQuery.graphql';
 
 type AssignmentDashboard = NonNullable<
   NonNullable<AssignmentQuery$data['viewer']>['assignment']
@@ -117,11 +121,16 @@ const AssignmentDashboardPage = ({ assignment }: { assignment: AssignmentDashboa
 const AssignmentPageContainer = () => {
   const params = useParams();
 
-  const assignment = getAssignment({
-    assignmentId: params.assignmentId || '',
+  const data = useLazyLoadQuery<AssignmentQuery>(AssignmentQueryDef, {
+    // @ts-expect-error testing
+    id: params.assignmentId,
   });
 
-  if (!assignment) return null;
+  const assignment = data?.viewer?.assignment;
+
+  if (!assignment) {
+    return null;
+  }
 
   return <AssignmentDashboardPage assignment={assignment} />;
 };
