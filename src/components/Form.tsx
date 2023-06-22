@@ -1,43 +1,50 @@
-import { Formik, FormikErrors, FormikValues } from 'formik';
-import { Flex, FormControl, FormErrorMessage, FormLabel } from '@chakra-ui/react';
+import { FormikProps, FormikConfig, Formik, FormikErrors, FormikValues } from 'formik';
+import {
+  Flex,
+  FormControlProps,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+} from '@chakra-ui/react';
 
 import Box from 'components/Box';
 import Button from 'components/Button';
 
 import { theme } from 'theme';
-import { FormErrors } from 'types';
 
-export interface FormInputFieldData {
+type FormInputFieldData<T> = {
   label: string;
-  readError: (errors: FormikErrors<FormikValues>) => string | undefined;
+  readError: (errors: FormikErrors<T>) => FormControlProps['isInvalid'];
   isFieldEnabled?: boolean;
   inputComponent: (
     values: FormikValues,
-    handleChange: (event: React.ChangeEvent<any>) => void
-  ) => JSX.Element;
+    handleChange: (
+      event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => void
+  ) => FormControlProps['children'];
   nextToLabel?: boolean;
-}
+};
 
-export interface OnSubmitFormData {
+type OnSubmitFormData<T> = {
   text: string;
-  onClick: (values: any) => void;
-}
+  onClick: FormikConfig<T>['onSubmit'];
+};
 
-export interface OnCancelFormData {
+type OnCancelFormData<T> = {
   text: string;
-  onClick: () => void;
-}
+  onClick: FormikConfig<T>['onReset'];
+};
 
-export interface FormData<T> {
-  initialValues: T;
-  validateForm: (values: T) => FormErrors<T>;
-  inputFields: FormInputFieldData[];
-  onSubmitForm: OnSubmitFormData;
-  onCancelForm: OnCancelFormData;
+type Props<T> = {
+  initialValues: FormikProps<T>['initialValues'];
+  validateForm: FormikConfig<T>['validate'];
+  inputFields: FormInputFieldData<T>[];
+  onSubmitForm: OnSubmitFormData<T>;
+  onCancelForm: OnCancelFormData<T>;
   buttonsEnabled: boolean;
-}
+};
 
-export const Form = (formData: FormData<any>) => {
+const Form = <T extends FormikValues>(props: Props<T>) => {
   const {
     initialValues,
     inputFields,
@@ -45,7 +52,8 @@ export const Form = (formData: FormData<any>) => {
     onCancelForm,
     onSubmitForm,
     buttonsEnabled,
-  } = formData;
+  } = props;
+
   return (
     <Formik
       initialValues={initialValues}
@@ -95,7 +103,8 @@ export const Form = (formData: FormData<any>) => {
               <Button
                 w={'full'}
                 disabled={isSubmitting || !isValid}
-                onClick={() => handleSubmit()}
+                // @ts-expect-error: FIXME
+                onClick={handleSubmit}
               >
                 {onSubmitForm.text}
               </Button>
@@ -106,3 +115,5 @@ export const Form = (formData: FormData<any>) => {
     </Formik>
   );
 };
+
+export default Form;

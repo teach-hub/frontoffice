@@ -13,7 +13,7 @@ import AssignmentQueryDef from 'graphql/AssignmentQuery';
 import useToast from 'hooks/useToast';
 import { formatDateAsLocaleIsoString } from 'utils/dates';
 
-import { Form } from 'components/Form';
+import Form from 'components/Form';
 import DateInputField from 'components/DateInputField';
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
@@ -202,7 +202,7 @@ const CreateOrUpdateAssignmentsPage = () => {
                 />
               ),
               label: 'Título',
-              readError: e => e.title as string,
+              readError: e => !!e.title,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -217,7 +217,7 @@ const CreateOrUpdateAssignmentsPage = () => {
                 />
               ),
               label: 'Descripción',
-              readError: e => e.description as string,
+              readError: e => !!e.description,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -230,7 +230,7 @@ const CreateOrUpdateAssignmentsPage = () => {
                 />
               ),
               label: 'Link al enunciado',
-              readError: e => e.link as string,
+              readError: e => !!e.link,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -241,7 +241,7 @@ const CreateOrUpdateAssignmentsPage = () => {
                 />
               ),
               label: 'Fecha inicio de entregas',
-              readError: e => e.startDate as string,
+              readError: e => !!e.startDate,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -252,7 +252,7 @@ const CreateOrUpdateAssignmentsPage = () => {
                 />
               ),
               label: 'Fecha límite de entregas',
-              readError: e => e.endDate as string,
+              readError: e => !!e.endDate,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -264,7 +264,7 @@ const CreateOrUpdateAssignmentsPage = () => {
                 />
               ),
               label: 'Aceptar entregas fuera de fecha',
-              readError: e => e.allowLateSubmissions as string,
+              readError: e => !!e.allowLateSubmissions,
               nextToLabel: true,
             },
           ]}

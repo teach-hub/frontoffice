@@ -1,6 +1,6 @@
 import { Flex, Stack, Text } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import { Form } from 'components/Form';
+import Form from 'components/Form';
 import { FormErrors, Mutable } from 'types';
 import React, { Suspense, useState } from 'react';
 import Navigation from 'components/Navigation';
@@ -49,8 +49,9 @@ const CreateRepositoryPage = () => {
       courseId: courseId || '',
     }
   );
-  const [commitCreateRepositoryMutation, isCreateRepositoryMutationInFlight] =
-    useMutation<CreateRepositoryMutation>(CreateRepositoryMutationDef);
+  const [commitCreateRepositoryMutation] = useMutation<CreateRepositoryMutation>(
+    CreateRepositoryMutationDef
+  );
 
   const course = courseQueryData.viewer?.course;
   const courseOrganization = course?.organization;
@@ -227,7 +228,7 @@ const CreateRepositoryPage = () => {
           <Form
             buttonsEnabled={true} // In this page always can use buttons
             initialValues={{
-              organization: courseOrganization,
+              organization: courseOrganization ?? undefined,
               useLastNameOnTemplate: true,
               useFileOnTemplate: true,
             }}
@@ -251,7 +252,7 @@ const CreateRepositoryPage = () => {
                   />
                 ),
                 label: 'Organización de GitHub',
-                readError: e => e.organization as string,
+                readError: e => !!e.organization,
               },
               {
                 inputComponent: (values, handleChange) => (
@@ -264,7 +265,7 @@ const CreateRepositoryPage = () => {
                   />
                 ),
                 label: 'Repositorio base',
-                readError: e => e.baseRepo as string,
+                readError: e => !!e.baseRepo,
               },
               {
                 inputComponent: (values, handleChange) => (
@@ -303,7 +304,7 @@ const CreateRepositoryPage = () => {
                   </Stack>
                 ),
                 label: 'Nombre repositorios',
-                readError: e => e.reposBaseName as string,
+                readError: e => !!e.reposBaseName,
               },
               {
                 inputComponent: (values, _) => (
@@ -317,7 +318,8 @@ const CreateRepositoryPage = () => {
                   />
                 ),
                 label: 'Ejemplo',
-                readError: e => e.reposNameExample as string,
+                // @ts-expect-error: FIXME
+                readError: e => !!e.reposNameExample,
               },
             ]}
           />
@@ -330,9 +332,9 @@ const CreateRepositoryPage = () => {
 
 export default () => {
   return (
-      <Navigation>
-        <Suspense fallback={<div> Cargando... </div>}>
-          <CreateRepositoryPage />
+    <Navigation>
+      <Suspense fallback={<div> Cargando... </div>}>
+        <CreateRepositoryPage />
       </Suspense>
     </Navigation>
   );

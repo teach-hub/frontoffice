@@ -9,7 +9,7 @@ import AvatarImage from 'components/AvatarImage';
 import Box from 'components/Box';
 import Heading from 'components/Heading';
 import Navigation from 'components/Navigation';
-import { Form } from 'components/Form';
+import Form from 'components/Form';
 import InputField from 'components/InputField';
 import PageDataContainer from 'components/PageDataContainer';
 
@@ -153,7 +153,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
                 />
               ),
               label: 'Nombre',
-              readError: e => e.name as string,
+              readError: e => !!e.name,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -167,7 +167,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
                 />
               ),
               label: 'Apellido',
-              readError: e => e.lastName as string,
+              readError: e => !!e.lastName,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -183,7 +183,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
                 />
               ),
               label: 'Padrón',
-              readError: e => e.file as string,
+              readError: e => !!e.file,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -197,7 +197,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
                 />
               ),
               label: 'Email (notificaciones)',
-              readError: e => e.notificationEmail as string,
+              readError: e => !!e.notificationEmail,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -211,7 +211,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
                 />
               ),
               label: 'Usuario de Github',
-              readError: e => e.githubId as string,
+              readError: e => !!e.githubId,
             },
           ]}
         />
