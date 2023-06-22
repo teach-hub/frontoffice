@@ -26,7 +26,7 @@ import useToast from 'hooks/useToast';
 import { FormErrors, Mutable } from 'types';
 
 import Button from 'components/Button';
-import { Form } from 'components/Form';
+import Form from 'components/Form';
 import InputField from 'components/InputField';
 
 import type {
@@ -211,7 +211,7 @@ const LoginPage = (props: LoginPageProps) => {
                 />
               ),
               label: 'Nombre',
-              readError: e => e.name as string,
+              readError: e => !!e.name,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -224,7 +224,7 @@ const LoginPage = (props: LoginPageProps) => {
                 />
               ),
               label: 'Apellido',
-              readError: e => e.lastName as string,
+              readError: e => !!e.lastName,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -237,7 +237,7 @@ const LoginPage = (props: LoginPageProps) => {
                 />
               ),
               label: 'Email (notificaciones)',
-              readError: e => e.notificationEmail as string,
+              readError: e => !!e.notificationEmail,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -252,7 +252,7 @@ const LoginPage = (props: LoginPageProps) => {
                 />
               ),
               label: 'Padrón',
-              readError: e => e.file as string,
+              readError: e => !!e.file,
             },
           ]}
         />
