@@ -28,7 +28,13 @@ import AssignmentQueryDef from 'graphql/AssignmentQuery';
 
 import type { AssignmentQuery } from '__generated__/AssignmentQuery.graphql';
 
-const AssignmentDashboardPage = ({ assignmentId, courseId }: { assignmentId: string, courseId: string }) => {
+const AssignmentDashboardPage = ({
+  assignmentId,
+  courseId,
+}: {
+  assignmentId: string;
+  courseId: string;
+}) => {
   const navigate = useNavigate();
   const courseContext = useUserContext();
 
@@ -61,33 +67,31 @@ const AssignmentDashboardPage = ({ assignmentId, courseId }: { assignmentId: str
 
   return (
     <PageDataContainer>
-      <Flex align={'center'}>
-        <Heading>{assignment.title}</Heading>
-        <Flex marginLeft={'40px'} gap={'20px'}>
-          {courseContext.userHasPermission(Permission.DeleteAssignment) && (
-            <IconButton
-              onClick={() =>
-                /*TODO: TH-93 Delete assignments (with a confirmation pop up) */
-                navigate(`edit`)
-              }
-              aria-label={'Delete'}
-              icon={<PencilIcon size={'medium'} />}
-              variant={'ghost'}
-              color={theme.colors.teachHub.black}
-            />
-          )}
-          {courseContext.userHasPermission(Permission.EditAssignment) && (
-            <IconButton
-              onClick={() => navigate(`edit`)}
-              aria-label={'Edit'}
-              icon={<TrashIcon size={'medium'} />}
-              variant={'ghost'}
-              color={theme.colors.teachHub.red}
-            />
-          )}
-        </Flex>
+      <Heading>{assignment.title}</Heading>
+      <Flex marginLeft={'40px'} gap={'20px'}>
+        {courseContext.userHasPermission(Permission.DeleteAssignment) && (
+          <IconButton
+            onClick={() =>
+              /*TODO: TH-93 Delete assignments (with a confirmation pop up) */
+              navigate(`edit`)
+            }
+            aria-label={'Delete'}
+            icon={<PencilIcon size={'medium'} />}
+            variant={'ghost'}
+            color={theme.colors.teachHub.black}
+          />
+        )}
+        {courseContext.userHasPermission(Permission.EditAssignment) && (
+          <IconButton
+            onClick={() => navigate(`edit`)}
+            aria-label={'Edit'}
+            icon={<TrashIcon size={'medium'} />}
+            variant={'ghost'}
+            color={theme.colors.teachHub.red}
+          />
+        )}
       </Flex>
-      <Flex direction={'column'} gap={'30px'} width={'50%'} paddingY={'30px'}>
+      <Flex direction={'row'} gap={'30px'} paddingY={'30px'}>
         <Text width={'600px'} whiteSpace="pre-wrap">
           {assignment.description}
         </Text>
@@ -123,6 +127,12 @@ const AssignmentDashboardPage = ({ assignmentId, courseId }: { assignmentId: str
             <ListIcon icon={LinkExternalIcon} />
             <RRLink to={'submissions'}>Ver entregas</RRLink>
           </ListItem>
+          {(true || courseContext.userHasPermission(Permission.SubmitAssignment)) && (
+            <ListItem>
+              <ListIcon icon={LinkExternalIcon} />
+              <RRLink to={'submissions/add'}>Realizar nueva entrega</RRLink>
+            </ListItem>
+          )}
         </List>
       </Flex>
     </PageDataContainer>
