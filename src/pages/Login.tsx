@@ -211,7 +211,7 @@ const LoginPage = (props: LoginPageProps) => {
                 />
               ),
               label: 'Nombre',
-              readError: e => !!e.name,
+              readError: e => e.name as string,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -224,7 +224,7 @@ const LoginPage = (props: LoginPageProps) => {
                 />
               ),
               label: 'Apellido',
-              readError: e => !!e.lastName,
+              readError: e => e.lastName as string,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -237,7 +237,7 @@ const LoginPage = (props: LoginPageProps) => {
                 />
               ),
               label: 'Email (notificaciones)',
-              readError: e => !!e.notificationEmail,
+              readError: e => e.notificationEmail as string,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -252,7 +252,7 @@ const LoginPage = (props: LoginPageProps) => {
                 />
               ),
               label: 'Padrón',
-              readError: e => !!e.file,
+              readError: e => e.file as string,
             },
           ]}
         />

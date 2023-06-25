@@ -1,11 +1,25 @@
 import { ReactNode } from 'react';
-import { Box, Table, TableContainer, Tbody, Td, Thead, Tr } from '@chakra-ui/react';
+import {
+  Box,
+  Table,
+  TableRowProps,
+  TableContainer,
+  Tbody,
+  Td,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
 
 import { theme } from 'theme';
 
+type RowOptions = {
+  rowProps?: TableRowProps;
+  content: ReactNode[];
+};
+
 type Props = {
   headers: ReactNode[];
-  cellsContent: ReactNode[][];
+  rowOptions: RowOptions[];
   tableWidth?: string;
   tableHeight?: string;
 };
@@ -37,9 +51,9 @@ export default (props: Props) => {
             </Tr>
           </Thead>
           <Tbody>
-            {props.cellsContent.map((cellContent, k) => (
-              <Tr key={k}>
-                {cellContent.map((cell, i) => (
+            {props.rowOptions.map((options, k) => (
+              <Tr key={k} {...options.rowProps}>
+                {options.content.map((cell, i) => (
                   <Td key={`${i}`} textAlign={'center'}>
                     {cell}
                   </Td>

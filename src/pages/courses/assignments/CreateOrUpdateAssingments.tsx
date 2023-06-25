@@ -202,7 +202,7 @@ const CreateOrUpdateAssignmentsPage = () => {
                 />
               ),
               label: 'Título',
-              readError: e => !!e.title,
+              readError: e => e.title as string,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -217,7 +217,7 @@ const CreateOrUpdateAssignmentsPage = () => {
                 />
               ),
               label: 'Descripción',
-              readError: e => !!e.description,
+              readError: e => e.description as string,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -230,7 +230,7 @@ const CreateOrUpdateAssignmentsPage = () => {
                 />
               ),
               label: 'Link al enunciado',
-              readError: e => !!e.link,
+              readError: e => e.link as string,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -241,7 +241,7 @@ const CreateOrUpdateAssignmentsPage = () => {
                 />
               ),
               label: 'Fecha inicio de entregas',
-              readError: e => !!e.startDate,
+              readError: e => e.startDate as string,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -252,7 +252,7 @@ const CreateOrUpdateAssignmentsPage = () => {
                 />
               ),
               label: 'Fecha límite de entregas',
-              readError: e => !!e.endDate,
+              readError: e => e.endDate as string,
             },
             {
               inputComponent: (values, handleChange) => (
@@ -264,7 +264,7 @@ const CreateOrUpdateAssignmentsPage = () => {
                 />
               ),
               label: 'Aceptar entregas fuera de fecha',
-              readError: e => !!e.allowLateSubmissions,
+              readError: e => e.allowLateSubmissions as string,
               nextToLabel: true,
             },
           ]}

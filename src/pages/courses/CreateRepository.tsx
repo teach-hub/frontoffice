@@ -142,15 +142,17 @@ const CreateRepositoryPage = () => {
             onChange={handleCheckAll}
           />,
         ]}
-        cellsContent={tableData.map(({ checked, userId, lastName, name, file }) => [
-          lastName + `, ${name}`, // FullName
-          file, // File
-          <Checkbox
-            id={'file'}
-            isChecked={checked}
-            onChange={() => handleRowCheck(file, !checked)}
-          />,
-        ])}
+        rowOptions={tableData.map(({ checked, userId, lastName, name, file }) => ({
+          content: [
+            lastName + `, ${name}`, // FullName
+            file, // File
+            <Checkbox
+              id={'file'}
+              isChecked={checked}
+              onChange={() => handleRowCheck(file, !checked)}
+            />,
+          ],
+        }))}
       />
     );
   };
@@ -252,7 +254,7 @@ const CreateRepositoryPage = () => {
                   />
                 ),
                 label: 'Organización de GitHub',
-                readError: e => !!e.organization,
+                readError: e => e.organization as string,
               },
               {
                 inputComponent: (values, handleChange) => (
@@ -265,7 +267,7 @@ const CreateRepositoryPage = () => {
                   />
                 ),
                 label: 'Repositorio base',
-                readError: e => !!e.baseRepo,
+                readError: e => e.baseRepo as string,
               },
               {
                 inputComponent: (values, handleChange) => (
@@ -304,7 +306,7 @@ const CreateRepositoryPage = () => {
                   </Stack>
                 ),
                 label: 'Nombre repositorios',
-                readError: e => !!e.reposBaseName,
+                readError: e => e.reposBaseName as string,
               },
               {
                 inputComponent: (values, _) => (
@@ -319,7 +321,7 @@ const CreateRepositoryPage = () => {
                 ),
                 label: 'Ejemplo',
                 // @ts-expect-error: FIXME
-                readError: e => !!e.reposNameExample,
+                readError: e => e.reposNameExample as string,
               },
             ]}
           />

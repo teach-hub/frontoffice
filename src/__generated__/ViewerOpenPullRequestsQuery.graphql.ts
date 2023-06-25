@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b57c3218b889adfc6fd3f2a9036bb10a>>
+ * @generated SignedSource<<d2ecdc3c4a97f39fc7b9dc417a1d0f45>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,35 +9,34 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type CourseInfoQuery$variables = {
+export type ViewerOpenPullRequestsQuery$variables = {
   courseId: string;
 };
-export type CourseInfoQuery$data = {
+export type ViewerOpenPullRequestsQuery$data = {
   readonly viewer: {
-    readonly availableOrganizations: {
-      readonly names: ReadonlyArray<string>;
-    };
     readonly course: {
       readonly assignments: ReadonlyArray<{
         readonly id: string;
+        readonly title: string | null;
       }>;
       readonly id: string;
-      readonly name: string;
-      readonly organization: string | null;
-      readonly studentsCount: number;
-      readonly subject: {
-        readonly id: string;
-        readonly name: string;
-      };
-      readonly teachersCount: number;
     } | null;
     readonly id: string;
-    readonly name: string;
+    readonly openPullRequests: ReadonlyArray<{
+      readonly id: string;
+      readonly repositoryName: string;
+      readonly title: string;
+      readonly url: string;
+    }>;
+    readonly repositories: ReadonlyArray<{
+      readonly id: string;
+      readonly name: string;
+    }>;
   } | null;
 };
-export type CourseInfoQuery = {
-  response: CourseInfoQuery$data;
-  variables: CourseInfoQuery$variables;
+export type ViewerOpenPullRequestsQuery = {
+  response: ViewerOpenPullRequestsQuery$data;
+  variables: ViewerOpenPullRequestsQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -59,10 +58,17 @@ v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "name",
+  "name": "title",
   "storageKey": null
 },
 v3 = [
+  {
+    "kind": "Variable",
+    "name": "courseId",
+    "variableName": "courseId"
+  }
+],
+v4 = [
   {
     "alias": null,
     "args": null,
@@ -72,7 +78,6 @@ v3 = [
     "plural": false,
     "selections": [
       (v1/*: any*/),
-      (v2/*: any*/),
       {
         "alias": null,
         "args": [
@@ -88,28 +93,6 @@ v3 = [
         "plural": false,
         "selections": [
           (v1/*: any*/),
-          (v2/*: any*/),
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "organization",
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "studentsCount",
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "teachersCount",
-            "storageKey": null
-          },
           {
             "alias": null,
             "args": null,
@@ -117,18 +100,6 @@ v3 = [
             "kind": "LinkedField",
             "name": "assignments",
             "plural": true,
-            "selections": [
-              (v1/*: any*/)
-            ],
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "SubjectType",
-            "kind": "LinkedField",
-            "name": "subject",
-            "plural": false,
             "selections": [
               (v1/*: any*/),
               (v2/*: any*/)
@@ -140,17 +111,45 @@ v3 = [
       },
       {
         "alias": null,
-        "args": null,
-        "concreteType": "ViewerOrganizations",
+        "args": (v3/*: any*/),
+        "concreteType": "RepositoryType",
         "kind": "LinkedField",
-        "name": "availableOrganizations",
-        "plural": false,
+        "name": "repositories",
+        "plural": true,
         "selections": [
+          (v1/*: any*/),
           {
             "alias": null,
             "args": null,
             "kind": "ScalarField",
-            "name": "names",
+            "name": "name",
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": (v3/*: any*/),
+        "concreteType": "UserPullRequestType",
+        "kind": "LinkedField",
+        "name": "openPullRequests",
+        "plural": true,
+        "selections": [
+          (v1/*: any*/),
+          (v2/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "url",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "repositoryName",
             "storageKey": null
           }
         ],
@@ -165,8 +164,8 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "CourseInfoQuery",
-    "selections": (v3/*: any*/),
+    "name": "ViewerOpenPullRequestsQuery",
+    "selections": (v4/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -174,20 +173,20 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "CourseInfoQuery",
-    "selections": (v3/*: any*/)
+    "name": "ViewerOpenPullRequestsQuery",
+    "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "775f83316baab85687667b742d3d1165",
+    "cacheID": "4ab4295b80d51091fb357c790cfd1093",
     "id": null,
     "metadata": {},
-    "name": "CourseInfoQuery",
+    "name": "ViewerOpenPullRequestsQuery",
     "operationKind": "query",
-    "text": "query CourseInfoQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      organization\n      studentsCount\n      teachersCount\n      assignments {\n        id\n      }\n      subject {\n        id\n        name\n      }\n    }\n    availableOrganizations {\n      names\n    }\n  }\n}\n"
+    "text": "query ViewerOpenPullRequestsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n    }\n    repositories(courseId: $courseId) {\n      id\n      name\n    }\n    openPullRequests(courseId: $courseId) {\n      id\n      title\n      url\n      repositoryName\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "bcc571f64cb5a8e8a9d568081d5ad952";
+(node as any).hash = "f65cc428da9505d94af2aef3097364a2";
 
 export default node;

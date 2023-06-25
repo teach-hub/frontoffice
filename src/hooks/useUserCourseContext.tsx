@@ -19,19 +19,19 @@ export enum Permission {
   CreateRepository = 'createRepository',
 }
 
-type EmptyContext = {
+export type EmptyContext = {
   courseId: null;
   userPermissions: never[];
   userIsTeacher: null;
 };
 
-type FetchedContext = {
+export type FetchedContext = {
   courseId: string;
   userPermissions: string[];
   userIsTeacher: boolean;
 };
 
-type CourseContext = (EmptyContext | FetchedContext) & {
+export type CourseContext = (EmptyContext | FetchedContext) & {
   userHasPermission: (p: Permission) => boolean;
 };
 

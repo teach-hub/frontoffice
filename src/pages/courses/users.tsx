@@ -68,18 +68,20 @@ const UsersList = ({
     <>
       <Table
         headers={['', 'Nombre', 'Padrón', 'Email', 'Rol', 'Fecha de creación', '']}
-        cellsContent={filteredUserRoles.map(userRole => {
-          return [
-            <PersonIcon size="medium" />,
-            `${userRole?.user?.name} ${userRole?.user?.lastName}`,
-            userRole?.user?.file,
-            userRole?.user?.notificationEmail,
-            userRole?.role?.name,
-            new Date().toLocaleString(),
-            <Button variant={'ghost'}>
-              <KebabHorizontalIcon />
-            </Button>,
-          ];
+        rowOptions={filteredUserRoles.map(userRole => {
+          return {
+            content: [
+              <PersonIcon size="medium" />,
+              `${userRole?.user?.name} ${userRole?.user?.lastName}`,
+              userRole?.user?.file,
+              userRole?.user?.notificationEmail,
+              userRole?.role?.name,
+              new Date().toLocaleString(),
+              <Button variant={'ghost'}>
+                <KebabHorizontalIcon />
+              </Button>,
+            ],
+          };
         })}
       />
       {!filteredUserRoles.length && emptyState}
