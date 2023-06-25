@@ -14,13 +14,12 @@ import { theme } from 'theme';
 
 type FormInputFieldData<T> = {
   label: string;
-  readError: (errors: FormikErrors<T>) => FormControlProps['isInvalid'];
+  readError: (errors: FormikErrors<T>) => string;
   isFieldEnabled?: boolean;
   inputComponent: (
     values: FormikValues,
-    handleChange: (
-      event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => void
+    handleChange: FormikProps<T>['handleChange'],
+    setFieldValue: FormikProps<T>['setFieldValue']
   ) => FormControlProps['children'];
   nextToLabel?: boolean;
 };
@@ -69,6 +68,7 @@ const Form = <T extends FormikValues>(props: Props<T>) => {
         isSubmitting,
         isValid,
         handleSubmit,
+        setFieldValue,
       }) => (
         <Flex direction={'column'} justifyContent={'space-evenly '} gap={'20px'}>
           {inputFields
@@ -82,7 +82,7 @@ const Form = <T extends FormikValues>(props: Props<T>) => {
                 <FormLabel fontWeight="bold" fontSize={theme.styles.global.body.fontSize}>
                   {label}
                 </FormLabel>
-                {inputComponent(values, handleChange)}
+                {inputComponent(values, handleChange, setFieldValue)}
                 <FormErrorMessage>{readError(errors)}</FormErrorMessage>
               </FormControl>
             ))}

@@ -254,7 +254,7 @@ const CreateRepositoryPage = () => {
                   />
                 ),
                 label: 'Organización de GitHub',
-                readError: e => !!e.organization,
+                readError: e => e.organization as string,
               },
               {
                 inputComponent: (values, handleChange) => (
@@ -267,7 +267,7 @@ const CreateRepositoryPage = () => {
                   />
                 ),
                 label: 'Repositorio base',
-                readError: e => !!e.baseRepo,
+                readError: e => e.baseRepo as string,
               },
               {
                 inputComponent: (values, handleChange) => (
@@ -306,7 +306,7 @@ const CreateRepositoryPage = () => {
                   </Stack>
                 ),
                 label: 'Nombre repositorios',
-                readError: e => !!e.reposBaseName,
+                readError: e => e.reposBaseName as string,
               },
               {
                 inputComponent: (values, _) => (
@@ -321,7 +321,7 @@ const CreateRepositoryPage = () => {
                 ),
                 label: 'Ejemplo',
                 // @ts-expect-error: FIXME
-                readError: e => !!e.reposNameExample,
+                readError: e => e.reposNameExample as string,
               },
             ]}
           />

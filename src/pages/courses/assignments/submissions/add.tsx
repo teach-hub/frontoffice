@@ -1,5 +1,6 @@
 import { useMemo, useState, Suspense } from 'react';
 import { useMutation, useLazyLoadQuery } from 'react-relay';
+import { useParams } from 'react-router-dom';
 
 import AddSubmissionQuery from 'graphql/ViewerOpenPullRequests';
 import CreateSubmissionMutation from 'graphql/CreateSubmissionMutation';
@@ -16,8 +17,13 @@ import { useUserContext } from 'hooks/useUserCourseContext';
 import type { ViewerOpenPullRequestsQuery } from '__generated__/ViewerOpenPullRequestsQuery.graphql';
 import type { CreateSubmissionMutation as CreateSubmissionMutationType } from '__generated__/CreateSubmissionMutation.graphql';
 
+type FormValues = Omit<CreateSubmissionMutationType['variables'], 'courseId'> & {
+  repository: string;
+};
+
 const NewSubmissionPageContainer = () => {
   const courseContext = useUserContext();
+  const { assignmentId } = useParams();
 
   const data = useLazyLoadQuery<ViewerOpenPullRequestsQuery>(AddSubmissionQuery, {
     courseId: courseContext.courseId || '',
@@ -26,40 +32,19 @@ const NewSubmissionPageContainer = () => {
     CreateSubmissionMutation
   );
 
-  const [repositoryName, setRepositoryName] = useState<null | string>(
-    data.viewer?.repositories[0].name || null
-  );
-
-  const filteredPRs = useMemo(
-    () =>
-      data.viewer?.openPullRequests.filter(
-        pullRequest => pullRequest.repositoryName === repositoryName
-      ) || [],
-    [data, repositoryName]
-  );
-
-  const [pullRequestUrl, setPullRequestUrl] = useState<null | string>(filteredPRs[0].url);
-  const [assignmentId, setAssignmentId] = useState<null | string>(null);
-
-  type FormValues = CreateSubmissionMutationType['variables'];
-
   const handleSubmit = (values: FormValues) => {
-    console.log('Submitting', {
-      assignmentId,
-      pullRequestUrl,
-      description: values.description,
-    });
-
-    if (courseContext.courseId && assignmentId && pullRequestUrl) {
-      commitMutation({
-        variables: {
-          courseId: courseContext.courseId,
-          assignmentId,
-          pullRequestUrl,
-          description: values.description,
-        },
-      });
+    if (!courseContext.courseId || !assignmentId || !values.pullRequestUrl) {
+      return;
     }
+
+    commitMutation({
+      variables: {
+        courseId: courseContext.courseId,
+        assignmentId: values.assignmentId,
+        pullRequestUrl: values.pullRequestUrl,
+        description: values.description,
+      },
+    });
   };
 
   return (
@@ -67,65 +52,98 @@ const NewSubmissionPageContainer = () => {
       <Heading margin="30px 0"> Nueva entrega </Heading>
       <Form
         initialValues={{
-          assignmentId: '',
-          courseId: '',
+          assignmentId: assignmentId || '',
           pullRequestUrl: '',
           description: '',
+          repository: '',
+        }}
+        validateForm={values => {
+          const errors: Record<string, string> = {};
+
+          if (!values.pullRequestUrl) {
+            errors['pullRequestUrl'] = 'Tenes que seleccionar un pull request abierto';
+          }
+
+          return errors;
         }}
         inputFields={[
           {
-            inputComponent: () => (
-              <Select onChange={changes => setAssignmentId(changes.currentTarget.value)}>
+            inputComponent: (values, handleChange, setFieldValue) => (
+              <Select
+                onChange={changes =>
+                  setFieldValue('assignmentId', changes.currentTarget.value)
+                }
+                value={values.assignmentId}
+                isDisabled
+              >
+                <option disabled value="">
+                  Elegi un TP
+                </option>
                 {data.viewer?.course?.assignments.map(assignment => (
                   <option value={assignment.id}>{assignment.title}</option>
                 ))}
               </Select>
             ),
             label: 'Trabajo practico',
-            readError: () => false,
+            readError: errors => errors.assignmentId as string,
           },
           {
-            inputComponent: () => (
+            inputComponent: (values, _, setFieldValue) => (
               <Select
-                onChange={changes => setRepositoryName(changes.currentTarget.value)}
+                onChange={changes => {
+                  setFieldValue('repository', changes.currentTarget.value);
+                  setFieldValue('pullRequestUrl', '');
+                }}
+                value={values.repository}
               >
+                <option disabled value="">
+                  Elegi un repositorio
+                </option>
                 {data.viewer?.repositories.map(repository => (
                   <option value={repository.name}>{repository.name}</option>
                 ))}
               </Select>
             ),
             label: 'Repositorio',
-            readError: () => false,
+            readError: errors => errors.repository as string,
           },
           {
-            inputComponent: () => (
-              <Select
-                onChange={changes => setPullRequestUrl(changes.currentTarget.value)}
-              >
-                {filteredPRs.map(pullRequest => (
-                  <option value={pullRequest.url}>{pullRequest.title}</option>
-                ))}
-              </Select>
-            ),
+            inputComponent: (values, _, setFieldValue) => {
+              const availablePullRequests =
+                data.viewer?.openPullRequests.filter(
+                  pullRequest => pullRequest.repositoryName === values.repository
+                ) || [];
+
+              return (
+                <Select
+                  onChange={changes =>
+                    setFieldValue('pullRequestUrl', changes.currentTarget.value)
+                  }
+                  value={values.pullRequestUrl}
+                  isDisabled={!values.repository}
+                >
+                  <option disabled value="">
+                    Elegi un pull request abierto
+                  </option>
+                  {availablePullRequests.map(pullRequest => (
+                    <option value={pullRequest.url}>{pullRequest.title}</option>
+                  ))}
+                </Select>
+              );
+            },
             label: 'Pull request',
-            readError: () => false,
+            readError: errors => errors.pullRequestUrl as string,
           },
           {
-            inputComponent: (value, handleChange) => (
-              <Input
-                id={'description'}
-                multiline
-                value={value.description}
-                onChange={handleChange}
-              />
+            inputComponent: (values, handleChange) => (
+              <Input id={'description'} multiline onChange={handleChange} />
             ),
             label: 'Comentarios adicionales',
-            readError: () => false,
+            readError: errors => errors.description as string,
           },
         ]}
         buttonsEnabled
         onSubmitForm={{ text: 'Enviar', onClick: handleSubmit }}
-        validateForm={() => []}
         // eslint-disable-next-line
         onCancelForm={{ text: 'Cancelar', onClick: () => {} }}
       />
