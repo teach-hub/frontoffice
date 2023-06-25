@@ -23,6 +23,8 @@ import Heading from 'components/Heading';
 import List from 'components/List';
 import Text from 'components/Text';
 import ListIcon from 'components/ListIcon';
+import Divider from 'components/Divider';
+import Card from 'components/Card';
 
 import AssignmentQueryDef from 'graphql/AssignmentQuery';
 
@@ -59,7 +61,7 @@ const AssignmentDashboardPage = ({
     itemKey: string;
   }) => (
     <ListItem key={itemKey}>
-      <ListIcon icon={CalendarIcon} />
+      <ListIcon color={theme.colors.teachHub.white} icon={CalendarIcon} />
       <span style={{ fontWeight: 'bold' }}>{text}</span>
       {date ? formatAsSimpleDateTime(date) : '-'}
     </ListItem>
@@ -68,7 +70,16 @@ const AssignmentDashboardPage = ({
   return (
     <PageDataContainer>
       <Heading>{assignment.title}</Heading>
-      <Flex marginLeft={'40px'} gap={'20px'}>
+      <Flex margin="20px 0px" gap={'20px'}>
+        {courseContext.userHasPermission(Permission.EditAssignment) && (
+          <IconButton
+            onClick={() => navigate(`edit`)}
+            aria-label={'Edit'}
+            icon={<PencilIcon size={'medium'} />}
+            variant={'ghost'}
+            color={theme.colors.teachHub.black}
+          />
+        )}
         {courseContext.userHasPermission(Permission.DeleteAssignment) && (
           <IconButton
             onClick={() =>
@@ -76,64 +87,57 @@ const AssignmentDashboardPage = ({
               navigate(`edit`)
             }
             aria-label={'Delete'}
-            icon={<PencilIcon size={'medium'} />}
-            variant={'ghost'}
-            color={theme.colors.teachHub.black}
-          />
-        )}
-        {courseContext.userHasPermission(Permission.EditAssignment) && (
-          <IconButton
-            onClick={() => navigate(`edit`)}
-            aria-label={'Edit'}
             icon={<TrashIcon size={'medium'} />}
             variant={'ghost'}
             color={theme.colors.teachHub.red}
           />
         )}
       </Flex>
-      <Flex direction={'row'} gap={'30px'} paddingY={'30px'}>
-        <Text width={'600px'} whiteSpace="pre-wrap">
+      <Flex direction={'row'}>
+        <Text marginEnd="80px" width={'600px'} whiteSpace="pre-wrap">
           {assignment.description}
         </Text>
-        <List>
-          <DateListItem
-            date={assignment.startDate}
-            text={'Inicio de entregas: '}
-            itemKey={'startDate'}
-          />
-          <DateListItem
-            date={assignment.endDate}
-            text={'Límite de entregas: '}
-            itemKey={'endDate'}
-          />
-          {courseContext.userIsTeacher && (
-            <ListItem key={'allowLateSubmissions'}>
-              <ListIcon icon={AlertIcon} />
-              <span style={{ fontWeight: 'bold' }}>{'Entregas fuera de fecha: '}</span>
-              {assignment.allowLateSubmissions == true ? 'Permitidas' : 'No Permitidas'}
-            </ListItem>
-          )}
-          {assignment.link ? (
-            <ListItem key={'link'}>
-              <ListIcon icon={LinkExternalIcon} />
-              <Link href={assignment.link} isExternal>
-                Ver enunciado
-              </Link>
-            </ListItem>
-          ) : (
-            <></>
-          )}
-          <ListItem>
-            <ListIcon icon={LinkExternalIcon} />
-            <RRLink to={'submissions'}>Ver entregas</RRLink>
-          </ListItem>
-          {(true || courseContext.userHasPermission(Permission.SubmitAssignment)) && (
+        <Card>
+          <List padding="30px">
+            <DateListItem
+              date={assignment.startDate}
+              text={'Inicio de entregas: '}
+              itemKey={'startDate'}
+            />
+            <DateListItem
+              date={assignment.endDate}
+              text={'Límite de entregas: '}
+              itemKey={'endDate'}
+            />
+            {courseContext.userIsTeacher && (
+              <ListItem key={'allowLateSubmissions'}>
+                <ListIcon color={theme.colors.teachHub.white} icon={AlertIcon} />
+                <span style={{ fontWeight: 'bold' }}>{'Entregas fuera de fecha: '}</span>
+                {assignment.allowLateSubmissions == true ? 'Permitidas' : 'No Permitidas'}
+              </ListItem>
+            )}
+            {assignment.link ? (
+              <ListItem key={'link'}>
+                <ListIcon color={theme.colors.teachHub.white} icon={LinkExternalIcon} />
+                <Link href={assignment.link} isExternal>
+                  Ver enunciado
+                </Link>
+              </ListItem>
+            ) : (
+              <></>
+            )}
             <ListItem>
-              <ListIcon icon={LinkExternalIcon} />
-              <RRLink to={'submissions/add'}>Realizar nueva entrega</RRLink>
+              <ListIcon color={theme.colors.teachHub.white} icon={LinkExternalIcon} />
+              <RRLink to={'submissions'}>Ver entregas</RRLink>
             </ListItem>
-          )}
-        </List>
+            {courseContext.userHasPermission(Permission.SubmitAssignment) && (
+              <ListItem>
+                <ListIcon color={theme.colors.teachHub.white} icon={LinkExternalIcon} />
+                <RRLink to={'submissions/add'}>Realizar nueva entrega</RRLink>
+              </ListItem>
+            )}
+          </List>
+        </Card>
       </Flex>
     </PageDataContainer>
   );

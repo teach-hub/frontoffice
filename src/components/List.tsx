@@ -1,8 +1,9 @@
-import { ReactNode } from 'react';
-import { List as ChakraList } from '@chakra-ui/react';
+import { ListProps, List as ChakraList } from '@chakra-ui/react';
 
-const List = ({ children }: { children: ReactNode }) => {
-  return <ChakraList spacing={4}>{children}</ChakraList>;
+type Props = ListProps;
+
+const List = (props: Props) => {
+  return <ChakraList spacing={4} {...props} />;
 };
 
 export default List;
