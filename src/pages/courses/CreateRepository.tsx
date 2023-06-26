@@ -1,4 +1,17 @@
-import { Flex, Stack, Text } from '@chakra-ui/react';
+import {
+  Flex,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Radio,
+  RadioGroup,
+  SimpleGrid,
+  Stack,
+  useDisclosure,
+} from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import Form from 'components/Form';
 import { FormErrors, Mutable } from 'types';
@@ -22,9 +35,12 @@ import {
   CreateRepositoryMutation,
   CreateRepositoryMutation$data,
 } from '__generated__/CreateRepositoryMutation.graphql';
+import { Icon } from '@chakra-ui/icons';
+import { MortarBoardIcon } from '@primer/octicons-react';
+import Button from 'components/Button';
+import Text from 'components/Text';
 
 type RepositoryData = {
-  baseRepo?: string;
   organization?: string;
   reposBaseName?: string;
   useLastNameOnTemplate?: boolean;
@@ -39,8 +55,22 @@ interface TableRowData {
   checked: boolean;
 }
 
+const enum TeacherRepositoryRole {
+  Admin = 'Admin',
+  Maintain = 'Maintain',
+}
+
+interface SelectedRoles {
+  [userId: string]: TeacherRepositoryRole;
+}
+
 const CreateRepositoryPage = () => {
   const { courseId } = useUserContext();
+  const {
+    isOpen: isOpenTeachersModal,
+    onOpen: onOpenTeachersModal,
+    onClose: onCloseTeachersModal,
+  } = useDisclosure();
   const navigate = useNavigate();
   const toast = useToast();
   const courseQueryData = useLazyLoadQuery<CourseCreateRepositoryQuery>(
@@ -97,6 +127,30 @@ const CreateRepositoryPage = () => {
     users: course?.userRoles || [],
     roleFilter: UserRoleFilter.Student,
   });
+
+  const teachers = filterUsers({
+    users: course?.userRoles || [],
+    roleFilter: UserRoleFilter.Teacher,
+  });
+
+  const getInitialRoles = (): SelectedRoles => {
+    const initialRoles: SelectedRoles = {};
+
+    teachers.forEach(teacher => {
+      initialRoles[teacher.user.id] = TeacherRepositoryRole.Admin;
+    });
+
+    return initialRoles;
+  };
+
+  const [selectedRoles, setSelectedRoles] = useState<SelectedRoles>(getInitialRoles);
+
+  const handleRoleChange = (userId: string, value: TeacherRepositoryRole) => {
+    setSelectedRoles(prevState => ({
+      ...prevState,
+      [userId]: value,
+    }));
+  };
 
   const [tableData, setTableData] = useState<TableRowData[]>(
     students.map(student => ({
@@ -176,13 +230,21 @@ const CreateRepositoryPage = () => {
       });
 
     if (courseId) {
+      const userIds = Object.keys(selectedRoles);
+      const adminUserIds = userIds.filter(
+        userId => selectedRoles[userId] === TeacherRepositoryRole.Admin
+      );
+      const maintainUserIds = userIds.filter(
+        userId => selectedRoles[userId] === TeacherRepositoryRole.Maintain
+      );
+
       commitCreateRepositoryMutation({
         variables: {
           organization: courseOrganization || '',
           courseId,
           repositoriesData: studentsRepositoryData,
-          admins: [], // TODO: TH-130 Add admins
-          maintainers: [], // TODO: TH-130 Add maintainers
+          admins: adminUserIds,
+          maintainers: maintainUserIds,
         },
         onCompleted: (response: CreateRepositoryMutation$data, errors) => {
           if (!errors?.length) {
@@ -222,11 +284,19 @@ const CreateRepositoryPage = () => {
       <Heading>Crear Repositorios</Heading>
 
       <Flex justifyContent={'space-between'}>
-        <Flex direction={'column'} gap={'30px'} width={'400px'} paddingY={'20px'}>
+        <Flex direction={'column'} gap={'30px'} width={'500px'} paddingY={'20px'}>
           <Text whiteSpace="pre-wrap">
             Indicar la configuración de los repositorios a crear y seleccionar los alumnos
             a quienes se les crearán sus repositorios en la organización del curso.
           </Text>
+
+          <Button onClick={onOpenTeachersModal} width={'fit-content'}>
+            <Flex align="center">
+              <Icon as={MortarBoardIcon} boxSize={6} marginRight={2} />
+              <Text>Configurar rol de profesores</Text>
+            </Flex>
+          </Button>
+
           <Form
             buttonsEnabled={true} // In this page always can use buttons
             initialValues={{
@@ -255,19 +325,6 @@ const CreateRepositoryPage = () => {
                 ),
                 label: 'Organización de GitHub',
                 readError: e => e.organization as string,
-              },
-              {
-                inputComponent: (values, handleChange) => (
-                  <InputField
-                    id={'baseRepo'}
-                    value={values?.baseRepo}
-                    onChange={handleChange}
-                    placeholder={'https://github.com/usr/repo'}
-                    type={'text'}
-                  />
-                ),
-                label: 'Repositorio base',
-                readError: e => e.baseRepo as string,
               },
               {
                 inputComponent: (values, handleChange) => (
@@ -328,6 +385,41 @@ const CreateRepositoryPage = () => {
         </Flex>
         <StudentsTable />
       </Flex>
+
+      <Modal isOpen={isOpenTeachersModal} onClose={onCloseTeachersModal} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            Seleccione el rol que tendrá cada profesor en los repositorios a crear.
+          </ModalHeader>
+          <ModalBody>
+            <Text></Text>
+            <SimpleGrid columns={2} spacing={2} marginTop={'20px'}>
+              {teachers.map(teacher => (
+                <React.Fragment key={teacher.user.id}>
+                  <Text>{`${teacher.user.name} ${teacher.user.lastName}`}</Text>
+                  <RadioGroup
+                    value={selectedRoles[teacher.user.id] || ''}
+                    onChange={value =>
+                      handleRoleChange(teacher.user.id, value as TeacherRepositoryRole)
+                    }
+                  >
+                    <SimpleGrid columns={2} spacing={2} alignItems="center">
+                      <Radio value={TeacherRepositoryRole.Admin}>
+                        {TeacherRepositoryRole.Admin}
+                      </Radio>
+                      <Radio value={TeacherRepositoryRole.Maintain}>
+                        {TeacherRepositoryRole.Maintain}
+                      </Radio>
+                    </SimpleGrid>
+                  </RadioGroup>
+                </React.Fragment>
+              ))}
+            </SimpleGrid>
+          </ModalBody>
+          <ModalFooter />
+        </ModalContent>
+      </Modal>
     </PageDataContainer>
   );
 };
