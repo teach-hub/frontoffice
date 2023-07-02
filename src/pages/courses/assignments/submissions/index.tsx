@@ -10,6 +10,10 @@ import Heading from 'components/Heading';
 import Table from 'components/Table';
 import Button from 'components/Button';
 import Box from 'components/Box';
+import IconButton from 'components/IconButton';
+import Text from 'components/Text';
+
+import { MarkGithubIcon, GitMergeIcon } from '@primer/octicons-react';
 
 import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
 
@@ -35,10 +39,19 @@ const SubmissionsPage = ({
 
   return (
     <PageDataContainer>
-      <Heading>Entregas</Heading>
+      <Heading>
+        <Text>{'Entregas'}</Text>
+      </Heading>
       <Box padding="30px 0px">
         <Table
-          headers={['Alumno', 'Email', 'Fecha entrega', '']}
+          headers={[
+            'Alumno',
+            'Email',
+            'Fecha entrega',
+            'Pull request',
+            'Repositorio',
+            '',
+          ]}
           rowOptions={submissions.map(s => {
             return {
               rowProps: {
@@ -48,6 +61,18 @@ const SubmissionsPage = ({
                 `${s.user.name} ${s.user.lastName}`,
                 s.description,
                 new Date(s.submittedAt).toLocaleString(),
+                <IconButton
+                  variant={'ghost'}
+                  onClick={() => (window.location.href = s.pullRequestUrl)}
+                  aria-label="pull-request-link"
+                  icon={<GitMergeIcon size="medium" />}
+                />,
+                <IconButton
+                  variant={'ghost'}
+                  onClick={() => (window.location.href = s.pullRequestUrl)}
+                  aria-label="pull-request-link"
+                  icon={<MarkGithubIcon size="medium" />}
+                />,
                 <Button variant={'ghost'}>
                   <KebabHorizontalIcon />
                 </Button>,

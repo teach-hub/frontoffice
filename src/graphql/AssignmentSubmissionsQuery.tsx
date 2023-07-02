@@ -13,6 +13,7 @@ export default graphql`
             id
             description
             submittedAt
+            pullRequestUrl
             user {
               id
               file
