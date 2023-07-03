@@ -1,13 +1,10 @@
 import { Card as ChakraCard, CardBody as ChakraBody, CardProps } from '@chakra-ui/react';
 import { theme } from 'theme';
 
-const CardStyle = {
-  shadow: 'md',
+const defaultStyle = {
   background: theme.colors.teachHub.primaryLight,
-  color: theme.colors.teachHub.white,
-  variant: 'outline',
+  textColor: theme.colors.teachHub.white,
   borderColor: theme.colors.teachHub.black,
-  borderWidth: '1px',
   borderRadius: '10px',
 } as const;
 
@@ -19,9 +16,10 @@ const CardBodyStyle = {
 type Props = CardProps;
 
 export default ({ children, ...rest }: Props) => {
+  const props = { ...defaultStyle, ...rest };
   return (
-    <ChakraCard sx={CardStyle} {...rest}>
-      <ChakraBody sx={CardBodyStyle}>{children}</ChakraBody>
+    <ChakraCard {...props}>
+      <ChakraBody {...CardBodyStyle}>{children}</ChakraBody>
     </ChakraCard>
   );
 };

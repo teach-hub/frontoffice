@@ -218,7 +218,6 @@ const CourseViewContainer = () => {
       <Heading>
         {course.name} - {course.subject.name}
       </Heading>
-      <Divider orientation="horizontal" />
       <CourseStatistics course={course} availableOrganizations={availableOrganizations} />
     </PageDataContainer>
   );

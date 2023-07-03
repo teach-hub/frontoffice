@@ -132,6 +132,12 @@ const AssignmentDashboardPage = ({
                 Ver entregas
               </Link>
             </ListItem>
+            <ListItem>
+              <ListIcon color={theme.colors.teachHub.white} icon={LinkExternalIcon} />
+              <Link as={RRLink} to={'assign-reviewers'}>
+                Assignar correctores
+              </Link>
+            </ListItem>
             {courseContext.userHasPermission(Permission.SubmitAssignment) && (
               <ListItem>
                 <ListIcon color={theme.colors.teachHub.white} icon={LinkExternalIcon} />

@@ -131,7 +131,7 @@ const NavigationBar = () => {
     >
       <HomeButton w="60px" h="70px" onClick={() => navigate('/')} />
 
-      <Divider borderColor={theme.colors.teachHub.primary} h="75%" />
+      <Divider h="75%" />
 
       <HStack flex="1" spacing="auto">
         <MainRoutes />
@@ -189,7 +189,7 @@ const LoadingNavigationBar = () => {
       height={`${NAVIGATION_HEIGHT_PX}px`}
     >
       <HomeButton w="60px" h="70px" />
-      <Divider borderColor={theme.colors.teachHub.primary} h="75%" />
+      <Divider h="75%" />
 
       <HStack flex="1">
         <Skeleton flex="1" height={'30px'} />
