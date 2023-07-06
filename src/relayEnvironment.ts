@@ -2,7 +2,7 @@ import { Environment, Network, RecordSource, Store } from 'relay-runtime';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:4000';
 
-const fetchQuery = async (operation: any, variables: any) => {
+const fetchQuery = async (operation: { text: string | null }, variables: unknown) => {
   const url = `${BACKEND_URL}/graphql`;
 
   const body = JSON.stringify({

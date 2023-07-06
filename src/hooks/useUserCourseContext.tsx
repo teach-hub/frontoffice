@@ -46,7 +46,7 @@ const defaultUserContext: CourseContext = {
   userHasPermission: _noop,
 };
 
-const CourseContext = createContext<CourseContext>({ ...defaultUserContext });
+const _CourseContext = createContext<CourseContext>({ ...defaultUserContext });
 
 const Provider = ({
   children,
@@ -74,7 +74,7 @@ const Provider = ({
   });
 
   return (
-    <CourseContext.Provider value={courseContext}>{children}</CourseContext.Provider>
+    <_CourseContext.Provider value={courseContext}>{children}</_CourseContext.Provider>
   );
 };
 
