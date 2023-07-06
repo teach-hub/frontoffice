@@ -5,6 +5,8 @@
   "parser": "@typescript-eslint/parser",
   "root": true,
   "rules": {
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-redeclare": "error",
     "no-relative-import-paths/no-relative-import-paths": [
       "error",
       { "allowSameFolder": false, "rootDir": "src", "prefix": "" }
