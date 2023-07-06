@@ -8,6 +8,9 @@ const defaultStyle = {
   borderRadius: '10px',
 } as const;
 
+// TODO. Revisar
+// Es medio raro que setee 'display: flex;' para todos los hijos.
+
 const CardBodyStyle = {
   display: 'flex',
   alignItems: 'center',

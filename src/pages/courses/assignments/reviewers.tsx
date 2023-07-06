@@ -1,11 +1,12 @@
 import { Suspense, useState } from 'react';
-import { useLazyLoadQuery, useFragment } from 'react-relay';
+import { useMutation, useLazyLoadQuery, useFragment } from 'react-relay';
 import { graphql } from 'babel-plugin-relay/macro';
 import { useParams } from 'react-router-dom';
 
-import { Stack, Badge, Flex, HStack } from '@chakra-ui/react';
+import { Stack, Badge, Flex, HStack, CheckboxGroup } from '@chakra-ui/react';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 
+import { Checkbox } from 'components/Checkbox';
 import Divider from 'components/Divider';
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
@@ -16,24 +17,59 @@ import Avatar from 'components/Avatar';
 import Box from 'components/Box';
 import Button from 'components/Button';
 
-import type { reviewersQuery } from '__generated__/reviewersQuery.graphql';
-import type { reviewersPreview$key } from '__generated__/reviewersPreview.graphql';
+import CommitReviewersMutationDef from 'graphql/CommitReviewersMutation';
 
-// @ts-expect-error: FIXME
-const AssignmentSettings = ({ onAssign }) => {
+import type { reviewersQuery } from '__generated__/reviewersQuery.graphql';
+import type {
+  reviewersPreview$key,
+  reviewersPreview$data,
+} from '__generated__/reviewersPreview.graphql';
+import type { CommitReviewersMutation } from '__generated__/CommitReviewersMutation.graphql';
+
+type ReviewerInfo = reviewersPreview$data['previewData'][number];
+
+const AssignmentSettings = ({
+  onAssign,
+  onFiltersChange,
+  filters,
+}: {
+  onAssign: any;
+  onFiltersChange: any;
+  filters: any;
+}) => {
   return (
-    <Card opacity="90%" bg="white" variant="elevated" w="500px" alignItems="stretch">
-      <Stack flex="1" bgColor="blue">
-        <Text opacity={100} fontSize={'20'} fontStyle="bold" color="black">
-          Configuracion
-        </Text>
-        <Button onClick={onAssign}>Asignar</Button>
+    <Card opacity="90%" textColor="black" bg="white" variant="elevated" w="500px">
+      <Stack h="100%" flex="1" alignSelf="flex-start">
+        <Text fontSize={'20'}>Configuracion</Text>
+        <Stack>
+          <Text>Estrategia</Text>
+          <CheckboxGroup>
+            <Checkbox
+              onChange={onFiltersChange}
+              isChecked={filters.consecutives}
+              bg="unset"
+            >
+              Consecutivos
+            </Checkbox>
+            <Checkbox
+              onChange={onFiltersChange}
+              isChecked={!filters.consecutives}
+              bg="unset"
+            >
+              Alternados
+            </Checkbox>
+          </CheckboxGroup>
+        </Stack>
       </Stack>
     </Card>
   );
 };
 
-const ReviewerAssignment = ({ reviewer }: { reviewer: any }) => {
+const ReviewerAssignment = ({
+  reviewerInfo: { reviewer, reviewee },
+}: {
+  reviewerInfo: ReviewerInfo;
+}) => {
   return (
     <Flex direction={'row'} alignItems={'center'} margin="20px 0" marginBlockStart="0px">
       <HStack
@@ -46,7 +82,7 @@ const ReviewerAssignment = ({ reviewer }: { reviewer: any }) => {
       >
         <Avatar size="md" />
         <Text w="50%" fontSize="17px">
-          {reviewer.reviewer.name} {reviewer.reviewer.lastName}
+          {reviewer.name} {reviewer.lastName}
         </Text>
       </HStack>
       <ArrowForwardIcon color="black" boxSize={'30px'} margin="0px 18px" />
@@ -54,7 +90,7 @@ const ReviewerAssignment = ({ reviewer }: { reviewer: any }) => {
         <HStack flex="1">
           <Avatar margin="0px 10px" size="sm" />
           <Text>
-            {reviewer.reviewee.name} {reviewer.reviewee.lastName}
+            {reviewee.name} {reviewee.lastName}
           </Text>
           <Text>-</Text>
           <Text>99840</Text>
@@ -65,16 +101,17 @@ const ReviewerAssignment = ({ reviewer }: { reviewer: any }) => {
   );
 };
 
-const AssignPreview = ({ assignmentRef }: { assignmentRef: reviewersPreview$key }) => {
-  const numbers = [];
-  for (let i = 0; i < 50; i++) {
-    numbers.push(i);
-  }
-
-  const data = useFragment(
+const AssignPreview = ({
+  assignmentRef,
+  onCommitPreview,
+}: {
+  assignmentRef: reviewersPreview$key;
+  onCommitPreview: (_: { reviewerId: string; revieweeId: string }[]) => void;
+}) => {
+  const { previewData } = useFragment(
     graphql`
       fragment reviewersPreview on AssignmentType {
-        previewReviewers {
+        previewData: previewReviewers {
           id
           reviewee {
             id
@@ -92,23 +129,27 @@ const AssignPreview = ({ assignmentRef }: { assignmentRef: reviewersPreview$key 
     assignmentRef
   );
 
-  console.log('data', data);
-
   return (
-    <Flex direction="column" grow="4" overflowY={'auto'}>
-      {data.previewReviewers.map((reviewer, i) => {
-        return <ReviewerAssignment key={i} reviewer={reviewer} />;
+    <Flex h="90%" direction="column" overflowY={'auto'}>
+      {previewData.map((reviewer, i) => {
+        return <ReviewerAssignment key={i} reviewerInfo={reviewer} />;
       })}
     </Flex>
   );
 };
 
-const PageContent = () => {
-  const { assignmentId, courseId } = useParams();
+const ReviewersPage = ({
+  courseId,
+  assignmentId,
+}: {
+  courseId: string;
+  assignmentId: string;
+}) => {
+  const [commitMutation] = useMutation<CommitReviewersMutation>(
+    CommitReviewersMutationDef
+  );
 
-  const [showPreview, setShowPreview] = useState(false);
-
-  const data = useLazyLoadQuery<reviewersQuery>(
+  const { viewer } = useLazyLoadQuery<reviewersQuery>(
     graphql`
       query reviewersQuery($courseId: ID!, $assignmentId: ID!) {
         viewer {
@@ -117,6 +158,19 @@ const PageContent = () => {
             id
             assignment(id: $assignmentId) {
               id
+              reviewers {
+                id
+                reviewer {
+                  id
+                  name
+                  lastName
+                }
+                reviewee {
+                  id
+                  name
+                  lastName
+                }
+              }
               ...reviewersPreview
             }
           }
@@ -124,10 +178,39 @@ const PageContent = () => {
       }
     `,
     {
-      courseId: courseId || '',
-      assignmentId: assignmentId || '',
+      courseId,
+      assignmentId,
     }
   );
+
+  const [showPreview, setShowPreview] = useState(false);
+  const [filters, setFilters] = useState({ consecutives: false });
+
+  // TODO. Fetch this from backend.
+  const [reviewers, setReviewers] = useState(viewer?.course?.assignment?.reviewers || []);
+
+  if (!viewer?.course?.assignment) {
+    return null;
+  }
+
+  const { assignment } = viewer.course;
+
+  const onCommitPreview = (toCommitData: { reviewerId: string; revieweeId: string }[]) =>
+    commitMutation({
+      variables: {
+        input: {
+          assignmentId,
+          reviewers: toCommitData.map(x => ({
+            revieweeUserId: x.revieweeId,
+            reviewerUserId: x.reviewerId,
+          })),
+        },
+      },
+    });
+
+  const onFiltersChange = () => {
+    setFilters(current => ({ consecutives: !current.consecutives }));
+  };
 
   return (
     <PageDataContainer>
@@ -136,18 +219,36 @@ const PageContent = () => {
         alignItems={'stretch'}
         h="800px"
         divider={
-          <Box alignSelf="center" h="90%">
-            <Divider margin="0px 30px" />
+          <Box h="90%">
+            <Divider margin="0px 10px" />
           </Box>
         }
       >
-        <AssignmentSettings onAssign={() => setShowPreview(true)} />
-        {showPreview && data.viewer?.course?.assignment && (
-          <AssignPreview assignmentRef={data.viewer?.course?.assignment} />
-        )}
+        <AssignmentSettings
+          onAssign={() => setShowPreview(true)}
+          filters={filters}
+          onFiltersChange={onFiltersChange}
+        />
+        <Stack w="100%">
+          <AssignPreview onCommit={onCommitPreview} assignmentRef={assignment} />
+          <Box textAlign="right">
+            <Button size="sm">Cancelar</Button>
+            <Button size="sm">Guardar</Button>
+          </Box>
+        </Stack>
       </HStack>
     </PageDataContainer>
   );
+};
+
+const PageContent = () => {
+  const { assignmentId, courseId } = useParams();
+
+  if (!assignmentId || !courseId) {
+    return null;
+  }
+
+  return <ReviewersPage assignmentId={assignmentId} courseId={courseId} />;
 };
 
 const AssignReviewersPage = () => {

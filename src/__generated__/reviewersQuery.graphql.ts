@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7d749e4da063fd3f95af96a7650bc163>>
+ * @generated SignedSource<<6aebe88df72dae74a711848eaecbefa8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,6 +19,19 @@ export type reviewersQuery$data = {
     readonly course: {
       readonly assignment: {
         readonly id: string;
+        readonly reviewers: ReadonlyArray<{
+          readonly id: string;
+          readonly reviewee: {
+            readonly id: string;
+            readonly lastName: string;
+            readonly name: string;
+          };
+          readonly reviewer: {
+            readonly id: string;
+            readonly lastName: string;
+            readonly name: string;
+          };
+        }>;
         readonly " $fragmentSpreads": FragmentRefs<"reviewersPreview">;
       } | null;
       readonly id: string;
@@ -79,7 +92,41 @@ v5 = [
     "name": "lastName",
     "storageKey": null
   }
-];
+],
+v6 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "UserType",
+  "kind": "LinkedField",
+  "name": "reviewer",
+  "plural": false,
+  "selections": (v5/*: any*/),
+  "storageKey": null
+},
+v7 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "UserType",
+  "kind": "LinkedField",
+  "name": "reviewee",
+  "plural": false,
+  "selections": (v5/*: any*/),
+  "storageKey": null
+},
+v8 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "ReviewerType",
+  "kind": "LinkedField",
+  "name": "reviewers",
+  "plural": true,
+  "selections": [
+    (v2/*: any*/),
+    (v6/*: any*/),
+    (v7/*: any*/)
+  ],
+  "storageKey": null
+};
 return {
   "fragment": {
     "argumentDefinitions": [
@@ -121,7 +168,8 @@ return {
                     "args": null,
                     "kind": "FragmentSpread",
                     "name": "reviewersPreview"
-                  }
+                  },
+                  (v8/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -172,7 +220,7 @@ return {
                 "selections": [
                   (v2/*: any*/),
                   {
-                    "alias": null,
+                    "alias": "previewData",
                     "args": null,
                     "concreteType": "ReviewerPreviewType",
                     "kind": "LinkedField",
@@ -180,29 +228,12 @@ return {
                     "plural": true,
                     "selections": [
                       (v2/*: any*/),
-                      {
-                        "alias": null,
-                        "args": null,
-                        "concreteType": "UserType",
-                        "kind": "LinkedField",
-                        "name": "reviewee",
-                        "plural": false,
-                        "selections": (v5/*: any*/),
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "concreteType": "UserType",
-                        "kind": "LinkedField",
-                        "name": "reviewer",
-                        "plural": false,
-                        "selections": (v5/*: any*/),
-                        "storageKey": null
-                      }
+                      (v7/*: any*/),
+                      (v6/*: any*/)
                     ],
                     "storageKey": null
-                  }
+                  },
+                  (v8/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -215,16 +246,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "27a052e3372b4fffe4f327ccacfd1d84",
+    "cacheID": "44d5a33c2a6b9bbdc2583d69a833b606",
     "id": null,
     "metadata": {},
     "name": "reviewersQuery",
     "operationKind": "query",
-    "text": "query reviewersQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        ...reviewersPreview\n      }\n    }\n  }\n}\n\nfragment reviewersPreview on AssignmentType {\n  previewReviewers {\n    id\n    reviewee {\n      id\n      name\n      lastName\n    }\n    reviewer {\n      id\n      name\n      lastName\n    }\n  }\n}\n"
+    "text": "query reviewersQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        ...reviewersPreview\n        reviewers {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n          reviewee {\n            id\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n\nfragment reviewersPreview on AssignmentType {\n  previewData: previewReviewers {\n    id\n    reviewee {\n      id\n      name\n      lastName\n    }\n    reviewer {\n      id\n      name\n      lastName\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "2311bda900fda41cbbd5f7b9b47ca4e4";
+(node as any).hash = "69419401f68bf22697184947f74505cb";
 
 export default node;

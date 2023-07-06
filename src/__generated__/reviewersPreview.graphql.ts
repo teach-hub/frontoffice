@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6bb28dc2fc9ff805735e6a44999f1abb>>
+ * @generated SignedSource<<21852e6d69db990f75e3ecce72893cda>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { Fragment, ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type reviewersPreview$data = {
-  readonly previewReviewers: ReadonlyArray<{
+  readonly previewData: ReadonlyArray<{
     readonly id: string;
     readonly reviewee: {
       readonly id: string;
@@ -63,7 +63,7 @@ return {
   "name": "reviewersPreview",
   "selections": [
     {
-      "alias": null,
+      "alias": "previewData",
       "args": null,
       "concreteType": "ReviewerPreviewType",
       "kind": "LinkedField",
@@ -100,6 +100,6 @@ return {
 };
 })();
 
-(node as any).hash = "3f44882a0abaa2ca52ee91274e0f09b3";
+(node as any).hash = "6ba770fbdcba5eeb5d1484ae1cd5e11f";
 
 export default node;
