@@ -3,7 +3,7 @@ import { useMutation, useLazyLoadQuery, useFragment } from 'react-relay';
 import { graphql } from 'babel-plugin-relay/macro';
 import { useParams } from 'react-router-dom';
 
-import { Stack, Badge, Flex, HStack, CheckboxGroup } from '@chakra-ui/react';
+import { Switch, Stack, Badge, Flex, HStack, CheckboxGroup } from '@chakra-ui/react';
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 
 import { Checkbox } from 'components/Checkbox';
@@ -26,15 +26,18 @@ import type {
 } from '__generated__/reviewersPreview.graphql';
 import type { CommitReviewersMutation } from '__generated__/CommitReviewersMutation.graphql';
 
-type ReviewerInfo = reviewersPreview$data['previewData'][number];
+type ReviewerInfo = reviewersPreview$data['previewReviewers'][number];
 
 const AssignmentSettings = ({
   onAssign,
   onFiltersChange,
   filters,
 }: {
+  // eslint-disable-next-line
   onAssign: any;
+  // eslint-disable-next-line
   onFiltersChange: any;
+  // eslint-disable-next-line
   filters: any;
 }) => {
   return (
@@ -43,22 +46,9 @@ const AssignmentSettings = ({
         <Text fontSize={'20'}>Configuracion</Text>
         <Stack>
           <Text>Estrategia</Text>
-          <CheckboxGroup>
-            <Checkbox
-              onChange={onFiltersChange}
-              isChecked={filters.consecutives}
-              bg="unset"
-            >
-              Consecutivos
-            </Checkbox>
-            <Checkbox
-              onChange={onFiltersChange}
-              isChecked={!filters.consecutives}
-              bg="unset"
-            >
-              Alternados
-            </Checkbox>
-          </CheckboxGroup>
+          <Switch isChecked={filters.consecutives} onChange={onFiltersChange}>
+            Consecutivos
+          </Switch>
         </Stack>
       </Stack>
     </Card>
@@ -108,10 +98,10 @@ const AssignPreview = ({
   assignmentRef: reviewersPreview$key;
   onCommitPreview: (_: { reviewerId: string; revieweeId: string }[]) => void;
 }) => {
-  const { previewData } = useFragment(
+  const { previewReviewers } = useFragment(
     graphql`
       fragment reviewersPreview on AssignmentType {
-        previewData: previewReviewers {
+        previewReviewers(consecutive: $consecutive) {
           id
           reviewee {
             id
@@ -129,9 +119,14 @@ const AssignPreview = ({
     assignmentRef
   );
 
+  console.log(
+    'previewData',
+    previewReviewers.map(x => x.reviewer.name)
+  );
+
   return (
     <Flex h="90%" direction="column" overflowY={'auto'}>
-      {previewData.map((reviewer, i) => {
+      {previewReviewers.map((reviewer, i) => {
         return <ReviewerAssignment key={i} reviewerInfo={reviewer} />;
       })}
     </Flex>
@@ -149,9 +144,12 @@ const ReviewersPage = ({
     CommitReviewersMutationDef
   );
 
+  const [showPreview, setShowPreview] = useState(false);
+  const [filters, setFilters] = useState({ consecutives: false });
+
   const { viewer } = useLazyLoadQuery<reviewersQuery>(
     graphql`
-      query reviewersQuery($courseId: ID!, $assignmentId: ID!) {
+      query reviewersQuery($courseId: ID!, $assignmentId: ID!, $consecutive: Boolean!) {
         viewer {
           id
           course(id: $courseId) {
@@ -180,13 +178,15 @@ const ReviewersPage = ({
     {
       courseId,
       assignmentId,
+      consecutive: filters.consecutives,
     }
   );
 
-  const [showPreview, setShowPreview] = useState(false);
-  const [filters, setFilters] = useState({ consecutives: false });
+  console.log(
+    'Fetched w',
+    JSON.stringify({ courseId, assignmentId, filters: filters.consecutives })
+  );
 
-  // TODO. Fetch this from backend.
   const [reviewers, setReviewers] = useState(viewer?.course?.assignment?.reviewers || []);
 
   if (!viewer?.course?.assignment) {
@@ -208,9 +208,7 @@ const ReviewersPage = ({
       },
     });
 
-  const onFiltersChange = () => {
-    setFilters(current => ({ consecutives: !current.consecutives }));
-  };
+  const onFiltersChange = () => setFilters({ consecutives: !filters.consecutives });
 
   return (
     <PageDataContainer>
@@ -230,7 +228,7 @@ const ReviewersPage = ({
           onFiltersChange={onFiltersChange}
         />
         <Stack w="100%">
-          <AssignPreview onCommit={onCommitPreview} assignmentRef={assignment} />
+          <AssignPreview onCommitPreview={onCommitPreview} assignmentRef={assignment} />
           <Box textAlign="right">
             <Button size="sm">Cancelar</Button>
             <Button size="sm">Guardar</Button>

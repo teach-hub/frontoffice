@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6aebe88df72dae74a711848eaecbefa8>>
+ * @generated SignedSource<<9157844defaaaca6a3cc967203110b5a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,6 +12,7 @@ import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type reviewersQuery$variables = {
   assignmentId: string;
+  consecutive: boolean;
   courseId: string;
 };
 export type reviewersQuery$data = {
@@ -53,31 +54,36 @@ var v0 = {
 v1 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "courseId"
+  "name": "consecutive"
 },
 v2 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "courseId"
+},
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v3 = [
+v4 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "courseId"
   }
 ],
-v4 = [
+v5 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "assignmentId"
   }
 ],
-v5 = [
-  (v2/*: any*/),
+v6 = [
+  (v3/*: any*/),
   {
     "alias": null,
     "args": null,
@@ -93,27 +99,27 @@ v5 = [
     "storageKey": null
   }
 ],
-v6 = {
+v7 = {
   "alias": null,
   "args": null,
   "concreteType": "UserType",
   "kind": "LinkedField",
   "name": "reviewer",
   "plural": false,
-  "selections": (v5/*: any*/),
+  "selections": (v6/*: any*/),
   "storageKey": null
 },
-v7 = {
+v8 = {
   "alias": null,
   "args": null,
   "concreteType": "UserType",
   "kind": "LinkedField",
   "name": "reviewee",
   "plural": false,
-  "selections": (v5/*: any*/),
+  "selections": (v6/*: any*/),
   "storageKey": null
 },
-v8 = {
+v9 = {
   "alias": null,
   "args": null,
   "concreteType": "ReviewerType",
@@ -121,9 +127,9 @@ v8 = {
   "name": "reviewers",
   "plural": true,
   "selections": [
-    (v2/*: any*/),
-    (v6/*: any*/),
-    (v7/*: any*/)
+    (v3/*: any*/),
+    (v7/*: any*/),
+    (v8/*: any*/)
   ],
   "storageKey": null
 };
@@ -131,7 +137,8 @@ return {
   "fragment": {
     "argumentDefinitions": [
       (v0/*: any*/),
-      (v1/*: any*/)
+      (v1/*: any*/),
+      (v2/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
@@ -145,31 +152,31 @@ return {
         "name": "viewer",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
+          (v3/*: any*/),
           {
             "alias": null,
-            "args": (v3/*: any*/),
+            "args": (v4/*: any*/),
             "concreteType": "CourseType",
             "kind": "LinkedField",
             "name": "course",
             "plural": false,
             "selections": [
-              (v2/*: any*/),
+              (v3/*: any*/),
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v5/*: any*/),
                 "concreteType": "AssignmentType",
                 "kind": "LinkedField",
                 "name": "assignment",
                 "plural": false,
                 "selections": [
-                  (v2/*: any*/),
+                  (v3/*: any*/),
+                  (v9/*: any*/),
                   {
                     "args": null,
                     "kind": "FragmentSpread",
                     "name": "reviewersPreview"
-                  },
-                  (v8/*: any*/)
+                  }
                 ],
                 "storageKey": null
               }
@@ -186,8 +193,9 @@ return {
   "kind": "Request",
   "operation": {
     "argumentDefinitions": [
-      (v1/*: any*/),
-      (v0/*: any*/)
+      (v2/*: any*/),
+      (v0/*: any*/),
+      (v1/*: any*/)
     ],
     "kind": "Operation",
     "name": "reviewersQuery",
@@ -200,40 +208,46 @@ return {
         "name": "viewer",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
+          (v3/*: any*/),
           {
             "alias": null,
-            "args": (v3/*: any*/),
+            "args": (v4/*: any*/),
             "concreteType": "CourseType",
             "kind": "LinkedField",
             "name": "course",
             "plural": false,
             "selections": [
-              (v2/*: any*/),
+              (v3/*: any*/),
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v5/*: any*/),
                 "concreteType": "AssignmentType",
                 "kind": "LinkedField",
                 "name": "assignment",
                 "plural": false,
                 "selections": [
-                  (v2/*: any*/),
+                  (v3/*: any*/),
+                  (v9/*: any*/),
                   {
-                    "alias": "previewData",
-                    "args": null,
+                    "alias": null,
+                    "args": [
+                      {
+                        "kind": "Variable",
+                        "name": "consecutive",
+                        "variableName": "consecutive"
+                      }
+                    ],
                     "concreteType": "ReviewerPreviewType",
                     "kind": "LinkedField",
                     "name": "previewReviewers",
                     "plural": true,
                     "selections": [
-                      (v2/*: any*/),
-                      (v7/*: any*/),
-                      (v6/*: any*/)
+                      (v3/*: any*/),
+                      (v8/*: any*/),
+                      (v7/*: any*/)
                     ],
                     "storageKey": null
-                  },
-                  (v8/*: any*/)
+                  }
                 ],
                 "storageKey": null
               }
@@ -246,16 +260,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "44d5a33c2a6b9bbdc2583d69a833b606",
+    "cacheID": "739b3bf9110fdf9ba0f59d697dbd347d",
     "id": null,
     "metadata": {},
     "name": "reviewersQuery",
     "operationKind": "query",
-    "text": "query reviewersQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        ...reviewersPreview\n        reviewers {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n          reviewee {\n            id\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n\nfragment reviewersPreview on AssignmentType {\n  previewData: previewReviewers {\n    id\n    reviewee {\n      id\n      name\n      lastName\n    }\n    reviewer {\n      id\n      name\n      lastName\n    }\n  }\n}\n"
+    "text": "query reviewersQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $consecutive: Boolean!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        reviewers {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n          reviewee {\n            id\n            name\n            lastName\n          }\n        }\n        ...reviewersPreview\n      }\n    }\n  }\n}\n\nfragment reviewersPreview on AssignmentType {\n  previewReviewers(consecutive: $consecutive) {\n    id\n    reviewee {\n      id\n      name\n      lastName\n    }\n    reviewer {\n      id\n      name\n      lastName\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "69419401f68bf22697184947f74505cb";
+(node as any).hash = "43b6dc0ba00f419025cdead9dda68235";
 
 export default node;

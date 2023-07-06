@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<21852e6d69db990f75e3ecce72893cda>>
+ * @generated SignedSource<<a6e1b4b55123594cca51d86c7927fd4d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { Fragment, ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type reviewersPreview$data = {
-  readonly previewData: ReadonlyArray<{
+  readonly previewReviewers: ReadonlyArray<{
     readonly id: string;
     readonly reviewee: {
       readonly id: string;
@@ -57,14 +57,25 @@ v1 = [
   }
 ];
 return {
-  "argumentDefinitions": [],
+  "argumentDefinitions": [
+    {
+      "kind": "RootArgument",
+      "name": "consecutive"
+    }
+  ],
   "kind": "Fragment",
   "metadata": null,
   "name": "reviewersPreview",
   "selections": [
     {
-      "alias": "previewData",
-      "args": null,
+      "alias": null,
+      "args": [
+        {
+          "kind": "Variable",
+          "name": "consecutive",
+          "variableName": "consecutive"
+        }
+      ],
       "concreteType": "ReviewerPreviewType",
       "kind": "LinkedField",
       "name": "previewReviewers",
@@ -100,6 +111,6 @@ return {
 };
 })();
 
-(node as any).hash = "6ba770fbdcba5eeb5d1484ae1cd5e11f";
+(node as any).hash = "4e32b88ea4b17b087885c8b2092c1d6f";
 
 export default node;
