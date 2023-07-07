@@ -103,6 +103,6 @@ const ContextProvider = ({ children }: { children: JSX.Element }) => {
   );
 };
 
-const useUserContext = () => useContext<CourseContext>(CourseContext);
+const useUserContext = () => useContext<CourseContext>(_CourseContext);
 
 export { ContextProvider, useUserContext };
