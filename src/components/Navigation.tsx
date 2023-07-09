@@ -57,6 +57,7 @@ const NavigationBar = () => {
         viewer {
           id
           name
+          lastName
         }
         ...AvailableRolesFragment
       }
@@ -151,7 +152,7 @@ const NavigationBar = () => {
         content={{
           menuButton: (
             // TODO: TH-67
-            <Avatar src="https://bit.ly/sage-adebayo" />
+            <Avatar name={`${viewerData.viewer.name} ${viewerData.viewer.lastName}`} />
           ),
           items: [
             { content: 'Ver perfil', action: handleGoToProfile },

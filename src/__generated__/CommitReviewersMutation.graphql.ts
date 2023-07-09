@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<cfae0b1254799342f4c1a1eff4688ce5>>
+ * @generated SignedSource<<32a1099a8029218db5c17ddb5ba87c69>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -22,11 +22,17 @@ export type CommitReviewersMutation$variables = {
 };
 export type CommitReviewersMutation$data = {
   readonly assignReviewers: ReadonlyArray<{
+    readonly id: string;
     readonly reviewee: {
+      readonly file: string;
       readonly id: string;
+      readonly lastName: string;
+      readonly name: string;
     };
     readonly reviewer: {
       readonly id: string;
+      readonly lastName: string;
+      readonly name: string;
     };
   }>;
 };
@@ -43,64 +49,89 @@ var v0 = [
     "name": "input"
   }
 ],
-v1 = [
-  {
-    "kind": "Variable",
-    "name": "input",
-    "variableName": "input"
-  }
-],
-v2 = {
+v1 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v3 = [
-  (v2/*: any*/)
-],
-v4 = {
+v2 = {
   "alias": null,
   "args": null,
-  "concreteType": "UserType",
-  "kind": "LinkedField",
-  "name": "reviewer",
-  "plural": false,
-  "selections": (v3/*: any*/),
+  "kind": "ScalarField",
+  "name": "name",
   "storageKey": null
 },
-v5 = {
+v3 = {
   "alias": null,
   "args": null,
-  "concreteType": "UserType",
-  "kind": "LinkedField",
-  "name": "reviewee",
-  "plural": false,
-  "selections": (v3/*: any*/),
+  "kind": "ScalarField",
+  "name": "lastName",
   "storageKey": null
-};
+},
+v4 = [
+  {
+    "alias": null,
+    "args": [
+      {
+        "kind": "Variable",
+        "name": "input",
+        "variableName": "input"
+      }
+    ],
+    "concreteType": "ReviewerType",
+    "kind": "LinkedField",
+    "name": "assignReviewers",
+    "plural": true,
+    "selections": [
+      (v1/*: any*/),
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": "UserType",
+        "kind": "LinkedField",
+        "name": "reviewer",
+        "plural": false,
+        "selections": [
+          (v1/*: any*/),
+          (v2/*: any*/),
+          (v3/*: any*/)
+        ],
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": "UserType",
+        "kind": "LinkedField",
+        "name": "reviewee",
+        "plural": false,
+        "selections": [
+          (v1/*: any*/),
+          (v2/*: any*/),
+          (v3/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "file",
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
+      }
+    ],
+    "storageKey": null
+  }
+];
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
     "name": "CommitReviewersMutation",
-    "selections": [
-      {
-        "alias": null,
-        "args": (v1/*: any*/),
-        "concreteType": "ReviewerType",
-        "kind": "LinkedField",
-        "name": "assignReviewers",
-        "plural": true,
-        "selections": [
-          (v4/*: any*/),
-          (v5/*: any*/)
-        ],
-        "storageKey": null
-      }
-    ],
+    "selections": (v4/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
@@ -109,34 +140,19 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "CommitReviewersMutation",
-    "selections": [
-      {
-        "alias": null,
-        "args": (v1/*: any*/),
-        "concreteType": "ReviewerType",
-        "kind": "LinkedField",
-        "name": "assignReviewers",
-        "plural": true,
-        "selections": [
-          (v4/*: any*/),
-          (v5/*: any*/),
-          (v2/*: any*/)
-        ],
-        "storageKey": null
-      }
-    ]
+    "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "9af1274abd8204d23814a274b3e1d9e5",
+    "cacheID": "29562386c2f5d92191c6e2f33709d99c",
     "id": null,
     "metadata": {},
     "name": "CommitReviewersMutation",
     "operationKind": "mutation",
-    "text": "mutation CommitReviewersMutation(\n  $input: AssignReviewersInputType!\n) {\n  assignReviewers(input: $input) {\n    reviewer {\n      id\n    }\n    reviewee {\n      id\n    }\n    id\n  }\n}\n"
+    "text": "mutation CommitReviewersMutation(\n  $input: AssignReviewersInputType!\n) {\n  assignReviewers(input: $input) {\n    id\n    reviewer {\n      id\n      name\n      lastName\n    }\n    reviewee {\n      id\n      name\n      lastName\n      file\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "bdb9e66be05f2e2c269ef1a0cd8d2b7f";
+(node as any).hash = "d9b6b53d5410694858eb5404b8a6be9f";
 
 export default node;

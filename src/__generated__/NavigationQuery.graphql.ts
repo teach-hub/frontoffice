@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9993a67be7d82ec119451f1bea2ddeff>>
+ * @generated SignedSource<<9e1d3b01eb3bdb042213a0ced3b87ce6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,6 +14,7 @@ export type NavigationQuery$variables = {};
 export type NavigationQuery$data = {
   readonly viewer: {
     readonly id: string;
+    readonly lastName: string;
     readonly name: string;
   } | null;
   readonly " $fragmentSpreads": FragmentRefs<"AvailableRolesFragment">;
@@ -24,30 +25,38 @@ export type NavigationQuery = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "alias": null,
-    "args": null,
-    "kind": "ScalarField",
-    "name": "id",
-    "storageKey": null
-  },
-  {
-    "alias": null,
-    "args": null,
-    "kind": "ScalarField",
-    "name": "name",
-    "storageKey": null
-  }
-],
+var v0 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
 v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "name",
+  "storageKey": null
+},
+v2 = {
   "alias": null,
   "args": null,
   "concreteType": "ViewerType",
   "kind": "LinkedField",
   "name": "viewer",
   "plural": false,
-  "selections": (v0/*: any*/),
+  "selections": [
+    (v0/*: any*/),
+    (v1/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "lastName",
+      "storageKey": null
+    }
+  ],
   "storageKey": null
 };
 return {
@@ -57,7 +66,7 @@ return {
     "metadata": null,
     "name": "NavigationQuery",
     "selections": [
-      (v1/*: any*/),
+      (v2/*: any*/),
       {
         "args": null,
         "kind": "FragmentSpread",
@@ -73,7 +82,7 @@ return {
     "kind": "Operation",
     "name": "NavigationQuery",
     "selections": [
-      (v1/*: any*/),
+      (v2/*: any*/),
       {
         "alias": null,
         "args": null,
@@ -81,22 +90,25 @@ return {
         "kind": "LinkedField",
         "name": "availableRoles",
         "plural": true,
-        "selections": (v0/*: any*/),
+        "selections": [
+          (v0/*: any*/),
+          (v1/*: any*/)
+        ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "5068afd55d73c34c5d24fd9e42ee6e95",
+    "cacheID": "b343683e7d54a195d426e446fba63fee",
     "id": null,
     "metadata": {},
     "name": "NavigationQuery",
     "operationKind": "query",
-    "text": "query NavigationQuery {\n  viewer {\n    id\n    name\n  }\n  ...AvailableRolesFragment\n}\n\nfragment AvailableRolesFragment on RootQueryType {\n  availableRoles {\n    id\n    name\n  }\n}\n"
+    "text": "query NavigationQuery {\n  viewer {\n    id\n    name\n    lastName\n  }\n  ...AvailableRolesFragment\n}\n\nfragment AvailableRolesFragment on RootQueryType {\n  availableRoles {\n    id\n    name\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "d815b4071368b219544f791a788f9c82";
+(node as any).hash = "4e546e6972a8586942e6fc7f30d9a965";
 
 export default node;
