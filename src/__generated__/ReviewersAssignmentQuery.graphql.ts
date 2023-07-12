@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<cd505525f60599514e875c8ebea81eda>>
+ * @generated SignedSource<<5ea4248a3154e02e078e5699b7da99cf>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,12 +9,16 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type reviewersQuery$variables = {
-  assignmentId: string;
+export type PreviewReviewersFilterInputType = {
   consecutive: boolean;
-  courseId: string;
+  teachersUserIds: ReadonlyArray<string | null>;
 };
-export type reviewersQuery$data = {
+export type ReviewersAssignmentQuery$variables = {
+  assignmentId: string;
+  courseId: string;
+  filters: PreviewReviewersFilterInputType;
+};
+export type ReviewersAssignmentQuery$data = {
   readonly viewer: {
     readonly course: {
       readonly assignment: {
@@ -49,13 +53,21 @@ export type reviewersQuery$data = {
         }>;
       } | null;
       readonly id: string;
+      readonly teachersUserRoles: ReadonlyArray<{
+        readonly id: string;
+        readonly user: {
+          readonly id: string;
+          readonly lastName: string;
+          readonly name: string;
+        };
+      }>;
     } | null;
     readonly id: string;
   } | null;
 };
-export type reviewersQuery = {
-  response: reviewersQuery$data;
-  variables: reviewersQuery$variables;
+export type ReviewersAssignmentQuery = {
+  response: ReviewersAssignmentQuery$data;
+  variables: ReviewersAssignmentQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -67,12 +79,12 @@ var v0 = {
 v1 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "consecutive"
+  "name": "courseId"
 },
 v2 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "courseId"
+  "name": "filters"
 },
 v3 = {
   "alias": null,
@@ -95,21 +107,22 @@ v5 = {
   "name": "lastName",
   "storageKey": null
 },
-v6 = {
+v6 = [
+  (v3/*: any*/),
+  (v4/*: any*/),
+  (v5/*: any*/)
+],
+v7 = {
   "alias": null,
   "args": null,
   "concreteType": "UserType",
   "kind": "LinkedField",
   "name": "reviewer",
   "plural": false,
-  "selections": [
-    (v3/*: any*/),
-    (v4/*: any*/),
-    (v5/*: any*/)
-  ],
+  "selections": (v6/*: any*/),
   "storageKey": null
 },
-v7 = {
+v8 = {
   "alias": null,
   "args": null,
   "concreteType": "UserType",
@@ -130,7 +143,7 @@ v7 = {
   ],
   "storageKey": null
 },
-v8 = [
+v9 = [
   {
     "alias": null,
     "args": null,
@@ -157,6 +170,28 @@ v8 = [
           (v3/*: any*/),
           {
             "alias": null,
+            "args": null,
+            "concreteType": "UserRoleType",
+            "kind": "LinkedField",
+            "name": "teachersUserRoles",
+            "plural": true,
+            "selections": [
+              (v3/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "UserType",
+                "kind": "LinkedField",
+                "name": "user",
+                "plural": false,
+                "selections": (v6/*: any*/),
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          },
+          {
+            "alias": null,
             "args": [
               {
                 "kind": "Variable",
@@ -179,8 +214,8 @@ v8 = [
                 "plural": true,
                 "selections": [
                   (v3/*: any*/),
-                  (v6/*: any*/),
-                  (v7/*: any*/)
+                  (v7/*: any*/),
+                  (v8/*: any*/)
                 ],
                 "storageKey": null
               },
@@ -189,8 +224,8 @@ v8 = [
                 "args": [
                   {
                     "kind": "Variable",
-                    "name": "consecutive",
-                    "variableName": "consecutive"
+                    "name": "input",
+                    "variableName": "filters"
                   }
                 ],
                 "concreteType": "ReviewerPreviewType",
@@ -199,8 +234,8 @@ v8 = [
                 "plural": true,
                 "selections": [
                   (v3/*: any*/),
-                  (v7/*: any*/),
-                  (v6/*: any*/)
+                  (v8/*: any*/),
+                  (v7/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -223,33 +258,33 @@ return {
     ],
     "kind": "Fragment",
     "metadata": null,
-    "name": "reviewersQuery",
-    "selections": (v8/*: any*/),
+    "name": "ReviewersAssignmentQuery",
+    "selections": (v9/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
     "argumentDefinitions": [
-      (v2/*: any*/),
+      (v1/*: any*/),
       (v0/*: any*/),
-      (v1/*: any*/)
+      (v2/*: any*/)
     ],
     "kind": "Operation",
-    "name": "reviewersQuery",
-    "selections": (v8/*: any*/)
+    "name": "ReviewersAssignmentQuery",
+    "selections": (v9/*: any*/)
   },
   "params": {
-    "cacheID": "85a950ac91642bf4667444df406a27dd",
+    "cacheID": "772888ecea834bb492cbd789d18a7c44",
     "id": null,
     "metadata": {},
-    "name": "reviewersQuery",
+    "name": "ReviewersAssignmentQuery",
     "operationKind": "query",
-    "text": "query reviewersQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $consecutive: Boolean!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        reviewers {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n          reviewee {\n            id\n            name\n            lastName\n            file\n          }\n        }\n        previewReviewers(consecutive: $consecutive) {\n          id\n          reviewee {\n            id\n            name\n            lastName\n            file\n          }\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query ReviewersAssignmentQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $filters: PreviewReviewersFilterInputType!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      teachersUserRoles {\n        id\n        user {\n          id\n          name\n          lastName\n        }\n      }\n      assignment(id: $assignmentId) {\n        id\n        reviewers {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n          reviewee {\n            id\n            name\n            lastName\n            file\n          }\n        }\n        previewReviewers(input: $filters) {\n          id\n          reviewee {\n            id\n            name\n            lastName\n            file\n          }\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "27cf3158b9f362912082408b38c1215f";
+(node as any).hash = "531468731f40f0911b32e8112b825457";
 
 export default node;

@@ -1,19 +1,15 @@
-import { Suspense, useState } from 'react';
+import { Suspense, Dispatch, useEffect, useState } from 'react';
 import { useMutation, useLazyLoadQuery } from 'react-relay';
-import { graphql } from 'babel-plugin-relay/macro';
 import { useParams } from 'react-router-dom';
 
-import {
-  Skeleton,
-  Switch,
-  Stack,
-  Badge,
-  Flex,
-  HStack,
-  CheckboxGroup,
-} from '@chakra-ui/react';
-import { ArrowForwardIcon } from '@chakra-ui/icons';
+import { Skeleton, Switch, Stack, Flex, HStack, Checkbox } from '@chakra-ui/react';
 
+import { ArrowForwardIcon } from '@chakra-ui/icons';
+import { ChevronRightIcon } from '@primer/octicons-react';
+
+import useToast from 'hooks/useToast';
+
+import IconButton from 'components/IconButton';
 import Divider from 'components/Divider';
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
@@ -22,116 +18,172 @@ import Card from 'components/Card';
 import Text from 'components/Text';
 import Avatar from 'components/Avatar';
 import Box from 'components/Box';
-import Button from 'components/Button';
 
+import ReviewersAssignmentQueryDef from 'graphql/ReviewersAssignmentQuery';
 import CommitReviewersMutationDef from 'graphql/CommitReviewersMutation';
 
 import type {
-  reviewersQuery,
-  reviewersQuery$data,
-} from '__generated__/reviewersQuery.graphql';
+  ReviewersAssignmentQuery,
+  ReviewersAssignmentQuery$data,
+} from '__generated__/ReviewersAssignmentQuery.graphql';
 import type { CommitReviewersMutation } from '__generated__/CommitReviewersMutation.graphql';
 
-type ReviewerInfo = NonNullable<
-  NonNullable<NonNullable<reviewersQuery$data['viewer']>['course']>['assignment']
->['previewReviewers'][number];
+type Assignment = NonNullable<
+  NonNullable<
+    NonNullable<ReviewersAssignmentQuery$data['viewer']>['course']
+  >['assignment']
+>;
+
+type ReviewerInfo = Assignment['previewReviewers'][number];
+
+type Teacher = NonNullable<
+  NonNullable<ReviewersAssignmentQuery$data['viewer']>['course']
+>['teachersUserRoles'][number]['user'];
+
+type Filters = {
+  teacherIds: string[];
+  consecutives: boolean;
+};
+
+function ContainerLayout({ children }: { children: JSX.Element[] }) {
+  return (
+    <HStack alignItems={'stretch'} h="700px">
+      {children}
+    </HStack>
+  );
+}
 
 function AssignmentSettings({
-  editable,
-  setPreview,
-  preview,
+  teachers,
   onFiltersChange,
   filters,
 }: {
-  editable: boolean;
-  // eslint-disable-next-line
-  onFiltersChange: any;
-  // eslint-disable-next-line
-  filters: any;
-  // eslint-disable-next-line
-  setPreview: any;
-  preview: boolean;
+  onFiltersChange: Dispatch<Filters>;
+  filters: Filters;
+  teachers: Teacher[];
 }) {
   return (
-    <Card opacity="90%" textColor="black" bg="white" variant="elevated" w="600px">
+    <Card opacity="90%" textColor="black" bg="white" variant="elevated" minW="300px">
       <Stack w="100%" h="100%" spacing="50px">
-        <Flex justifyContent="space-between" dir="row">
-          <Text fontSize={'25'}>Configuracion</Text>
+        <Text fontSize={'25'}>Configuracion</Text>
 
-          <Flex alignItems="center">
-            <Switch
-              isDisabled={!editable}
-              size="md"
-              isChecked={preview}
-              onChange={() => setPreview(!preview)}
-            />
-            <Text paddingLeft="10px">Previsualizacion</Text>
-          </Flex>
-        </Flex>
-
-        <Stack>
+        <Stack spacing="20px">
           <Text>Estrategia</Text>
           <Flex alignItems="center">
             <Switch
-              isDisabled={!editable}
               isChecked={filters.consecutives}
-              onChange={onFiltersChange}
+              onChange={() =>
+                onFiltersChange({ ...filters, consecutives: !filters.consecutives })
+              }
             />
-            <Text paddingLeft="10px">Consecutivos</Text>
+            <Text pl="10px">Consecutivos</Text>
           </Flex>
+          <Text>Profesores</Text>
+          {teachers.map((teacher, k) => (
+            <Checkbox
+              key={k}
+              onChange={() =>
+                onFiltersChange({
+                  ...filters,
+                  teacherIds: filters.teacherIds.includes(teacher.id)
+                    ? filters.teacherIds.filter(id => id !== teacher.id)
+                    : [...filters.teacherIds, teacher.id],
+                })
+              }
+            >
+              {teacher.name} {teacher.lastName}
+            </Checkbox>
+          ))}
         </Stack>
       </Stack>
     </Card>
   );
 }
 
-function ReviewerAssignment({
-  reviewerInfo: { reviewer, reviewee },
+function ReviewerCard({ name, lastName }: { name: string; lastName: string }) {
+  return (
+    <HStack
+      borderWidth="1px"
+      borderColor="grey"
+      borderRadius="10px"
+      justifyContent="center"
+      w="300px"
+    >
+      <Avatar name={`${name} ${lastName}`} size="md" />
+      <Text maxW="50%">
+        {name} {lastName}
+      </Text>
+    </HStack>
+  );
+}
+
+function RevieweeCard({
+  name,
+  lastName,
+  file,
 }: {
-  reviewerInfo: ReviewerInfo;
+  name: string;
+  lastName: string;
+  file: string;
 }) {
   return (
-    <Flex direction={'row'} alignItems={'center'} margin="20px 0" marginBlockStart="0px">
-      <HStack
-        borderWidth="1px"
-        borderColor="grey"
-        borderRadius="10px"
-        justifyContent="center"
-        h="70px"
-        w="20%"
-      >
-        <Avatar name={`${reviewer.name} ${reviewer.lastName}`} size="md" />
-        <Text w="50%" fontSize="17px">
-          {reviewer.name} {reviewer.lastName}
-        </Text>
-      </HStack>
-      <ArrowForwardIcon color="black" boxSize={'30px'} margin="0px 18px" />
-      <Card flex="1" opacity={'80%'} alignContent="space-around">
-        <HStack flex="1">
-          <Avatar
-            name={`${reviewee.name} ${reviewee.lastName}`}
-            margin="0px 10px"
-            size="sm"
+    <Card w="100%" opacity={'80%'}>
+      <Avatar name={`${name} ${lastName}`} mx="10px" size="sm" />
+      <Text>
+        {name} {lastName} - {file}
+      </Text>
+    </Card>
+  );
+}
+
+function AssignPreview({
+  reviewers,
+  title = 'Pendientes',
+}: {
+  reviewers: readonly ReviewerInfo[];
+  title?: string;
+}) {
+  return (
+    <Flex flex="1" direction="column" overflowY={'auto'}>
+      <Text>{title}</Text>
+      {reviewers.map(({ reviewer, reviewee }, i) => (
+        <Flex key={i} h="70px" fontSize="15px" alignItems="stretch" my="10px">
+          <ReviewerCard name={reviewer.name} lastName={reviewer.lastName} />
+          <Box display="flex" alignItems="center">
+            <ArrowForwardIcon color="black" boxSize={'30px'} mx="18px" />
+          </Box>
+          <RevieweeCard
+            name={reviewee.name}
+            lastName={reviewee.lastName}
+            file={reviewee.file}
           />
-          <Text>
-            {reviewee.name} {reviewee.lastName}
-          </Text>
-          <Text>-</Text>
-          <Text>{reviewee.file}</Text>
-        </HStack>
-        <Badge borderRadius="5px">Test</Badge>
-      </Card>
+        </Flex>
+      ))}
     </Flex>
   );
 }
 
-function AssignPreview({ reviewers }: { reviewers: readonly ReviewerInfo[] }) {
+function AssignButton({
+  onClick,
+  isDisabled,
+}: {
+  onClick?: () => void;
+  isDisabled: boolean;
+}) {
   return (
-    <Flex h="90%" direction="column" overflowY={'auto'}>
-      {reviewers.map((r, i) => (
-        <ReviewerAssignment key={i} reviewerInfo={r} />
-      ))}
-    </Flex>
+    <Box flexDir="column" display="flex" alignItems="center">
+      <Divider />
+      <IconButton
+        variant="ghost"
+        py="30px"
+        disabled={isDisabled}
+        my="20px"
+        aria-label="arrow right icon"
+        onClick={onClick}
+        icon={<ChevronRightIcon size="large" />}
+      />
+      <Divider />
+    </Box>
   );
 }
 
@@ -142,219 +194,139 @@ function ReviewersPageContainer({
   courseId: string;
   assignmentId: string;
 }) {
+  const toast = useToast();
+
   const [commitMutation] = useMutation<CommitReviewersMutation>(
     CommitReviewersMutationDef
   );
 
-  const [filters, setFilters] = useState({ consecutives: false });
-  const [preview, setPreview] = useState<boolean>(false);
+  const [filters, setFilters] = useState<Filters>({
+    consecutives: false,
+    teacherIds: [],
+  });
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { viewer } = useLazyLoadQuery<reviewersQuery>(
-    graphql`
-      query reviewersQuery($courseId: ID!, $assignmentId: ID!, $consecutive: Boolean!) {
-        viewer {
-          id
-          course(id: $courseId) {
-            id
-            assignment(id: $assignmentId) {
-              id
-              reviewers {
-                id
-                reviewer {
-                  id
-                  name
-                  lastName
-                }
-                reviewee {
-                  id
-                  name
-                  lastName
-                  file
-                }
-              }
-              previewReviewers(consecutive: $consecutive) {
-                id
-                reviewee {
-                  id
-                  name
-                  lastName
-                  file
-                }
-                reviewer {
-                  id
-                  name
-                  lastName
-                }
-              }
-            }
-          }
-        }
-      }
-    `,
+  const { viewer } = useLazyLoadQuery<ReviewersAssignmentQuery>(
+    ReviewersAssignmentQueryDef,
     {
       courseId,
       assignmentId,
-      consecutive: filters.consecutives,
+      filters: { consecutive: filters.consecutives, teachersUserIds: filters.teacherIds },
     }
   );
 
-  const [reviewers, setReviewers] = useState(viewer?.course?.assignment?.reviewers || []);
+  const [reviewers, setReviewers] = useState<readonly ReviewerInfo[]>(
+    viewer?.course?.assignment?.reviewers || []
+  );
+  const [previewReviewers, setPreviewReviewers] = useState<readonly ReviewerInfo[]>(
+    viewer?.course?.assignment?.previewReviewers || []
+  );
 
-  if (!viewer?.course?.assignment) {
-    return null;
-  }
+  useEffect(() => {
+    if (!viewer?.course?.assignment) {
+      return;
+    }
 
-  const { assignment } = viewer.course;
+    const { previewReviewers, reviewers } = viewer.course.assignment;
 
-  const onCommitPreview = (
-    toCommitData: { reviewerId: string; revieweeId: string }[]
+    setPreviewReviewers(previewReviewers);
+    setReviewers(reviewers);
+  }, [viewer]);
+
+  const onCommit = (
+    toCommitData: readonly { reviewer: { id: string }; reviewee: { id: string } }[]
   ) => {
     commitMutation({
       variables: {
         input: {
           assignmentId,
           reviewers: toCommitData.map(x => ({
-            revieweeUserId: x.revieweeId,
-            reviewerUserId: x.reviewerId,
+            revieweeUserId: x.reviewee.id,
+            reviewerUserId: x.reviewer.id,
           })),
         },
       },
       onCompleted(response, errors) {
-        setReviewers(response.assignReviewers);
+        if (errors?.length) {
+          console.log('Error while commiting reviewers', errors);
+          toast({ title: 'No pudimos asignar los correctores', status: 'error' });
+        } else {
+          console.log('Reviewers assigned');
+          setReviewers(response.assignReviewers);
+          setPreviewReviewers([]);
+          toast({ title: 'Correctores asignados', status: 'success' });
+        }
         setIsLoading(false);
       },
     });
   };
 
-  const onFiltersChange = () => {
-    setFilters({ consecutives: !filters.consecutives });
-    setReviewers(assignment?.previewReviewers || []);
-  };
-
   if (isLoading) {
     return (
-      <HStack
-        alignItems={'stretch'}
-        h="800px"
-        divider={
-          <Box h="90%">
-            <Divider margin="0px 10px" />
-          </Box>
-        }
-      >
+      <ContainerLayout>
         <AssignmentSettings
-          editable={false}
-          preview={preview}
+          teachers={[]}
           filters={filters}
-          setPreview={setPreview}
-          onFiltersChange={onFiltersChange}
+          onFiltersChange={() => null}
         />
         <Stack w="100%">
           <Skeleton h="30px" />
           <Skeleton h="30px" />
           <Skeleton h="30px" />
         </Stack>
-      </HStack>
+      </ContainerLayout>
     );
   }
 
   // Si hay previewers lockeamos todo y los mostramos.
-  if (assignment.reviewers.length) {
-    return (
-      <HStack
-        alignItems={'stretch'}
-        h="800px"
-        divider={
-          <Box h="90%">
-            <Divider margin="0px 10px" />
-          </Box>
-        }
-      >
-        <AssignmentSettings
-          editable={false}
-          preview={preview}
-          filters={filters}
-          setPreview={setPreview}
-          onFiltersChange={onFiltersChange}
-        />
-        <Stack w="100%">
-          <AssignPreview reviewers={reviewers} />
-        </Stack>
-      </HStack>
-    );
-  }
-
   return (
-    <HStack
-      alignItems={'stretch'}
-      h="800px"
-      divider={
-        <Box h="90%">
-          <Divider margin="0px 10px" />
-        </Box>
-      }
-    >
+    <ContainerLayout>
       <AssignmentSettings
-        editable
-        preview={preview}
+        teachers={viewer?.course?.teachersUserRoles.map(x => x.user) || []}
         filters={filters}
-        setPreview={setPreview}
-        onFiltersChange={onFiltersChange}
+        onFiltersChange={setFilters}
       />
-      <Stack w="100%">
-        {!preview ? (
-          <Box h="100%">No hay reviewers asignados.</Box>
-        ) : (
-          <AssignPreview reviewers={assignment.previewReviewers} />
-        )}
-        <Box textAlign="right">
-          <Button size="sm">Cancelar</Button>
-          <Button
-            onClick={() => {
-              onCommitPreview(
-                assignment.previewReviewers.map(r => ({
-                  revieweeId: r.reviewee.id,
-                  reviewerId: r.reviewer.id,
-                }))
-              );
-              setIsLoading(true);
-            }}
-            size="sm"
-          >
-            Guardar
-          </Button>
-        </Box>
-      </Stack>
-    </HStack>
+
+      <Box px="10px">
+        <Divider />
+      </Box>
+
+      <AssignPreview title="Pendientes" reviewers={previewReviewers} />
+      <AssignButton
+        onClick={() => {
+          onCommit(previewReviewers);
+          setIsLoading(true);
+        }}
+        isDisabled={!previewReviewers.length}
+      />
+
+      <AssignPreview title="Asignados" reviewers={reviewers} />
+    </ContainerLayout>
   );
 }
 
 function LoadingPageContainer() {
   return (
-    <HStack
-      alignItems={'stretch'}
-      h="800px"
-      divider={
-        <Box h="90%">
-          <Divider margin="0px 10px" />
-        </Box>
-      }
-    >
+    <ContainerLayout>
       <AssignmentSettings
-        editable={false}
-        preview={false}
-        filters={[]}
-        setPreview={() => null}
+        teachers={[]}
+        filters={{ consecutives: false, teacherIds: [] }}
         onFiltersChange={() => null}
       />
-      <Stack w="100%">
+      <Stack spacing="10px " w="100%">
         <Skeleton rounded={'lg'} h="70px" />
         <Skeleton rounded={'lg'} h="70px" />
         <Skeleton rounded={'lg'} h="70px" />
         <Skeleton rounded={'lg'} h="70px" />
       </Stack>
-    </HStack>
+      <AssignButton isDisabled />
+      <Stack spacing="10px" w="100%">
+        <Skeleton rounded={'lg'} h="70px" />
+        <Skeleton rounded={'lg'} h="70px" />
+        <Skeleton rounded={'lg'} h="70px" />
+        <Skeleton rounded={'lg'} h="70px" />
+      </Stack>
+    </ContainerLayout>
   );
 }
 
@@ -367,7 +339,7 @@ const PageContent = () => {
 
   return (
     <PageDataContainer>
-      <Heading margin="20px 0px">Asignar correctores</Heading>
+      <Heading m="20px 0px">Asignar correctores</Heading>
       <Suspense fallback={<LoadingPageContainer />}>
         <ReviewersPageContainer assignmentId={assignmentId} courseId={courseId} />
       </Suspense>
