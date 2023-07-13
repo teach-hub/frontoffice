@@ -26,6 +26,7 @@ import CreateRepository from 'pages/courses/CreateRepository';
 import SubmissionsPage from 'pages/courses/assignments/submissions';
 import SubmissionPage from 'pages/courses/assignments/submissions/submission';
 import AddSubmissionPage from 'pages/courses/assignments/submissions/add';
+import AssignReviewersPage from 'pages/courses/assignments/reviewers';
 
 import { ContextProvider } from 'hooks/useUserCourseContext';
 import { useLocalStorage } from 'hooks/useLocalStorage';
@@ -100,6 +101,7 @@ const App = () => {
               <Route path="create" element={<CreateOrUpdateAssignmentsPage />} />
               <Route path=":assignmentId">
                 <Route index element={<AssignmentPage />} />
+                <Route path="assign-reviewers" element={<AssignReviewersPage />} />
                 <Route path="edit" element={<CreateOrUpdateAssignmentsPage />} />
                 <Route path="submissions">
                   <Route index element={<SubmissionsPage />} />

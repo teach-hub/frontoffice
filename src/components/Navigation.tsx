@@ -57,6 +57,7 @@ const NavigationBar = () => {
         viewer {
           id
           name
+          lastName
         }
         ...AvailableRolesFragment
       }
@@ -131,7 +132,7 @@ const NavigationBar = () => {
     >
       <HomeButton w="60px" h="70px" onClick={() => navigate('/')} />
 
-      <Divider borderColor={theme.colors.teachHub.primary} h="75%" />
+      <Divider h="75%" />
 
       <HStack flex="1" spacing="auto">
         <MainRoutes />
@@ -151,7 +152,7 @@ const NavigationBar = () => {
         content={{
           menuButton: (
             // TODO: TH-67
-            <Avatar src="https://bit.ly/sage-adebayo" />
+            <Avatar name={`${viewerData.viewer.name} ${viewerData.viewer.lastName}`} />
           ),
           items: [
             { content: 'Ver perfil', action: handleGoToProfile },
@@ -189,7 +190,7 @@ const LoadingNavigationBar = () => {
       height={`${NAVIGATION_HEIGHT_PX}px`}
     >
       <HomeButton w="60px" h="70px" />
-      <Divider borderColor={theme.colors.teachHub.primary} h="75%" />
+      <Divider h="75%" />
 
       <HStack flex="1">
         <Skeleton flex="1" height={'30px'} />

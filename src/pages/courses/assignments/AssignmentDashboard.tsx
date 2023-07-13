@@ -113,7 +113,7 @@ const AssignmentDashboardPage = ({
               <ListItem key={'allowLateSubmissions'}>
                 <ListIcon color={theme.colors.teachHub.white} icon={AlertIcon} />
                 <span style={{ fontWeight: 'bold' }}>{'Entregas fuera de fecha: '}</span>
-                {assignment.allowLateSubmissions == true ? 'Permitidas' : 'No Permitidas'}
+                {assignment.allowLateSubmissions ? 'Permitidas' : 'No Permitidas'}
               </ListItem>
             )}
             {assignment.link ? (
@@ -128,12 +128,22 @@ const AssignmentDashboardPage = ({
             )}
             <ListItem>
               <ListIcon color={theme.colors.teachHub.white} icon={LinkExternalIcon} />
-              <RRLink to={'submissions'}>Ver entregas</RRLink>
+              <Link as={RRLink} to={'submissions'}>
+                Ver entregas
+              </Link>
+            </ListItem>
+            <ListItem>
+              <ListIcon color={theme.colors.teachHub.white} icon={LinkExternalIcon} />
+              <Link as={RRLink} to={'assign-reviewers'}>
+                Assignar correctores
+              </Link>
             </ListItem>
             {courseContext.userHasPermission(Permission.SubmitAssignment) && (
               <ListItem>
                 <ListIcon color={theme.colors.teachHub.white} icon={LinkExternalIcon} />
-                <RRLink to={'submissions/add'}>Realizar nueva entrega</RRLink>
+                <Link as={RRLink} to={'submissions/add'}>
+                  Realizar nueva entrega
+                </Link>
               </ListItem>
             )}
           </List>

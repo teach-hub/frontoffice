@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<07cd29cfaf25762cf17fe0369ce196d8>>
+ * @generated SignedSource<<5253dac78b5a4ecc5039e550486b4f26>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -21,6 +21,7 @@ export type AssignmentSubmissionsQuery$data = {
         readonly submissions: ReadonlyArray<{
           readonly description: string | null;
           readonly id: string;
+          readonly pullRequestUrl: string;
           readonly submittedAt: string;
           readonly user: {
             readonly file: string;
@@ -133,6 +134,13 @@ v4 = [
                   {
                     "alias": null,
                     "args": null,
+                    "kind": "ScalarField",
+                    "name": "pullRequestUrl",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
                     "concreteType": "UserType",
                     "kind": "LinkedField",
                     "name": "user",
@@ -194,16 +202,16 @@ return {
     "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "67ccf93d0429644b5e976b7af3a8280e",
+    "cacheID": "c67c62e56b76fa0015366f2b8278b27d",
     "id": null,
     "metadata": {},
     "name": "AssignmentSubmissionsQuery",
     "operationKind": "query",
-    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        submissions {\n          id\n          description\n          submittedAt\n          user {\n            id\n            file\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        submissions {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          user {\n            id\n            file\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "0c7af67b32fc24a55602199f42e7af89";
+(node as any).hash = "646b8033ebcd8ef12758c59bcf2c8785";
 
 export default node;
