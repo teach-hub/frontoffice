@@ -27,7 +27,6 @@ import {
 
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
-import Divider from 'components/Divider';
 import StatCard from 'components/StatCard';
 import Button from 'components/Button';
 import Box from 'components/Box';

@@ -16,8 +16,10 @@ import Heading from 'components/Heading';
 import PageDataContainer from 'components/PageDataContainer';
 import Card from 'components/Card';
 import Text from 'components/Text';
-import Avatar from 'components/Avatar';
 import Box from 'components/Box';
+
+import ReviewerCard from 'components/ReviewerCard';
+import RevieweeCard from 'components/RevieweeCard';
 
 import ReviewersAssignmentQueryDef from 'graphql/ReviewersAssignmentQuery';
 import CommitReviewersMutationDef from 'graphql/CommitReviewersMutation';
@@ -45,52 +47,65 @@ type Filters = {
   consecutives: boolean;
 };
 
-function ContainerLayout({ children }: { children: JSX.Element[] }) {
-  return (
-    <HStack alignItems={'stretch'} h="700px">
-      {children}
-    </HStack>
-  );
-}
+function AssignmentSettings(
+  props:
+    | {
+        setFilters: Dispatch<Filters>;
+        filters: Filters;
+        teachers: Teacher[];
+        isLoading?: false;
+      }
+    | {
+        isLoading: true;
+      }
+) {
+  if (props.isLoading) {
+    return (
+      <Card textColor="black" bg="white" minW="300px">
+        <Stack h="100%" spacing="50px">
+          <Skeleton h="30px" />
+          <Skeleton h="30px" />
+          <Skeleton h="30px" />
+        </Stack>
+      </Card>
+    );
+  }
 
-function AssignmentSettings({
-  teachers,
-  onFiltersChange,
-  filters,
-}: {
-  onFiltersChange: Dispatch<Filters>;
-  filters: Filters;
-  teachers: Teacher[];
-}) {
+  const { setFilters, filters, teachers } = props;
+
+  const buildOnTeacherChange = (teacher: Teacher) => () => {
+    return setFilters({
+      ...filters,
+
+      // Si ya existe en la lista lo saco, sino lo agrego.
+
+      teacherIds: filters.teacherIds.includes(teacher.id)
+        ? filters.teacherIds.filter(id => id !== teacher.id)
+        : [...filters.teacherIds, teacher.id],
+    });
+  };
+
   return (
-    <Card opacity="90%" textColor="black" bg="white" variant="elevated" minW="300px">
-      <Stack w="100%" h="100%" spacing="50px">
-        <Text fontSize={'25'}>Configuracion</Text>
+    <Card textColor="black" bg="white" minW="300px">
+      <Stack h="100%" spacing="50px">
+        <Heading size={'md'}>Configuracion</Heading>
 
         <Stack spacing="20px">
           <Text>Estrategia</Text>
-          <Flex alignItems="center">
+          <Flex gap={'10px'}>
             <Switch
               isChecked={filters.consecutives}
               onChange={() =>
-                onFiltersChange({ ...filters, consecutives: !filters.consecutives })
+                setFilters &&
+                setFilters({ ...filters, consecutives: !filters.consecutives })
               }
             />
-            <Text pl="10px">Consecutivos</Text>
+            <Text>Consecutivos</Text>
           </Flex>
+
           <Text>Profesores</Text>
           {teachers.map((teacher, k) => (
-            <Checkbox
-              key={k}
-              onChange={() =>
-                onFiltersChange({
-                  ...filters,
-                  teacherIds: filters.teacherIds.includes(teacher.id)
-                    ? filters.teacherIds.filter(id => id !== teacher.id)
-                    : [...filters.teacherIds, teacher.id],
-                })
-              }
-            >
+            <Checkbox key={k} onChange={buildOnTeacherChange(teacher)}>
               {teacher.name} {teacher.lastName}
             </Checkbox>
           ))}
@@ -100,65 +115,32 @@ function AssignmentSettings({
   );
 }
 
-function ReviewerCard({ name, lastName }: { name: string; lastName: string }) {
-  return (
-    <HStack
-      borderWidth="1px"
-      borderColor="grey"
-      borderRadius="10px"
-      justifyContent="center"
-      w="300px"
-    >
-      <Avatar name={`${name} ${lastName}`} size="md" />
-      <Text maxW="50%">
-        {name} {lastName}
-      </Text>
-    </HStack>
-  );
-}
-
-function RevieweeCard({
-  name,
-  lastName,
-  file,
-}: {
-  name: string;
-  lastName: string;
-  file: string;
-}) {
-  return (
-    <Card w="100%" opacity={'80%'}>
-      <Avatar name={`${name} ${lastName}`} mx="10px" size="sm" />
-      <Text>
-        {name} {lastName} - {file}
-      </Text>
-    </Card>
-  );
-}
-
-function AssignPreview({
+function AssignmentsContainer({
   reviewers,
-  title = 'Pendientes',
+  title,
+  fallbackText,
 }: {
   reviewers: readonly ReviewerInfo[];
   title?: string;
+  fallbackText?: string;
 }) {
   return (
     <Flex flex="1" direction="column" overflowY={'auto'}>
-      <Text>{title}</Text>
-      {reviewers.map(({ reviewer, reviewee }, i) => (
-        <Flex key={i} h="70px" fontSize="15px" alignItems="stretch" my="10px">
-          <ReviewerCard name={reviewer.name} lastName={reviewer.lastName} />
-          <Box display="flex" alignItems="center">
-            <ArrowForwardIcon color="black" boxSize={'30px'} mx="18px" />
-          </Box>
-          <RevieweeCard
-            name={reviewee.name}
-            lastName={reviewee.lastName}
-            file={reviewee.file}
-          />
-        </Flex>
-      ))}
+      <Heading py="15px" size="md">
+        {title}
+      </Heading>
+
+      {!reviewers.length && <Text>{fallbackText}</Text>}
+
+      {reviewers.length
+        ? reviewers.map(({ reviewer, reviewee }, i) => (
+            <Flex key={i} h="70px" fontSize="15px" my="10px">
+              <ReviewerCard reviewerInfo={reviewer} w="300px" />
+              <ArrowForwardIcon alignSelf={'center'} boxSize={'30px'} mx="18px" />
+              <RevieweeCard revieweeInfo={reviewee} />
+            </Flex>
+          ))
+        : null}
     </Flex>
   );
 }
@@ -262,36 +244,24 @@ function ReviewersPageContainer({
   };
 
   if (isLoading) {
-    return (
-      <ContainerLayout>
-        <AssignmentSettings
-          teachers={[]}
-          filters={filters}
-          onFiltersChange={() => null}
-        />
-        <Stack w="100%">
-          <Skeleton h="30px" />
-          <Skeleton h="30px" />
-          <Skeleton h="30px" />
-        </Stack>
-      </ContainerLayout>
-    );
+    return <LoadingPageContainer />;
   }
 
-  // Si hay previewers lockeamos todo y los mostramos.
   return (
     <ContainerLayout>
       <AssignmentSettings
         teachers={viewer?.course?.teachersUserRoles.map(x => x.user) || []}
         filters={filters}
-        onFiltersChange={setFilters}
+        setFilters={setFilters}
       />
-
       <Box px="10px">
         <Divider />
       </Box>
-
-      <AssignPreview title="Pendientes" reviewers={previewReviewers} />
+      <AssignmentsContainer
+        title="Pendientes"
+        reviewers={previewReviewers}
+        fallbackText="No hay alumnos pendientes a los cuales asignar correctores"
+      />
       <AssignButton
         onClick={() => {
           onCommit(previewReviewers);
@@ -299,8 +269,11 @@ function ReviewersPageContainer({
         }}
         isDisabled={!previewReviewers.length}
       />
-
-      <AssignPreview title="Asignados" reviewers={reviewers} />
+      <AssignmentsContainer
+        title="Asignados"
+        reviewers={reviewers}
+        fallbackText="Asigna los correctores seleccionando los profesores y clickeando en el boton"
+      />
     </ContainerLayout>
   );
 }
@@ -308,11 +281,7 @@ function ReviewersPageContainer({
 function LoadingPageContainer() {
   return (
     <ContainerLayout>
-      <AssignmentSettings
-        teachers={[]}
-        filters={{ consecutives: false, teacherIds: [] }}
-        onFiltersChange={() => null}
-      />
+      <AssignmentSettings isLoading />
       <Stack spacing="10px " w="100%">
         <Skeleton rounded={'lg'} h="70px" />
         <Skeleton rounded={'lg'} h="70px" />
@@ -329,6 +298,12 @@ function LoadingPageContainer() {
     </ContainerLayout>
   );
 }
+
+const ContainerLayout = ({ children }: { children: JSX.Element[] }) => (
+  <HStack alignItems={'stretch'} h="700px">
+    {children}
+  </HStack>
+);
 
 const PageContent = () => {
   const { assignmentId, courseId } = useParams();
