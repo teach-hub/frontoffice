@@ -54,6 +54,7 @@ function AssignmentSettings(
         filters: Filters;
         teachers: Teacher[];
         isLoading?: false;
+        editable: boolean;
       }
     | {
         isLoading: true;
@@ -94,6 +95,7 @@ function AssignmentSettings(
           <Text>Estrategia</Text>
           <Flex gap={'10px'}>
             <Switch
+              disabled={!props.editable}
               isChecked={filters.consecutives}
               onChange={() =>
                 setFilters &&
@@ -105,7 +107,12 @@ function AssignmentSettings(
 
           <Text>Profesores</Text>
           {teachers.map((teacher, k) => (
-            <Checkbox key={k} onChange={buildOnTeacherChange(teacher)}>
+            <Checkbox
+              key={k}
+              disabled={!props.editable}
+              isChecked={filters.teacherIds.includes(teacher.id)}
+              onChange={buildOnTeacherChange(teacher)}
+            >
               {teacher.name} {teacher.lastName}
             </Checkbox>
           ))}
@@ -251,8 +258,9 @@ function ReviewersPageContainer({
     <ContainerLayout>
       <AssignmentSettings
         teachers={viewer?.course?.teachersUserRoles.map(x => x.user) || []}
-        filters={filters}
+        filters={{ ...filters, teacherIds: previewReviewers.map(x => x.reviewer.id) }}
         setFilters={setFilters}
+        editable={!!previewReviewers.length}
       />
       <Box px="10px">
         <Divider />
