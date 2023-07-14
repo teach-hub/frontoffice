@@ -115,6 +115,15 @@ const NavigationBar = () => {
     studentActions.push({ content: 'Realizar entrega' });
   }
 
+  if (courseContext.userHasPermission(Permission.ManageOwnGroups)) {
+    studentActions.push({
+      content: 'Gestionar mis grupos',
+      action: () => {
+        navigate(`/courses/${courseContext.courseId}/my-groups`);
+      },
+    });
+  }
+
   return (
     <HStack
       spacing="25px"
