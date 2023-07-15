@@ -1,11 +1,11 @@
 import { RelayEnvironmentProvider } from 'react-relay';
 import {
-  Outlet,
-  useLocation,
   BrowserRouter,
   Navigate,
+  Outlet,
   Route,
   Routes,
+  useLocation,
 } from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react';
 
@@ -33,6 +33,7 @@ import { useLocalStorage } from 'hooks/useLocalStorage';
 import { isAuthenticated } from 'auth/utils';
 
 import { theme } from 'theme';
+import MyGroups from 'pages/courses/groups/MyGroups';
 
 /*
  * Way to solve protected routes, as routes can not
@@ -96,6 +97,7 @@ const App = () => {
             <Route index element={<CoursePage />} />
             <Route path="users" element={<CourseUsersPage />} />
             <Route path="new-repo" element={<CreateRepository />} />
+            <Route path="my-groups" element={<MyGroups />} />
             <Route path="assignments">
               <Route index element={<CourseAssignmentsPage />} />
               <Route path="create" element={<CreateOrUpdateAssignmentsPage />} />
