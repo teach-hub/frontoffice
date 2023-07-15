@@ -1,6 +1,6 @@
 import { useUserContext } from 'hooks/useUserCourseContext';
 import Navigation from 'components/Navigation';
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import PageDataContainer from 'components/PageDataContainer';
 import Heading from 'components/Heading';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
@@ -13,6 +13,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Select,
   Stack,
   useDisclosure,
 } from '@chakra-ui/react';
@@ -21,7 +22,11 @@ import Box from 'components/Box';
 import Table from 'components/Table';
 import UserCourseGroupsQueryDef from 'graphql/UserCourseGroupsQuery';
 import CreateGroupWithParticipantMutationDef from 'graphql/CreateGroupWithParticipantMutation';
-import { UserCourseGroupsQuery } from '__generated__/UserCourseGroupsQuery.graphql';
+import JoinGroupMutationDef from 'graphql/JoinGroupMutation';
+import {
+  UserCourseGroupsQuery,
+  UserCourseGroupsQuery$data,
+} from '__generated__/UserCourseGroupsQuery.graphql';
 import Menu from 'components/Menu';
 import { Nullable } from 'types';
 import InputField from 'components/InputField';
@@ -33,6 +38,10 @@ import {
 import useToast from 'hooks/useToast';
 import { useNavigate } from 'react-router-dom';
 import { theme } from 'theme';
+import {
+  JoinGroupMutation,
+  JoinGroupMutation$data,
+} from '__generated__/JoinGroupMutation.graphql';
 
 interface AssignmentGroupData {
   assignmentId: string;
@@ -47,32 +56,15 @@ enum AssignmentGroupAction {
   None,
 }
 
-const MyGroupsPage = ({ courseId }: { courseId: string }) => {
-  const navigate = useNavigate();
-  const toast = useToast();
-  const [assignmentGroupAction, setAssignmentGroupAction] = useState(
-    AssignmentGroupAction.None
-  );
-  const [chosenAssignmentGroup, setChosenAssignmentGroup] =
-    useState<Nullable<AssignmentGroupData>>(null);
+type ViewerCourseData = NonNullable<
+  NonNullable<UserCourseGroupsQuery$data['viewer']>['course']
+>;
 
-  /*
-   * Save the chosen group name, for when the user
-   * creates a group
-   * */
-  const [chosenGroupName, setChosenGroupName] = useState('');
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const userCourseGroupsQuery = useLazyLoadQuery<UserCourseGroupsQuery>(
-    UserCourseGroupsQueryDef,
-    {
-      courseId,
-    }
-  );
-  const assignments = userCourseGroupsQuery.viewer?.course?.assignments ?? [];
-  const viewerGroups = userCourseGroupsQuery.viewer?.course?.viewerGroups ?? [];
-
-  const groupsData: AssignmentGroupData[] = assignments
+const mapToAssignmentGroupData = (
+  assignments: NonNullable<ViewerCourseData['assignments']>,
+  viewerGroups: NonNullable<ViewerCourseData['viewerGroups']>
+) => {
+  return assignments
     .map(assignment => {
       const assignmentViewerGroup = viewerGroups.find(
         viewerGroup => viewerGroup.assignmentId === assignment.id
@@ -98,6 +90,50 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
     .filter(
       assignmentGroupData => assignmentGroupData !== undefined
     ) as AssignmentGroupData[];
+};
+
+const MyGroupsPage = ({ courseId }: { courseId: string }) => {
+  const navigate = useNavigate();
+  const toast = useToast();
+  const [assignmentGroupAction, setAssignmentGroupAction] = useState(
+    AssignmentGroupAction.None
+  );
+  const [chosenAssignmentGroup, setChosenAssignmentGroup] =
+    useState<Nullable<AssignmentGroupData>>(null);
+
+  /*
+   * Save the chosen group name, for when the user
+   * creates or joins a group
+   * */
+  const [chosenGroupName, setChosenGroupName] = useState<Nullable<string>>(null);
+
+  const userCourseGroupsQuery = useLazyLoadQuery<UserCourseGroupsQuery>(
+    UserCourseGroupsQueryDef,
+    {
+      courseId,
+    }
+  );
+  const assignments = userCourseGroupsQuery.viewer?.course?.assignments ?? [];
+  const viewerGroups = userCourseGroupsQuery.viewer?.course?.viewerGroups ?? [];
+  const availableGroups = [...(userCourseGroupsQuery.viewer?.course?.groups ?? [])].sort(
+    (a, b) => a?.name?.localeCompare(b?.name || '') || 0
+  ); // Sort groups by ascending name
+
+  const groupsData: AssignmentGroupData[] = mapToAssignmentGroupData(
+    assignments,
+    viewerGroups
+  );
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  useEffect(() => {
+    /* When modal closes reset manage group information */
+    if (!isOpen) {
+      setAssignmentGroupAction(AssignmentGroupAction.None);
+      setChosenAssignmentGroup(null);
+      setChosenGroupName(null);
+    }
+  }, [isOpen]);
 
   const GroupList = ({
     groupsData,
@@ -117,14 +153,13 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
       </Box>
     );
 
-    const handleCreateGroup = (assignmentGroupData: AssignmentGroupData) => {
-      setAssignmentGroupAction(AssignmentGroupAction.Create);
+    const handleAssignmentGroup = (
+      assignmentGroupData: AssignmentGroupData,
+      action: AssignmentGroupAction
+    ) => {
+      setAssignmentGroupAction(action);
       setChosenAssignmentGroup(assignmentGroupData);
       onOpen();
-    };
-
-    const handleJoinGroup = () => {
-      console.log('handleJoinGroup');
     };
 
     return (
@@ -140,7 +175,7 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
                   <AlertIcon size="medium" fill={theme.colors.teachHub.red} />
                 ),
                 <Text fontWeight={'bold'}>{data.assignmentTitle}</Text>,
-                data.groupName || '-',
+                <Text>{data.groupName || '-'}</Text>,
                 <Stack>
                   {data.groupParticipants?.map(participant => (
                     <Text>{participant}</Text>
@@ -150,8 +185,16 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
                   content={{
                     menuButton: <KebabHorizontalIcon />,
                     items: [
-                      { content: 'Crear grupo', action: () => handleCreateGroup(data) },
-                      { content: 'Unirme a grupo', action: handleJoinGroup },
+                      {
+                        content: 'Crear grupo',
+                        action: () =>
+                          handleAssignmentGroup(data, AssignmentGroupAction.Create),
+                      },
+                      {
+                        content: 'Unirme a grupo',
+                        action: () =>
+                          handleAssignmentGroup(data, AssignmentGroupAction.Join),
+                      },
                     ],
                   }}
                 />,
@@ -169,41 +212,86 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
       CreateGroupWithParticipantMutationDef
     );
 
+  const [commitJoinGroup] = useMutation<JoinGroupMutation>(JoinGroupMutationDef);
+
   const handleGroupChangeSubmit = () => {
     if (assignmentGroupAction === AssignmentGroupAction.Create) {
-      commitCreateGroupWithParticipant({
-        variables: {
-          groupName: chosenGroupName,
-          courseId,
-          assignmentId: chosenAssignmentGroup?.assignmentId ?? '',
-        },
-        onCompleted: (response: CreateGroupWithParticipantMutation$data, errors) => {
-          const responseData = response.createGroupWithParticipant;
-          const group = responseData?.group;
-          if (!errors?.length && group) {
-            setAssignmentGroupAction(AssignmentGroupAction.None);
-            setChosenAssignmentGroup(null);
-            onClose();
-            navigate(0); // Reload page data
-          } else {
-            toast({
-              title: 'Error',
-              description: `Error al intentar crear el grupo: ${errors?.at(0)?.message}`,
-              status: 'error',
-            });
-          }
-        },
-      });
+      if (!chosenGroupName) {
+        toast({
+          title: 'Error',
+          description: 'El nombre del grupo no puede estar vacío',
+          status: 'error',
+        });
+      } else {
+        commitCreateGroupWithParticipant({
+          variables: {
+            groupName: chosenGroupName,
+            courseId,
+            assignmentId: chosenAssignmentGroup?.assignmentId ?? '',
+          },
+          onCompleted: (response: CreateGroupWithParticipantMutation$data, errors) => {
+            const responseData = response.createGroupWithParticipant;
+            const group = responseData?.group;
+            if (!errors?.length && group) {
+              onClose();
+              navigate(0); // Reload page data
+            } else {
+              toast({
+                title: 'Error',
+                description: `Error al intentar crear el grupo: ${
+                  errors?.at(0)?.message
+                }`,
+                status: 'error',
+              });
+            }
+          },
+        });
+      }
     } else {
-      /* TODO: TH-149 Join group */
-      console.log('join');
-    }
-  };
+      if (!chosenGroupName) {
+        toast({
+          title: 'Error',
+          description: 'Se debe seleccionar un grupo',
+          status: 'error',
+        });
+        return;
+      }
 
-  const handleGroupChangeCancel = () => {
-    setChosenAssignmentGroup(null);
-    setChosenGroupName('');
-    onClose();
+      /* Get the group id by its name */
+      const groupId = availableGroups.find(group => group?.name === chosenGroupName)?.id;
+
+      if (!groupId) {
+        toast({
+          title: 'Error',
+          description: `Error al intentar unirse al grupo, intente de nuevo`,
+          status: 'error',
+        });
+      } else {
+        commitJoinGroup({
+          variables: {
+            groupId: groupId,
+            courseId,
+            assignmentId: chosenAssignmentGroup?.assignmentId ?? '',
+          },
+          onCompleted: (response: JoinGroupMutation$data, errors) => {
+            const responseData = response.joinGroup;
+            const group = responseData?.group;
+            if (!errors?.length && group) {
+              onClose();
+              navigate(0); // Reload page data
+            } else {
+              toast({
+                title: 'Error',
+                description: `Error al intentar unirse al grupo: ${
+                  errors?.at(0)?.message
+                }`,
+                status: 'error',
+              });
+            }
+          },
+        });
+      }
+    }
   };
 
   return (
@@ -252,19 +340,30 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
                 <Text>Ingresá el nombre del grupo: </Text>
                 <InputField
                   id={'name'}
-                  value={chosenGroupName}
+                  value={chosenGroupName || ''}
                   onChange={event => setChosenGroupName(event.target.value)}
                   placeholder={'Nombre'}
                   type={'text'}
                 />
               </Flex>
             ) : (
-              /* TODO: TH-149 Join group */
-              <Text>Join group</Text>
+              <Flex direction={'column'} gap={'10px'}>
+                <Select
+                  placeholder="Seleccioná un grupo"
+                  value={chosenGroupName || ''}
+                  onChange={event => setChosenGroupName(event.target.value)}
+                >
+                  {availableGroups.map(group => (
+                    <option value={group.name || ''} key={group.id}>
+                      {group.name}
+                    </option>
+                  ))}
+                </Select>
+              </Flex>
             )}
           </ModalBody>
           <ModalFooter gap={'30px'}>
-            <Button onClick={handleGroupChangeCancel} variant={'ghost'}>
+            <Button onClick={onClose} variant={'ghost'}>
               {'Cancelar'}
             </Button>
             <Button onClick={handleGroupChangeSubmit}>{'Guardar'}</Button>
