@@ -16,6 +16,7 @@ export default graphql`
           startDate
           title
           active
+          isGroup
         }
       }
     }

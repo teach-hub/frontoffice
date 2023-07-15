@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
-import { Checkbox, Flex, Textarea } from '@chakra-ui/react';
+import { Flex, Textarea } from '@chakra-ui/react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { FormErrors, Mutable, Nullable } from 'types';
@@ -29,6 +29,7 @@ import type {
   UpdateAssignmentMutation$data,
 } from '__generated__/UpdateAssignmentMutation.graphql';
 import type { AssignmentQuery } from '__generated__/AssignmentQuery.graphql';
+import { Checkbox } from 'components/Checkbox';
 
 type AssignmentData = {
   id?: Nullable<string>;
@@ -39,6 +40,7 @@ type AssignmentData = {
   link?: Nullable<string>;
   allowLateSubmissions?: Nullable<boolean>;
   active?: Nullable<boolean>;
+  isGroup?: Nullable<boolean>;
 };
 
 const CreateOrUpdateAssignmentsPage = () => {
@@ -71,6 +73,7 @@ const CreateOrUpdateAssignmentsPage = () => {
     initialValues.endDate = assignment?.endDate;
     initialValues.link = assignment?.link;
     initialValues.allowLateSubmissions = assignment?.allowLateSubmissions;
+    initialValues.isGroup = assignment?.isGroup;
   }
 
   type FormValues = Mutable<NonNullable<AssignmentData>>;
@@ -180,6 +183,7 @@ const CreateOrUpdateAssignmentsPage = () => {
             endDate: initialValues.endDate || undefined,
             link: initialValues.link || undefined,
             allowLateSubmissions: initialValues.allowLateSubmissions || false,
+            isGroup: initialValues.isGroup || false,
           }}
           validateForm={validateForm}
           onCancelForm={{
@@ -265,6 +269,19 @@ const CreateOrUpdateAssignmentsPage = () => {
               ),
               label: 'Aceptar entregas fuera de fecha',
               readError: e => e.allowLateSubmissions as string,
+              nextToLabel: true,
+            },
+            {
+              inputComponent: (values, handleChange) => (
+                <Checkbox
+                  id={'isGroup'}
+                  isChecked={values?.isGroup}
+                  value={values?.isGroup}
+                  onChange={handleChange}
+                />
+              ),
+              label: 'Es grupal',
+              readError: e => e.isGroup as string,
               nextToLabel: true,
             },
           ]}

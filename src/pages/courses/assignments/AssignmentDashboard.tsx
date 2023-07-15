@@ -8,6 +8,8 @@ import {
   CalendarIcon,
   LinkExternalIcon,
   PencilIcon,
+  PeopleIcon,
+  PersonIcon,
   TrashIcon,
 } from '@primer/octicons-react';
 import { formatAsSimpleDateTime } from 'utils/dates';
@@ -23,7 +25,6 @@ import Heading from 'components/Heading';
 import List from 'components/List';
 import Text from 'components/Text';
 import ListIcon from 'components/ListIcon';
-import Divider from 'components/Divider';
 import Card from 'components/Card';
 
 import AssignmentQueryDef from 'graphql/AssignmentQuery';
@@ -99,6 +100,15 @@ const AssignmentDashboardPage = ({
         </Text>
         <Card>
           <List padding="30px">
+            <ListItem key={'isGroup'}>
+              <ListIcon
+                color={theme.colors.teachHub.white}
+                icon={assignment.isGroup ? PeopleIcon : PersonIcon}
+              />
+              <span style={{ fontWeight: 'bold' }}>
+                {assignment.isGroup ? 'Entrega grupal' : 'Entrega individual'}
+              </span>
+            </ListItem>
             <DateListItem
               date={assignment.startDate}
               text={'Inicio de entregas: '}

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<944837e8a9ad131c9493222451741fc5>>
+ * @generated SignedSource<<d002cbe6a2ca7ee5eb3b7dd971cc3f48>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,6 +14,7 @@ export type CreateAssignmentMutation$variables = {
   courseId: string;
   description?: string | null;
   endDate?: string | null;
+  isGroup?: boolean | null;
   link?: string | null;
   startDate?: string | null;
   title?: string | null;
@@ -25,6 +26,7 @@ export type CreateAssignmentMutation$data = {
     readonly description: string | null;
     readonly endDate: string | null;
     readonly id: string;
+    readonly isGroup: boolean | null;
     readonly link: string | null;
     readonly startDate: string | null;
     readonly title: string | null;
@@ -59,19 +61,24 @@ v3 = {
 v4 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "link"
+  "name": "isGroup"
 },
 v5 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "startDate"
+  "name": "link"
 },
 v6 = {
   "defaultValue": null,
   "kind": "LocalArgument",
+  "name": "startDate"
+},
+v7 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
   "name": "title"
 },
-v7 = [
+v8 = [
   {
     "alias": null,
     "args": [
@@ -94,6 +101,11 @@ v7 = [
         "kind": "Variable",
         "name": "endDate",
         "variableName": "endDate"
+      },
+      {
+        "kind": "Variable",
+        "name": "isGroup",
+        "variableName": "isGroup"
       },
       {
         "kind": "Variable",
@@ -171,6 +183,13 @@ v7 = [
         "kind": "ScalarField",
         "name": "courseId",
         "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "isGroup",
+        "storageKey": null
       }
     ],
     "storageKey": null
@@ -185,41 +204,43 @@ return {
       (v3/*: any*/),
       (v4/*: any*/),
       (v5/*: any*/),
-      (v6/*: any*/)
+      (v6/*: any*/),
+      (v7/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
     "name": "CreateAssignmentMutation",
-    "selections": (v7/*: any*/),
+    "selections": (v8/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
     "argumentDefinitions": [
-      (v6/*: any*/),
+      (v7/*: any*/),
       (v2/*: any*/),
-      (v5/*: any*/),
+      (v6/*: any*/),
       (v3/*: any*/),
-      (v4/*: any*/),
+      (v5/*: any*/),
       (v0/*: any*/),
+      (v4/*: any*/),
       (v1/*: any*/)
     ],
     "kind": "Operation",
     "name": "CreateAssignmentMutation",
-    "selections": (v7/*: any*/)
+    "selections": (v8/*: any*/)
   },
   "params": {
-    "cacheID": "5091a6cfbcb17d90812d243f83f1a195",
+    "cacheID": "69322ca803551cff0cf32d04c800b0cc",
     "id": null,
     "metadata": {},
     "name": "CreateAssignmentMutation",
     "operationKind": "mutation",
-    "text": "mutation CreateAssignmentMutation(\n  $title: String\n  $description: String\n  $startDate: String\n  $endDate: String\n  $link: String\n  $allowLateSubmissions: Boolean\n  $courseId: ID!\n) {\n  createAssignment(title: $title, description: $description, startDate: $startDate, endDate: $endDate, link: $link, allowLateSubmissions: $allowLateSubmissions, courseId: $courseId) {\n    id\n    title\n    description\n    startDate\n    endDate\n    link\n    allowLateSubmissions\n    courseId\n  }\n}\n"
+    "text": "mutation CreateAssignmentMutation(\n  $title: String\n  $description: String\n  $startDate: String\n  $endDate: String\n  $link: String\n  $allowLateSubmissions: Boolean\n  $isGroup: Boolean\n  $courseId: ID!\n) {\n  createAssignment(title: $title, description: $description, startDate: $startDate, endDate: $endDate, link: $link, allowLateSubmissions: $allowLateSubmissions, courseId: $courseId, isGroup: $isGroup) {\n    id\n    title\n    description\n    startDate\n    endDate\n    link\n    allowLateSubmissions\n    courseId\n    isGroup\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "9b2a852b5e21c542dc14b3f07afdd4e3";
+(node as any).hash = "10e2025cfeab1fc0c08fa0e34c01e77a";
 
 export default node;

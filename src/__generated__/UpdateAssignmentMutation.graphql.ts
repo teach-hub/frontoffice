@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<78dded678316a7eff4e5c7313e54715f>>
+ * @generated SignedSource<<8a8f091cd0678d645ec2a512ee662230>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,6 +16,7 @@ export type UpdateAssignmentMutation$variables = {
   description?: string | null;
   endDate?: string | null;
   id: string;
+  isGroup?: boolean | null;
   link?: string | null;
   startDate?: string | null;
   title?: string | null;
@@ -28,6 +29,7 @@ export type UpdateAssignmentMutation$data = {
     readonly description: string | null;
     readonly endDate: string | null;
     readonly id: string;
+    readonly isGroup: boolean | null;
     readonly link: string | null;
     readonly startDate: string | null;
     readonly title: string | null;
@@ -72,19 +74,24 @@ v5 = {
 v6 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "link"
+  "name": "isGroup"
 },
 v7 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "startDate"
+  "name": "link"
 },
 v8 = {
   "defaultValue": null,
   "kind": "LocalArgument",
+  "name": "startDate"
+},
+v9 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
   "name": "title"
 },
-v9 = [
+v10 = [
   {
     "alias": null,
     "args": [
@@ -117,6 +124,11 @@ v9 = [
         "kind": "Variable",
         "name": "id",
         "variableName": "id"
+      },
+      {
+        "kind": "Variable",
+        "name": "isGroup",
+        "variableName": "isGroup"
       },
       {
         "kind": "Variable",
@@ -201,6 +213,13 @@ v9 = [
         "kind": "ScalarField",
         "name": "active",
         "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "isGroup",
+        "storageKey": null
       }
     ],
     "storageKey": null
@@ -217,12 +236,13 @@ return {
       (v5/*: any*/),
       (v6/*: any*/),
       (v7/*: any*/),
-      (v8/*: any*/)
+      (v8/*: any*/),
+      (v9/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
     "name": "UpdateAssignmentMutation",
-    "selections": (v9/*: any*/),
+    "selections": (v10/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
@@ -230,30 +250,31 @@ return {
   "operation": {
     "argumentDefinitions": [
       (v5/*: any*/),
-      (v8/*: any*/),
+      (v9/*: any*/),
       (v3/*: any*/),
-      (v7/*: any*/),
+      (v8/*: any*/),
       (v4/*: any*/),
-      (v6/*: any*/),
+      (v7/*: any*/),
       (v1/*: any*/),
       (v0/*: any*/),
+      (v6/*: any*/),
       (v2/*: any*/)
     ],
     "kind": "Operation",
     "name": "UpdateAssignmentMutation",
-    "selections": (v9/*: any*/)
+    "selections": (v10/*: any*/)
   },
   "params": {
-    "cacheID": "af15acad126a2214533566120a8b8f56",
+    "cacheID": "b01834af5effa182c74ccea3ec9b7bfc",
     "id": null,
     "metadata": {},
     "name": "UpdateAssignmentMutation",
     "operationKind": "mutation",
-    "text": "mutation UpdateAssignmentMutation(\n  $id: ID!\n  $title: String\n  $description: String\n  $startDate: String\n  $endDate: String\n  $link: String\n  $allowLateSubmissions: Boolean\n  $active: Boolean\n  $courseId: ID!\n) {\n  updateAssignment(id: $id, title: $title, description: $description, startDate: $startDate, endDate: $endDate, link: $link, allowLateSubmissions: $allowLateSubmissions, active: $active, courseId: $courseId) {\n    id\n    title\n    description\n    startDate\n    endDate\n    link\n    allowLateSubmissions\n    courseId\n    active\n  }\n}\n"
+    "text": "mutation UpdateAssignmentMutation(\n  $id: ID!\n  $title: String\n  $description: String\n  $startDate: String\n  $endDate: String\n  $link: String\n  $allowLateSubmissions: Boolean\n  $active: Boolean\n  $isGroup: Boolean\n  $courseId: ID!\n) {\n  updateAssignment(id: $id, title: $title, description: $description, startDate: $startDate, endDate: $endDate, link: $link, allowLateSubmissions: $allowLateSubmissions, active: $active, isGroup: $isGroup, courseId: $courseId) {\n    id\n    title\n    description\n    startDate\n    endDate\n    link\n    allowLateSubmissions\n    courseId\n    active\n    isGroup\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "04974e3f2a28eb92c29ae69c2484e1bd";
+(node as any).hash = "00dcd30b8419563a8d6dd79351357461";
 
 export default node;
