@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d6320b11b50ec58040c71d1a0ba935e9>>
+ * @generated SignedSource<<b0ddb37ceabf2664b9f7c4e4366f52a8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,7 +16,7 @@ export type CreateGroupWithParticipantMutation$variables = {
 };
 export type CreateGroupWithParticipantMutation$data = {
   readonly createGroupWithParticipant: {
-    readonly assignmentId: string | null;
+    readonly assignmentId: string;
     readonly group: {
       readonly courseId: string;
       readonly id: string;
