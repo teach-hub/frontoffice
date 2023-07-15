@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<19c0b994558af027ada4c55254b39d7c>>
+ * @generated SignedSource<<8ec6c29ab69d8d5bbef39b156c856401>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,6 +18,10 @@ export type UserCourseGroupsQuery$data = {
       readonly assignments: ReadonlyArray<{
         readonly id: string;
         readonly title: string | null;
+      }>;
+      readonly groups: ReadonlyArray<{
+        readonly id: string;
+        readonly name: string | null;
       }>;
       readonly id: string;
       readonly viewerGroups: ReadonlyArray<{
@@ -67,6 +71,10 @@ v2 = {
   "storageKey": null
 },
 v3 = [
+  (v1/*: any*/),
+  (v2/*: any*/)
+],
+v4 = [
   {
     "alias": null,
     "args": null,
@@ -133,10 +141,7 @@ v3 = [
                 "kind": "LinkedField",
                 "name": "group",
                 "plural": false,
-                "selections": [
-                  (v1/*: any*/),
-                  (v2/*: any*/)
-                ],
+                "selections": (v3/*: any*/),
                 "storageKey": null
               },
               {
@@ -175,6 +180,16 @@ v3 = [
               }
             ],
             "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "InternalGroupType",
+            "kind": "LinkedField",
+            "name": "groups",
+            "plural": true,
+            "selections": (v3/*: any*/),
+            "storageKey": null
           }
         ],
         "storageKey": null
@@ -189,7 +204,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "UserCourseGroupsQuery",
-    "selections": (v3/*: any*/),
+    "selections": (v4/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -198,19 +213,19 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "UserCourseGroupsQuery",
-    "selections": (v3/*: any*/)
+    "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "bd360fb447b7dab4a8e3335a627c934b",
+    "cacheID": "6507c3aad003884dd2fe4afd781d9a78",
     "id": null,
     "metadata": {},
     "name": "UserCourseGroupsQuery",
     "operationKind": "query",
-    "text": "query UserCourseGroupsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n      viewerGroups {\n        id\n        assignmentId\n        group {\n          id\n          name\n        }\n        otherParticipants {\n          id\n          name\n          lastName\n          notificationEmail\n          file\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query UserCourseGroupsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n      viewerGroups {\n        id\n        assignmentId\n        group {\n          id\n          name\n        }\n        otherParticipants {\n          id\n          name\n          lastName\n          notificationEmail\n          file\n        }\n      }\n      groups {\n        id\n        name\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "8643162c0e498027a12a74751e22a495";
+(node as any).hash = "e7ee9b1f5808e7f0a7ce8040e7e9979e";
 
 export default node;

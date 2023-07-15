@@ -25,6 +25,10 @@ export default graphql`
             file
           }
         }
+        groups {
+          id
+          name
+        }
       }
     }
   }
