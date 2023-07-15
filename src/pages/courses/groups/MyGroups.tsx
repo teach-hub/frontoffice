@@ -65,6 +65,7 @@ const mapToAssignmentGroupData = (
   viewerGroups: NonNullable<ViewerCourseData['viewerGroups']>
 ) => {
   return assignments
+    .filter(assignment => assignment.isGroup === true) // Keep only group assignments
     .map(assignment => {
       const assignmentViewerGroup = viewerGroups.find(
         viewerGroup => viewerGroup.assignmentId === assignment.id
@@ -77,7 +78,6 @@ const mapToAssignmentGroupData = (
           }`
       );
 
-      /* TODO: TH-157 Filter assignments for group */
       return assignment.title
         ? {
             assignmentId: assignment.id,

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<96965dd4aae5a03807e68a060885f94f>>
+ * @generated SignedSource<<2d91af9d7f66daa3d05a6f3e4aea2ea5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -23,6 +23,7 @@ export type AssignmentQuery$data = {
         readonly description: string | null;
         readonly endDate: string | null;
         readonly id: string;
+        readonly isGroup: boolean | null;
         readonly link: string | null;
         readonly startDate: string | null;
         readonly title: string | null;
@@ -150,6 +151,13 @@ v3 = [
                 "kind": "ScalarField",
                 "name": "active",
                 "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "isGroup",
+                "storageKey": null
               }
             ],
             "storageKey": null
@@ -185,16 +193,16 @@ return {
     "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "39f39f7903ff5c65891adfbe4da8006a",
+    "cacheID": "789bcae41ec48c13d25081668377e836",
     "id": null,
     "metadata": {},
     "name": "AssignmentQuery",
     "operationKind": "query",
-    "text": "query AssignmentQuery(\n  $id: ID!\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignment(id: $id) {\n        allowLateSubmissions\n        courseId\n        description\n        endDate\n        id\n        link\n        startDate\n        title\n        active\n      }\n    }\n  }\n}\n"
+    "text": "query AssignmentQuery(\n  $id: ID!\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignment(id: $id) {\n        allowLateSubmissions\n        courseId\n        description\n        endDate\n        id\n        link\n        startDate\n        title\n        active\n        isGroup\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "6a064d42ff38cf089b35eadc496ae65e";
+(node as any).hash = "d880869a505e343d961b5f69ee098fcd";
 
 export default node;

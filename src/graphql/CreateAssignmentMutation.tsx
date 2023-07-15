@@ -8,6 +8,7 @@ export default graphql`
     $endDate: String
     $link: String
     $allowLateSubmissions: Boolean
+    $isGroup: Boolean
     $courseId: ID!
   ) {
     createAssignment(
@@ -18,6 +19,7 @@ export default graphql`
       link: $link
       allowLateSubmissions: $allowLateSubmissions
       courseId: $courseId
+      isGroup: $isGroup
     ) {
       id
       title
@@ -27,6 +29,7 @@ export default graphql`
       link
       allowLateSubmissions
       courseId
+      isGroup
     }
   }
 `;

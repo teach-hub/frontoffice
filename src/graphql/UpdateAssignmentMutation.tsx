@@ -10,6 +10,7 @@ export default graphql`
     $link: String
     $allowLateSubmissions: Boolean
     $active: Boolean
+    $isGroup: Boolean
     $courseId: ID!
   ) {
     updateAssignment(
@@ -21,6 +22,7 @@ export default graphql`
       link: $link
       allowLateSubmissions: $allowLateSubmissions
       active: $active
+      isGroup: $isGroup
       courseId: $courseId
     ) {
       id
@@ -32,6 +34,7 @@ export default graphql`
       allowLateSubmissions
       courseId
       active
+      isGroup
     }
   }
 `;
