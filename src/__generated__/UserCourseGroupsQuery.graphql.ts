@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8ec6c29ab69d8d5bbef39b156c856401>>
+ * @generated SignedSource<<92041dd97d2023afd6651cab8510df83>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,6 +17,7 @@ export type UserCourseGroupsQuery$data = {
     readonly course: {
       readonly assignments: ReadonlyArray<{
         readonly id: string;
+        readonly isGroup: boolean | null;
         readonly title: string | null;
       }>;
       readonly groups: ReadonlyArray<{
@@ -113,6 +114,13 @@ v4 = [
                 "args": null,
                 "kind": "ScalarField",
                 "name": "title",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "isGroup",
                 "storageKey": null
               }
             ],
@@ -216,16 +224,16 @@ return {
     "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "6507c3aad003884dd2fe4afd781d9a78",
+    "cacheID": "8d2c9070b50ae50e69df25c0a97f53d1",
     "id": null,
     "metadata": {},
     "name": "UserCourseGroupsQuery",
     "operationKind": "query",
-    "text": "query UserCourseGroupsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n      viewerGroups {\n        id\n        assignmentId\n        group {\n          id\n          name\n        }\n        otherParticipants {\n          id\n          name\n          lastName\n          notificationEmail\n          file\n        }\n      }\n      groups {\n        id\n        name\n      }\n    }\n  }\n}\n"
+    "text": "query UserCourseGroupsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n        isGroup\n      }\n      viewerGroups {\n        id\n        assignmentId\n        group {\n          id\n          name\n        }\n        otherParticipants {\n          id\n          name\n          lastName\n          notificationEmail\n          file\n        }\n      }\n      groups {\n        id\n        name\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "e7ee9b1f5808e7f0a7ce8040e7e9979e";
+(node as any).hash = "1289ccc48568f6fd124f763058a1cc64";
 
 export default node;
