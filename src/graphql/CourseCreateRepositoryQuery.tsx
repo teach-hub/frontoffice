@@ -25,6 +25,26 @@ export default graphql`
             isTeacher
           }
         }
+        assignments {
+          id
+          title
+        }
+        groupParticipants {
+          id
+          assignmentId
+          userRoleId
+          group {
+            id
+            name
+          }
+          otherParticipants {
+            id
+            name
+            lastName
+            notificationEmail
+            file
+          }
+        }
       }
     }
   }
