@@ -29,6 +29,7 @@ export default graphql`
             }
             reviewee {
               ... on UserType {
+                __typename
                 id
                 name
                 lastName
@@ -40,6 +41,7 @@ export default graphql`
             id
             reviewee {
               ... on UserType {
+                __typename
                 id
                 name
                 lastName

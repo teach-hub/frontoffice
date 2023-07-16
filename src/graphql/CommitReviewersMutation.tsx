@@ -11,6 +11,7 @@ export default graphql`
       }
       reviewee {
         ... on UserType {
+          __typename
           id
           name
           lastName

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fff1b5ab720c78e510b86182d682c5db>>
+ * @generated SignedSource<<6ed84801c4c9b30b41b4b459568a2a2d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -26,10 +26,15 @@ export type ReviewersAssignmentQuery$data = {
         readonly previewReviewers: ReadonlyArray<{
           readonly id: string;
           readonly reviewee: {
-            readonly file?: string;
-            readonly id?: string;
-            readonly lastName?: string;
-            readonly name?: string;
+            readonly __typename: "UserType";
+            readonly file: string;
+            readonly id: string;
+            readonly lastName: string;
+            readonly name: string;
+          } | {
+            // This will never be '%other', but we need some
+            // value in case none of the concrete values match.
+            readonly __typename: "%other";
           };
           readonly reviewer: {
             readonly id: string;
@@ -40,10 +45,15 @@ export type ReviewersAssignmentQuery$data = {
         readonly reviewers: ReadonlyArray<{
           readonly id: string;
           readonly reviewee: {
-            readonly file?: string;
-            readonly id?: string;
-            readonly lastName?: string;
-            readonly name?: string;
+            readonly __typename: "UserType";
+            readonly file: string;
+            readonly id: string;
+            readonly lastName: string;
+            readonly name: string;
+          } | {
+            // This will never be '%other', but we need some
+            // value in case none of the concrete values match.
+            readonly __typename: "%other";
           };
           readonly reviewer: {
             readonly id: string;
@@ -159,23 +169,20 @@ v10 = {
   "storageKey": null
 },
 v11 = {
-  "kind": "InlineFragment",
-  "selections": [
-    (v3/*: any*/),
-    (v5/*: any*/),
-    (v6/*: any*/),
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "file",
-      "storageKey": null
-    }
-  ],
-  "type": "UserType",
-  "abstractKey": null
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "__typename",
+  "storageKey": null
 },
 v12 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "file",
+  "storageKey": null
+},
+v13 = {
   "alias": null,
   "args": null,
   "concreteType": null,
@@ -183,18 +190,29 @@ v12 = {
   "name": "reviewee",
   "plural": false,
   "selections": [
-    (v11/*: any*/)
+    {
+      "kind": "InlineFragment",
+      "selections": [
+        (v11/*: any*/),
+        (v3/*: any*/),
+        (v5/*: any*/),
+        (v6/*: any*/),
+        (v12/*: any*/)
+      ],
+      "type": "UserType",
+      "abstractKey": null
+    }
   ],
   "storageKey": null
 },
-v13 = [
+v14 = [
   {
     "kind": "Variable",
     "name": "input",
     "variableName": "filters"
   }
 ],
-v14 = {
+v15 = {
   "alias": null,
   "args": null,
   "concreteType": null,
@@ -202,14 +220,18 @@ v14 = {
   "name": "reviewee",
   "plural": false,
   "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "__typename",
-      "storageKey": null
-    },
     (v11/*: any*/),
+    {
+      "kind": "InlineFragment",
+      "selections": [
+        (v3/*: any*/),
+        (v5/*: any*/),
+        (v6/*: any*/),
+        (v12/*: any*/)
+      ],
+      "type": "UserType",
+      "abstractKey": null
+    },
     {
       "kind": "InlineFragment",
       "selections": [
@@ -270,20 +292,20 @@ return {
                     "selections": [
                       (v3/*: any*/),
                       (v10/*: any*/),
-                      (v12/*: any*/)
+                      (v13/*: any*/)
                     ],
                     "storageKey": null
                   },
                   {
                     "alias": null,
-                    "args": (v13/*: any*/),
+                    "args": (v14/*: any*/),
                     "concreteType": "ReviewerPreviewType",
                     "kind": "LinkedField",
                     "name": "previewReviewers",
                     "plural": true,
                     "selections": [
                       (v3/*: any*/),
-                      (v12/*: any*/),
+                      (v13/*: any*/),
                       (v10/*: any*/)
                     ],
                     "storageKey": null
@@ -349,20 +371,20 @@ return {
                     "selections": [
                       (v3/*: any*/),
                       (v10/*: any*/),
-                      (v14/*: any*/)
+                      (v15/*: any*/)
                     ],
                     "storageKey": null
                   },
                   {
                     "alias": null,
-                    "args": (v13/*: any*/),
+                    "args": (v14/*: any*/),
                     "concreteType": "ReviewerPreviewType",
                     "kind": "LinkedField",
                     "name": "previewReviewers",
                     "plural": true,
                     "selections": [
                       (v3/*: any*/),
-                      (v14/*: any*/),
+                      (v15/*: any*/),
                       (v10/*: any*/)
                     ],
                     "storageKey": null
@@ -379,16 +401,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "be3f19c7031b5d61d937f8f89419e939",
+    "cacheID": "3a6a4a3fcf18358eb90811cc63ba49a1",
     "id": null,
     "metadata": {},
     "name": "ReviewersAssignmentQuery",
     "operationKind": "query",
-    "text": "query ReviewersAssignmentQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $filters: PreviewReviewersFilterInputType!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      teachersUserRoles {\n        id\n        user {\n          id\n          name\n          lastName\n        }\n      }\n      assignment(id: $assignmentId) {\n        id\n        reviewers {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n          reviewee {\n            __typename\n            ... on UserType {\n              id\n              name\n              lastName\n              file\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n        }\n        previewReviewers(input: $filters) {\n          id\n          reviewee {\n            __typename\n            ... on UserType {\n              id\n              name\n              lastName\n              file\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query ReviewersAssignmentQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $filters: PreviewReviewersFilterInputType!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      teachersUserRoles {\n        id\n        user {\n          id\n          name\n          lastName\n        }\n      }\n      assignment(id: $assignmentId) {\n        id\n        reviewers {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n          reviewee {\n            __typename\n            ... on UserType {\n              __typename\n              id\n              name\n              lastName\n              file\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n        }\n        previewReviewers(input: $filters) {\n          id\n          reviewee {\n            __typename\n            ... on UserType {\n              __typename\n              id\n              name\n              lastName\n              file\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "03e849dc7914caef60f38f79103e9c88";
+(node as any).hash = "7a6a0c1baab50d3a429ed8b186c2dc37";
 
 export default node;
