@@ -47,6 +47,10 @@ type Filters = {
   consecutives: boolean;
 };
 
+type UserReviewee = Omit<ReviewerInfo, 'reviewee'> & {
+  reviewee: Extract<ReviewerInfo['reviewee'], { __typename: 'UserType' }>;
+};
+
 function AssignmentSettings(
   props:
     | {
@@ -144,7 +148,9 @@ function AssignmentsContainer({
             <Flex key={i} h="70px" fontSize="15px" my="10px">
               <ReviewerCard reviewerInfo={reviewer} w="300px" />
               <ArrowForwardIcon alignSelf={'center'} boxSize={'30px'} mx="18px" />
-              <RevieweeCard revieweeInfo={reviewee} />
+              {reviewee.__typename === 'UserType' && (
+                <RevieweeCard revieweeInfo={reviewee} />
+              )}
             </Flex>
           ))
         : null}
@@ -272,7 +278,11 @@ function ReviewersPageContainer({
       />
       <AssignButton
         onClick={() => {
-          onCommit(previewReviewers);
+          onCommit(
+            previewReviewers.filter(
+              (x): x is UserReviewee => x.reviewee.__typename === 'UserType'
+            )
+          );
           setIsLoading(true);
         }}
         isDisabled={!previewReviewers.length}

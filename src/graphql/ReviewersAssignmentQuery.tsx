@@ -28,19 +28,25 @@ export default graphql`
               lastName
             }
             reviewee {
-              id
-              name
-              lastName
-              file
+              ... on UserType {
+                __typename
+                id
+                name
+                lastName
+                file
+              }
             }
           }
           previewReviewers(input: $filters) {
             id
             reviewee {
-              id
-              name
-              lastName
-              file
+              ... on UserType {
+                __typename
+                id
+                name
+                lastName
+                file
+              }
             }
             reviewer {
               id

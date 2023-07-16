@@ -10,10 +10,13 @@ export default graphql`
         lastName
       }
       reviewee {
-        id
-        name
-        lastName
-        file
+        ... on UserType {
+          __typename
+          id
+          name
+          lastName
+          file
+        }
       }
     }
   }
