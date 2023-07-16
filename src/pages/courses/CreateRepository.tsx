@@ -12,7 +12,7 @@ import {
   Stack,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Form from 'components/Form';
 import { FormErrors, Mutable } from 'types';
 import React, { Suspense, useState } from 'react';
@@ -47,14 +47,6 @@ type RepositoryData = {
   useFileOnTemplate?: boolean;
 };
 
-interface TableRowData {
-  userId: string;
-  name: string;
-  lastName: string;
-  file: string;
-  checked: boolean;
-}
-
 const enum TeacherRepositoryRole {
   Admin = 'Admin',
   Maintain = 'Maintain',
@@ -64,21 +56,101 @@ interface SelectedRoles {
   [userId: string]: TeacherRepositoryRole;
 }
 
+/**
+ * Value of the params to configure the page
+ * for student or group repository
+ * */
+export enum RepositoryTypeParam {
+  Students = 'students',
+  Groups = 'groups',
+}
+
+/**
+ * Props required for a row in the table
+ * to select repositories to create
+ *
+ * @param id: unique id of the row
+ * @param rowData: data to display in the row, does not include checkbox
+ * @param checked: whether the checkbox is checked or not
+ * */
+interface SelectionTableRowProps {
+  id: string;
+  rowData: string[];
+  checked: boolean;
+}
+
+/**
+ * Props required for a row in the table
+ * to select repositories to create for students
+ * */
+interface StudentSelectionTableRowProps extends SelectionTableRowProps {
+  userId: string;
+  lastName: string;
+  file: string;
+}
+
+/**
+ * Configuration for the page to create repositories.
+ * May differ from students or groups, so a different configuration
+ * should be created for each
+ *
+ * @param title: title of the page
+ * @param description: description of the page
+ * @param tableHeaders: headers of the table, must not include checkbox
+ * @param tableRowData: data for each row of the table
+ * */
+interface RepositoriesTypePageConfiguration {
+  title: string;
+  description: string;
+  tableHeaders: string[];
+  tableRowData: SelectionTableRowProps[];
+}
+
+const buildStudentRepositoryPageConfiguration = ({
+  students,
+}: {
+  // FIXME. No copiar
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  students: any[]; // todo: FIX TYPE!
+}): RepositoriesTypePageConfiguration => {
+  return {
+    title: 'Crear Repositorios (Individuales)',
+    description:
+      'Indicar la configuración de los repositorios a crear y seleccionar los alumnos a ' +
+      'quienes se les crearán sus repositorios en la organización del curso.',
+    tableHeaders: ['Alumno', 'Padrón'],
+    tableRowData: students.map(student => ({
+      id: student.user.file,
+      rowData: [
+        student.user.lastName + `, ${student.user.name}`, // FullName
+        student.user.file, // File
+      ],
+      checked: true,
+      userId: student.user.id, // todo: ver bien que hacer con esto y como usarlo
+      userLastName: student.user.lastName,
+      userFile: student.user.file,
+    })),
+  };
+};
+
 const CreateRepositoryPage = () => {
+  const { type } = useParams();
   const { courseId } = useUserContext();
+  const navigate = useNavigate();
+  const toast = useToast();
   const {
     isOpen: isOpenTeachersModal,
     onOpen: onOpenTeachersModal,
     onClose: onCloseTeachersModal,
   } = useDisclosure();
-  const navigate = useNavigate();
-  const toast = useToast();
+
   const courseQueryData = useLazyLoadQuery<CourseCreateRepositoryQuery>(
     CourseCreateRepositoryQueryDef,
     {
       courseId: courseId || '',
     }
   );
+
   const [commitCreateRepositoryMutation] = useMutation<CreateRepositoryMutation>(
     CreateRepositoryMutationDef
   );
@@ -100,9 +172,11 @@ const CreateRepositoryPage = () => {
     return errors;
   };
 
+  /* todo: limpieza de espacios, tildes, apostrofes etc., llevar a la base*/
+  /* todo: sumar comportamiento para grupos */
   const buildStudentRepositoryName = ({
     values,
-    lastName = 'lópez',
+    lastName = 'lopez',
     file = '12345',
   }: {
     values: FormikValues;
@@ -152,29 +226,29 @@ const CreateRepositoryPage = () => {
     }));
   };
 
-  const [tableData, setTableData] = useState<TableRowData[]>(
-    students.map(student => ({
-      lastName: student.user.lastName,
-      name: student.user.name,
-      file: student.user.file,
-      checked: true,
-      userId: student.user.id,
-    }))
+  /* todo: elegir basado en tipo */
+  const studentsPageConfiguration = buildStudentRepositoryPageConfiguration({ students });
+  const [tableData, setTableData] = useState<SelectionTableRowProps[]>(
+    studentsPageConfiguration.tableRowData
   );
 
-  const StudentsTable = () => {
+  const SelectionTable = () => {
     const allChecked = tableData.map(i => i.checked).every(Boolean);
     const isIndeterminate = tableData.map(i => i.checked).some(Boolean) && !allChecked;
 
     const handleCheckAll = (event: React.ChangeEvent<HTMLInputElement>) => {
       const checked = event.target.checked;
-      const updatedData = tableData.map(row => ({ ...row, checked }));
+      const updatedData = tableData.map(row => ({
+        ...row,
+        checked,
+      }));
       setTableData(updatedData);
     };
 
-    const handleRowCheck = (file: string, checked: boolean) => {
+    /* todo: actualizar para generalizar en caso de alumno y grupo */
+    const handleRowCheck = (rowId: string, checked: boolean) => {
       const updatedData = tableData.map(row =>
-        row.file === file ? { ...row, checked } : row
+        row.id === rowId ? { ...row, checked } : row
       );
       setTableData(updatedData);
     };
@@ -184,8 +258,7 @@ const CreateRepositoryPage = () => {
         tableHeight={'70vh'}
         tableWidth={'50vw'}
         headers={[
-          'Alumno',
-          'Padrón',
+          ...studentsPageConfiguration.tableHeaders, // todo: manejar bien esto
           <Checkbox
             id={'allChecked'}
             size={'lg'}
@@ -196,14 +269,13 @@ const CreateRepositoryPage = () => {
             onChange={handleCheckAll}
           />,
         ]}
-        rowOptions={tableData.map(({ checked, userId, lastName, name, file }) => ({
+        rowOptions={tableData.map(({ checked, id, rowData }) => ({
           content: [
-            lastName + `, ${name}`, // FullName
-            file, // File
+            ...rowData,
             <Checkbox
-              id={'file'}
+              id={'id'}
               isChecked={checked}
-              onChange={() => handleRowCheck(file, !checked)}
+              onChange={() => handleRowCheck(id, !checked)}
             />,
           ],
         }))}
@@ -219,12 +291,15 @@ const CreateRepositoryPage = () => {
     const studentsRepositoryData = tableData
       .filter(row => row.checked)
       .map(row => {
+        /* TODO: choose based on type */
+        const studentData = row as StudentSelectionTableRowProps;
+
         return {
-          students: [row.userId],
+          students: [studentData.userId],
           name: buildStudentRepositoryName({
             values,
-            lastName: row.lastName,
-            file: row.file,
+            lastName: studentData.lastName,
+            file: studentData.file,
           }),
         };
       });
@@ -281,13 +356,12 @@ const CreateRepositoryPage = () => {
 
   return (
     <PageDataContainer>
-      <Heading>Crear Repositorios</Heading>
-
+      <Heading>{studentsPageConfiguration.title}</Heading>{' '}
+      {/* todo: choose based on type */}
       <Flex justifyContent={'space-between'}>
         <Flex direction={'column'} gap={'30px'} width={'500px'} paddingY={'20px'}>
           <Text whiteSpace="pre-wrap">
-            Indicar la configuración de los repositorios a crear y seleccionar los alumnos
-            a quienes se les crearán sus repositorios en la organización del curso.
+            {studentsPageConfiguration.description} {/* todo: choose based on type */}
           </Text>
 
           <Button onClick={onOpenTeachersModal} width={'fit-content'}>
@@ -383,9 +457,8 @@ const CreateRepositoryPage = () => {
             ]}
           />
         </Flex>
-        <StudentsTable />
+        <SelectionTable />
       </Flex>
-
       <Modal isOpen={isOpenTeachersModal} onClose={onCloseTeachersModal} isCentered>
         <ModalOverlay />
         <ModalContent>
