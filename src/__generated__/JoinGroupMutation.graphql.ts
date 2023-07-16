@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<86e91255f204c81dfb6973164a1b0cac>>
+ * @generated SignedSource<<5ea79493f6741d522a681fdad0b9fa1b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,7 +16,7 @@ export type JoinGroupMutation$variables = {
 };
 export type JoinGroupMutation$data = {
   readonly joinGroup: {
-    readonly assignmentId: string | null;
+    readonly assignmentId: string;
     readonly group: {
       readonly courseId: string;
       readonly id: string;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<32a1099a8029218db5c17ddb5ba87c69>>
+ * @generated SignedSource<<968346cd67facb9cd27d555b3685c0e4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -24,10 +24,10 @@ export type CommitReviewersMutation$data = {
   readonly assignReviewers: ReadonlyArray<{
     readonly id: string;
     readonly reviewee: {
-      readonly file: string;
-      readonly id: string;
-      readonly lastName: string;
-      readonly name: string;
+      readonly file?: string;
+      readonly id?: string;
+      readonly lastName?: string;
+      readonly name?: string;
     };
     readonly reviewer: {
       readonly id: string;
@@ -49,89 +49,98 @@ var v0 = [
     "name": "input"
   }
 ],
-v1 = {
+v1 = [
+  {
+    "kind": "Variable",
+    "name": "input",
+    "variableName": "input"
+  }
+],
+v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v2 = {
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "name",
   "storageKey": null
 },
-v3 = {
+v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "lastName",
   "storageKey": null
 },
-v4 = [
-  {
-    "alias": null,
-    "args": [
-      {
-        "kind": "Variable",
-        "name": "input",
-        "variableName": "input"
-      }
-    ],
-    "concreteType": "ReviewerType",
-    "kind": "LinkedField",
-    "name": "assignReviewers",
-    "plural": true,
-    "selections": [
-      (v1/*: any*/),
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "UserType",
-        "kind": "LinkedField",
-        "name": "reviewer",
-        "plural": false,
-        "selections": [
-          (v1/*: any*/),
-          (v2/*: any*/),
-          (v3/*: any*/)
-        ],
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "UserType",
-        "kind": "LinkedField",
-        "name": "reviewee",
-        "plural": false,
-        "selections": [
-          (v1/*: any*/),
-          (v2/*: any*/),
-          (v3/*: any*/),
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "file",
-            "storageKey": null
-          }
-        ],
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
-  }
-];
+v5 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "UserType",
+  "kind": "LinkedField",
+  "name": "reviewer",
+  "plural": false,
+  "selections": [
+    (v2/*: any*/),
+    (v3/*: any*/),
+    (v4/*: any*/)
+  ],
+  "storageKey": null
+},
+v6 = {
+  "kind": "InlineFragment",
+  "selections": [
+    (v2/*: any*/),
+    (v3/*: any*/),
+    (v4/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "file",
+      "storageKey": null
+    }
+  ],
+  "type": "UserType",
+  "abstractKey": null
+};
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
     "name": "CommitReviewersMutation",
-    "selections": (v4/*: any*/),
+    "selections": [
+      {
+        "alias": null,
+        "args": (v1/*: any*/),
+        "concreteType": "ReviewerType",
+        "kind": "LinkedField",
+        "name": "assignReviewers",
+        "plural": true,
+        "selections": [
+          (v2/*: any*/),
+          (v5/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": null,
+            "kind": "LinkedField",
+            "name": "reviewee",
+            "plural": false,
+            "selections": [
+              (v6/*: any*/)
+            ],
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
+      }
+    ],
     "type": "RootMutationType",
     "abstractKey": null
   },
@@ -140,19 +149,60 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "CommitReviewersMutation",
-    "selections": (v4/*: any*/)
+    "selections": [
+      {
+        "alias": null,
+        "args": (v1/*: any*/),
+        "concreteType": "ReviewerType",
+        "kind": "LinkedField",
+        "name": "assignReviewers",
+        "plural": true,
+        "selections": [
+          (v2/*: any*/),
+          (v5/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": null,
+            "kind": "LinkedField",
+            "name": "reviewee",
+            "plural": false,
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "__typename",
+                "storageKey": null
+              },
+              (v6/*: any*/),
+              {
+                "kind": "InlineFragment",
+                "selections": [
+                  (v2/*: any*/)
+                ],
+                "type": "InternalGroupType",
+                "abstractKey": null
+              }
+            ],
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
+      }
+    ]
   },
   "params": {
-    "cacheID": "29562386c2f5d92191c6e2f33709d99c",
+    "cacheID": "d959f73ead23845b4f3ac0339223f21c",
     "id": null,
     "metadata": {},
     "name": "CommitReviewersMutation",
     "operationKind": "mutation",
-    "text": "mutation CommitReviewersMutation(\n  $input: AssignReviewersInputType!\n) {\n  assignReviewers(input: $input) {\n    id\n    reviewer {\n      id\n      name\n      lastName\n    }\n    reviewee {\n      id\n      name\n      lastName\n      file\n    }\n  }\n}\n"
+    "text": "mutation CommitReviewersMutation(\n  $input: AssignReviewersInputType!\n) {\n  assignReviewers(input: $input) {\n    id\n    reviewer {\n      id\n      name\n      lastName\n    }\n    reviewee {\n      __typename\n      ... on UserType {\n        id\n        name\n        lastName\n        file\n      }\n      ... on InternalGroupType {\n        id\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "d9b6b53d5410694858eb5404b8a6be9f";
+(node as any).hash = "f455554f01abf70e508ccb2f4d857fbc";
 
 export default node;
