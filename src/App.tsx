@@ -96,7 +96,9 @@ const App = () => {
           >
             <Route index element={<CoursePage />} />
             <Route path="users" element={<CourseUsersPage />} />
-            <Route path="new-repo" element={<CreateRepository />} />
+            <Route path="new-repo">
+              <Route path=":type" element={<CreateRepository />} />
+            </Route>
             <Route path="my-groups" element={<MyGroups />} />
             <Route path="assignments">
               <Route index element={<CourseAssignmentsPage />} />
