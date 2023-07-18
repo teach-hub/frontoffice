@@ -28,7 +28,6 @@ import {
   LogoutMutation$data,
 } from '__generated__/LogoutMutation.graphql';
 import { NavigationQuery } from '__generated__/NavigationQuery.graphql';
-import { RepositoryTypeParam } from 'pages/courses/CreateRepository';
 
 const MainRoutes = () => {
   return (
@@ -105,17 +104,13 @@ const NavigationBar = () => {
     teacherActions.push({
       content: 'Crear repositorios (individuales)',
       action: () => {
-        navigate(
-          `/courses/${courseContext.courseId}/new-repo/${RepositoryTypeParam.Students}`
-        );
+        navigate(`/courses/${courseContext.courseId}/new-repo/students`);
       },
     });
     teacherActions.push({
       content: 'Crear repositorios (grupales)',
       action: () => {
-        navigate(
-          `/courses/${courseContext.courseId}/new-repo/${RepositoryTypeParam.Groups}`
-        );
+        navigate(`/courses/${courseContext.courseId}/new-repo/groups`);
       },
     });
   }

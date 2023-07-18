@@ -12,10 +12,10 @@ import {
   Stack,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Form from 'components/Form';
 import { FormErrors, Mutable } from 'types';
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
 import InputField from 'components/InputField';
@@ -28,7 +28,10 @@ import { FormikValues } from 'formik';
 import { Checkbox } from 'components/Checkbox';
 import CourseCreateRepositoryQueryDef from 'graphql/CourseCreateRepositoryQuery';
 import CreateRepositoryMutationDef from 'graphql/CreateRepositoryMutation';
-import { CourseCreateRepositoryQuery } from '__generated__/CourseCreateRepositoryQuery.graphql';
+import {
+  CourseCreateRepositoryQuery,
+  CourseCreateRepositoryQuery$data,
+} from '__generated__/CourseCreateRepositoryQuery.graphql';
 import { filterUsers, UserRoleFilter } from 'app/users';
 import { useUserContext } from 'hooks/useUserCourseContext';
 import {
@@ -47,6 +50,8 @@ type RepositoryData = {
   useFileOnTemplate?: boolean;
 };
 
+type FormValues = Mutable<NonNullable<RepositoryData>>;
+
 const enum TeacherRepositoryRole {
   Admin = 'Admin',
   Maintain = 'Maintain',
@@ -57,10 +62,10 @@ interface SelectedRoles {
 }
 
 /**
- * Value of the params to configure the page
- * for student or group repository
+ * Value of the type of repositories to configure
+ * the page for
  * */
-export enum RepositoryTypeParam {
+export enum RepositoryType {
   Students = 'students',
   Groups = 'groups',
 }
@@ -75,7 +80,7 @@ export enum RepositoryTypeParam {
  * */
 interface SelectionTableRowProps {
   id: string;
-  rowData: string[];
+  rowData: (React.JSX.Element | string)[];
   checked: boolean;
 }
 
@@ -85,8 +90,47 @@ interface SelectionTableRowProps {
  * */
 interface StudentSelectionTableRowProps extends SelectionTableRowProps {
   userId: string;
+  name: string;
   lastName: string;
   file: string;
+}
+
+interface GroupParticipantData {
+  userId: string;
+  name: string;
+  lastName: string;
+  file: string;
+}
+
+interface GroupAssignmentData {
+  id: string;
+  title: string;
+}
+
+/**
+ * Groups will be displayed in a table, joining the cases where
+ * different assignments have the same participants.
+ *
+ * If a group has different participants for different assignments,
+ * then each one will be a different object associated to this interface
+ * */
+interface GroupSelectionTableRowProps extends SelectionTableRowProps {
+  groupName: string;
+  groupId: string;
+  assignments: GroupAssignmentData[];
+  participants: GroupParticipantData[];
+}
+
+type CourseType = NonNullable<
+  NonNullable<CourseCreateRepositoryQuery$data['viewer']>['course']
+>;
+type UserRoleType = NonNullable<CourseType['userRoles']>[number];
+type GroupType = NonNullable<CourseType['groups'][number]>;
+type UsersByAssignmentType = NonNullable<GroupType['usersByAssignments']>;
+
+interface GroupUsersData {
+  group: GroupType;
+  usersByAssigment: UsersByAssignmentType;
 }
 
 /**
@@ -109,9 +153,7 @@ interface RepositoriesTypePageConfiguration {
 const buildStudentRepositoryPageConfiguration = ({
   students,
 }: {
-  // FIXME. No copiar
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  students: any[]; // todo: FIX TYPE!
+  students: UserRoleType[];
 }): RepositoriesTypePageConfiguration => {
   return {
     title: 'Crear Repositorios (Individuales)',
@@ -119,22 +161,97 @@ const buildStudentRepositoryPageConfiguration = ({
       'Indicar la configuración de los repositorios a crear y seleccionar los alumnos a ' +
       'quienes se les crearán sus repositorios en la organización del curso.',
     tableHeaders: ['Alumno', 'Padrón'],
-    tableRowData: students.map(student => ({
-      id: student.user.file,
-      rowData: [
-        student.user.lastName + `, ${student.user.name}`, // FullName
-        student.user.file, // File
-      ],
-      checked: true,
-      userId: student.user.id, // todo: ver bien que hacer con esto y como usarlo
-      userLastName: student.user.lastName,
-      userFile: student.user.file,
-    })),
+    tableRowData: students
+      .map(student => ({
+        id: student.user.file,
+        rowData: [
+          student.user.lastName + `, ${student.user.name}`, // FullName
+          student.user.file, // File
+        ],
+        checked: true,
+        userId: student.user.id,
+        lastName: student.user.lastName,
+        name: student.user.name,
+        file: student.user.file,
+      }))
+      .sort((a, b) => a.lastName.localeCompare(b.lastName)), // Sort alphabetically
   };
 };
 
-const CreateRepositoryPage = () => {
-  const { type } = useParams();
+const buildGroupRepositoryPageConfiguration = ({
+  groupUsersData,
+}: {
+  groupUsersData: GroupUsersData[];
+}): RepositoriesTypePageConfiguration => {
+  const tableRowData: GroupSelectionTableRowProps[] = groupUsersData
+    .reduce((result: GroupSelectionTableRowProps[], currentGroupUsersData) => {
+      const { group, usersByAssigment } = currentGroupUsersData;
+
+      usersByAssigment.forEach(currentUsersByAssignment => {
+        const assignments = currentUsersByAssignment.assignments;
+        const users = currentUsersByAssignment.users;
+
+        /* Create stack to view better spaced */
+        const usersRowData = (
+          <Stack>
+            {users
+              .map((user): string => `${user.lastName}, ${user.name} (${user.file})`)
+              .sort((a: string, b: string) => a.localeCompare(b)) // Sort users alphabetically
+              .map((userData: string) => (
+                <Text>{userData}</Text>
+              ))}
+          </Stack>
+        );
+
+        /* Create stack to view better spaced */
+        const assignmentTitles = (
+          <Stack>
+            {assignments.map(assignment => (
+              <Text>{assignment.title}</Text>
+            ))}
+          </Stack>
+        );
+        const groupName = group.name || '';
+        const groupId = group.id;
+
+        result.push({
+          groupId: groupId,
+          groupName: groupName,
+          assignments: assignments.map(assignment => ({
+            id: assignment.id || '',
+            title: assignment.title || '',
+          })),
+          participants: users.map(user => ({
+            userId: user.id,
+            name: user.name,
+            lastName: user.lastName,
+            file: user.file,
+          })),
+          rowData: [groupName, assignmentTitles, usersRowData],
+          checked: true,
+          id: `${groupId}-${assignments.map(a => a.id).join('-')}`,
+        });
+      });
+
+      return result;
+    }, [])
+    .sort((a: GroupSelectionTableRowProps, b: GroupSelectionTableRowProps) =>
+      a.groupName.localeCompare(b.groupName)
+    ); // Sort by group names
+
+  return {
+    title: 'Crear Repositorios (Grupales)',
+    description:
+      'Indicar la configuración de los repositorios a crear y seleccionar los grupos a ' +
+      'quienes se les crearán sus repositorios en la organización del curso.\n\n' +
+      'En caso de que un grupo tenga distintos integrantes en distintos trabajos prácticos se podrá ' +
+      'seleccionar a quienes crear el repositorio.',
+    tableHeaders: ['Grupo', 'Trabajo/s Práctico/s', 'Alumnos'],
+    tableRowData,
+  };
+};
+
+const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
   const { courseId } = useUserContext();
   const navigate = useNavigate();
   const toast = useToast();
@@ -157,8 +274,11 @@ const CreateRepositoryPage = () => {
 
   const course = courseQueryData.viewer?.course;
   const courseOrganization = course?.organization;
-
-  type FormValues = Mutable<NonNullable<RepositoryData>>;
+  const groupUsersData: GroupUsersData[] =
+    course?.groups?.map(group => ({
+      group,
+      usersByAssigment: group.usersByAssignments,
+    })) || [];
 
   const validateForm = (values: FormValues): FormErrors<FormValues> => {
     const errors: FormErrors<FormValues> = {};
@@ -166,6 +286,7 @@ const CreateRepositoryPage = () => {
     if (!values.organization)
       errors.organization = 'Aún no se ha configurado la organización del curso';
 
+    /* TODO: update name creation */
     if (!buildStudentRepositoryName({ values }))
       errors.reposBaseName = 'Es necesario configurar el nombre de los repositorios';
 
@@ -173,7 +294,7 @@ const CreateRepositoryPage = () => {
   };
 
   /* todo: limpieza de espacios, tildes, apostrofes etc., llevar a la base*/
-  /* todo: sumar comportamiento para grupos */
+  /* todo: sumar comportamiento para grupos y tambien limpiar*/
   const buildStudentRepositoryName = ({
     values,
     lastName = 'lopez',
@@ -217,7 +338,28 @@ const CreateRepositoryPage = () => {
     return initialRoles;
   };
 
-  const [selectedRoles, setSelectedRoles] = useState<SelectedRoles>(getInitialRoles);
+  const [selectedRoles, setSelectedRoles] = useState<SelectedRoles>(getInitialRoles());
+
+  const getPageConfiguration = (): RepositoriesTypePageConfiguration => {
+    return type === RepositoryType.Students
+      ? buildStudentRepositoryPageConfiguration({ students })
+      : buildGroupRepositoryPageConfiguration({
+          groupUsersData,
+        });
+  };
+
+  const [pageConfiguration, setPageConfiguration] =
+    useState<RepositoriesTypePageConfiguration>(getPageConfiguration());
+
+  const [tableData, setTableData] = useState<SelectionTableRowProps[]>(
+    pageConfiguration.tableRowData
+  );
+
+  useEffect(() => {
+    const newPageConfiguration = getPageConfiguration();
+    setPageConfiguration(newPageConfiguration);
+    setTableData(newPageConfiguration.tableRowData);
+  }, [type]);
 
   const handleRoleChange = (userId: string, value: TeacherRepositoryRole) => {
     setSelectedRoles(prevState => ({
@@ -225,12 +367,6 @@ const CreateRepositoryPage = () => {
       [userId]: value,
     }));
   };
-
-  /* todo: elegir basado en tipo */
-  const studentsPageConfiguration = buildStudentRepositoryPageConfiguration({ students });
-  const [tableData, setTableData] = useState<SelectionTableRowProps[]>(
-    studentsPageConfiguration.tableRowData
-  );
 
   const SelectionTable = () => {
     const allChecked = tableData.map(i => i.checked).every(Boolean);
@@ -245,7 +381,6 @@ const CreateRepositoryPage = () => {
       setTableData(updatedData);
     };
 
-    /* todo: actualizar para generalizar en caso de alumno y grupo */
     const handleRowCheck = (rowId: string, checked: boolean) => {
       const updatedData = tableData.map(row =>
         row.id === rowId ? { ...row, checked } : row
@@ -258,7 +393,7 @@ const CreateRepositoryPage = () => {
         tableHeight={'70vh'}
         tableWidth={'50vw'}
         headers={[
-          ...studentsPageConfiguration.tableHeaders, // todo: manejar bien esto
+          ...pageConfiguration.tableHeaders,
           <Checkbox
             id={'allChecked'}
             size={'lg'}
@@ -288,6 +423,7 @@ const CreateRepositoryPage = () => {
   };
 
   const onSubmit = (values: FormValues) => {
+    /* todo: cambiar esto */
     const studentsRepositoryData = tableData
       .filter(row => row.checked)
       .map(row => {
@@ -314,6 +450,7 @@ const CreateRepositoryPage = () => {
       );
 
       commitCreateRepositoryMutation({
+        /* todo: falta meter el groupId */
         variables: {
           organization: courseOrganization || '',
           courseId,
@@ -356,13 +493,10 @@ const CreateRepositoryPage = () => {
 
   return (
     <PageDataContainer>
-      <Heading>{studentsPageConfiguration.title}</Heading>{' '}
-      {/* todo: choose based on type */}
+      <Heading>{pageConfiguration.title}</Heading>{' '}
       <Flex justifyContent={'space-between'}>
         <Flex direction={'column'} gap={'30px'} width={'500px'} paddingY={'20px'}>
-          <Text whiteSpace="pre-wrap">
-            {studentsPageConfiguration.description} {/* todo: choose based on type */}
-          </Text>
+          <Text whiteSpace="pre-wrap">{pageConfiguration.description}</Text>
 
           <Button onClick={onOpenTeachersModal} width={'fit-content'}>
             <Flex align="center">
@@ -497,11 +631,11 @@ const CreateRepositoryPage = () => {
   );
 };
 
-export default () => {
+export default ({ type }: { type: RepositoryType }) => {
   return (
     <Navigation>
       <Suspense fallback={<div> Cargando... </div>}>
-        <CreateRepositoryPage />
+        <CreateRepositoryPage type={type} />
       </Suspense>
     </Navigation>
   );

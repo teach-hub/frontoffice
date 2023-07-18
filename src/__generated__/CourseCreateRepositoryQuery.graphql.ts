@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d599cbd2a6e8165ebd2a5d7ec95b0060>>
+ * @generated SignedSource<<f247fde1165d41119c9facd96a588d97>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,21 +19,22 @@ export type CourseCreateRepositoryQuery$data = {
         readonly id: string;
         readonly title: string | null;
       }>;
-      readonly groupParticipants: ReadonlyArray<{
-        readonly assignmentId: string;
-        readonly group: {
-          readonly id: string;
-          readonly name: string | null;
-        };
+      readonly groups: ReadonlyArray<{
         readonly id: string;
-        readonly otherParticipants: ReadonlyArray<{
-          readonly file: string;
-          readonly id: string;
-          readonly lastName: string;
-          readonly name: string;
-          readonly notificationEmail: string;
+        readonly name: string | null;
+        readonly usersByAssignments: ReadonlyArray<{
+          readonly assignments: ReadonlyArray<{
+            readonly id: string;
+            readonly title: string | null;
+          }>;
+          readonly users: ReadonlyArray<{
+            readonly file: string;
+            readonly id: string;
+            readonly lastName: string;
+            readonly name: string;
+            readonly notificationEmail: string;
+          }>;
         }>;
-        readonly userRoleId: string;
       }>;
       readonly id: string;
       readonly name: string;
@@ -107,7 +108,26 @@ v5 = {
   "name": "notificationEmail",
   "storageKey": null
 },
-v6 = [
+v6 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "AssignmentType",
+  "kind": "LinkedField",
+  "name": "assignments",
+  "plural": true,
+  "selections": [
+    (v1/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "title",
+      "storageKey": null
+    }
+  ],
+  "storageKey": null
+},
+v7 = [
   {
     "alias": null,
     "args": null,
@@ -196,74 +216,42 @@ v6 = [
             ],
             "storageKey": null
           },
+          (v6/*: any*/),
           {
             "alias": null,
             "args": null,
-            "concreteType": "AssignmentType",
+            "concreteType": "InternalGroupType",
             "kind": "LinkedField",
-            "name": "assignments",
+            "name": "groups",
             "plural": true,
             "selections": [
               (v1/*: any*/),
+              (v2/*: any*/),
               {
                 "alias": null,
                 "args": null,
-                "kind": "ScalarField",
-                "name": "title",
-                "storageKey": null
-              }
-            ],
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "InternalGroupParticipantType",
-            "kind": "LinkedField",
-            "name": "groupParticipants",
-            "plural": true,
-            "selections": [
-              (v1/*: any*/),
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "assignmentId",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "userRoleId",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "concreteType": "InternalGroupType",
+                "concreteType": "InternalGroupUsersByAssignments",
                 "kind": "LinkedField",
-                "name": "group",
-                "plural": false,
-                "selections": [
-                  (v1/*: any*/),
-                  (v2/*: any*/)
-                ],
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "concreteType": "UserType",
-                "kind": "LinkedField",
-                "name": "otherParticipants",
+                "name": "usersByAssignments",
                 "plural": true,
                 "selections": [
-                  (v1/*: any*/),
-                  (v2/*: any*/),
-                  (v3/*: any*/),
-                  (v5/*: any*/),
-                  (v4/*: any*/)
+                  (v6/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "UserType",
+                    "kind": "LinkedField",
+                    "name": "users",
+                    "plural": true,
+                    "selections": [
+                      (v1/*: any*/),
+                      (v2/*: any*/),
+                      (v3/*: any*/),
+                      (v5/*: any*/),
+                      (v4/*: any*/)
+                    ],
+                    "storageKey": null
+                  }
                 ],
                 "storageKey": null
               }
@@ -283,7 +271,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "CourseCreateRepositoryQuery",
-    "selections": (v6/*: any*/),
+    "selections": (v7/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -292,19 +280,19 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "CourseCreateRepositoryQuery",
-    "selections": (v6/*: any*/)
+    "selections": (v7/*: any*/)
   },
   "params": {
-    "cacheID": "3a99f63b6b51e388fa5fba9ecb0cb25c",
+    "cacheID": "48e53f7921e16c09e0d5c52140b14ec8",
     "id": null,
     "metadata": {},
     "name": "CourseCreateRepositoryQuery",
     "operationKind": "query",
-    "text": "query CourseCreateRepositoryQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      organization\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          permissions\n          isTeacher\n        }\n      }\n      assignments {\n        id\n        title\n      }\n      groupParticipants {\n        id\n        assignmentId\n        userRoleId\n        group {\n          id\n          name\n        }\n        otherParticipants {\n          id\n          name\n          lastName\n          notificationEmail\n          file\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query CourseCreateRepositoryQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      organization\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          permissions\n          isTeacher\n        }\n      }\n      assignments {\n        id\n        title\n      }\n      groups {\n        id\n        name\n        usersByAssignments {\n          assignments {\n            id\n            title\n          }\n          users {\n            id\n            name\n            lastName\n            notificationEmail\n            file\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "450cea7ac8bed901fb844a66dedfab4b";
+(node as any).hash = "d9368801466e2a53f9c146dd97d86b16";
 
 export default node;

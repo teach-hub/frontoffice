@@ -25,24 +25,21 @@ export default graphql`
             isTeacher
           }
         }
-        assignments {
+        groups {
           id
-          title
-        }
-        groupParticipants {
-          id
-          assignmentId
-          userRoleId
-          group {
-            id
-            name
-          }
-          otherParticipants {
-            id
-            name
-            lastName
-            notificationEmail
-            file
+          name
+          usersByAssignments {
+            assignments {
+              id
+              title
+            }
+            users {
+              id
+              name
+              lastName
+              notificationEmail
+              file
+            }
           }
         }
       }
