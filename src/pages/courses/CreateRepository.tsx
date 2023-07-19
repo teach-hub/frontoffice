@@ -24,7 +24,6 @@ import PageDataContainer from 'components/PageDataContainer';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 import Table from 'components/Table';
 import { theme } from 'theme';
-import { FormikValues } from 'formik';
 import { Checkbox } from 'components/Checkbox';
 import CourseCreateRepositoryQueryDef from 'graphql/CourseCreateRepositoryQuery';
 import CreateRepositoryMutationDef from 'graphql/CreateRepositoryMutation';
@@ -43,14 +42,14 @@ import { MortarBoardIcon } from '@primer/octicons-react';
 import Button from 'components/Button';
 import Text from 'components/Text';
 
-type RepositoryData = {
+type RepositoryConfiguration = {
   organization?: string;
   reposBaseName?: string;
   useLastNameOnTemplate?: boolean;
   useFileOnTemplate?: boolean;
 };
 
-type FormValues = Mutable<NonNullable<RepositoryData>>;
+type FormValues = Mutable<NonNullable<RepositoryConfiguration>>;
 
 const enum TeacherRepositoryRole {
   Admin = 'Admin',
@@ -70,18 +69,30 @@ export enum RepositoryType {
   Groups = 'groups',
 }
 
+/*TODO: SOBRE LOS NOMBRES*/
+/* todo: limpieza de espacios, tildes, apostrofes etc., llevar a la base*/
+
+/* todo: alguna logica que si se repite apellido use otro dato? hacerlos incrementales
+    por un numero cuando se repita exactamente lo mismo? */
+
 /**
  * Props required for a row in the table
  * to select repositories to create
  *
  * @param id: unique id of the row
- * @param rowData: data to display in the row, does not include checkbox
+ * @param rowData: data to display in the row, does not include checkbox.
+ * May either be a string or any react component
  * @param checked: whether the checkbox is checked or not
+ * @param getStudentIds: function to get the ids of the students to create the repositories for
+ * @param getRepoName: function to get the name that the repository will have, based
+ * on the given configuration
  * */
 interface SelectionTableRowProps {
   id: string;
   rowData: (React.JSX.Element | string)[];
   checked: boolean;
+  getStudentIds: () => string[];
+  getRepoName: (repositoryConfiguration: RepositoryConfiguration) => string;
 }
 
 /**
@@ -162,18 +173,33 @@ const buildStudentRepositoryPageConfiguration = ({
       'quienes se les crearán sus repositorios en la organización del curso.',
     tableHeaders: ['Alumno', 'Padrón'],
     tableRowData: students
-      .map(student => ({
-        id: student.user.file,
-        rowData: [
-          student.user.lastName + `, ${student.user.name}`, // FullName
-          student.user.file, // File
-        ],
-        checked: true,
-        userId: student.user.id,
-        lastName: student.user.lastName,
-        name: student.user.name,
-        file: student.user.file,
-      }))
+      .map(
+        (student): StudentSelectionTableRowProps => ({
+          id: student.user.file,
+          rowData: [
+            student.user.lastName + `, ${student.user.name}`, // FullName
+            student.user.file, // File
+          ],
+          checked: true,
+          userId: student.user.id,
+          lastName: student.user.lastName,
+          name: student.user.name,
+          file: student.user.file,
+          getStudentIds: () => [student.user.id],
+          getRepoName: (repositoryData: RepositoryConfiguration) => {
+            const { reposBaseName, useLastNameOnTemplate, useFileOnTemplate } =
+              repositoryData;
+
+            return [
+              reposBaseName || null,
+              useLastNameOnTemplate ? student.user.lastName.toLowerCase() : null,
+              useFileOnTemplate ? student.user.file : null,
+            ]
+              .filter(item => item !== null)
+              .join('_');
+          },
+        })
+      )
       .sort((a, b) => a.lastName.localeCompare(b.lastName)), // Sort alphabetically
   };
 };
@@ -230,6 +256,21 @@ const buildGroupRepositoryPageConfiguration = ({
           rowData: [groupName, assignmentTitles, usersRowData],
           checked: true,
           id: `${groupId}-${assignments.map(a => a.id).join('-')}`,
+          getStudentIds: () => users.map(user => user.id),
+          getRepoName: (repositoryData: RepositoryConfiguration) => {
+            const { reposBaseName, useLastNameOnTemplate, useFileOnTemplate } =
+              repositoryData;
+
+            const lastNames = useLastNameOnTemplate
+              ? users.map(user => user.lastName.toLowerCase()).join('_')
+              : null;
+            const files = useFileOnTemplate
+              ? users.map(user => user.file).join('_')
+              : null;
+            return [reposBaseName || null, lastNames, files]
+              .filter(item => item !== null)
+              .join('_');
+          },
         });
       });
 
@@ -286,36 +327,12 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
     if (!values.organization)
       errors.organization = 'Aún no se ha configurado la organización del curso';
 
-    /* TODO: update name creation */
-    if (!buildStudentRepositoryName({ values }))
-      errors.reposBaseName = 'Es necesario configurar el nombre de los repositorios';
+    /* todo: si hago que se auto incremente ante repetido puedo actualizar el mensaje */
+    if (!values.useFileOnTemplate && !values.useLastNameOnTemplate)
+      errors.reposBaseName =
+        'Es necesario configurar un dato que permita diferenciar el nombre de los repositorios';
 
     return errors;
-  };
-
-  /* todo: limpieza de espacios, tildes, apostrofes etc., llevar a la base*/
-  /* todo: sumar comportamiento para grupos y tambien limpiar*/
-  const buildStudentRepositoryName = ({
-    values,
-    lastName = 'lopez',
-    file = '12345',
-  }: {
-    values: FormikValues;
-    lastName?: string;
-    file?: string;
-  }) => {
-    const {
-      reposBaseName,
-      useLastNameOnTemplate,
-      useFileOnTemplate: userFileOnTemplate,
-    } = values;
-    return [
-      reposBaseName || null,
-      useLastNameOnTemplate ? lastName.toLowerCase() : null,
-      userFileOnTemplate ? file : null,
-    ]
-      .filter(item => item !== null)
-      .join('_');
   };
 
   const students = filterUsers({
@@ -423,20 +440,20 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
   };
 
   const onSubmit = (values: FormValues) => {
-    /* todo: cambiar esto */
-    const studentsRepositoryData = tableData
+    const repositoriesData = tableData
       .filter(row => row.checked)
       .map(row => {
-        /* TODO: choose based on type */
-        const studentData = row as StudentSelectionTableRowProps;
+        /* Check if row has group id in order to add it to request variables */
+        const hasGroupId = (
+          row: SelectionTableRowProps
+        ): row is GroupSelectionTableRowProps => {
+          return 'groupId' in row;
+        };
 
         return {
-          students: [studentData.userId],
-          name: buildStudentRepositoryName({
-            values,
-            lastName: studentData.lastName,
-            file: studentData.file,
-          }),
+          students: row.getStudentIds(),
+          name: row.getRepoName(values),
+          groupId: hasGroupId(row) ? row.groupId : null,
         };
       });
 
@@ -450,11 +467,10 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
       );
 
       commitCreateRepositoryMutation({
-        /* todo: falta meter el groupId */
         variables: {
           organization: courseOrganization || '',
           courseId,
-          repositoriesData: studentsRepositoryData,
+          repositoriesData,
           admins: adminUserIds,
           maintainers: maintainUserIds,
         },
@@ -577,9 +593,7 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
                 inputComponent: (values, _) => (
                   <InputField
                     id={'exampleName'}
-                    value={buildStudentRepositoryName({
-                      values,
-                    })}
+                    value={tableData.length > 0 ? tableData[0].getRepoName(values) : ''} // Use first item of the table as example
                     type={'text'}
                     isReadOnly={true}
                   />
