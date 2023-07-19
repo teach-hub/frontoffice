@@ -1,4 +1,9 @@
-import { Card as ChakraCard, CardBody as ChakraBody, CardProps } from '@chakra-ui/react';
+import {
+  Card as ChakraCard,
+  CardBody as ChakraBody,
+  CardProps,
+  CardBodyProps,
+} from '@chakra-ui/react';
 import { theme } from 'theme';
 
 const defaultStyle = {
@@ -16,13 +21,14 @@ const CardBodyStyle = {
   alignItems: 'center',
 } as const;
 
-type Props = CardProps;
+type Props = CardProps & { bodyProps?: CardBodyProps };
 
-export default ({ children, ...rest }: Props) => {
+export default ({ children, bodyProps, ...rest }: Props) => {
   const props = { ...defaultStyle, ...rest };
+  const _bodyProps = { ...CardBodyStyle, ...bodyProps };
   return (
     <ChakraCard {...props}>
-      <ChakraBody {...CardBodyStyle}>{children}</ChakraBody>
+      <ChakraBody {..._bodyProps}>{children}</ChakraBody>
     </ChakraCard>
   );
 };

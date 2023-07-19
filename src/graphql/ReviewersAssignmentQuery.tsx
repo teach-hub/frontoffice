@@ -20,6 +20,15 @@ export default graphql`
         }
         assignment(id: $assignmentId) {
           id
+          isGroup
+          groupParticipants {
+            id
+            user {
+              name
+              lastName
+            }
+            groupId
+          }
           reviewers {
             id
             reviewer {
@@ -28,8 +37,12 @@ export default graphql`
               lastName
             }
             reviewee {
+              __typename
+              ... on InternalGroupType {
+                id
+                groupName: name
+              }
               ... on UserType {
-                __typename
                 id
                 name
                 lastName
@@ -40,8 +53,12 @@ export default graphql`
           previewReviewers(input: $filters) {
             id
             reviewee {
+              __typename
+              ... on InternalGroupType {
+                id
+                groupName: name
+              }
               ... on UserType {
-                __typename
                 id
                 name
                 lastName

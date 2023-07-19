@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6ed84801c4c9b30b41b4b459568a2a2d>>
+ * @generated SignedSource<<1947ef40ea118a078b65f6571a072fad>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -22,10 +22,23 @@ export type ReviewersAssignmentQuery$data = {
   readonly viewer: {
     readonly course: {
       readonly assignment: {
+        readonly groupParticipants: ReadonlyArray<{
+          readonly groupId: string;
+          readonly id: string;
+          readonly user: {
+            readonly lastName: string;
+            readonly name: string;
+          };
+        }>;
         readonly id: string;
+        readonly isGroup: boolean | null;
         readonly previewReviewers: ReadonlyArray<{
           readonly id: string;
           readonly reviewee: {
+            readonly __typename: "InternalGroupType";
+            readonly groupName: string | null;
+            readonly id: string;
+          } | {
             readonly __typename: "UserType";
             readonly file: string;
             readonly id: string;
@@ -45,6 +58,10 @@ export type ReviewersAssignmentQuery$data = {
         readonly reviewers: ReadonlyArray<{
           readonly id: string;
           readonly reviewee: {
+            readonly __typename: "InternalGroupType";
+            readonly groupName: string | null;
+            readonly id: string;
+          } | {
             readonly __typename: "UserType";
             readonly file: string;
             readonly id: string;
@@ -161,25 +178,25 @@ v9 = [
 v10 = {
   "alias": null,
   "args": null,
-  "concreteType": "UserType",
-  "kind": "LinkedField",
-  "name": "reviewer",
-  "plural": false,
-  "selections": (v7/*: any*/),
+  "kind": "ScalarField",
+  "name": "isGroup",
   "storageKey": null
 },
 v11 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "__typename",
+  "name": "groupId",
   "storageKey": null
 },
 v12 = {
   "alias": null,
   "args": null,
-  "kind": "ScalarField",
-  "name": "file",
+  "concreteType": "UserType",
+  "kind": "LinkedField",
+  "name": "reviewer",
+  "plural": false,
+  "selections": (v7/*: any*/),
   "storageKey": null
 },
 v13 = {
@@ -191,13 +208,40 @@ v13 = {
   "plural": false,
   "selections": [
     {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "__typename",
+      "storageKey": null
+    },
+    {
       "kind": "InlineFragment",
       "selections": [
-        (v11/*: any*/),
+        (v3/*: any*/),
+        {
+          "alias": "groupName",
+          "args": null,
+          "kind": "ScalarField",
+          "name": "name",
+          "storageKey": null
+        }
+      ],
+      "type": "InternalGroupType",
+      "abstractKey": null
+    },
+    {
+      "kind": "InlineFragment",
+      "selections": [
         (v3/*: any*/),
         (v5/*: any*/),
         (v6/*: any*/),
-        (v12/*: any*/)
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "file",
+          "storageKey": null
+        }
       ],
       "type": "UserType",
       "abstractKey": null
@@ -205,41 +249,37 @@ v13 = {
   ],
   "storageKey": null
 },
-v14 = [
-  {
-    "kind": "Variable",
-    "name": "input",
-    "variableName": "filters"
-  }
-],
-v15 = {
+v14 = {
   "alias": null,
   "args": null,
-  "concreteType": null,
+  "concreteType": "ReviewerType",
   "kind": "LinkedField",
-  "name": "reviewee",
-  "plural": false,
+  "name": "reviewers",
+  "plural": true,
   "selections": [
-    (v11/*: any*/),
+    (v3/*: any*/),
+    (v12/*: any*/),
+    (v13/*: any*/)
+  ],
+  "storageKey": null
+},
+v15 = {
+  "alias": null,
+  "args": [
     {
-      "kind": "InlineFragment",
-      "selections": [
-        (v3/*: any*/),
-        (v5/*: any*/),
-        (v6/*: any*/),
-        (v12/*: any*/)
-      ],
-      "type": "UserType",
-      "abstractKey": null
-    },
-    {
-      "kind": "InlineFragment",
-      "selections": [
-        (v3/*: any*/)
-      ],
-      "type": "InternalGroupType",
-      "abstractKey": null
+      "kind": "Variable",
+      "name": "input",
+      "variableName": "filters"
     }
+  ],
+  "concreteType": "ReviewerPreviewType",
+  "kind": "LinkedField",
+  "name": "previewReviewers",
+  "plural": true,
+  "selections": [
+    (v3/*: any*/),
+    (v13/*: any*/),
+    (v12/*: any*/)
   ],
   "storageKey": null
 };
@@ -282,34 +322,35 @@ return {
                 "plural": false,
                 "selections": [
                   (v3/*: any*/),
+                  (v10/*: any*/),
                   {
                     "alias": null,
                     "args": null,
-                    "concreteType": "ReviewerType",
+                    "concreteType": "InternalGroupParticipantType",
                     "kind": "LinkedField",
-                    "name": "reviewers",
+                    "name": "groupParticipants",
                     "plural": true,
                     "selections": [
                       (v3/*: any*/),
-                      (v10/*: any*/),
-                      (v13/*: any*/)
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "UserType",
+                        "kind": "LinkedField",
+                        "name": "user",
+                        "plural": false,
+                        "selections": [
+                          (v5/*: any*/),
+                          (v6/*: any*/)
+                        ],
+                        "storageKey": null
+                      },
+                      (v11/*: any*/)
                     ],
                     "storageKey": null
                   },
-                  {
-                    "alias": null,
-                    "args": (v14/*: any*/),
-                    "concreteType": "ReviewerPreviewType",
-                    "kind": "LinkedField",
-                    "name": "previewReviewers",
-                    "plural": true,
-                    "selections": [
-                      (v3/*: any*/),
-                      (v13/*: any*/),
-                      (v10/*: any*/)
-                    ],
-                    "storageKey": null
-                  }
+                  (v14/*: any*/),
+                  (v15/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -361,34 +402,36 @@ return {
                 "plural": false,
                 "selections": [
                   (v3/*: any*/),
+                  (v10/*: any*/),
                   {
                     "alias": null,
                     "args": null,
-                    "concreteType": "ReviewerType",
+                    "concreteType": "InternalGroupParticipantType",
                     "kind": "LinkedField",
-                    "name": "reviewers",
+                    "name": "groupParticipants",
                     "plural": true,
                     "selections": [
                       (v3/*: any*/),
-                      (v10/*: any*/),
-                      (v15/*: any*/)
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "UserType",
+                        "kind": "LinkedField",
+                        "name": "user",
+                        "plural": false,
+                        "selections": [
+                          (v5/*: any*/),
+                          (v6/*: any*/),
+                          (v3/*: any*/)
+                        ],
+                        "storageKey": null
+                      },
+                      (v11/*: any*/)
                     ],
                     "storageKey": null
                   },
-                  {
-                    "alias": null,
-                    "args": (v14/*: any*/),
-                    "concreteType": "ReviewerPreviewType",
-                    "kind": "LinkedField",
-                    "name": "previewReviewers",
-                    "plural": true,
-                    "selections": [
-                      (v3/*: any*/),
-                      (v15/*: any*/),
-                      (v10/*: any*/)
-                    ],
-                    "storageKey": null
-                  }
+                  (v14/*: any*/),
+                  (v15/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -401,16 +444,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "3a6a4a3fcf18358eb90811cc63ba49a1",
+    "cacheID": "2a169afb2ce434bf40fd476e9c0eed51",
     "id": null,
     "metadata": {},
     "name": "ReviewersAssignmentQuery",
     "operationKind": "query",
-    "text": "query ReviewersAssignmentQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $filters: PreviewReviewersFilterInputType!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      teachersUserRoles {\n        id\n        user {\n          id\n          name\n          lastName\n        }\n      }\n      assignment(id: $assignmentId) {\n        id\n        reviewers {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n          reviewee {\n            __typename\n            ... on UserType {\n              __typename\n              id\n              name\n              lastName\n              file\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n        }\n        previewReviewers(input: $filters) {\n          id\n          reviewee {\n            __typename\n            ... on UserType {\n              __typename\n              id\n              name\n              lastName\n              file\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query ReviewersAssignmentQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $filters: PreviewReviewersFilterInputType!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      teachersUserRoles {\n        id\n        user {\n          id\n          name\n          lastName\n        }\n      }\n      assignment(id: $assignmentId) {\n        id\n        isGroup\n        groupParticipants {\n          id\n          user {\n            name\n            lastName\n            id\n          }\n          groupId\n        }\n        reviewers {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n          reviewee {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n            }\n            ... on UserType {\n              id\n              name\n              lastName\n              file\n            }\n          }\n        }\n        previewReviewers(input: $filters) {\n          id\n          reviewee {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n            }\n            ... on UserType {\n              id\n              name\n              lastName\n              file\n            }\n          }\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "7a6a0c1baab50d3a429ed8b186c2dc37";
+(node as any).hash = "6511f10d358572547053072b3265ab05";
 
 export default node;

@@ -1,9 +1,11 @@
-import { Flex } from '@chakra-ui/react';
+import { Flex, FlexProps } from '@chakra-ui/react';
 import { ReactNode } from 'react';
 
-const PageDataContainer = ({ children }: { children: ReactNode }) => {
+type Props = { children: ReactNode } & FlexProps;
+
+const PageDataContainer = ({ children, ...props }: Props) => {
   return (
-    <Flex paddingX={'50px'} paddingY={'10px'} direction={'column'}>
+    <Flex px={'50px'} py={'10px'} direction={'column'} {...props}>
       {children}
     </Flex>
   );
