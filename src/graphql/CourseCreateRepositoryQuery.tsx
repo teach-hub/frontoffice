@@ -9,6 +9,10 @@ export default graphql`
         id
         name
         organization
+        assignments {
+          id
+          title
+        }
         userRoles {
           id
           user {
@@ -29,10 +33,7 @@ export default graphql`
           id
           name
           usersByAssignments {
-            assignments {
-              id
-              title
-            }
+            assignmentIds
             users {
               id
               name

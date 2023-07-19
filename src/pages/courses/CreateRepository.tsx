@@ -137,6 +137,7 @@ type CourseType = NonNullable<
   NonNullable<CourseCreateRepositoryQuery$data['viewer']>['course']
 >;
 type UserRoleType = NonNullable<CourseType['userRoles']>[number];
+type AssignmentType = NonNullable<CourseType['assignments']>[number];
 type GroupType = NonNullable<CourseType['groups'][number]>;
 type UsersByAssignmentType = NonNullable<GroupType['usersByAssignments']>;
 
@@ -207,15 +208,23 @@ const buildStudentRepositoryPageConfiguration = ({
 
 const buildGroupRepositoryPageConfiguration = ({
   groupUsersData,
+  courseAssignments,
 }: {
   groupUsersData: GroupUsersData[];
+  courseAssignments: readonly AssignmentType[];
 }): RepositoriesTypePageConfiguration => {
   const tableRowData: GroupSelectionTableRowProps[] = groupUsersData
     .reduce((result: GroupSelectionTableRowProps[], currentGroupUsersData) => {
       const { group, usersByAssigment } = currentGroupUsersData;
 
       usersByAssigment.forEach(currentUsersByAssignment => {
-        const assignments = currentUsersByAssignment.assignments;
+        const assignments = currentUsersByAssignment.assignmentIds
+          .map(assignmentId =>
+            courseAssignments.find(
+              courseAssignment => courseAssignment.id === assignmentId
+            )
+          )
+          .filter(assignment => assignment !== undefined) as AssignmentType[];
         const users = currentUsersByAssignment.users;
 
         /* Create stack to view better spaced */
@@ -316,6 +325,7 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
 
   const course = courseQueryData.viewer?.course;
   const courseOrganization = course?.organization;
+  const courseAssignments = course?.assignments || [];
   const groupUsersData: GroupUsersData[] =
     course?.groups?.map(group => ({
       group,
@@ -363,6 +373,7 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
       ? buildStudentRepositoryPageConfiguration({ students })
       : buildGroupRepositoryPageConfiguration({
           groupUsersData,
+          courseAssignments,
         });
   };
 

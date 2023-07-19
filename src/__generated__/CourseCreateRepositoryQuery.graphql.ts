@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7cb3ecb94483765c6eda55ab5e4f03b0>>
+ * @generated SignedSource<<839450c9a739ba3a93b096f9639f7a4c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,14 +15,15 @@ export type CourseCreateRepositoryQuery$variables = {
 export type CourseCreateRepositoryQuery$data = {
   readonly viewer: {
     readonly course: {
+      readonly assignments: ReadonlyArray<{
+        readonly id: string;
+        readonly title: string | null;
+      }>;
       readonly groups: ReadonlyArray<{
         readonly id: string;
         readonly name: string | null;
         readonly usersByAssignments: ReadonlyArray<{
-          readonly assignments: ReadonlyArray<{
-            readonly id: string;
-            readonly title: string | null;
-          }>;
+          readonly assignmentIds: ReadonlyArray<string | null>;
           readonly users: ReadonlyArray<{
             readonly file: string;
             readonly id: string;
@@ -141,6 +142,25 @@ v6 = [
           {
             "alias": null,
             "args": null,
+            "concreteType": "AssignmentType",
+            "kind": "LinkedField",
+            "name": "assignments",
+            "plural": true,
+            "selections": [
+              (v1/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "title",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
             "concreteType": "UserRoleType",
             "kind": "LinkedField",
             "name": "userRoles",
@@ -214,20 +234,8 @@ v6 = [
                   {
                     "alias": null,
                     "args": null,
-                    "concreteType": "AssignmentType",
-                    "kind": "LinkedField",
-                    "name": "assignments",
-                    "plural": true,
-                    "selections": [
-                      (v1/*: any*/),
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "title",
-                        "storageKey": null
-                      }
-                    ],
+                    "kind": "ScalarField",
+                    "name": "assignmentIds",
                     "storageKey": null
                   },
                   {
@@ -277,16 +285,16 @@ return {
     "selections": (v6/*: any*/)
   },
   "params": {
-    "cacheID": "280838981a1a19548ee78146f7304cae",
+    "cacheID": "d7d50ff2adc3eb0c00b429cfb98f7a68",
     "id": null,
     "metadata": {},
     "name": "CourseCreateRepositoryQuery",
     "operationKind": "query",
-    "text": "query CourseCreateRepositoryQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      organization\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          permissions\n          isTeacher\n        }\n      }\n      groups {\n        id\n        name\n        usersByAssignments {\n          assignments {\n            id\n            title\n          }\n          users {\n            id\n            name\n            lastName\n            notificationEmail\n            file\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query CourseCreateRepositoryQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      organization\n      assignments {\n        id\n        title\n      }\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          permissions\n          isTeacher\n        }\n      }\n      groups {\n        id\n        name\n        usersByAssignments {\n          assignmentIds\n          users {\n            id\n            name\n            lastName\n            notificationEmail\n            file\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "eb4d547d2b2cf80cf84e4e127e6e2d2f";
+(node as any).hash = "b900d65015e0f2c5ba76dc894ebb988d";
 
 export default node;
