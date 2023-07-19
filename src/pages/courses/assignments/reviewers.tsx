@@ -19,7 +19,7 @@ import Text from 'components/Text';
 import Box from 'components/Box';
 
 import ReviewerCard from 'components/ReviewerCard';
-import RevieweeCard from 'components/RevieweeCard';
+import { UserRevieweeCard, GroupRevieweeCard } from 'components/RevieweeCard';
 
 import ReviewersAssignmentQueryDef from 'graphql/ReviewersAssignmentQuery';
 import CommitReviewersMutationDef from 'graphql/CommitReviewersMutation';
@@ -130,30 +130,52 @@ function AssignmentsContainer({
   reviewers,
   title,
   fallbackText,
+  groupsParticipants,
 }: {
   reviewers: readonly ReviewerInfo[];
   title?: string;
   fallbackText?: string;
+  groupsParticipants: Assignment['groupParticipants'];
 }) {
+  const buildRevieweeCard = (reviewee: ReviewerInfo['reviewee']) => {
+    if (reviewee.__typename === 'UserType')
+      return <UserRevieweeCard revieweeInfo={{ ...reviewee }} />;
+
+    if (reviewee.__typename === 'InternalGroupType') {
+      // Reviewee puede ser un grupo entero asi que agarramos sus integrates.
+      const groupParticipants = groupsParticipants
+        .filter(x => x.groupId === reviewee.id)
+        .map(x => x.user);
+
+      return (
+        <GroupRevieweeCard
+          revieweeInfo={{
+            groupName: reviewee.groupName!,
+            participants: groupParticipants,
+          }}
+        />
+      );
+    }
+
+    return null;
+  };
+
   return (
-    <Flex flex="1" direction="column" overflowY={'auto'}>
-      <Heading py="15px" size="md">
-        {title}
-      </Heading>
-
-      {!reviewers.length && <Text>{fallbackText}</Text>}
-
-      {reviewers.length
-        ? reviewers.map(({ reviewer, reviewee }, i) => (
-            <Flex key={i} h="70px" fontSize="15px" my="10px">
+    <Flex flex="1" direction="column" gap="20px">
+      <Heading size="md">{title}</Heading>
+      <Flex gap="15px" direction="column" overflowY={'auto'}>
+        {reviewers.length ? (
+          reviewers.map(({ reviewer, reviewee }, i) => (
+            <Box display="flex" gap="25px" key={i} h="70px" fontSize="15px">
               <ReviewerCard reviewerInfo={reviewer} w="300px" />
-              <ArrowForwardIcon alignSelf={'center'} boxSize={'30px'} mx="18px" />
-              {reviewee.__typename === 'UserType' && (
-                <RevieweeCard revieweeInfo={reviewee} />
-              )}
-            </Flex>
+              <ArrowForwardIcon alignSelf={'center'} boxSize={'30px'} />
+              {buildRevieweeCard(reviewee)}
+            </Box>
           ))
-        : null}
+        ) : (
+          <Text>{fallbackText}</Text>
+        )}
+      </Flex>
     </Flex>
   );
 }
@@ -166,19 +188,17 @@ function AssignButton({
   isDisabled: boolean;
 }) {
   return (
-    <Box flexDir="column" display="flex" alignItems="center">
+    <Flex gap="20px" direction={'column'} alignItems="center">
       <Divider />
       <IconButton
         variant="ghost"
-        py="30px"
         disabled={isDisabled}
-        my="20px"
-        aria-label="arrow right icon"
+        aria-label="assign reviewers icon"
         onClick={onClick}
         icon={<ChevronRightIcon size="large" />}
       />
       <Divider />
-    </Box>
+    </Flex>
   );
 }
 
@@ -216,6 +236,8 @@ function ReviewersPageContainer({
   const [previewReviewers, setPreviewReviewers] = useState<readonly ReviewerInfo[]>(
     viewer?.course?.assignment?.previewReviewers || []
   );
+
+  const groupsParticipants = viewer?.course?.assignment?.groupParticipants ?? [];
 
   useEffect(() => {
     if (!viewer?.course?.assignment) {
@@ -268,13 +290,11 @@ function ReviewersPageContainer({
         setFilters={setFilters}
         editable={!!previewReviewers.length}
       />
-      <Box px="10px">
-        <Divider />
-      </Box>
       <AssignmentsContainer
         title="Pendientes"
         reviewers={previewReviewers}
         fallbackText="No hay alumnos pendientes a los cuales asignar correctores"
+        groupsParticipants={groupsParticipants}
       />
       <AssignButton
         onClick={() => {
@@ -290,6 +310,7 @@ function ReviewersPageContainer({
       <AssignmentsContainer
         title="Asignados"
         reviewers={reviewers}
+        groupsParticipants={groupsParticipants}
         fallbackText="Asigna los correctores seleccionando los profesores y clickeando en el boton"
       />
     </ContainerLayout>
@@ -318,7 +339,7 @@ function LoadingPageContainer() {
 }
 
 const ContainerLayout = ({ children }: { children: JSX.Element[] }) => (
-  <HStack alignItems={'stretch'} h="700px">
+  <HStack gap="30px" alignItems={'stretch'} h="700px">
     {children}
   </HStack>
 );
@@ -331,8 +352,8 @@ const PageContent = () => {
   }
 
   return (
-    <PageDataContainer>
-      <Heading m="20px 0px">Asignar correctores</Heading>
+    <PageDataContainer gap="30px">
+      <Heading>Asignar correctores</Heading>
       <Suspense fallback={<LoadingPageContainer />}>
         <ReviewersPageContainer assignmentId={assignmentId} courseId={courseId} />
       </Suspense>
