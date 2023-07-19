@@ -1,11 +1,5 @@
 import {
   Flex,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Radio,
   RadioGroup,
   SimpleGrid,
@@ -42,6 +36,7 @@ import { MortarBoardIcon } from '@primer/octicons-react';
 import Button from 'components/Button';
 import Text from 'components/Text';
 import { removeAccentsAndSpecialCharacters } from 'utils/strings';
+import { Modal } from 'components/Modal';
 
 type RepositoryConfiguration = {
   organization?: string;
@@ -523,6 +518,33 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
     }
   };
 
+  const TeachersModalBody = () => (
+    <>
+      <SimpleGrid columns={2} spacing={2} marginTop={'20px'}>
+        {teachers.map(teacher => (
+          <React.Fragment key={teacher.user.id}>
+            <Text>{`${teacher.user.name} ${teacher.user.lastName}`}</Text>
+            <RadioGroup
+              value={selectedRoles[teacher.user.id] || ''}
+              onChange={value =>
+                handleRoleChange(teacher.user.id, value as TeacherRepositoryRole)
+              }
+            >
+              <SimpleGrid columns={2} spacing={2} alignItems="center">
+                <Radio value={TeacherRepositoryRole.Admin}>
+                  {TeacherRepositoryRole.Admin}
+                </Radio>
+                <Radio value={TeacherRepositoryRole.Maintain}>
+                  {TeacherRepositoryRole.Maintain}
+                </Radio>
+              </SimpleGrid>
+            </RadioGroup>
+          </React.Fragment>
+        ))}
+      </SimpleGrid>
+    </>
+  );
+
   return (
     <PageDataContainer>
       <Heading>{pageConfiguration.title}</Heading>{' '}
@@ -623,39 +645,15 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
         </Flex>
         <SelectionTable />
       </Flex>
-      <Modal isOpen={isOpenTeachersModal} onClose={onCloseTeachersModal} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            Seleccione el rol que tendrá cada profesor en los repositorios a crear.
-          </ModalHeader>
-          <ModalBody>
-            <Text></Text>
-            <SimpleGrid columns={2} spacing={2} marginTop={'20px'}>
-              {teachers.map(teacher => (
-                <React.Fragment key={teacher.user.id}>
-                  <Text>{`${teacher.user.name} ${teacher.user.lastName}`}</Text>
-                  <RadioGroup
-                    value={selectedRoles[teacher.user.id] || ''}
-                    onChange={value =>
-                      handleRoleChange(teacher.user.id, value as TeacherRepositoryRole)
-                    }
-                  >
-                    <SimpleGrid columns={2} spacing={2} alignItems="center">
-                      <Radio value={TeacherRepositoryRole.Admin}>
-                        {TeacherRepositoryRole.Admin}
-                      </Radio>
-                      <Radio value={TeacherRepositoryRole.Maintain}>
-                        {TeacherRepositoryRole.Maintain}
-                      </Radio>
-                    </SimpleGrid>
-                  </RadioGroup>
-                </React.Fragment>
-              ))}
-            </SimpleGrid>
-          </ModalBody>
-          <ModalFooter />
-        </ModalContent>
+      <Modal
+        isOpen={isOpenTeachersModal}
+        onClose={onCloseTeachersModal}
+        isCentered
+        headerText={
+          'Seleccione el rol que tendrá cada profesor en los repositorios a crear'
+        }
+      >
+        <TeachersModalBody />
       </Modal>
     </PageDataContainer>
   );
