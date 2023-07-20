@@ -7,7 +7,6 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import Form from 'components/Form';
 import React, { Suspense, useEffect, useState } from 'react';
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
@@ -63,12 +62,6 @@ export enum RepositoryType {
   Students = 'students',
   Groups = 'groups',
 }
-
-/**
- * TODO:
- *  - if there are repeated names, add a number to the end, or make a difference to each name
- *    - perhaps warn about repetitions?
- * */
 
 /**
  * Props required for a row in the table
@@ -578,26 +571,26 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
             />
           </FormControl>
 
-          {/* todo: block create button if errors (no organization or name empty) */}
-          {/* todo: remove form and replace for buttons directly */}
-          <Form
-            buttonsEnabled={true} // In this page always can use buttons
-            initialValues={{
-              organization: courseOrganization ?? undefined,
-            }}
-            validateForm={() => {
-              console.log('do nothing');
-            }}
-            onCancelForm={{
-              text: 'Cancelar',
-              onClick: onCancel,
-            }}
-            onSubmitForm={{
-              text: 'Crear',
-              onClick: onSubmit,
-            }}
-            inputFields={[]}
-          />
+          <Flex>
+            <Button
+              variant="ghost"
+              w={'full'}
+              mr={'10%'}
+              onClick={onCancel}
+              disabled={false}
+              borderColor={theme.colors.teachHub.black}
+              borderWidth="1px"
+            >
+              Cancelar
+            </Button>
+            <Button
+              w={'full'}
+              disabled={!courseOrganization || errorInRepositoryName}
+              onClick={onSubmit}
+            >
+              Crear
+            </Button>
+          </Flex>
         </Flex>
         <SelectionTable />
       </Flex>
