@@ -382,15 +382,16 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
   const errorInRepositoryName = exampleRepositoryName() === '';
 
   /**
-   * TODO: clear state of all variables when changing type (student or group page)
-   *  - selectedRoles
-   *  - etc.
+   * When type changes (go from students to groups or vice-versa)
+   * state of the page must be cleared, in order to view configuration
+   * as if it was the first time the page is loaded
    * */
   useEffect(() => {
     const newPageConfiguration = getPageConfiguration();
     setPageConfiguration(newPageConfiguration);
     setTableData(newPageConfiguration.tableRowData);
     setRepositoryNameConfiguration(initialRepositoryNameConfiguration);
+    setSelectedRoles(getInitialRoles());
   }, [type]);
 
   const handleRoleChange = (userId: string, value: TeacherRepositoryRole) => {
