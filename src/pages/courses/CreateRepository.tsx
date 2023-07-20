@@ -8,7 +8,6 @@ import {
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import Form from 'components/Form';
-import { FormErrors, Mutable } from 'types';
 import React, { Suspense, useEffect, useState } from 'react';
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
@@ -32,20 +31,20 @@ import {
   CreateRepositoryMutation$data,
 } from '__generated__/CreateRepositoryMutation.graphql';
 import { Icon } from '@chakra-ui/icons';
-import { MortarBoardIcon } from '@primer/octicons-react';
+import { IdBadgeIcon, MortarBoardIcon } from '@primer/octicons-react';
 import Button from 'components/Button';
 import Text from 'components/Text';
 import { removeAccentsAndSpecialCharacters } from 'utils/strings';
 import { Modal } from 'components/Modal';
+import { FormControl } from 'components/FormControl';
+import CheckboxGroup from 'components/CheckboxGroup';
 
-type RepositoryConfiguration = {
-  organization?: string;
-  reposBaseName?: string;
-  useLastNameOnTemplate?: boolean;
-  useFileOnTemplate?: boolean;
+type RepositoriesNameConfiguration = {
+  prefix: string;
+  useLastName: boolean;
+  useFile: boolean;
+  useGroupName: boolean;
 };
-
-type FormValues = Mutable<NonNullable<RepositoryConfiguration>>;
 
 const enum TeacherRepositoryRole {
   Admin = 'Admin',
@@ -88,7 +87,7 @@ interface SelectionTableRowProps {
   rowData: (React.JSX.Element | string)[];
   checked: boolean;
   getStudentIds: () => string[];
-  getRepoName: (repositoryConfiguration: RepositoryConfiguration) => string;
+  getRepoName: (repositoryConfiguration: RepositoriesNameConfiguration) => string;
 }
 
 /**
@@ -183,17 +182,17 @@ const buildStudentRepositoryPageConfiguration = ({
           name: student.user.name,
           file: student.user.file,
           getStudentIds: () => [student.user.id],
-          getRepoName: (repositoryData: RepositoryConfiguration) => {
-            const { reposBaseName, useLastNameOnTemplate, useFileOnTemplate } =
-              repositoryData;
+          getRepoName: (repositoryData: RepositoriesNameConfiguration) => {
+            const { prefix, useLastName, useFile } = repositoryData;
 
             const repoName = [
-              reposBaseName || null,
-              useLastNameOnTemplate ? student.user.lastName.toLowerCase() : null,
-              useFileOnTemplate ? student.user.file : null,
+              prefix || null,
+              useLastName ? student.user.lastName : null,
+              useFile ? student.user.file : null,
             ]
               .filter(item => item !== null)
-              .join('_');
+              .join('_')
+              .toLowerCase();
 
             return removeAccentsAndSpecialCharacters(repoName);
           },
@@ -264,20 +263,18 @@ const buildGroupRepositoryPageConfiguration = ({
           checked: true,
           id: `${groupId}-${assignments.map(a => a.id).join('-')}`,
           getStudentIds: () => users.map(user => user.id),
-          getRepoName: (repositoryData: RepositoryConfiguration) => {
-            const { reposBaseName, useLastNameOnTemplate, useFileOnTemplate } =
-              repositoryData;
+          getRepoName: (repositoryData: RepositoriesNameConfiguration) => {
+            const { prefix, useLastName, useFile, useGroupName } = repositoryData;
 
-            const lastNames = useLastNameOnTemplate
-              ? users.map(user => user.lastName.toLowerCase()).join('_')
+            const lastNames = useLastName
+              ? users.map(user => user.lastName).join('_')
               : null;
-            const files = useFileOnTemplate
-              ? users.map(user => user.file).join('_')
-              : null;
-
-            const repoName = [reposBaseName || null, lastNames, files]
+            const files = useFile ? users.map(user => user.file).join('_') : null;
+            const repoName = [prefix || null, useGroupName ? groupName : null, lastNames, files]
               .filter(item => item !== null)
-              .join('_');
+              .join('_')
+              .toLowerCase();
+
             return removeAccentsAndSpecialCharacters(repoName);
           },
         });
@@ -311,6 +308,12 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
     onClose: onCloseTeachersModal,
   } = useDisclosure();
 
+  const {
+    isOpen: isOpenRepoNamesConfigurationModal,
+    onOpen: onOpenRepoNamesConfigurationModal,
+    onClose: onCloseRepoNamesConfigurationModal,
+  } = useDisclosure();
+
   const courseQueryData = useLazyLoadQuery<CourseCreateRepositoryQuery>(
     CourseCreateRepositoryQueryDef,
     {
@@ -330,20 +333,6 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
       group,
       usersByAssigment: group.usersByAssignments,
     })) || [];
-
-  const validateForm = (values: FormValues): FormErrors<FormValues> => {
-    const errors: FormErrors<FormValues> = {};
-
-    if (!values.organization)
-      errors.organization = 'Aún no se ha configurado la organización del curso';
-
-    /* todo: update conditions with group data, or if same names are autogenerated (if repeated) */
-    if (!values.useFileOnTemplate && !values.useLastNameOnTemplate)
-      errors.reposBaseName =
-        'Es necesario configurar un dato que permita diferenciar el nombre de los repositorios';
-
-    return errors;
-  };
 
   const students = filterUsers({
     users: course?.userRoles || [],
@@ -383,10 +372,32 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
     pageConfiguration.tableRowData
   );
 
+  const initialRepositoryNameConfiguration: RepositoriesNameConfiguration = {
+    prefix: '',
+    useLastName: true,
+    useGroupName: true,
+    useFile: true,
+  };
+  const [repositoryNameConfiguration, setRepositoryNameConfiguration] =
+    useState<RepositoriesNameConfiguration>(initialRepositoryNameConfiguration);
+
+  const exampleRepositoryName = (): string => {
+    return tableData.length > 0
+      ? tableData[0].getRepoName(repositoryNameConfiguration) // Use first item of the table as example
+      : '';
+  };
+  const errorInRepositoryName = exampleRepositoryName() === '';
+
+  /**
+   * TODO: clear state of all variables when changing type (student or group page)
+   *  - selectedRoles
+   *  - etc.
+   * */
   useEffect(() => {
     const newPageConfiguration = getPageConfiguration();
     setPageConfiguration(newPageConfiguration);
     setTableData(newPageConfiguration.tableRowData);
+    setRepositoryNameConfiguration(initialRepositoryNameConfiguration);
   }, [type]);
 
   const handleRoleChange = (userId: string, value: TeacherRepositoryRole) => {
@@ -450,7 +461,7 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
     navigate(`/courses/${courseId}`);
   };
 
-  const onSubmit = (values: FormValues) => {
+  const onSubmit = () => {
     const repositoriesData = tableData
       .filter(row => row.checked)
       .map(row => {
@@ -463,7 +474,7 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
 
         return {
           students: row.getStudentIds(),
-          name: row.getRepoName(values),
+          name: row.getRepoName(repositoryNameConfiguration),
           groupId: hasGroupId(row) ? row.groupId : null,
         };
       });
@@ -532,14 +543,51 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
             </Flex>
           </Button>
 
+          <Button onClick={onOpenRepoNamesConfigurationModal} width={'fit-content'}>
+            <Flex align="center">
+              <Icon as={IdBadgeIcon} boxSize={6} marginRight={2} />
+              <Text>Configurar nombre repositorios</Text>
+            </Flex>
+          </Button>
+
+          <FormControl
+            label={'Ejemplo nombre repositorio'}
+            isInvalid={errorInRepositoryName}
+            errorMessage={
+              'No es posible crear repositorios sin nombre, revisar configuración'
+            }
+          >
+            <InputField
+              id={'exampleRepositoryName'}
+              value={exampleRepositoryName()}
+              type={'text'}
+              isReadOnly={true}
+            />
+          </FormControl>
+
+          <FormControl
+            label={'Organización de GitHub'}
+            isInvalid={!courseOrganization}
+            errorMessage={'Aún no se ha configurado la organización del curso'}
+          >
+            <InputField
+              id={'organization'}
+              value={courseOrganization ?? undefined}
+              type={'text'}
+              isReadOnly={true}
+            />
+          </FormControl>
+
+          {/* todo: block create button if errors (no organization or name empty) */}
+          {/* todo: remove form and replace for buttons directly */}
           <Form
             buttonsEnabled={true} // In this page always can use buttons
             initialValues={{
               organization: courseOrganization ?? undefined,
-              useLastNameOnTemplate: true,
-              useFileOnTemplate: true,
             }}
-            validateForm={validateForm}
+            validateForm={() => {
+              console.log('do nothing');
+            }}
             onCancelForm={{
               text: 'Cancelar',
               onClick: onCancel,
@@ -548,72 +596,7 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
               text: 'Crear',
               onClick: onSubmit,
             }}
-            inputFields={[
-              {
-                inputComponent: (values, _) => (
-                  <InputField
-                    id={'organization'}
-                    value={values.organization}
-                    type={'text'}
-                    isReadOnly={true}
-                  />
-                ),
-                label: 'Organización de GitHub',
-                readError: e => e.organization as string, // TODO: Remove from form
-              },
-              {
-                inputComponent: (values, handleChange) => (
-                  <Stack flexDirection={'column'}>
-                    <InputField
-                      id={'reposBaseName'}
-                      value={values?.reposBaseName}
-                      onChange={handleChange}
-                      placeholder={'texto_prefijo'}
-                      type={'text'}
-                    />
-                    {[
-                      {
-                        id: 'useLastNameOnTemplate',
-                        isChecked: values?.useLastNameOnTemplate,
-                        value: values?.useLastNameOnTemplate,
-                        text: 'Incluir apellido',
-                      },
-                      {
-                        id: 'useFileOnTemplate',
-                        isChecked: values?.useFileOnTemplate,
-                        value: values?.useFileOnTemplate,
-                        text: 'Incluir padrón',
-                      },
-                    ].map(item => (
-                      <Flex alignItems={'center'} gap={'10px'}>
-                        <Checkbox
-                          id={item.id}
-                          isChecked={item.isChecked}
-                          value={item.value}
-                          onChange={handleChange}
-                        />
-                        <Text>{item.text}</Text>
-                      </Flex>
-                    ))}
-                  </Stack>
-                ),
-                label: 'Configuración nombre repositorios',
-                readError: e => e.reposBaseName as string,
-              },
-              {
-                inputComponent: (values, _) => (
-                  <InputField
-                    id={'exampleName'}
-                    value={tableData.length > 0 ? tableData[0].getRepoName(values) : ''} // Use first item of the table as example
-                    type={'text'}
-                    isReadOnly={true}
-                  />
-                ),
-                label: 'Ejemplo',
-                // @ts-expect-error: FIXME
-                readError: e => e.reposNameExample as string, // TODO: Remove from form
-              },
-            ]}
+            inputFields={[]}
           />
         </Flex>
         <SelectionTable />
@@ -648,6 +631,77 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
             </React.Fragment>
           ))}
         </SimpleGrid>
+      </Modal>
+      <Modal
+        isOpen={isOpenRepoNamesConfigurationModal}
+        onClose={onCloseRepoNamesConfigurationModal}
+        isCentered
+        headerText={'Configurar nombres de repositorios'}
+      >
+        <Stack gap={'20px'}>
+          <FormControl
+            helperText={'Se agregará al inicio del nombre para cada repositorio'}
+            label={'Prefijo'}
+          >
+            <InputField
+              id={'reposPrefix'}
+              value={repositoryNameConfiguration.prefix}
+              onChange={event =>
+                setRepositoryNameConfiguration({
+                  ...repositoryNameConfiguration,
+                  prefix: event.target.value,
+                })
+              }
+              placeholder={'texto_prefijo'}
+              type={'text'}
+            />
+          </FormControl>
+          <FormControl label={'Datos a incluir'}>
+            <CheckboxGroup>
+              <Stack spacing={[1, 5]} direction={['column', 'row']}>
+                {type === RepositoryType.Groups && (
+                  <Checkbox
+                    id={'useGroupName'}
+                    isChecked={repositoryNameConfiguration.useGroupName}
+                    onChange={() =>
+                      setRepositoryNameConfiguration({
+                        ...repositoryNameConfiguration,
+                        useGroupName: !repositoryNameConfiguration.useGroupName,
+                      })
+                    }
+                  >
+                    Nombre Grupo
+                  </Checkbox>
+                )}
+                <Checkbox
+                  id={'useLastName'}
+                  isChecked={repositoryNameConfiguration.useLastName}
+                  onChange={() =>
+                    setRepositoryNameConfiguration({
+                      ...repositoryNameConfiguration,
+                      useLastName: !repositoryNameConfiguration.useLastName,
+                    })
+                  }
+                  bg={'transparent'}
+                >
+                  Apellido/s
+                </Checkbox>
+                <Checkbox
+                  id={'useFile'}
+                  isChecked={repositoryNameConfiguration.useFile}
+                  onChange={() =>
+                    setRepositoryNameConfiguration({
+                      ...repositoryNameConfiguration,
+                      useFile: !repositoryNameConfiguration.useFile,
+                    })
+                  }
+                >
+                  Padrón
+                </Checkbox>
+              </Stack>
+            </CheckboxGroup>
+          </FormControl>
+        </Stack>
       </Modal>
     </PageDataContainer>
   );
