@@ -41,6 +41,7 @@ import { Icon } from '@chakra-ui/icons';
 import { MortarBoardIcon } from '@primer/octicons-react';
 import Button from 'components/Button';
 import Text from 'components/Text';
+import { removeAccentsAndSpecialCharacters } from 'utils/strings';
 
 type RepositoryConfiguration = {
   organization?: string;
@@ -71,7 +72,6 @@ export enum RepositoryType {
 
 /**
  * TODO:
- *  - clean repo names: spaces, accents, apostrophes, etc. Set as base text
  *  - if there are repeated names, add a number to the end, or make a difference to each name
  *    - perhaps warn about repetitions?
  * */
@@ -192,13 +192,15 @@ const buildStudentRepositoryPageConfiguration = ({
             const { reposBaseName, useLastNameOnTemplate, useFileOnTemplate } =
               repositoryData;
 
-            return [
+            const repoName = [
               reposBaseName || null,
               useLastNameOnTemplate ? student.user.lastName.toLowerCase() : null,
               useFileOnTemplate ? student.user.file : null,
             ]
               .filter(item => item !== null)
               .join('_');
+
+            return removeAccentsAndSpecialCharacters(repoName);
           },
         })
       )
@@ -277,9 +279,11 @@ const buildGroupRepositoryPageConfiguration = ({
             const files = useFileOnTemplate
               ? users.map(user => user.file).join('_')
               : null;
-            return [reposBaseName || null, lastNames, files]
+
+            const repoName = [reposBaseName || null, lastNames, files]
               .filter(item => item !== null)
               .join('_');
+            return removeAccentsAndSpecialCharacters(repoName);
           },
         });
       });
