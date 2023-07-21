@@ -9,6 +9,10 @@ export default graphql`
         id
         name
         organization
+        assignments {
+          id
+          title
+        }
         userRoles {
           id
           user {
@@ -23,6 +27,20 @@ export default graphql`
             name
             permissions
             isTeacher
+          }
+        }
+        groups {
+          id
+          name
+          usersByAssignments {
+            assignmentIds
+            users {
+              id
+              name
+              lastName
+              notificationEmail
+              file
+            }
           }
         }
       }

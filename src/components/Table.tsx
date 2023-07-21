@@ -2,8 +2,8 @@ import { ReactNode } from 'react';
 import {
   Box,
   Table,
-  TableRowProps,
   TableContainer,
+  TableRowProps,
   Tbody,
   Td,
   Thead,
@@ -54,7 +54,7 @@ export default (props: Props) => {
             {props.rowOptions.map((options, k) => (
               <Tr key={k} {...options.rowProps}>
                 {options.content.map((cell, i) => (
-                  <Td key={`${i}`} textAlign={'center'}>
+                  <Td key={`${i}`} textAlign={'center'} whiteSpace={'pre-line'}>
                     {cell}
                   </Td>
                 ))}

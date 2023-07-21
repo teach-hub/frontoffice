@@ -102,9 +102,15 @@ const NavigationBar = () => {
 
   if (courseContext.userHasPermission(Permission.CreateRepository)) {
     teacherActions.push({
-      content: 'Crear repositorios',
+      content: 'Crear repositorios (individuales)',
       action: () => {
-        navigate(`/courses/${courseContext.courseId}/new-repo`);
+        navigate(`/courses/${courseContext.courseId}/new-repo/students`);
+      },
+    });
+    teacherActions.push({
+      content: 'Crear repositorios (grupales)',
+      action: () => {
+        navigate(`/courses/${courseContext.courseId}/new-repo/groups`);
       },
     });
   }

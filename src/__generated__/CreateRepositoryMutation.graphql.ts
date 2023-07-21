@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<05ecc0ad2c1e6ee0ccd3a46ce383a81f>>
+ * @generated SignedSource<<12adeda90a76fc6f8de76ce8432e09e8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,6 +10,7 @@
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type RepositoryStudentData = {
+  groupId?: string | null;
   name: string;
   students?: ReadonlyArray<string> | null;
 };
