@@ -523,6 +523,14 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
     }
   };
 
+  const createButtonIsDisabled = () => {
+    return (
+      !courseOrganization ||
+      errorInRepositoryName ||
+      tableData.map(row => row.checked).every(checked => !checked)
+    );
+  };
+
   return (
     <PageDataContainer>
       <Heading>{pageConfiguration.title}</Heading>{' '}
@@ -584,11 +592,7 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
             >
               Cancelar
             </Button>
-            <Button
-              w={'full'}
-              disabled={!courseOrganization || errorInRepositoryName}
-              onClick={onSubmit}
-            >
+            <Button w={'full'} disabled={createButtonIsDisabled()} onClick={onSubmit}>
               Crear
             </Button>
           </Flex>
