@@ -9,7 +9,7 @@ export const Checkbox = ({ id, isChecked, onChange, ...rest }: Props) => {
       id={id}
       size={'lg'}
       borderColor={theme.colors.teachHub.black}
-      bg={theme.colors.teachHub.white}
+      bg={'transparent'}
       isChecked={isChecked}
       onChange={onChange}
       width={'fit-content'}
