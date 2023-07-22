@@ -5,16 +5,13 @@ import { Link as RRLink, useNavigate, useParams } from 'react-router-dom';
 import { Flex, Link, ListItem } from '@chakra-ui/react';
 import {
   AlertIcon,
-  CalendarIcon,
   LinkExternalIcon,
   PencilIcon,
   PeopleIcon,
   PersonIcon,
   TrashIcon,
 } from '@primer/octicons-react';
-import { formatAsSimpleDateTime } from 'utils/dates';
 import { theme } from 'theme';
-import { Nullable } from 'types';
 
 import { Permission, useUserContext } from 'hooks/useUserCourseContext';
 
@@ -30,6 +27,7 @@ import Card from 'components/Card';
 import AssignmentQueryDef from 'graphql/AssignmentQuery';
 
 import type { AssignmentQuery } from '__generated__/AssignmentQuery.graphql';
+import { DateListItem } from 'components/DateListItem';
 
 const AssignmentDashboardPage = ({
   assignmentId,
@@ -51,22 +49,6 @@ const AssignmentDashboardPage = ({
   if (!assignment) {
     return null;
   }
-
-  const DateListItem = ({
-    date,
-    text,
-    itemKey,
-  }: {
-    date: Nullable<string>;
-    text: string;
-    itemKey: string;
-  }) => (
-    <ListItem key={itemKey}>
-      <ListIcon color={theme.colors.teachHub.white} icon={CalendarIcon} />
-      <span style={{ fontWeight: 'bold' }}>{text}</span>
-      {date ? formatAsSimpleDateTime(date) : '-'}
-    </ListItem>
-  );
 
   return (
     <PageDataContainer>
