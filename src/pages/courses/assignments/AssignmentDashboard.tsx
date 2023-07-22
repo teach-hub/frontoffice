@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { useLazyLoadQuery } from 'react-relay';
 import { Link as RRLink, useNavigate, useParams } from 'react-router-dom';
 
-import { Flex, Link, ListItem } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 import {
   AlertIcon,
   LinkExternalIcon,
@@ -28,6 +28,8 @@ import AssignmentQueryDef from 'graphql/AssignmentQuery';
 
 import type { AssignmentQuery } from '__generated__/AssignmentQuery.graphql';
 import { DateListItem } from 'components/DateListItem';
+import ListItem from 'components/ListItem';
+import Link from 'components/Link';
 
 const AssignmentDashboardPage = ({
   assignmentId,
