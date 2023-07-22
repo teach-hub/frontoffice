@@ -51,6 +51,10 @@ type UserReviewee = Omit<ReviewerInfo, 'reviewee'> & {
   reviewee: Extract<ReviewerInfo['reviewee'], { __typename: 'UserType' }>;
 };
 
+type InternalGroupType = Omit<ReviewerInfo, 'reviewee'> & {
+  reviewee: Extract<ReviewerInfo['reviewee'], { __typename: 'InternalGroupType' }>;
+};
+
 function AssignmentSettings(
   props:
     | {
@@ -163,7 +167,7 @@ function AssignmentsContainer({
   return (
     <Flex flex="1" direction="column" gap="20px">
       <Heading size="md">{title}</Heading>
-      <Flex gap="15px" direction="column" overflowY={'auto'}>
+      <Flex h="100%" gap="15px" direction="column" overflowY={'auto'}>
         {reviewers.length ? (
           reviewers.map(({ reviewer, reviewee }, i) => (
             <Box display="flex" gap="25px" key={i} h="70px" fontSize="15px">
@@ -258,8 +262,8 @@ function ReviewersPageContainer({
         input: {
           assignmentId,
           reviewers: toCommitData.map(x => ({
-            revieweeUserId: x.reviewee.id,
             reviewerUserId: x.reviewer.id,
+            revieweeId: x.reviewee.id,
           })),
         },
       },
@@ -299,8 +303,8 @@ function ReviewersPageContainer({
       <AssignButton
         onClick={() => {
           onCommit(
-            previewReviewers.filter(
-              (x): x is UserReviewee => x.reviewee.__typename === 'UserType'
+            previewReviewers.filter((x): x is UserReviewee | InternalGroupType =>
+              ['UserType', 'InternalGroupType'].includes(x.reviewee.__typename)
             )
           );
           setIsLoading(true);

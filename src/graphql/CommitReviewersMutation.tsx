@@ -10,8 +10,12 @@ export default graphql`
         lastName
       }
       reviewee {
+        __typename
+        ... on InternalGroupType {
+          id
+          groupName: name
+        }
         ... on UserType {
-          __typename
           id
           name
           lastName

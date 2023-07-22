@@ -24,9 +24,7 @@ const UserRevieweeCard = ({
   revieweeInfo: { name, lastName, file },
 }: UserRevieweeCardProps) => (
   <_Card>
-    <AvatarGroup max={2} size="sm" textColor="black">
-      <Avatar name={`${name} ${lastName}`} />
-    </AvatarGroup>
+    <Avatar name={`${name} ${lastName}`} />
     <Text>
       {name} {lastName} - {file}
     </Text>
