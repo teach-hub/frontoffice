@@ -1,11 +1,10 @@
 import { Suspense } from 'react';
 import { useLazyLoadQuery } from 'react-relay';
-import { Link as RRLink, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { Flex } from '@chakra-ui/react';
 import {
   AlertIcon,
-  LinkExternalIcon,
   PencilIcon,
   PeopleIcon,
   PersonIcon,
@@ -19,17 +18,16 @@ import Navigation from 'components/Navigation';
 import IconButton from 'components/IconButton';
 import PageDataContainer from 'components/PageDataContainer';
 import Heading from 'components/Heading';
-import List from 'components/List';
+import List from 'components/list/List';
 import Text from 'components/Text';
-import ListIcon from 'components/ListIcon';
 import Card from 'components/Card';
 
 import AssignmentQueryDef from 'graphql/AssignmentQuery';
 
 import type { AssignmentQuery } from '__generated__/AssignmentQuery.graphql';
-import { DateListItem } from 'components/DateListItem';
-import ListItem from 'components/ListItem';
-import Link from 'components/Link';
+import { DateListItem } from 'components/list/DateListItem';
+import { TextListItem } from 'components/list/TextListItem';
+import { LinkListItem } from 'components/list/LinkListItem';
 
 const AssignmentDashboardPage = ({
   assignmentId,
@@ -51,6 +49,8 @@ const AssignmentDashboardPage = ({
   if (!assignment) {
     return null;
   }
+
+  const LIST_ITEM_ICON_COLOR = theme.colors.teachHub.white;
 
   return (
     <PageDataContainer>
@@ -84,63 +84,72 @@ const AssignmentDashboardPage = ({
         </Text>
         <Card>
           <List padding="30px">
-            <ListItem key={'isGroup'}>
-              <ListIcon
-                color={theme.colors.teachHub.white}
-                icon={assignment.isGroup ? PeopleIcon : PersonIcon}
-              />
-              <span style={{ fontWeight: 'bold' }}>
-                {assignment.isGroup ? 'Entrega grupal' : 'Entrega individual'}
-              </span>
-            </ListItem>
+            <TextListItem
+              iconProps={{
+                color: LIST_ITEM_ICON_COLOR,
+                icon: assignment.isGroup ? PeopleIcon : PersonIcon,
+              }}
+              text={assignment.isGroup ? 'Entrega grupal' : 'Entrega individual'}
+              key={'isGroup'}
+            />
             <DateListItem
               date={assignment.startDate}
-              text={'Inicio de entregas: '}
-              itemKey={'startDate'}
+              label={'Inicio de entregas: '}
+              key={'startDate'}
+              iconColor={LIST_ITEM_ICON_COLOR}
             />
             <DateListItem
               date={assignment.endDate}
-              text={'Límite de entregas: '}
-              itemKey={'endDate'}
+              label={'Límite de entregas: '}
+              key={'endDate'}
+              iconColor={LIST_ITEM_ICON_COLOR}
             />
             {courseContext.userIsTeacher && (
-              <ListItem key={'allowLateSubmissions'}>
-                <ListIcon color={theme.colors.teachHub.white} icon={AlertIcon} />
-                <span style={{ fontWeight: 'bold' }}>{'Entregas fuera de fecha: '}</span>
-                {assignment.allowLateSubmissions ? 'Permitidas' : 'No Permitidas'}
-              </ListItem>
+              <TextListItem
+                key={'allowLateSubmissions'}
+                iconProps={{
+                  color: LIST_ITEM_ICON_COLOR,
+                  icon: AlertIcon,
+                }}
+                text={assignment.allowLateSubmissions ? 'Permitidas' : 'No Permitidas'}
+                label={'Entregas fuera de fecha: '}
+              />
             )}
             {assignment.link ? (
-              <ListItem key={'link'}>
-                <ListIcon color={theme.colors.teachHub.white} icon={LinkExternalIcon} />
-                <Link href={assignment.link} isExternal>
-                  Ver enunciado
-                </Link>
-              </ListItem>
+              <LinkListItem
+                key={'link'}
+                iconColor={LIST_ITEM_ICON_COLOR}
+                link={assignment.link}
+                text={'Ver enunciado'}
+                external={true}
+              />
             ) : (
               <></>
             )}
-            <ListItem>
-              <ListIcon color={theme.colors.teachHub.white} icon={LinkExternalIcon} />
-              <Link as={RRLink} to={'submissions'}>
-                Ver entregas
-              </Link>
-            </ListItem>
+            <LinkListItem
+              key={'submissions'}
+              iconColor={LIST_ITEM_ICON_COLOR}
+              external={false}
+              text={'Ver entregas'}
+              link={'submissions'}
+            />
             {courseContext.userHasPermission(Permission.AssignReviewer) && (
-              <ListItem>
-                <ListIcon color={theme.colors.teachHub.white} icon={LinkExternalIcon} />
-                <Link as={RRLink} to={'assign-reviewers'}>
-                  Assignar correctores
-                </Link>
-              </ListItem>
+              <LinkListItem
+                key={'assignReviewers'}
+                iconColor={LIST_ITEM_ICON_COLOR}
+                external={false}
+                text={'Assignar correctores'}
+                link={'assign-reviewers'}
+              />
             )}
             {courseContext.userHasPermission(Permission.SubmitAssignment) && (
-              <ListItem>
-                <ListIcon color={theme.colors.teachHub.white} icon={LinkExternalIcon} />
-                <Link as={RRLink} to={'submissions/add'}>
-                  Realizar nueva entrega
-                </Link>
-              </ListItem>
+              <LinkListItem
+                key={'addSubmission'}
+                iconColor={LIST_ITEM_ICON_COLOR}
+                external={false}
+                text={'Realizar nueva entrega'}
+                link={'submissions/add'}
+              />
             )}
           </List>
         </Card>
