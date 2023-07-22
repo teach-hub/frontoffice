@@ -9,6 +9,7 @@ export default graphql`
         id
         assignment(id: $assignmentId) {
           id
+          title
           submission(id: $submissionId) {
             id
             description

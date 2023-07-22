@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e77e158b4c39f399d3913234867ff0fe>>
+ * @generated SignedSource<<07528d02a77272ff3c85a6a6b8bc132e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -30,6 +30,7 @@ export type SubmissionQuery$data = {
             readonly name: string;
           };
         } | null;
+        readonly title: string | null;
       } | null;
       readonly id: string;
     } | null;
@@ -113,6 +114,13 @@ v5 = [
             "plural": false,
             "selections": [
               (v3/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "title",
+                "storageKey": null
+              },
               {
                 "alias": null,
                 "args": [
@@ -208,16 +216,16 @@ return {
     "selections": (v5/*: any*/)
   },
   "params": {
-    "cacheID": "d532b6170cd28558c3c4bc56a0633f10",
+    "cacheID": "03180406e729ee914f127dff7b115720",
     "id": null,
     "metadata": {},
     "name": "SubmissionQuery",
     "operationKind": "query",
-    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        submission(id: $submissionId) {\n          id\n          description\n          submittedAt\n          user {\n            id\n            file\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        title\n        submission(id: $submissionId) {\n          id\n          description\n          submittedAt\n          user {\n            id\n            file\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "90bd5ee1852d2a394b2ee0783f3efd72";
+(node as any).hash = "b41ea743acde8ef27cb64c770ed7063c";
 
 export default node;
