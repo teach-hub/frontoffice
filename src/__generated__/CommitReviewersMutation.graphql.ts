@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<21728c99cf5067ce9805faa99d3a5b22>>
+ * @generated SignedSource<<3c1a75f8125d1e1dec4c28ba0b7892f0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,6 +18,7 @@ export type ReviewersAssignmentInputType = {
   reviewerUserId: string;
 };
 export type CommitReviewersMutation$variables = {
+  courseId: string;
   input: AssignReviewersInputType;
 };
 export type CommitReviewersMutation$data = {
@@ -51,38 +52,46 @@ export type CommitReviewersMutation = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "input"
-  }
-],
+var v0 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "courseId"
+},
 v1 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "input"
+},
+v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v2 = {
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "name",
   "storageKey": null
 },
-v3 = {
+v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "lastName",
   "storageKey": null
 },
-v4 = [
+v5 = [
   {
     "alias": null,
     "args": [
+      {
+        "kind": "Variable",
+        "name": "courseId",
+        "variableName": "courseId"
+      },
       {
         "kind": "Variable",
         "name": "input",
@@ -94,7 +103,7 @@ v4 = [
     "name": "assignReviewers",
     "plural": true,
     "selections": [
-      (v1/*: any*/),
+      (v2/*: any*/),
       {
         "alias": null,
         "args": null,
@@ -103,9 +112,9 @@ v4 = [
         "name": "reviewer",
         "plural": false,
         "selections": [
-          (v1/*: any*/),
           (v2/*: any*/),
-          (v3/*: any*/)
+          (v3/*: any*/),
+          (v4/*: any*/)
         ],
         "storageKey": null
       },
@@ -127,7 +136,7 @@ v4 = [
           {
             "kind": "InlineFragment",
             "selections": [
-              (v1/*: any*/),
+              (v2/*: any*/),
               {
                 "alias": "groupName",
                 "args": null,
@@ -142,9 +151,9 @@ v4 = [
           {
             "kind": "InlineFragment",
             "selections": [
-              (v1/*: any*/),
               (v2/*: any*/),
               (v3/*: any*/),
+              (v4/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -165,32 +174,38 @@ v4 = [
 ];
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "CommitReviewersMutation",
-    "selections": (v4/*: any*/),
+    "selections": (v5/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v1/*: any*/),
+      (v0/*: any*/)
+    ],
     "kind": "Operation",
     "name": "CommitReviewersMutation",
-    "selections": (v4/*: any*/)
+    "selections": (v5/*: any*/)
   },
   "params": {
-    "cacheID": "2e4203af796130e733e9d951b5ce76d5",
+    "cacheID": "6a96c4b8e7e9b9ea77b99d0e735baf3e",
     "id": null,
     "metadata": {},
     "name": "CommitReviewersMutation",
     "operationKind": "mutation",
-    "text": "mutation CommitReviewersMutation(\n  $input: AssignReviewersInputType!\n) {\n  assignReviewers(input: $input) {\n    id\n    reviewer {\n      id\n      name\n      lastName\n    }\n    reviewee {\n      __typename\n      ... on InternalGroupType {\n        id\n        groupName: name\n      }\n      ... on UserType {\n        id\n        name\n        lastName\n        file\n      }\n    }\n  }\n}\n"
+    "text": "mutation CommitReviewersMutation(\n  $input: AssignReviewersInputType!\n  $courseId: ID!\n) {\n  assignReviewers(input: $input, courseId: $courseId) {\n    id\n    reviewer {\n      id\n      name\n      lastName\n    }\n    reviewee {\n      __typename\n      ... on InternalGroupType {\n        id\n        groupName: name\n      }\n      ... on UserType {\n        id\n        name\n        lastName\n        file\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "76b18859bef75e7c88598da903004978";
+(node as any).hash = "dc70fc94ab6f1b99fc1699ad5ac059b7";
 
 export default node;

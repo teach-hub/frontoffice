@@ -71,7 +71,7 @@ const mapToAssignmentGroupData = (
         viewerGroup => viewerGroup.assignmentId === assignment.id
       );
 
-      const participantsData = assignmentViewerGroup?.otherParticipants?.map(
+      const participantsData = assignmentViewerGroup?.groupUsers?.map(
         participant =>
           `${participant.name} ${participant.lastName} (${participant.file})${
             participant.notificationEmail ? ` - ${participant.notificationEmail}` : ''

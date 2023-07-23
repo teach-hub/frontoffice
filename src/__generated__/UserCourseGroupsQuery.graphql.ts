@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<53c1f8f2671f58e6cb235444d0af0b41>>
+ * @generated SignedSource<<190a1fa5599b5891b02886a1c6ff5bd9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -31,14 +31,14 @@ export type UserCourseGroupsQuery$data = {
           readonly id: string;
           readonly name: string | null;
         };
-        readonly id: string;
-        readonly otherParticipants: ReadonlyArray<{
+        readonly groupUsers: ReadonlyArray<{
           readonly file: string;
           readonly id: string;
           readonly lastName: string;
           readonly name: string;
           readonly notificationEmail: string;
         }>;
+        readonly id: string;
       }>;
     } | null;
     readonly id: string;
@@ -157,7 +157,7 @@ v4 = [
                 "args": null,
                 "concreteType": "UserType",
                 "kind": "LinkedField",
-                "name": "otherParticipants",
+                "name": "groupUsers",
                 "plural": true,
                 "selections": [
                   (v1/*: any*/),
@@ -224,16 +224,16 @@ return {
     "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "8d2c9070b50ae50e69df25c0a97f53d1",
+    "cacheID": "5ddede8801f768f4107a82306b3c46d3",
     "id": null,
     "metadata": {},
     "name": "UserCourseGroupsQuery",
     "operationKind": "query",
-    "text": "query UserCourseGroupsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n        isGroup\n      }\n      viewerGroups {\n        id\n        assignmentId\n        group {\n          id\n          name\n        }\n        otherParticipants {\n          id\n          name\n          lastName\n          notificationEmail\n          file\n        }\n      }\n      groups {\n        id\n        name\n      }\n    }\n  }\n}\n"
+    "text": "query UserCourseGroupsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n        isGroup\n      }\n      viewerGroups {\n        id\n        assignmentId\n        group {\n          id\n          name\n        }\n        groupUsers {\n          id\n          name\n          lastName\n          notificationEmail\n          file\n        }\n      }\n      groups {\n        id\n        name\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "1289ccc48568f6fd124f763058a1cc64";
+(node as any).hash = "0085e7f9240d881e1863432a4dcb84d6";
 
 export default node;

@@ -259,6 +259,7 @@ function ReviewersPageContainer({
   ) => {
     commitMutation({
       variables: {
+        courseId,
         input: {
           assignmentId,
           reviewers: toCommitData.map(x => ({
