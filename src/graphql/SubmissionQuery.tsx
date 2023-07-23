@@ -10,10 +10,12 @@ export default graphql`
         assignment(id: $assignmentId) {
           id
           title
+          endDate
           submission(id: $submissionId) {
             id
             description
             submittedAt
+            pullRequestUrl
             user {
               id
               file

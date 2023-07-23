@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<07528d02a77272ff3c85a6a6b8bc132e>>
+ * @generated SignedSource<<59e12ad01a7364406db98b5f7752db38>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,10 +18,12 @@ export type SubmissionQuery$data = {
   readonly viewer: {
     readonly course: {
       readonly assignment: {
+        readonly endDate: string | null;
         readonly id: string;
         readonly submission: {
           readonly description: string | null;
           readonly id: string;
+          readonly pullRequestUrl: string;
           readonly submittedAt: string;
           readonly user: {
             readonly file: string;
@@ -123,6 +125,13 @@ v5 = [
               },
               {
                 "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "endDate",
+                "storageKey": null
+              },
+              {
+                "alias": null,
                 "args": [
                   {
                     "kind": "Variable",
@@ -148,6 +157,13 @@ v5 = [
                     "args": null,
                     "kind": "ScalarField",
                     "name": "submittedAt",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "pullRequestUrl",
                     "storageKey": null
                   },
                   {
@@ -216,16 +232,16 @@ return {
     "selections": (v5/*: any*/)
   },
   "params": {
-    "cacheID": "03180406e729ee914f127dff7b115720",
+    "cacheID": "5ae2e981ff1bb5568878dedd518d78a8",
     "id": null,
     "metadata": {},
     "name": "SubmissionQuery",
     "operationKind": "query",
-    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        title\n        submission(id: $submissionId) {\n          id\n          description\n          submittedAt\n          user {\n            id\n            file\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        title\n        endDate\n        submission(id: $submissionId) {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          user {\n            id\n            file\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b41ea743acde8ef27cb64c770ed7063c";
+(node as any).hash = "8249fe0e900794bddfaac59af64cd560";
 
 export default node;
