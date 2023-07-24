@@ -22,6 +22,13 @@ export default graphql`
               name
               lastName
             }
+            reviewer {
+              reviewer {
+                id
+                name
+                lastName
+              }
+            }
           }
         }
       }

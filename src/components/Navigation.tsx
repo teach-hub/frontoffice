@@ -118,6 +118,7 @@ const NavigationBar = () => {
   const studentActions = [];
 
   if (courseContext.userHasPermission(Permission.SubmitAssignment)) {
+    /* todo: missing navigate on click */
     studentActions.push({ content: 'Realizar entrega' });
   }
 

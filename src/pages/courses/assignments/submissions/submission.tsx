@@ -16,7 +16,8 @@ import { theme } from 'theme';
 import { TextListItem } from 'components/list/TextListItem';
 import {
   CheckCircleFillIcon,
-  GitPullRequestIcon,
+  MarkGithubIcon,
+  MortarBoardIcon,
   PersonFillIcon,
   XCircleFillIcon,
 } from '@primer/octicons-react';
@@ -42,11 +43,12 @@ const SubmissionPage = ({
     submissionId,
   });
 
-  const assignment = data.viewer?.course?.assignment;
-  const submission = data.viewer?.course?.assignment?.submission;
+  const viewer = data.viewer;
+  const course = viewer?.course;
+  const assignment = course?.assignment;
+  const submission = assignment?.submission;
   const user = submission?.user; // TODO: TH-164 may be user or group
-
-  /* todo: download reviewer */
+  const reviewerUser = submission?.reviewer?.reviewer;
 
   if (!submission || !assignment || !user) {
     return null; // todo: fix cases when null data
@@ -86,7 +88,7 @@ const SubmissionPage = ({
             <IconButton
               variant={'ghost'}
               aria-label="pull-request-link"
-              icon={<GitPullRequestIcon size="medium" />}
+              icon={<MarkGithubIcon size="medium" />}
             />
           </Link>
         </Tooltip>
@@ -102,6 +104,17 @@ const SubmissionPage = ({
             text={`${user.name} ${user.lastName} (${user.file})`}
             key={'name'}
           />
+          {reviewerUser && (
+            <TextListItem
+              iconProps={{
+                color: LIST_ITEM_ICON_COLOR,
+                icon: MortarBoardIcon,
+              }}
+              text={`${reviewerUser.name} ${reviewerUser.lastName}`}
+              label={'Corrector: '}
+              key={'reviewer'}
+            />
+          )}
           <TextListItem
             key={'submittedOnTime'}
             iconProps={{
