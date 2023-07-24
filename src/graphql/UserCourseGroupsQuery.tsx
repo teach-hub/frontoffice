@@ -18,7 +18,7 @@ export default graphql`
             id
             name
           }
-          otherParticipants {
+          groupUsers {
             id
             name
             lastName

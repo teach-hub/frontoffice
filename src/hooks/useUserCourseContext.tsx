@@ -17,6 +17,7 @@ export enum Permission {
   EditAssignment = 'editAssignment',
   DeleteAssignment = 'deleteAssignment',
   CreateRepository = 'createRepository',
+  AssignReviewer = 'assignReviewer',
   ManageOwnGroups = 'manageOwnGroups',
 }
 

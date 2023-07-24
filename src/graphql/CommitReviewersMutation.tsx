@@ -1,8 +1,8 @@
 import { graphql } from 'babel-plugin-relay/macro';
 
 export default graphql`
-  mutation CommitReviewersMutation($input: AssignReviewersInputType!) {
-    assignReviewers(input: $input) {
+  mutation CommitReviewersMutation($input: AssignReviewersInputType!, $courseId: ID!) {
+    assignReviewers(input: $input, courseId: $courseId) {
       id
       reviewer {
         id
@@ -10,8 +10,12 @@ export default graphql`
         lastName
       }
       reviewee {
+        __typename
+        ... on InternalGroupType {
+          id
+          groupName: name
+        }
         ... on UserType {
-          __typename
           id
           name
           lastName
