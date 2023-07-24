@@ -10,14 +10,14 @@ import { TasklistIcon } from '@primer/octicons-react';
 
 import { formatAsSimpleDate } from 'utils/dates';
 
-import { useUserContext, Permission } from 'hooks/useUserCourseContext';
+import { Permission, useUserContext } from 'hooks/useUserCourseContext';
 
 import PageDataContainer from 'components/PageDataContainer';
-import List from 'components/List';
+import List from 'components/list/List';
 import Navigation from 'components/Navigation';
 import Box from 'components/Box';
 import IconButton from 'components/IconButton';
-import ListIcon from 'components/ListIcon';
+import ListIcon from 'components/list/ListIcon';
 import Text from 'components/Text';
 import Heading from 'components/Heading';
 
