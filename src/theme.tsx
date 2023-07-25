@@ -27,7 +27,7 @@ export const theme = extendTheme({
       body: {
         color: 'default',
         bg: 'teachHub.secondary',
-        fontSize: '18px',
+        fontSize: '20px',
       },
     },
   },

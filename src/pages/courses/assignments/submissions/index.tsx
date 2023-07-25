@@ -1,7 +1,11 @@
 import { Suspense } from 'react';
 
-import { KebabHorizontalIcon } from '@primer/octicons-react';
-import { useParams, useNavigate } from 'react-router-dom';
+import {
+  GitMergeIcon,
+  KebabHorizontalIcon,
+  MarkGithubIcon,
+} from '@primer/octicons-react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
 import PageDataContainer from 'components/PageDataContainer';
@@ -12,8 +16,6 @@ import Button from 'components/Button';
 import Box from 'components/Box';
 import IconButton from 'components/IconButton';
 import Text from 'components/Text';
-
-import { MarkGithubIcon, GitMergeIcon } from '@primer/octicons-react';
 
 import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
 
@@ -55,11 +57,11 @@ const SubmissionsPage = ({
           rowOptions={submissions.map(s => {
             return {
               rowProps: {
-                onClick: () => navigate(s.id),
+                onClick: () => navigate(s.id), // TODO: remove going to submission on every click
               },
               content: [
                 `${s.user.name} ${s.user.lastName}`,
-                s.description,
+                s.description, // TODO: remove wrong field
                 new Date(s.submittedAt).toLocaleString(),
                 <IconButton
                   variant={'ghost'}

@@ -9,15 +9,25 @@ export default graphql`
         id
         assignment(id: $assignmentId) {
           id
+          title
+          endDate
           submission(id: $submissionId) {
             id
             description
             submittedAt
+            pullRequestUrl
             user {
               id
               file
               name
               lastName
+            }
+            reviewer {
+              reviewer {
+                id
+                name
+                lastName
+              }
             }
           }
         }
