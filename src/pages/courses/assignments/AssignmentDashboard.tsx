@@ -95,13 +95,13 @@ const AssignmentDashboardPage = ({
             <DateListItem
               date={assignment.startDate}
               label={'Inicio de entregas: '}
-              key={'startDate'}
+              listItemKey={'startDate'}
               iconColor={LIST_ITEM_ICON_COLOR}
             />
             <DateListItem
               date={assignment.endDate}
               label={'Límite de entregas: '}
-              key={'endDate'}
+              listItemKey={'endDate'}
               iconColor={LIST_ITEM_ICON_COLOR}
             />
             {courseContext.userIsTeacher && (

@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import React, { Suspense } from 'react';
 import { Link as RRLink, useParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
@@ -16,8 +16,10 @@ import { theme } from 'theme';
 import { TextListItem } from 'components/list/TextListItem';
 import {
   CheckCircleFillIcon,
+  InfoIcon,
   MarkGithubIcon,
   MortarBoardIcon,
+  NumberIcon,
   PersonFillIcon,
   XCircleFillIcon,
 } from '@primer/octicons-react';
@@ -49,6 +51,7 @@ const SubmissionPage = ({
   const submission = assignment?.submission;
   const user = submission?.submitter; // TODO: TH-164 may be user or group
   const reviewerUser = submission?.reviewer?.reviewer;
+  const review = submission?.review;
 
   if (!submission || !assignment || !user) {
     return null; // todo: fix cases when null data
@@ -64,9 +67,21 @@ const SubmissionPage = ({
       ? true
       : new Date(submission.submittedAt) <= new Date(assignment.endDate);
 
+  const getReviewStatus = () => {
+    const grade = review?.grade;
+    const revisionRequested = review?.revisionRequested;
+    if (grade) {
+      return 'Corregido';
+    } else if (revisionRequested) {
+      return 'Reentrega solicitada';
+    } else {
+      return 'Sin corregir';
+    }
+  };
+
   return (
     <PageDataContainer>
-      <Flex direction="row" gap={'20px'}>
+      <Flex direction="row" gap={'20px'} align={'center'}>
         <Heading>
           Entrega | {user.lastName} |{' '}
           <Link
@@ -94,8 +109,8 @@ const SubmissionPage = ({
         </Tooltip>
       </Flex>
 
-      <Stack>
-        <List padding="30px">
+      <Stack gap={'30px'} marginTop={'30px'}>
+        <List paddingX="30px">
           <TextListItem
             iconProps={{
               color: LIST_ITEM_ICON_COLOR,
@@ -104,17 +119,6 @@ const SubmissionPage = ({
             text={`${user.name} ${user.lastName} (${user.file})`}
             listItemKey={'name'}
           />
-          {reviewerUser && (
-            <TextListItem
-              iconProps={{
-                color: LIST_ITEM_ICON_COLOR,
-                icon: MortarBoardIcon,
-              }}
-              text={`${reviewerUser.name} ${reviewerUser.lastName}`}
-              label={'Corrector: '}
-              listItemKey={'reviewer'}
-            />
-          )}
           <TextListItem
             listItemKey={'submittedOnTime'}
             iconProps={{
@@ -130,11 +134,41 @@ const SubmissionPage = ({
             }
             text={` (${formatAsSimpleDateTime(submission.submittedAt)})`}
           />
+          <TextListItem
+            iconProps={{
+              color: LIST_ITEM_ICON_COLOR,
+              icon: MortarBoardIcon,
+            }}
+            text={
+              reviewerUser
+                ? `${reviewerUser.name} ${reviewerUser.lastName}`
+                : 'Sin asignar'
+            }
+            label={'Corrector: '}
+            listItemKey={'reviewer'}
+          />
+          <TextListItem
+            iconProps={{
+              color: LIST_ITEM_ICON_COLOR,
+              icon: InfoIcon,
+            }}
+            text={`${getReviewStatus()}`}
+            label={'Estado corrección: '}
+            listItemKey={'status'}
+          />
+          <TextListItem
+            iconProps={{
+              color: LIST_ITEM_ICON_COLOR,
+              icon: NumberIcon,
+            }}
+            text={`${review?.grade || '-'}`}
+            label={'Calificación: '}
+            listItemKey={'grade'}
+          />
         </List>
-
         <Stack>
           <Heading fontSize={theme.styles.global.body.fontSize}>
-            Comentarios sobre la entrega
+            Comentarios al realizar la entrega
           </Heading>
           <Text w={'40vw'}>{submission.description}</Text>
         </Stack>
