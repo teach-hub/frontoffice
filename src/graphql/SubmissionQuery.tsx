@@ -16,7 +16,7 @@ export default graphql`
             description
             submittedAt
             pullRequestUrl
-            submitee {
+            submitter {
               ... on UserType {
                 id
                 file

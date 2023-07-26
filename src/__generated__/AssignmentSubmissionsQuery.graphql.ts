@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bc5d22a7ce93effad765e437861f616e>>
+ * @generated SignedSource<<5d1517bf346ddd58202826ff04a10f8d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -22,13 +22,13 @@ export type AssignmentSubmissionsQuery$data = {
           readonly description: string | null;
           readonly id: string;
           readonly pullRequestUrl: string;
-          readonly submitee: {
+          readonly submittedAt: string;
+          readonly submitter: {
             readonly file?: string;
             readonly id?: string;
             readonly lastName?: string;
             readonly name?: string;
           };
-          readonly submittedAt: string;
         }>;
       } | null;
       readonly id: string;
@@ -180,7 +180,7 @@ return {
                         "args": null,
                         "concreteType": null,
                         "kind": "LinkedField",
-                        "name": "submitee",
+                        "name": "submitter",
                         "plural": false,
                         "selections": [
                           (v9/*: any*/)
@@ -257,7 +257,7 @@ return {
                         "args": null,
                         "concreteType": null,
                         "kind": "LinkedField",
-                        "name": "submitee",
+                        "name": "submitter",
                         "plural": false,
                         "selections": [
                           {
@@ -294,16 +294,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "bceb8b9a4334883d879dda836e0d6b2a",
+    "cacheID": "0da21e3886b55f73bbeac3b52a3fb0b9",
     "id": null,
     "metadata": {},
     "name": "AssignmentSubmissionsQuery",
     "operationKind": "query",
-    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        submissions {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          submitee {\n            __typename\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        submissions {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          submitter {\n            __typename\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "fd5c5ece382c63d84625c60b05aaa483";
+(node as any).hash = "9fdefb6b947fdc2d64adea9ee5c7e172";
 
 export default node;

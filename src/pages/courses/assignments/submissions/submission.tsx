@@ -47,7 +47,7 @@ const SubmissionPage = ({
   const course = viewer?.course;
   const assignment = course?.assignment;
   const submission = assignment?.submission;
-  const user = submission?.submitee; // TODO: TH-164 may be user or group
+  const user = submission?.submitter; // TODO: TH-164 may be user or group
   const reviewerUser = submission?.reviewer?.reviewer;
 
   if (!submission || !assignment || !user) {

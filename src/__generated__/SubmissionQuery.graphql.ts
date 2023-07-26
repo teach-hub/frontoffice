@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<523d95a8883149a3007e560cd988636d>>
+ * @generated SignedSource<<1c0c7f57e8a56700851b98ed83eba4eb>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -32,13 +32,13 @@ export type SubmissionQuery$data = {
               readonly name: string;
             };
           } | null;
-          readonly submitee: {
+          readonly submittedAt: string;
+          readonly submitter: {
             readonly file?: string;
             readonly id?: string;
             readonly lastName?: string;
             readonly name?: string;
           };
-          readonly submittedAt: string;
         } | null;
         readonly title: string | null;
       } | null;
@@ -247,7 +247,7 @@ return {
                         "args": null,
                         "concreteType": null,
                         "kind": "LinkedField",
-                        "name": "submitee",
+                        "name": "submitter",
                         "plural": false,
                         "selections": [
                           (v14/*: any*/)
@@ -328,7 +328,7 @@ return {
                         "args": null,
                         "concreteType": null,
                         "kind": "LinkedField",
-                        "name": "submitee",
+                        "name": "submitter",
                         "plural": false,
                         "selections": [
                           {
@@ -366,16 +366,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "270720ca9a4b1f3f62720beca07b8880",
+    "cacheID": "9b3914317d8978f1617f8af0bab6086d",
     "id": null,
     "metadata": {},
     "name": "SubmissionQuery",
     "operationKind": "query",
-    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        title\n        endDate\n        submission(id: $submissionId) {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          submitee {\n            __typename\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        title\n        endDate\n        submission(id: $submissionId) {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          submitter {\n            __typename\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "6b7fa86fededde57cc56972d5babf7ea";
+(node as any).hash = "52dc67fd9b630494335713c78d801ba8";
 
 export default node;
