@@ -32,6 +32,13 @@ export default graphql`
                 lastName
               }
             }
+            review {
+              id
+              revisionRequested
+              grade
+              createdAt
+              updatedAt
+            }
           }
         }
       }
