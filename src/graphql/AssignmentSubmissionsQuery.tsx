@@ -14,11 +14,13 @@ export default graphql`
             description
             submittedAt
             pullRequestUrl
-            user {
-              id
-              file
-              name
-              lastName
+            submitter {
+              ... on UserType {
+                id
+                file
+                name
+                lastName
+              }
             }
           }
         }
