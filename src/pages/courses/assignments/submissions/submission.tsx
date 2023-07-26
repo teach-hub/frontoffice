@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Link as RRLink, useParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
@@ -20,15 +20,22 @@ import {
   MarkGithubIcon,
   MortarBoardIcon,
   NumberIcon,
+  PencilIcon,
   PersonFillIcon,
   XCircleFillIcon,
 } from '@primer/octicons-react';
 import Link from 'components/Link';
 import { formatAsSimpleDateTime } from 'utils/dates';
-import { Flex, Stack } from '@chakra-ui/react';
+import { Flex, Select, Stack, useDisclosure } from '@chakra-ui/react';
 import IconButton from 'components/IconButton';
 import Tooltip from 'components/Tooltip';
 import Text from 'components/Text';
+import Button from 'components/Button';
+import { Icon } from '@chakra-ui/icons';
+import { Modal } from 'components/Modal';
+import { Optional } from 'types';
+import { FormControl } from 'components/FormControl';
+import { Checkbox } from 'components/Checkbox';
 
 const SubmissionPage = ({
   context,
@@ -39,6 +46,22 @@ const SubmissionPage = ({
   assignmentId: string;
   submissionId: string;
 }) => {
+  const {
+    isOpen: isOpenReviewModal,
+    onOpen: onOpenReviewModal,
+    onClose: onCloseReviewModal,
+  } = useDisclosure();
+
+  const [newGrade, setNewGrade] = useState<Optional<number>>(undefined);
+  const [revisionRequested, setRevisionRequested] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!isOpenReviewModal) {
+      setNewGrade(undefined);
+      setRevisionRequested(false);
+    }
+  }, [isOpenReviewModal]);
+
   const data = useLazyLoadQuery<SubmissionQuery>(SubmissionQueryDef, {
     courseId: context.courseId,
     assignmentId,
@@ -79,6 +102,11 @@ const SubmissionPage = ({
     }
   };
 
+  const handleReviewChange = () => {
+    /* todo: add create or update mutation*/
+    console.log('gradeUpdate');
+  };
+
   return (
     <PageDataContainer>
       <Flex direction="row" gap={'20px'} align={'center'}>
@@ -109,7 +137,13 @@ const SubmissionPage = ({
         </Tooltip>
       </Flex>
 
-      <Stack gap={'30px'} marginTop={'30px'}>
+      <Stack gap={'30px'} marginTop={'10px'}>
+        <Button onClick={onOpenReviewModal} width={'fit-content'}>
+          <Flex align="center">
+            <Icon as={PencilIcon} boxSize={6} marginRight={2} />
+            <Text>Calificar</Text>
+          </Flex>
+        </Button>
         <List paddingX="30px">
           <TextListItem
             iconProps={{
@@ -173,6 +207,48 @@ const SubmissionPage = ({
           <Text w={'40vw'}>{submission.description}</Text>
         </Stack>
       </Stack>
+
+      <Modal
+        isOpen={isOpenReviewModal}
+        onClose={onCloseReviewModal}
+        isCentered
+        headerText={'Calificar'}
+        closeOnOverlayClick={false}
+        footerChildren={
+          <Flex direction={'row'} gap={'30px'}>
+            <Button onClick={onCloseReviewModal} variant={'ghost'}>
+              {'Cancelar'}
+            </Button>
+            <Button onClick={handleReviewChange}>{'Guardar'}</Button>
+          </Flex>
+        }
+      >
+        <Stack>
+          <FormControl label={'Seleccionar nota'}>
+            <Select
+              placeholder="Selecciona una opción"
+              value={newGrade}
+              onChange={changes => setNewGrade(Number(changes.currentTarget.value))}
+              isDisabled={revisionRequested}
+            >
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(grade => (
+                <option value={grade} key={grade}>
+                  {grade}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+          <Checkbox
+            id={'revisionRequested'}
+            isChecked={revisionRequested}
+            onChange={() => {
+              setRevisionRequested(!revisionRequested);
+            }}
+          >
+            Requiere reentrega
+          </Checkbox>
+        </Stack>
+      </Modal>
     </PageDataContainer>
   );
 };
