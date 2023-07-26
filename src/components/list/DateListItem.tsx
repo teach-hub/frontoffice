@@ -14,7 +14,7 @@ export const DateListItem = ({ date, label, key, iconColor }: Props) => {
   const text = date ? formatAsSimpleDateTime(date) : '-';
   return (
     <TextListItem
-      key={key}
+      listItemKey={key}
       label={label}
       text={text}
       iconProps={{

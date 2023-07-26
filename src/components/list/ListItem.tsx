@@ -8,12 +8,19 @@ export type ListItemProps = ChakraListItemProps & {
   iconProps: ListIconProps;
   label?: string;
   children: JSX.Element;
+  listItemKey: string;
 };
 
-const ListItem = ({ iconProps, label, children, ...rest }: ListItemProps) => {
+const ListItem = ({
+  iconProps,
+  label,
+  listItemKey,
+  children,
+  ...rest
+}: ListItemProps) => {
   return (
     <ChakraListItem {...rest}>
-      <ListIcon {...iconProps} />
+      <ListIcon {...iconProps} key={listItemKey} />
       {label && <span style={{ fontWeight: 'bold' }}>{label}</span>}
       {children}
     </ChakraListItem>

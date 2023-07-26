@@ -102,7 +102,7 @@ const SubmissionPage = ({
               icon: PersonFillIcon,
             }}
             text={`${user.name} ${user.lastName} (${user.file})`}
-            key={'name'}
+            listItemKey={'name'}
           />
           {reviewerUser && (
             <TextListItem
@@ -112,11 +112,11 @@ const SubmissionPage = ({
               }}
               text={`${reviewerUser.name} ${reviewerUser.lastName}`}
               label={'Corrector: '}
-              key={'reviewer'}
+              listItemKey={'reviewer'}
             />
           )}
           <TextListItem
-            key={'submittedOnTime'}
+            listItemKey={'submittedOnTime'}
             iconProps={{
               color: submittedOnTime
                 ? theme.colors.teachHub.green

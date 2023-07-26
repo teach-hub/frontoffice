@@ -7,7 +7,7 @@ export type LinkListItemProps = {
   text: string;
   link: string;
   label?: string;
-  key: string;
+  listItemKey: string;
   iconColor: string;
   external: boolean;
 };
@@ -17,7 +17,7 @@ export const LinkListItem = ({
   text,
   link,
   iconColor,
-  key,
+  listItemKey,
   external,
 }: LinkListItemProps) => {
   const children = external ? (
@@ -36,7 +36,7 @@ export const LinkListItem = ({
       color: iconColor,
     },
     children,
-    key,
+    listItemKey,
     label,
   };
 

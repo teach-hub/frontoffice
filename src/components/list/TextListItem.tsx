@@ -5,15 +5,20 @@ import { Nullable } from 'types';
 export type TextListItemProps = {
   text?: Nullable<string>;
   label?: string;
-  key: string;
+  listItemKey: string;
   iconProps: ListIconProps;
 };
 
-export const TextListItem = ({ label, text, iconProps, key }: TextListItemProps) => {
+export const TextListItem = ({
+  label,
+  text,
+  iconProps,
+  listItemKey,
+}: TextListItemProps) => {
   const listItemProps: ListItemProps = {
     iconProps,
     children: <span>{text || '-'}</span>,
-    key,
+    listItemKey,
     label,
   };
   return <ListItem {...listItemProps} />;
