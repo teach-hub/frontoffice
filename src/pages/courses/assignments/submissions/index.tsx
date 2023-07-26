@@ -60,7 +60,7 @@ const SubmissionsPage = ({
                 onClick: () => navigate(s.id), // TODO: remove going to submission on every click
               },
               content: [
-                `${s.user.name} ${s.user.lastName}`,
+                `${s.submitee.name} ${s.submitee.lastName}`,
                 s.description, // TODO: remove wrong field
                 new Date(s.submittedAt).toLocaleString(),
                 <IconButton
