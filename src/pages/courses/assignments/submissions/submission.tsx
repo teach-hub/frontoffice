@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useState } from 'react';
-import { Link as RRLink, useParams } from 'react-router-dom';
-import { useLazyLoadQuery } from 'react-relay';
+import { Link as RRLink, useNavigate, useParams } from 'react-router-dom';
+import { useLazyLoadQuery, useMutation } from 'react-relay';
 
 import PageDataContainer from 'components/PageDataContainer';
 import Navigation from 'components/Navigation';
@@ -36,6 +36,12 @@ import { Modal } from 'components/Modal';
 import { Optional } from 'types';
 import { FormControl } from 'components/FormControl';
 import { Checkbox } from 'components/Checkbox';
+import {
+  CreateReviewMutation as CreateReviewMutationType,
+  CreateReviewMutation$data,
+} from '__generated__/CreateReviewMutation.graphql';
+import CreateReviewMutation from 'graphql/CreateReviewMutation';
+import useToast from 'hooks/useToast';
 
 const SubmissionPage = ({
   context,
@@ -46,6 +52,8 @@ const SubmissionPage = ({
   assignmentId: string;
   submissionId: string;
 }) => {
+  const navigate = useNavigate();
+  const toast = useToast();
   const {
     isOpen: isOpenReviewModal,
     onOpen: onOpenReviewModal,
@@ -54,6 +62,9 @@ const SubmissionPage = ({
 
   const [newGrade, setNewGrade] = useState<Optional<number>>(undefined);
   const [revisionRequested, setRevisionRequested] = useState<boolean>(false);
+
+  const [commitCreateMutation, _] =
+    useMutation<CreateReviewMutationType>(CreateReviewMutation);
 
   useEffect(() => {
     if (!isOpenReviewModal) {
@@ -103,8 +114,23 @@ const SubmissionPage = ({
   };
 
   const handleReviewChange = () => {
-    /* todo: add create or update mutation*/
-    console.log('gradeUpdate');
+    commitCreateMutation({
+      variables: {
+        submissionId,
+        revisionRequested,
+        grade: revisionRequested ? undefined : newGrade, // Only set grade if no revision requested
+      },
+      onCompleted: (response: CreateReviewMutation$data, errors) => {
+        if (!errors?.length) {
+          navigate(0); // Reload page data
+        } else {
+          toast({
+            title: 'Error al actualizar la corrección, intentelo de nuevo',
+            status: 'error',
+          });
+        }
+      },
+    });
   };
 
   return (
@@ -186,7 +212,7 @@ const SubmissionPage = ({
               color: LIST_ITEM_ICON_COLOR,
               icon: InfoIcon,
             }}
-            text={`${getReviewStatus()}`}
+            text={`${getReviewStatus()}`} // TODO: show in badge to highlight
             label={'Estado corrección: '}
             listItemKey={'status'}
           />
@@ -195,7 +221,7 @@ const SubmissionPage = ({
               color: LIST_ITEM_ICON_COLOR,
               icon: NumberIcon,
             }}
-            text={`${review?.grade || '-'}`}
+            text={`${review?.grade || '-'}`} // TODO: show in badge to highlight
             label={'Calificación: '}
             listItemKey={'grade'}
           />
