@@ -51,37 +51,63 @@ import { PayloadError } from 'relay-runtime';
 import ListItem from 'components/list/ListItem';
 import Badge from 'components/Badge';
 
-type SubmissionReviewStatusData = {
-  text: string;
+type BadgeConfiguration = {
   badgeBackgroundColor: string;
   badgeTextColor: string;
 };
 
-const getSubmissionReviewStatusData = ({
+type SubmissionReviewStatusConfiguration = BadgeConfiguration & {
+  text: string;
+};
+
+const SuccessBadgeConfiguration: BadgeConfiguration = {
+  badgeBackgroundColor: theme.colors.teachHub.success,
+  badgeTextColor: theme.colors.teachHub.white,
+};
+
+const ErrorBadgeConfiguration: BadgeConfiguration = {
+  badgeBackgroundColor: theme.colors.teachHub.error,
+  badgeTextColor: theme.colors.teachHub.white,
+};
+
+const WarningBadgeConfiguration: BadgeConfiguration = {
+  badgeBackgroundColor: theme.colors.teachHub.warning,
+  badgeTextColor: theme.colors.teachHub.black,
+};
+
+const getSubmissionReviewStatusConfiguration = ({
   grade,
   revisionRequest,
 }: {
-  grade?: Optional<Nullable<number>>;
+  grade: Optional<Nullable<number>>;
   revisionRequest: Optional<Nullable<boolean>>;
-}): SubmissionReviewStatusData => {
+}): SubmissionReviewStatusConfiguration => {
   if (grade) {
     return {
       text: 'Corregido',
-      badgeBackgroundColor: theme.colors.teachHub.warning,
-      badgeTextColor: theme.colors.teachHub.black,
+      ...SuccessBadgeConfiguration,
     };
   } else if (revisionRequest) {
     return {
       text: 'Reentrega solicitada',
-      badgeBackgroundColor: theme.colors.teachHub.error,
-      badgeTextColor: theme.colors.teachHub.white,
+      ...WarningBadgeConfiguration,
     };
   } else {
     return {
       text: 'Sin corregir',
-      badgeBackgroundColor: theme.colors.teachHub.warning,
-      badgeTextColor: theme.colors.teachHub.black,
+      ...ErrorBadgeConfiguration,
     };
+  }
+};
+
+const GRADES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+const getGradeConfiguration = (grade: Optional<Nullable<number>>): BadgeConfiguration => {
+  if (grade) {
+    if (grade >= 4) return SuccessBadgeConfiguration;
+    else return ErrorBadgeConfiguration;
+  } else {
+    return WarningBadgeConfiguration;
   }
 };
 
@@ -146,10 +172,11 @@ const SubmissionPage = ({
       ? true
       : new Date(submission.submittedAt) <= new Date(assignment.endDate);
 
-  const reviewStatusData = getSubmissionReviewStatusData({
+  const reviewStatusConfiguration = getSubmissionReviewStatusConfiguration({
     grade: review?.grade,
     revisionRequest: review?.revisionRequested,
   });
+  const gradeConfiguration = getGradeConfiguration(review?.grade);
 
   const handleReviewChange = () => {
     const reviewId = review?.id;
@@ -294,12 +321,11 @@ const SubmissionPage = ({
             <Badge
               fontSize="md"
               fontWeight="bold"
-              backgroundColor={reviewStatusData.badgeBackgroundColor}
-              color={reviewStatusData.badgeTextColor}
-              width={'fit-content'}
+              backgroundColor={reviewStatusConfiguration.badgeBackgroundColor}
+              color={reviewStatusConfiguration.badgeTextColor}
             >
               <Flex align="center" justify="center">
-                {reviewStatusData.text}
+                {reviewStatusConfiguration.text}
               </Flex>
             </Badge>
           </ListItem>
@@ -314,10 +340,9 @@ const SubmissionPage = ({
             <Badge
               fontSize="xl"
               fontWeight="bold"
-              backgroundColor={theme.colors.teachHub.primary}
-              color={theme.colors.teachHub.white}
-              borderRadius={'5px'}
-              width={'30px'}
+              backgroundColor={gradeConfiguration.badgeBackgroundColor}
+              color={gradeConfiguration.badgeTextColor}
+              w="30px"
             >
               <Flex align="center" justify="center">
                 {`${review?.grade || '-'}`}
@@ -329,7 +354,7 @@ const SubmissionPage = ({
           <Heading fontSize={theme.styles.global.body.fontSize}>
             Comentarios al realizar la entrega
           </Heading>
-          <Text w={'40vw'}>{submission.description}</Text>
+          <Text w={'40vw'}>{submission.description ? submission.description : '-'}</Text>
         </Stack>
       </Stack>
 
@@ -356,15 +381,11 @@ const SubmissionPage = ({
               onChange={changes => setNewGrade(Number(changes.currentTarget.value))}
               isDisabled={revisionRequested}
             >
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(
-                (
-                  grade // todo: move to constants
-                ) => (
-                  <option value={grade} key={grade}>
-                    {grade}
-                  </option>
-                )
-              )}
+              {GRADES.map(grade => (
+                <option value={grade} key={grade}>
+                  {grade}
+                </option>
+              ))}
             </Select>
           </FormControl>
           <Checkbox
