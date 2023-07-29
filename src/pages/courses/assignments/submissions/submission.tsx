@@ -163,6 +163,17 @@ const SubmissionPage = ({
     }
   };
 
+  const viewerIsReviewer = reviewerUser?.id === viewer?.id;
+  const handleReviewButtonClick = () => {
+    if (!viewerIsReviewer) {
+      toast({
+        title: 'No es posible calificar',
+        description: 'Para calificar debes ser el corrector de la entrega',
+        status: 'warning',
+      });
+    }
+  };
+
   return (
     <PageDataContainer>
       <Flex direction="row" gap={'20px'} align={'center'}>
@@ -194,12 +205,18 @@ const SubmissionPage = ({
       </Flex>
 
       <Stack gap={'30px'} marginTop={'10px'}>
-        <Button onClick={onOpenReviewModal} width={'fit-content'}>
-          <Flex align="center">
-            <Icon as={PencilIcon} boxSize={6} marginRight={2} />
-            <Text>Calificar</Text>
-          </Flex>
-        </Button>
+        <div onClick={handleReviewButtonClick}>
+          <Button
+            onClick={onOpenReviewModal}
+            width={'fit-content'}
+            isDisabled={!viewerIsReviewer}
+          >
+            <Flex align="center">
+              <Icon as={PencilIcon} boxSize={6} marginRight={2} />
+              <Text>Calificar</Text>
+            </Flex>
+          </Button>
+        </div>
         <List paddingX="30px">
           <TextListItem
             iconProps={{

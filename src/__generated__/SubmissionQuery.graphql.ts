@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1c0c7f57e8a56700851b98ed83eba4eb>>
+ * @generated SignedSource<<fb3b4cb011a0764f3c1a96172aa22d69>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -301,6 +301,7 @@ return {
                         ],
                         "storageKey": null
                       },
+                      (v15/*: any*/),
                       (v16/*: any*/)
                     ],
                     "storageKey": null
@@ -397,6 +398,7 @@ return {
                         ],
                         "storageKey": null
                       },
+                      (v15/*: any*/),
                       (v16/*: any*/)
                     ],
                     "storageKey": null
@@ -413,16 +415,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "22600db0dcef5c79291ccb6362e3594d",
+    "cacheID": "2c835fbba58b09e3e2790b71431e5632",
     "id": null,
     "metadata": {},
     "name": "SubmissionQuery",
     "operationKind": "query",
-    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        title\n        endDate\n        submission(id: $submissionId) {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          user {\n            id\n            file\n            name\n            lastName\n          }\n          reviewer {\n            reviewer {\n              id\n              name\n              lastName\n            }\n            id\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            createdAt\n            updatedAt\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        title\n        endDate\n        submission(id: $submissionId) {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          submitter {\n            __typename\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            createdAt\n            updatedAt\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "2dd97256e113b77eef77f9c14412979c";
+(node as any).hash = "4fbaf5fb17e93cae53aa6c4dc722534d";
 
 export default node;
