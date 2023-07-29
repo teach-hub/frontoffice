@@ -1,14 +1,14 @@
 import { graphql } from 'babel-plugin-relay/macro';
 
 export default graphql`
-  mutation CreateReviewMutation(
-    $submissionId: ID!
+  mutation UpdateReviewMutation(
+    $id: ID!
     $courseId: ID!
     $revisionRequested: Boolean!
     $grade: Int
   ) {
-    createReview(
-      submissionId: $submissionId
+    updateReview(
+      id: $id
       courseId: $courseId
       revisionRequested: $revisionRequested
       grade: $grade

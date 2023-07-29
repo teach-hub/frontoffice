@@ -41,7 +41,13 @@ import {
   CreateReviewMutation$data,
 } from '__generated__/CreateReviewMutation.graphql';
 import CreateReviewMutation from 'graphql/CreateReviewMutation';
+import {
+  UpdateReviewMutation as UpdateReviewMutationType,
+  UpdateReviewMutation$data,
+} from '__generated__/UpdateReviewMutation.graphql';
+import UpdateReviewMutation from 'graphql/UpdateReviewMutation';
 import useToast from 'hooks/useToast';
+import { PayloadError } from 'relay-runtime';
 
 const SubmissionPage = ({
   context,
@@ -65,6 +71,9 @@ const SubmissionPage = ({
 
   const [commitCreateMutation, _] =
     useMutation<CreateReviewMutationType>(CreateReviewMutation);
+
+  const [commitUpdateMutation, __] =
+    useMutation<UpdateReviewMutationType>(UpdateReviewMutation);
 
   useEffect(() => {
     if (!isOpenReviewModal) {
@@ -114,23 +123,44 @@ const SubmissionPage = ({
   };
 
   const handleReviewChange = () => {
-    commitCreateMutation({
-      variables: {
-        submissionId,
-        revisionRequested,
-        grade: revisionRequested ? undefined : newGrade, // Only set grade if no revision requested
-      },
-      onCompleted: (response: CreateReviewMutation$data, errors) => {
-        if (!errors?.length) {
-          navigate(0); // Reload page data
-        } else {
-          toast({
-            title: 'Error al actualizar la corrección, intentelo de nuevo',
-            status: 'error',
-          });
-        }
-      },
-    });
+    const reviewId = review?.id;
+    const baseVariables = {
+      courseId: course?.id,
+      revisionRequested,
+      grade: revisionRequested ? undefined : newGrade, // Only set grade if no revision requested
+    };
+    const onCompleted = (
+      response: CreateReviewMutation$data | UpdateReviewMutation$data,
+      errors: PayloadError[] | null
+    ) => {
+      if (!errors?.length) {
+        navigate(0); // Reload page data
+      } else {
+        toast({
+          title: 'Error al actualizar la corrección, intentelo de nuevo',
+          status: 'error',
+        });
+      }
+    };
+
+    /* If review did not exist, create it, otherwise update it*/
+    if (!reviewId) {
+      commitCreateMutation({
+        variables: {
+          ...baseVariables,
+          submissionId,
+        },
+        onCompleted,
+      });
+    } else {
+      commitUpdateMutation({
+        variables: {
+          ...baseVariables,
+          id: reviewId,
+        },
+        onCompleted,
+      });
+    }
   };
 
   return (
@@ -257,11 +287,15 @@ const SubmissionPage = ({
               onChange={changes => setNewGrade(Number(changes.currentTarget.value))}
               isDisabled={revisionRequested}
             >
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(grade => (
-                <option value={grade} key={grade}>
-                  {grade}
-                </option>
-              ))}
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(
+                (
+                  grade // todo: move to constants
+                ) => (
+                  <option value={grade} key={grade}>
+                    {grade}
+                  </option>
+                )
+              )}
             </Select>
           </FormControl>
           <Checkbox
