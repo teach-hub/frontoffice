@@ -9,6 +9,7 @@ export default graphql`
         id
         assignment(id: $assignmentId) {
           id
+          title
           submissions {
             id
             description
@@ -21,6 +22,21 @@ export default graphql`
                 name
                 lastName
               }
+            }
+            reviewer {
+              id
+              reviewer {
+                id
+                name
+                lastName
+              }
+            }
+            review {
+              id
+              revisionRequested
+              grade
+              createdAt
+              updatedAt
             }
           }
         }

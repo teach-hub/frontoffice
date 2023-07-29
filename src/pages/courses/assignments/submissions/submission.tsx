@@ -33,7 +33,7 @@ import Text from 'components/Text';
 import Button from 'components/Button';
 import { Icon } from '@chakra-ui/icons';
 import { Modal } from 'components/Modal';
-import { Nullable, Optional } from 'types';
+import { Optional } from 'types';
 import { FormControl } from 'components/FormControl';
 import { Checkbox } from 'components/Checkbox';
 import {
@@ -49,67 +49,13 @@ import UpdateReviewMutation from 'graphql/UpdateReviewMutation';
 import useToast from 'hooks/useToast';
 import { PayloadError } from 'relay-runtime';
 import ListItem from 'components/list/ListItem';
-import Badge from 'components/Badge';
-
-type BadgeConfiguration = {
-  badgeBackgroundColor: string;
-  badgeTextColor: string;
-};
-
-type SubmissionReviewStatusConfiguration = BadgeConfiguration & {
-  text: string;
-};
-
-const SuccessBadgeConfiguration: BadgeConfiguration = {
-  badgeBackgroundColor: theme.colors.teachHub.success,
-  badgeTextColor: theme.colors.teachHub.white,
-};
-
-const ErrorBadgeConfiguration: BadgeConfiguration = {
-  badgeBackgroundColor: theme.colors.teachHub.error,
-  badgeTextColor: theme.colors.teachHub.white,
-};
-
-const WarningBadgeConfiguration: BadgeConfiguration = {
-  badgeBackgroundColor: theme.colors.teachHub.warning,
-  badgeTextColor: theme.colors.teachHub.black,
-};
-
-const getSubmissionReviewStatusConfiguration = ({
-  grade,
-  revisionRequest,
-}: {
-  grade: Optional<Nullable<number>>;
-  revisionRequest: Optional<Nullable<boolean>>;
-}): SubmissionReviewStatusConfiguration => {
-  if (grade) {
-    return {
-      text: 'Corregido',
-      ...SuccessBadgeConfiguration,
-    };
-  } else if (revisionRequest) {
-    return {
-      text: 'Reentrega solicitada',
-      ...WarningBadgeConfiguration,
-    };
-  } else {
-    return {
-      text: 'Sin corregir',
-      ...ErrorBadgeConfiguration,
-    };
-  }
-};
-
-const GRADES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-const getGradeConfiguration = (grade: Optional<Nullable<number>>): BadgeConfiguration => {
-  if (grade) {
-    if (grade >= 4) return SuccessBadgeConfiguration;
-    else return ErrorBadgeConfiguration;
-  } else {
-    return WarningBadgeConfiguration;
-  }
-};
+import {
+  getGradeConfiguration,
+  getSubmissionReviewStatusConfiguration,
+  GRADES,
+} from 'app/submissions';
+import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
+import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
 
 const SubmissionPage = ({
   context,
@@ -245,11 +191,7 @@ const SubmissionPage = ({
           </Link>
         </Heading>
 
-        <Tooltip
-          hasArrow
-          label={'Ir a pull request'}
-          fontSize={theme.styles.global.body.fontSize}
-        >
+        <Tooltip label={'Ir a pull request'}>
           <Link href={submission.pullRequestUrl} isExternal>
             <IconButton
               variant={'ghost'}
@@ -318,16 +260,7 @@ const SubmissionPage = ({
             label={'Estado corrección: '}
             listItemKey={'status'}
           >
-            <Badge
-              fontSize="md"
-              fontWeight="bold"
-              backgroundColor={reviewStatusConfiguration.badgeBackgroundColor}
-              color={reviewStatusConfiguration.badgeTextColor}
-            >
-              <Flex align="center" justify="center">
-                {reviewStatusConfiguration.text}
-              </Flex>
-            </Badge>
+            <ReviewStatusBadge reviewStatusConfiguration={reviewStatusConfiguration} />
           </ListItem>
           <ListItem
             iconProps={{
@@ -337,17 +270,10 @@ const SubmissionPage = ({
             label={'Calificación: '}
             listItemKey={'grade'}
           >
-            <Badge
-              fontSize="xl"
-              fontWeight="bold"
-              backgroundColor={gradeConfiguration.badgeBackgroundColor}
-              color={gradeConfiguration.badgeTextColor}
-              w="30px"
-            >
-              <Flex align="center" justify="center">
-                {`${review?.grade || '-'}`}
-              </Flex>
-            </Badge>
+            <ReviewGradeBadge
+              grade={review?.grade}
+              gradeConfiguration={gradeConfiguration}
+            />
           </ListItem>
         </List>
         <Stack>
