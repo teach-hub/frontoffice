@@ -163,9 +163,9 @@ const SubmissionPage = ({
     }
   };
 
-  const viewerIsReviewer = reviewerUser?.id === viewer?.id;
+  const reviewEnabled = submission?.reviewEnabledForViewer === true;
   const handleReviewButtonClick = () => {
-    if (!viewerIsReviewer) {
+    if (!reviewEnabled) {
       toast({
         title: 'No es posible calificar',
         description: 'Para calificar debes ser el corrector de la entrega',
@@ -209,7 +209,7 @@ const SubmissionPage = ({
           <Button
             onClick={onOpenReviewModal}
             width={'fit-content'}
-            isDisabled={!viewerIsReviewer}
+            isDisabled={!reviewEnabled}
           >
             <Flex align="center">
               <Icon as={PencilIcon} boxSize={6} marginRight={2} />

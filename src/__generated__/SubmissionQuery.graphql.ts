@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fb3b4cb011a0764f3c1a96172aa22d69>>
+ * @generated SignedSource<<379448ea87b9d243192338fedeb216d4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -31,6 +31,7 @@ export type SubmissionQuery$data = {
             readonly revisionRequested: boolean | null;
             readonly updatedAt: string;
           } | null;
+          readonly reviewEnabledForViewer: boolean;
           readonly reviewer: {
             readonly id: string;
             readonly reviewer: {
@@ -150,10 +151,17 @@ v13 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "lastName",
+  "name": "reviewEnabledForViewer",
   "storageKey": null
 },
 v14 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "lastName",
+  "storageKey": null
+},
+v15 = {
   "kind": "InlineFragment",
   "selections": [
     (v3/*: any*/),
@@ -165,12 +173,12 @@ v14 = {
       "storageKey": null
     },
     (v4/*: any*/),
-    (v13/*: any*/)
+    (v14/*: any*/)
   ],
   "type": "UserType",
   "abstractKey": null
 },
-v15 = {
+v16 = {
   "alias": null,
   "args": null,
   "concreteType": "ReviewerType",
@@ -189,14 +197,14 @@ v15 = {
       "selections": [
         (v3/*: any*/),
         (v4/*: any*/),
-        (v13/*: any*/)
+        (v14/*: any*/)
       ],
       "storageKey": null
     }
   ],
   "storageKey": null
 },
-v16 = {
+v17 = {
   "alias": null,
   "args": null,
   "concreteType": "InternalReviewType",
@@ -289,6 +297,7 @@ return {
                       (v10/*: any*/),
                       (v11/*: any*/),
                       (v12/*: any*/),
+                      (v13/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -297,12 +306,12 @@ return {
                         "name": "submitter",
                         "plural": false,
                         "selections": [
-                          (v14/*: any*/)
+                          (v15/*: any*/)
                         ],
                         "storageKey": null
                       },
-                      (v15/*: any*/),
-                      (v16/*: any*/)
+                      (v16/*: any*/),
+                      (v17/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -371,6 +380,7 @@ return {
                       (v10/*: any*/),
                       (v11/*: any*/),
                       (v12/*: any*/),
+                      (v13/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -386,7 +396,7 @@ return {
                             "name": "__typename",
                             "storageKey": null
                           },
-                          (v14/*: any*/),
+                          (v15/*: any*/),
                           {
                             "kind": "InlineFragment",
                             "selections": [
@@ -398,8 +408,8 @@ return {
                         ],
                         "storageKey": null
                       },
-                      (v15/*: any*/),
-                      (v16/*: any*/)
+                      (v16/*: any*/),
+                      (v17/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -415,16 +425,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "2c835fbba58b09e3e2790b71431e5632",
+    "cacheID": "0ccf1cdd6c635ffd82ca34fc28ec0181",
     "id": null,
     "metadata": {},
     "name": "SubmissionQuery",
     "operationKind": "query",
-    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        title\n        endDate\n        submission(id: $submissionId) {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          submitter {\n            __typename\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            createdAt\n            updatedAt\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        title\n        endDate\n        submission(id: $submissionId) {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          reviewEnabledForViewer\n          submitter {\n            __typename\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            createdAt\n            updatedAt\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "4fbaf5fb17e93cae53aa6c4dc722534d";
+(node as any).hash = "8c6698485d9593280681f43e4d5ee252";
 
 export default node;

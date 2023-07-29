@@ -16,6 +16,7 @@ export default graphql`
             description
             submittedAt
             pullRequestUrl
+            reviewEnabledForViewer
             submitter {
               ... on UserType {
                 id
