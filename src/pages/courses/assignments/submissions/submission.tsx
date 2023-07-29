@@ -33,7 +33,7 @@ import Text from 'components/Text';
 import Button from 'components/Button';
 import { Icon } from '@chakra-ui/icons';
 import { Modal } from 'components/Modal';
-import { Optional } from 'types';
+import { Nullable, Optional } from 'types';
 import { FormControl } from 'components/FormControl';
 import { Checkbox } from 'components/Checkbox';
 import {
@@ -48,6 +48,42 @@ import {
 import UpdateReviewMutation from 'graphql/UpdateReviewMutation';
 import useToast from 'hooks/useToast';
 import { PayloadError } from 'relay-runtime';
+import ListItem from 'components/list/ListItem';
+import Badge from 'components/Badge';
+
+type SubmissionReviewStatusData = {
+  text: string;
+  badgeBackgroundColor: string;
+  badgeTextColor: string;
+};
+
+const getSubmissionReviewStatusData = ({
+  grade,
+  revisionRequest,
+}: {
+  grade?: Optional<Nullable<number>>;
+  revisionRequest: Optional<Nullable<boolean>>;
+}): SubmissionReviewStatusData => {
+  if (grade) {
+    return {
+      text: 'Corregido',
+      badgeBackgroundColor: theme.colors.teachHub.warning,
+      badgeTextColor: theme.colors.teachHub.black,
+    };
+  } else if (revisionRequest) {
+    return {
+      text: 'Reentrega solicitada',
+      badgeBackgroundColor: theme.colors.teachHub.error,
+      badgeTextColor: theme.colors.teachHub.white,
+    };
+  } else {
+    return {
+      text: 'Sin corregir',
+      badgeBackgroundColor: theme.colors.teachHub.warning,
+      badgeTextColor: theme.colors.teachHub.black,
+    };
+  }
+};
 
 const SubmissionPage = ({
   context,
@@ -110,17 +146,10 @@ const SubmissionPage = ({
       ? true
       : new Date(submission.submittedAt) <= new Date(assignment.endDate);
 
-  const getReviewStatus = () => {
-    const grade = review?.grade;
-    const revisionRequested = review?.revisionRequested;
-    if (grade) {
-      return 'Corregido';
-    } else if (revisionRequested) {
-      return 'Reentrega solicitada';
-    } else {
-      return 'Sin corregir';
-    }
-  };
+  const reviewStatusData = getSubmissionReviewStatusData({
+    grade: review?.grade,
+    revisionRequest: review?.revisionRequested,
+  });
 
   const handleReviewChange = () => {
     const reviewId = review?.id;
@@ -254,24 +283,47 @@ const SubmissionPage = ({
             label={'Corrector: '}
             listItemKey={'reviewer'}
           />
-          <TextListItem
+          <ListItem
             iconProps={{
               color: LIST_ITEM_ICON_COLOR,
               icon: InfoIcon,
             }}
-            text={`${getReviewStatus()}`} // TODO: show in badge to highlight
             label={'Estado corrección: '}
             listItemKey={'status'}
-          />
-          <TextListItem
+          >
+            <Badge
+              fontSize="md"
+              fontWeight="bold"
+              backgroundColor={reviewStatusData.badgeBackgroundColor}
+              color={reviewStatusData.badgeTextColor}
+              width={'fit-content'}
+            >
+              <Flex align="center" justify="center">
+                {reviewStatusData.text}
+              </Flex>
+            </Badge>
+          </ListItem>
+          <ListItem
             iconProps={{
               color: LIST_ITEM_ICON_COLOR,
               icon: NumberIcon,
             }}
-            text={`${review?.grade || '-'}`} // TODO: show in badge to highlight
             label={'Calificación: '}
             listItemKey={'grade'}
-          />
+          >
+            <Badge
+              fontSize="xl"
+              fontWeight="bold"
+              backgroundColor={theme.colors.teachHub.primary}
+              color={theme.colors.teachHub.white}
+              borderRadius={'5px'}
+              width={'30px'}
+            >
+              <Flex align="center" justify="center">
+                {`${review?.grade || '-'}`}
+              </Flex>
+            </Badge>
+          </ListItem>
         </List>
         <Stack>
           <Heading fontSize={theme.styles.global.body.fontSize}>
