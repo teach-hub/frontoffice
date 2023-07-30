@@ -20,6 +20,10 @@ export const theme = extendTheme({
       gray: '#BDBDBD',
       green: '#00798c',
       red: '#D1103A',
+      yellow: '#F2CD5D',
+      success: 'teachHub.green',
+      error: 'teachHub.red',
+      warning: 'teachHub.yellow',
     },
   },
   styles: {

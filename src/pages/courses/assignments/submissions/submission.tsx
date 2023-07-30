@@ -33,7 +33,7 @@ import Text from 'components/Text';
 import Button from 'components/Button';
 import { Icon } from '@chakra-ui/icons';
 import { Modal } from 'components/Modal';
-import { Optional } from 'types';
+import { Nullable, Optional } from 'types';
 import { FormControl } from 'components/FormControl';
 import { Checkbox } from 'components/Checkbox';
 import {
@@ -48,6 +48,68 @@ import {
 import UpdateReviewMutation from 'graphql/UpdateReviewMutation';
 import useToast from 'hooks/useToast';
 import { PayloadError } from 'relay-runtime';
+import ListItem from 'components/list/ListItem';
+import Badge from 'components/Badge';
+
+type BadgeConfiguration = {
+  badgeBackgroundColor: string;
+  badgeTextColor: string;
+};
+
+type SubmissionReviewStatusConfiguration = BadgeConfiguration & {
+  text: string;
+};
+
+const SuccessBadgeConfiguration: BadgeConfiguration = {
+  badgeBackgroundColor: theme.colors.teachHub.success,
+  badgeTextColor: theme.colors.teachHub.white,
+};
+
+const ErrorBadgeConfiguration: BadgeConfiguration = {
+  badgeBackgroundColor: theme.colors.teachHub.error,
+  badgeTextColor: theme.colors.teachHub.white,
+};
+
+const WarningBadgeConfiguration: BadgeConfiguration = {
+  badgeBackgroundColor: theme.colors.teachHub.warning,
+  badgeTextColor: theme.colors.teachHub.black,
+};
+
+const getSubmissionReviewStatusConfiguration = ({
+  grade,
+  revisionRequest,
+}: {
+  grade: Optional<Nullable<number>>;
+  revisionRequest: Optional<Nullable<boolean>>;
+}): SubmissionReviewStatusConfiguration => {
+  if (grade) {
+    return {
+      text: 'Corregido',
+      ...SuccessBadgeConfiguration,
+    };
+  } else if (revisionRequest) {
+    return {
+      text: 'Reentrega solicitada',
+      ...WarningBadgeConfiguration,
+    };
+  } else {
+    return {
+      text: 'Sin corregir',
+      ...ErrorBadgeConfiguration,
+    };
+  }
+};
+
+const GRADES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+const getGradeConfiguration = (grade: Optional<Nullable<number>>): BadgeConfiguration => {
+  if (grade) {
+    if (grade >= 4) return SuccessBadgeConfiguration;
+    else return ErrorBadgeConfiguration;
+  } else {
+    return WarningBadgeConfiguration;
+  }
+};
 
 const SubmissionPage = ({
   context,
@@ -110,17 +172,11 @@ const SubmissionPage = ({
       ? true
       : new Date(submission.submittedAt) <= new Date(assignment.endDate);
 
-  const getReviewStatus = () => {
-    const grade = review?.grade;
-    const revisionRequested = review?.revisionRequested;
-    if (grade) {
-      return 'Corregido';
-    } else if (revisionRequested) {
-      return 'Reentrega solicitada';
-    } else {
-      return 'Sin corregir';
-    }
-  };
+  const reviewStatusConfiguration = getSubmissionReviewStatusConfiguration({
+    grade: review?.grade,
+    revisionRequest: review?.revisionRequested,
+  });
+  const gradeConfiguration = getGradeConfiguration(review?.grade);
 
   const handleReviewChange = () => {
     const reviewId = review?.id;
@@ -254,30 +310,51 @@ const SubmissionPage = ({
             label={'Corrector: '}
             listItemKey={'reviewer'}
           />
-          <TextListItem
+          <ListItem
             iconProps={{
               color: LIST_ITEM_ICON_COLOR,
               icon: InfoIcon,
             }}
-            text={`${getReviewStatus()}`} // TODO: show in badge to highlight
             label={'Estado corrección: '}
             listItemKey={'status'}
-          />
-          <TextListItem
+          >
+            <Badge
+              fontSize="md"
+              fontWeight="bold"
+              backgroundColor={reviewStatusConfiguration.badgeBackgroundColor}
+              color={reviewStatusConfiguration.badgeTextColor}
+            >
+              <Flex align="center" justify="center">
+                {reviewStatusConfiguration.text}
+              </Flex>
+            </Badge>
+          </ListItem>
+          <ListItem
             iconProps={{
               color: LIST_ITEM_ICON_COLOR,
               icon: NumberIcon,
             }}
-            text={`${review?.grade || '-'}`} // TODO: show in badge to highlight
             label={'Calificación: '}
             listItemKey={'grade'}
-          />
+          >
+            <Badge
+              fontSize="xl"
+              fontWeight="bold"
+              backgroundColor={gradeConfiguration.badgeBackgroundColor}
+              color={gradeConfiguration.badgeTextColor}
+              w="30px"
+            >
+              <Flex align="center" justify="center">
+                {`${review?.grade || '-'}`}
+              </Flex>
+            </Badge>
+          </ListItem>
         </List>
         <Stack>
           <Heading fontSize={theme.styles.global.body.fontSize}>
             Comentarios al realizar la entrega
           </Heading>
-          <Text w={'40vw'}>{submission.description}</Text>
+          <Text w={'40vw'}>{submission.description ? submission.description : '-'}</Text>
         </Stack>
       </Stack>
 
@@ -304,15 +381,11 @@ const SubmissionPage = ({
               onChange={changes => setNewGrade(Number(changes.currentTarget.value))}
               isDisabled={revisionRequested}
             >
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(
-                (
-                  grade // todo: move to constants
-                ) => (
-                  <option value={grade} key={grade}>
-                    {grade}
-                  </option>
-                )
-              )}
+              {GRADES.map(grade => (
+                <option value={grade} key={grade}>
+                  {grade}
+                </option>
+              ))}
             </Select>
           </FormControl>
           <Checkbox
