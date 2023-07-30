@@ -1,6 +1,7 @@
 import {
   ListItem as ChakraListItem,
   ListItemProps as ChakraListItemProps,
+  Stack,
 } from '@chakra-ui/react';
 import ListIcon, { ListIconProps } from 'components/list/ListIcon';
 
@@ -20,9 +21,11 @@ const ListItem = ({
 }: ListItemProps) => {
   return (
     <ChakraListItem {...rest}>
-      <ListIcon {...iconProps} key={listItemKey} />
-      {label && <span style={{ fontWeight: 'bold' }}>{label}</span>}
-      {children}
+      <Stack direction={'row'}>
+        <ListIcon {...iconProps} key={listItemKey} />
+        {label && <span style={{ fontWeight: 'bold' }}>{label}</span>}
+        {children}
+      </Stack>
     </ChakraListItem>
   );
 };

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5d1517bf346ddd58202826ff04a10f8d>>
+ * @generated SignedSource<<54154246fb71753a79b9574a04516dab>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -22,6 +22,21 @@ export type AssignmentSubmissionsQuery$data = {
           readonly description: string | null;
           readonly id: string;
           readonly pullRequestUrl: string;
+          readonly review: {
+            readonly createdAt: string;
+            readonly grade: number | null;
+            readonly id: string;
+            readonly revisionRequested: boolean | null;
+            readonly updatedAt: string;
+          } | null;
+          readonly reviewer: {
+            readonly id: string;
+            readonly reviewer: {
+              readonly id: string;
+              readonly lastName: string;
+              readonly name: string;
+            };
+          } | null;
           readonly submittedAt: string;
           readonly submitter: {
             readonly file?: string;
@@ -30,6 +45,7 @@ export type AssignmentSubmissionsQuery$data = {
             readonly name?: string;
           };
         }>;
+        readonly title: string | null;
       } | null;
       readonly id: string;
     } | null;
@@ -85,24 +101,38 @@ v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "description",
+  "name": "title",
   "storageKey": null
 },
 v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "submittedAt",
+  "name": "description",
   "storageKey": null
 },
 v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "pullRequestUrl",
+  "name": "submittedAt",
   "storageKey": null
 },
 v9 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "pullRequestUrl",
+  "storageKey": null
+},
+v10 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "lastName",
+  "storageKey": null
+},
+v11 = {
   "kind": "InlineFragment",
   "selections": [
     (v2/*: any*/),
@@ -114,16 +144,76 @@ v9 = {
       "storageKey": null
     },
     (v3/*: any*/),
+    (v10/*: any*/)
+  ],
+  "type": "UserType",
+  "abstractKey": null
+},
+v12 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "ReviewerType",
+  "kind": "LinkedField",
+  "name": "reviewer",
+  "plural": false,
+  "selections": [
+    (v2/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "concreteType": "UserType",
+      "kind": "LinkedField",
+      "name": "reviewer",
+      "plural": false,
+      "selections": [
+        (v2/*: any*/),
+        (v3/*: any*/),
+        (v10/*: any*/)
+      ],
+      "storageKey": null
+    }
+  ],
+  "storageKey": null
+},
+v13 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "InternalReviewType",
+  "kind": "LinkedField",
+  "name": "review",
+  "plural": false,
+  "selections": [
+    (v2/*: any*/),
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "lastName",
+      "name": "revisionRequested",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "grade",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "createdAt",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "updatedAt",
       "storageKey": null
     }
   ],
-  "type": "UserType",
-  "abstractKey": null
+  "storageKey": null
 };
 return {
   "fragment": {
@@ -163,6 +253,7 @@ return {
                 "plural": false,
                 "selections": [
                   (v2/*: any*/),
+                  (v6/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -172,9 +263,9 @@ return {
                     "plural": true,
                     "selections": [
                       (v2/*: any*/),
-                      (v6/*: any*/),
                       (v7/*: any*/),
                       (v8/*: any*/),
+                      (v9/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -183,10 +274,12 @@ return {
                         "name": "submitter",
                         "plural": false,
                         "selections": [
-                          (v9/*: any*/)
+                          (v11/*: any*/)
                         ],
                         "storageKey": null
-                      }
+                      },
+                      (v12/*: any*/),
+                      (v13/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -240,6 +333,7 @@ return {
                 "plural": false,
                 "selections": [
                   (v2/*: any*/),
+                  (v6/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -249,9 +343,9 @@ return {
                     "plural": true,
                     "selections": [
                       (v2/*: any*/),
-                      (v6/*: any*/),
                       (v7/*: any*/),
                       (v8/*: any*/),
+                      (v9/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -267,7 +361,7 @@ return {
                             "name": "__typename",
                             "storageKey": null
                           },
-                          (v9/*: any*/),
+                          (v11/*: any*/),
                           {
                             "kind": "InlineFragment",
                             "selections": [
@@ -278,7 +372,9 @@ return {
                           }
                         ],
                         "storageKey": null
-                      }
+                      },
+                      (v12/*: any*/),
+                      (v13/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -294,16 +390,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "0da21e3886b55f73bbeac3b52a3fb0b9",
+    "cacheID": "906135eef422e1e4dc6317e05bcc74f0",
     "id": null,
     "metadata": {},
     "name": "AssignmentSubmissionsQuery",
     "operationKind": "query",
-    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        submissions {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          submitter {\n            __typename\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        title\n        submissions {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          submitter {\n            __typename\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            createdAt\n            updatedAt\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "9fdefb6b947fdc2d64adea9ee5c7e172";
+(node as any).hash = "abd17c58d8264ccecd654576dac5ffe8";
 
 export default node;
