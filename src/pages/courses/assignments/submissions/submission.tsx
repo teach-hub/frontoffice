@@ -1,6 +1,6 @@
-import { Suspense } from 'react';
-import { Link as RRLink, useParams } from 'react-router-dom';
-import { useLazyLoadQuery } from 'react-relay';
+import React, { Suspense, useEffect, useState } from 'react';
+import { Link as RRLink, useNavigate, useParams } from 'react-router-dom';
+import { useLazyLoadQuery, useMutation } from 'react-relay';
 
 import PageDataContainer from 'components/PageDataContainer';
 import Navigation from 'components/Navigation';
@@ -16,17 +16,38 @@ import { theme } from 'theme';
 import { TextListItem } from 'components/list/TextListItem';
 import {
   CheckCircleFillIcon,
+  InfoIcon,
   MarkGithubIcon,
   MortarBoardIcon,
+  NumberIcon,
+  PencilIcon,
   PersonFillIcon,
   XCircleFillIcon,
 } from '@primer/octicons-react';
 import Link from 'components/Link';
 import { formatAsSimpleDateTime } from 'utils/dates';
-import { Flex, Stack } from '@chakra-ui/react';
+import { Flex, Select, Stack, useDisclosure } from '@chakra-ui/react';
 import IconButton from 'components/IconButton';
 import Tooltip from 'components/Tooltip';
 import Text from 'components/Text';
+import Button from 'components/Button';
+import { Icon } from '@chakra-ui/icons';
+import { Modal } from 'components/Modal';
+import { Optional } from 'types';
+import { FormControl } from 'components/FormControl';
+import { Checkbox } from 'components/Checkbox';
+import {
+  CreateReviewMutation as CreateReviewMutationType,
+  CreateReviewMutation$data,
+} from '__generated__/CreateReviewMutation.graphql';
+import CreateReviewMutation from 'graphql/CreateReviewMutation';
+import {
+  UpdateReviewMutation as UpdateReviewMutationType,
+  UpdateReviewMutation$data,
+} from '__generated__/UpdateReviewMutation.graphql';
+import UpdateReviewMutation from 'graphql/UpdateReviewMutation';
+import useToast from 'hooks/useToast';
+import { PayloadError } from 'relay-runtime';
 
 const SubmissionPage = ({
   context,
@@ -37,6 +58,30 @@ const SubmissionPage = ({
   assignmentId: string;
   submissionId: string;
 }) => {
+  const navigate = useNavigate();
+  const toast = useToast();
+  const {
+    isOpen: isOpenReviewModal,
+    onOpen: onOpenReviewModal,
+    onClose: onCloseReviewModal,
+  } = useDisclosure();
+
+  const [newGrade, setNewGrade] = useState<Optional<number>>(undefined);
+  const [revisionRequested, setRevisionRequested] = useState<boolean>(false);
+
+  const [commitCreateMutation, _] =
+    useMutation<CreateReviewMutationType>(CreateReviewMutation);
+
+  const [commitUpdateMutation, __] =
+    useMutation<UpdateReviewMutationType>(UpdateReviewMutation);
+
+  useEffect(() => {
+    if (!isOpenReviewModal) {
+      setNewGrade(undefined);
+      setRevisionRequested(false);
+    }
+  }, [isOpenReviewModal]);
+
   const data = useLazyLoadQuery<SubmissionQuery>(SubmissionQueryDef, {
     courseId: context.courseId,
     assignmentId,
@@ -49,6 +94,7 @@ const SubmissionPage = ({
   const submission = assignment?.submission;
   const user = submission?.submitter; // TODO: TH-164 may be user or group
   const reviewerUser = submission?.reviewer?.reviewer;
+  const review = submission?.review;
 
   if (!submission || !assignment || !user) {
     return null; // todo: fix cases when null data
@@ -64,9 +110,73 @@ const SubmissionPage = ({
       ? true
       : new Date(submission.submittedAt) <= new Date(assignment.endDate);
 
+  const getReviewStatus = () => {
+    const grade = review?.grade;
+    const revisionRequested = review?.revisionRequested;
+    if (grade) {
+      return 'Corregido';
+    } else if (revisionRequested) {
+      return 'Reentrega solicitada';
+    } else {
+      return 'Sin corregir';
+    }
+  };
+
+  const handleReviewChange = () => {
+    const reviewId = review?.id;
+    const baseVariables = {
+      courseId: course?.id,
+      revisionRequested,
+      grade: revisionRequested ? undefined : newGrade, // Only set grade if no revision requested
+    };
+    const onCompleted = (
+      response: CreateReviewMutation$data | UpdateReviewMutation$data,
+      errors: PayloadError[] | null
+    ) => {
+      if (!errors?.length) {
+        navigate(0); // Reload page data
+      } else {
+        toast({
+          title: 'Error al actualizar la corrección, intentelo de nuevo',
+          status: 'error',
+        });
+      }
+    };
+
+    /* If review did not exist, create it, otherwise update it*/
+    if (!reviewId) {
+      commitCreateMutation({
+        variables: {
+          ...baseVariables,
+          submissionId,
+        },
+        onCompleted,
+      });
+    } else {
+      commitUpdateMutation({
+        variables: {
+          ...baseVariables,
+          id: reviewId,
+        },
+        onCompleted,
+      });
+    }
+  };
+
+  const reviewEnabled = submission?.reviewEnabledForViewer === true;
+  const handleReviewButtonClick = () => {
+    if (!reviewEnabled) {
+      toast({
+        title: 'No es posible calificar',
+        description: 'Para calificar debes ser el corrector de la entrega',
+        status: 'warning',
+      });
+    }
+  };
+
   return (
     <PageDataContainer>
-      <Flex direction="row" gap={'20px'}>
+      <Flex direction="row" gap={'20px'} align={'center'}>
         <Heading>
           Entrega | {user.lastName} |{' '}
           <Link
@@ -94,29 +204,30 @@ const SubmissionPage = ({
         </Tooltip>
       </Flex>
 
-      <Stack>
-        <List padding="30px">
+      <Stack gap={'30px'} marginTop={'10px'}>
+        <div onClick={handleReviewButtonClick}>
+          <Button
+            onClick={onOpenReviewModal}
+            width={'fit-content'}
+            isDisabled={!reviewEnabled}
+          >
+            <Flex align="center">
+              <Icon as={PencilIcon} boxSize={6} marginRight={2} />
+              <Text>Calificar</Text>
+            </Flex>
+          </Button>
+        </div>
+        <List paddingX="30px">
           <TextListItem
             iconProps={{
               color: LIST_ITEM_ICON_COLOR,
               icon: PersonFillIcon,
             }}
             text={`${user.name} ${user.lastName} (${user.file})`}
-            key={'name'}
+            listItemKey={'name'}
           />
-          {reviewerUser && (
-            <TextListItem
-              iconProps={{
-                color: LIST_ITEM_ICON_COLOR,
-                icon: MortarBoardIcon,
-              }}
-              text={`${reviewerUser.name} ${reviewerUser.lastName}`}
-              label={'Corrector: '}
-              key={'reviewer'}
-            />
-          )}
           <TextListItem
-            key={'submittedOnTime'}
+            listItemKey={'submittedOnTime'}
             iconProps={{
               color: submittedOnTime
                 ? theme.colors.teachHub.green
@@ -130,15 +241,91 @@ const SubmissionPage = ({
             }
             text={` (${formatAsSimpleDateTime(submission.submittedAt)})`}
           />
+          <TextListItem
+            iconProps={{
+              color: LIST_ITEM_ICON_COLOR,
+              icon: MortarBoardIcon,
+            }}
+            text={
+              reviewerUser
+                ? `${reviewerUser.name} ${reviewerUser.lastName}`
+                : 'Sin asignar'
+            }
+            label={'Corrector: '}
+            listItemKey={'reviewer'}
+          />
+          <TextListItem
+            iconProps={{
+              color: LIST_ITEM_ICON_COLOR,
+              icon: InfoIcon,
+            }}
+            text={`${getReviewStatus()}`} // TODO: show in badge to highlight
+            label={'Estado corrección: '}
+            listItemKey={'status'}
+          />
+          <TextListItem
+            iconProps={{
+              color: LIST_ITEM_ICON_COLOR,
+              icon: NumberIcon,
+            }}
+            text={`${review?.grade || '-'}`} // TODO: show in badge to highlight
+            label={'Calificación: '}
+            listItemKey={'grade'}
+          />
         </List>
-
         <Stack>
           <Heading fontSize={theme.styles.global.body.fontSize}>
-            Comentarios sobre la entrega
+            Comentarios al realizar la entrega
           </Heading>
           <Text w={'40vw'}>{submission.description}</Text>
         </Stack>
       </Stack>
+
+      <Modal
+        isOpen={isOpenReviewModal}
+        onClose={onCloseReviewModal}
+        isCentered
+        headerText={'Calificar'}
+        closeOnOverlayClick={false}
+        footerChildren={
+          <Flex direction={'row'} gap={'30px'}>
+            <Button onClick={onCloseReviewModal} variant={'ghost'}>
+              {'Cancelar'}
+            </Button>
+            <Button onClick={handleReviewChange}>{'Guardar'}</Button>
+          </Flex>
+        }
+      >
+        <Stack>
+          <FormControl label={'Seleccionar nota'}>
+            <Select
+              placeholder="Selecciona una opción"
+              value={newGrade}
+              onChange={changes => setNewGrade(Number(changes.currentTarget.value))}
+              isDisabled={revisionRequested}
+            >
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(
+                (
+                  grade // todo: move to constants
+                ) => (
+                  <option value={grade} key={grade}>
+                    {grade}
+                  </option>
+                )
+              )}
+            </Select>
+          </FormControl>
+          <Checkbox
+            id={'revisionRequested'}
+            isChecked={revisionRequested}
+            onChange={() => {
+              setRevisionRequested(!revisionRequested);
+            }}
+          >
+            Requiere reentrega
+          </Checkbox>
+        </Stack>
+      </Modal>
     </PageDataContainer>
   );
 };

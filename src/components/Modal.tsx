@@ -12,16 +12,17 @@ import {
 type Props = ChakraModalProps & {
   children?: JSX.Element;
   headerText: string;
+  footerChildren?: JSX.Element;
 };
 
-export const Modal = ({ headerText, children, ...rest }: Props) => {
+export const Modal = ({ headerText, children, footerChildren, ...rest }: Props) => {
   return (
     <ChakraModal {...rest}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{headerText}</ModalHeader>
         <ModalBody>{children}</ModalBody>
-        <ModalFooter />
+        {footerChildren ? <ModalFooter>{footerChildren}</ModalFooter> : <ModalFooter />}
       </ModalContent>
     </ChakraModal>
   );

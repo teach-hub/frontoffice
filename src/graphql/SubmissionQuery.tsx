@@ -16,6 +16,7 @@ export default graphql`
             description
             submittedAt
             pullRequestUrl
+            reviewEnabledForViewer
             submitter {
               ... on UserType {
                 id
@@ -31,6 +32,13 @@ export default graphql`
                 name
                 lastName
               }
+            }
+            review {
+              id
+              revisionRequested
+              grade
+              createdAt
+              updatedAt
             }
           }
         }

@@ -90,23 +90,23 @@ const AssignmentDashboardPage = ({
                 icon: assignment.isGroup ? PeopleIcon : PersonIcon,
               }}
               text={assignment.isGroup ? 'Entrega grupal' : 'Entrega individual'}
-              key={'isGroup'}
+              listItemKey={'isGroup'}
             />
             <DateListItem
               date={assignment.startDate}
               label={'Inicio de entregas: '}
-              key={'startDate'}
+              listItemKey={'startDate'}
               iconColor={LIST_ITEM_ICON_COLOR}
             />
             <DateListItem
               date={assignment.endDate}
               label={'Límite de entregas: '}
-              key={'endDate'}
+              listItemKey={'endDate'}
               iconColor={LIST_ITEM_ICON_COLOR}
             />
             {courseContext.userIsTeacher && (
               <TextListItem
-                key={'allowLateSubmissions'}
+                listItemKey={'allowLateSubmissions'}
                 iconProps={{
                   color: LIST_ITEM_ICON_COLOR,
                   icon: AlertIcon,
@@ -117,7 +117,7 @@ const AssignmentDashboardPage = ({
             )}
             {assignment.link ? (
               <LinkListItem
-                key={'link'}
+                listItemKey={'link'}
                 iconColor={LIST_ITEM_ICON_COLOR}
                 link={assignment.link}
                 text={'Ver enunciado'}
@@ -127,7 +127,7 @@ const AssignmentDashboardPage = ({
               <></>
             )}
             <LinkListItem
-              key={'submissions'}
+              listItemKey={'submissions'}
               iconColor={LIST_ITEM_ICON_COLOR}
               external={false}
               text={'Ver entregas'}
@@ -135,7 +135,7 @@ const AssignmentDashboardPage = ({
             />
             {courseContext.userHasPermission(Permission.AssignReviewer) && (
               <LinkListItem
-                key={'assignReviewers'}
+                listItemKey={'assignReviewers'}
                 iconColor={LIST_ITEM_ICON_COLOR}
                 external={false}
                 text={'Assignar correctores'}
@@ -144,7 +144,7 @@ const AssignmentDashboardPage = ({
             )}
             {courseContext.userHasPermission(Permission.SubmitAssignment) && (
               <LinkListItem
-                key={'addSubmission'}
+                listItemKey={'addSubmission'}
                 iconColor={LIST_ITEM_ICON_COLOR}
                 external={false}
                 text={'Realizar nueva entrega'}
