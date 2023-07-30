@@ -13,6 +13,7 @@ import Select from 'components/Select';
 import Input from 'components/InputField';
 import Text from 'components/Text';
 import Alert from 'components/Alert';
+import Skeleton from 'components/Skeleton';
 
 import { useUserContext } from 'hooks/useUserCourseContext';
 
@@ -231,6 +232,17 @@ const NewSubmissionPageContainer = ({
   );
 };
 
+function EmptyState() {
+  return (
+    <>
+      <Heading> Nueva entrega </Heading>
+      <Skeleton h="50px" />
+      <Skeleton h="50px" />
+      <Skeleton h="50px" />
+    </>
+  );
+}
+
 function PageContainer() {
   const courseContext = useUserContext();
   const { assignmentId } = useParams();
@@ -241,7 +253,7 @@ function PageContainer() {
 
   return (
     <PageDataContainer gap="30px">
-      <Suspense fallback={'Cargando datos'}>
+      <Suspense fallback={<EmptyState />}>
         <NewSubmissionPageContainer
           courseId={courseContext.courseId}
           assignmentId={assignmentId}
