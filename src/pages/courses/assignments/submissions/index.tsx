@@ -63,20 +63,26 @@ const SubmissionsPage = ({
           headers={['Alumno', 'Corrector', 'Estado', 'Nota', '']}
           rowOptions={submissions.map(s => {
             const review = s?.review;
+            const grade = review?.grade;
+            const revisionRequested = review?.revisionRequested;
 
             const reviewStatusConfiguration = getSubmissionReviewStatusConfiguration({
-              grade: review?.grade,
-              revisionRequest: review?.revisionRequested,
+              grade: grade,
+              revisionRequested,
             });
-            const gradeConfiguration = getGradeConfiguration(review?.grade);
+            const gradeConfiguration = getGradeConfiguration(grade);
 
             const submitter = s.submitter;
             const reviewerUser = s.reviewer?.reviewer;
 
             return {
               rowProps: {
-                /* todo: show that row is clickable*/
-                onClick: () => navigate(s.id), // TODO: remove going to submission on every click
+                style: {
+                  cursor: 'pointer',
+                  transition: 'background-color 0.8s',
+                },
+                _hover: { bg: theme.colors.teachHub.gray },
+                onClick: () => navigate(s.id),
               },
               content: [
                 `${submitter.name} ${submitter.lastName}`, // todo: TH-170 may be group
@@ -85,15 +91,18 @@ const SubmissionsPage = ({
                   reviewStatusConfiguration={reviewStatusConfiguration}
                 />,
                 <ReviewGradeBadge
-                  grade={review?.grade}
+                  grade={grade}
                   gradeConfiguration={gradeConfiguration}
                 />,
                 <Flex>
                   <Tooltip label={'Ir a pull request'}>
-                    <Link href={s.pullRequestUrl} isExternal>
+                    <Link
+                      href={s.pullRequestUrl}
+                      isExternal
+                      onClick={event => event.stopPropagation()} // Avoid row clic behaviour
+                    >
                       <IconButton
                         variant={'ghost'}
-                        onClick={() => (window.location.href = s.pullRequestUrl)}
                         aria-label="pull-request-link"
                         icon={<MarkGithubIcon size="medium" />}
                       />

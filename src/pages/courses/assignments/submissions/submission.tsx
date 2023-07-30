@@ -120,7 +120,7 @@ const SubmissionPage = ({
 
   const reviewStatusConfiguration = getSubmissionReviewStatusConfiguration({
     grade: review?.grade,
-    revisionRequest: review?.revisionRequested,
+    revisionRequested: review?.revisionRequested,
   });
   const gradeConfiguration = getGradeConfiguration(review?.grade);
 

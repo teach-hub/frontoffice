@@ -27,17 +27,17 @@ const WarningBadgeConfiguration: BadgeConfiguration = {
 
 export const getSubmissionReviewStatusConfiguration = ({
   grade,
-  revisionRequest,
+  revisionRequested,
 }: {
   grade: Optional<Nullable<number>>;
-  revisionRequest: Optional<Nullable<boolean>>;
+  revisionRequested: Optional<Nullable<boolean>>;
 }): SubmissionReviewStatusConfiguration => {
   if (grade) {
     return {
       text: 'Corregido',
       ...SuccessBadgeConfiguration,
     };
-  } else if (revisionRequest) {
+  } else if (revisionRequested) {
     return {
       text: 'Reentrega solicitada',
       ...WarningBadgeConfiguration,
@@ -59,6 +59,9 @@ export const getGradeConfiguration = (
     if (grade >= 4) return SuccessBadgeConfiguration;
     else return ErrorBadgeConfiguration;
   } else {
-    return WarningBadgeConfiguration;
+    return {
+      badgeBackgroundColor: theme.colors.teachHub.gray,
+      badgeTextColor: theme.colors.teachHub.black,
+    };
   }
 };
