@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<508fc41bb5764e6b69a451c7ee94bff0>>
+ * @generated SignedSource<<941448e89c4785529876e4465239e13a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,10 +16,10 @@ export type AddSubmissionQuery$data = {
   readonly viewer: {
     readonly course: {
       readonly assignments: ReadonlyArray<{
-        readonly alreadySubmitted: boolean;
         readonly id: string;
         readonly isGroup: boolean | null;
         readonly title: string | null;
+        readonly viewerAlreadyMadeSubmission: boolean;
       }>;
       readonly id: string;
       readonly viewerGroupParticipants: ReadonlyArray<{
@@ -126,7 +126,7 @@ v5 = [
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "alreadySubmitted",
+                "name": "viewerAlreadyMadeSubmission",
                 "storageKey": null
               },
               (v2/*: any*/),
@@ -231,16 +231,16 @@ return {
     "selections": (v5/*: any*/)
   },
   "params": {
-    "cacheID": "1cb905da3da009e29a3e29a162cc159a",
+    "cacheID": "41684a1adb661fb6314565f302e576a1",
     "id": null,
     "metadata": {},
     "name": "AddSubmissionQuery",
     "operationKind": "query",
-    "text": "query AddSubmissionQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        alreadySubmitted\n        title\n        isGroup\n      }\n      viewerGroupParticipants: viewerGroups {\n        id\n        group {\n          id\n          name\n        }\n        assignmentId\n      }\n    }\n    repositories(courseId: $courseId) {\n      id\n      name\n    }\n    openPullRequests(courseId: $courseId) {\n      id\n      title\n      url\n      repositoryName\n    }\n  }\n}\n"
+    "text": "query AddSubmissionQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        viewerAlreadyMadeSubmission\n        title\n        isGroup\n      }\n      viewerGroupParticipants: viewerGroups {\n        id\n        group {\n          id\n          name\n        }\n        assignmentId\n      }\n    }\n    repositories(courseId: $courseId) {\n      id\n      name\n    }\n    openPullRequests(courseId: $courseId) {\n      id\n      title\n      url\n      repositoryName\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "d4117a6006b022b3d2664489448c828a";
+(node as any).hash = "163b5649b0fdb9a0fd1d2977000521ac";
 
 export default node;

@@ -11,7 +11,7 @@ export default graphql`
           allowLateSubmissions
           courseId
           isOpenForSubmissions
-          alreadySubmitted
+          viewerAlreadyMadeSubmission
           description
           endDate
           link

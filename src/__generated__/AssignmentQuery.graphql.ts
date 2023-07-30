@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<cfadc5813d156edcb764df49ce51cc5e>>
+ * @generated SignedSource<<ffd4fd51f006bb0cc4faf619a63294c0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,7 +19,6 @@ export type AssignmentQuery$data = {
       readonly assignment: {
         readonly active: boolean | null;
         readonly allowLateSubmissions: boolean | null;
-        readonly alreadySubmitted: boolean;
         readonly courseId: string;
         readonly description: string | null;
         readonly endDate: string | null;
@@ -29,6 +28,7 @@ export type AssignmentQuery$data = {
         readonly link: string | null;
         readonly startDate: string | null;
         readonly title: string | null;
+        readonly viewerAlreadyMadeSubmission: boolean;
       } | null;
       readonly id: string;
     } | null;
@@ -123,7 +123,7 @@ v3 = [
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "alreadySubmitted",
+                "name": "viewerAlreadyMadeSubmission",
                 "storageKey": null
               },
               {
@@ -209,16 +209,16 @@ return {
     "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "4311098cb4c464169f3127657fddfdeb",
+    "cacheID": "7e2e8a408f23c9bb2e276c484a31d8e2",
     "id": null,
     "metadata": {},
     "name": "AssignmentQuery",
     "operationKind": "query",
-    "text": "query AssignmentQuery(\n  $id: ID!\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignment(id: $id) {\n        id\n        allowLateSubmissions\n        courseId\n        isOpenForSubmissions\n        alreadySubmitted\n        description\n        endDate\n        link\n        startDate\n        title\n        active\n        isGroup\n      }\n    }\n  }\n}\n"
+    "text": "query AssignmentQuery(\n  $id: ID!\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignment(id: $id) {\n        id\n        allowLateSubmissions\n        courseId\n        isOpenForSubmissions\n        viewerAlreadyMadeSubmission\n        description\n        endDate\n        link\n        startDate\n        title\n        active\n        isGroup\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "00deeb6587cd940c612adafe671d1a19";
+(node as any).hash = "c8143116086bacdeef18328d9d3bae82";
 
 export default node;

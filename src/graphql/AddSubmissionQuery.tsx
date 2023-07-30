@@ -8,7 +8,7 @@ export default graphql`
         id
         assignments {
           id
-          alreadySubmitted
+          viewerAlreadyMadeSubmission
           title
           isGroup
         }

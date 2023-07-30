@@ -55,7 +55,7 @@ const AssignmentDashboardPage = ({
   const viewerCanSubmit =
     courseContext.userHasPermission(Permission.SubmitAssignment) &&
     assignment.isOpenForSubmissions &&
-    !assignment.alreadySubmitted;
+    !assignment.viewerAlreadyMadeSubmission;
 
   return (
     <PageDataContainer>
