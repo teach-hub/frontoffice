@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d2ecdc3c4a97f39fc7b9dc417a1d0f45>>
+ * @generated SignedSource<<508fc41bb5764e6b69a451c7ee94bff0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,17 +9,27 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type ViewerOpenPullRequestsQuery$variables = {
+export type AddSubmissionQuery$variables = {
   courseId: string;
 };
-export type ViewerOpenPullRequestsQuery$data = {
+export type AddSubmissionQuery$data = {
   readonly viewer: {
     readonly course: {
       readonly assignments: ReadonlyArray<{
+        readonly alreadySubmitted: boolean;
         readonly id: string;
+        readonly isGroup: boolean | null;
         readonly title: string | null;
       }>;
       readonly id: string;
+      readonly viewerGroupParticipants: ReadonlyArray<{
+        readonly assignmentId: string;
+        readonly group: {
+          readonly id: string;
+          readonly name: string | null;
+        };
+        readonly id: string;
+      }>;
     } | null;
     readonly id: string;
     readonly openPullRequests: ReadonlyArray<{
@@ -34,9 +44,9 @@ export type ViewerOpenPullRequestsQuery$data = {
     }>;
   } | null;
 };
-export type ViewerOpenPullRequestsQuery = {
-  response: ViewerOpenPullRequestsQuery$data;
-  variables: ViewerOpenPullRequestsQuery$variables;
+export type AddSubmissionQuery = {
+  response: AddSubmissionQuery$data;
+  variables: AddSubmissionQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -62,13 +72,23 @@ v2 = {
   "storageKey": null
 },
 v3 = [
+  (v1/*: any*/),
+  {
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "name",
+    "storageKey": null
+  }
+],
+v4 = [
   {
     "kind": "Variable",
     "name": "courseId",
     "variableName": "courseId"
   }
 ],
-v4 = [
+v5 = [
   {
     "alias": null,
     "args": null,
@@ -102,7 +122,50 @@ v4 = [
             "plural": true,
             "selections": [
               (v1/*: any*/),
-              (v2/*: any*/)
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "alreadySubmitted",
+                "storageKey": null
+              },
+              (v2/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "isGroup",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          },
+          {
+            "alias": "viewerGroupParticipants",
+            "args": null,
+            "concreteType": "InternalGroupParticipantType",
+            "kind": "LinkedField",
+            "name": "viewerGroups",
+            "plural": true,
+            "selections": [
+              (v1/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "InternalGroupType",
+                "kind": "LinkedField",
+                "name": "group",
+                "plural": false,
+                "selections": (v3/*: any*/),
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "assignmentId",
+                "storageKey": null
+              }
             ],
             "storageKey": null
           }
@@ -111,26 +174,17 @@ v4 = [
       },
       {
         "alias": null,
-        "args": (v3/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": "RepositoryType",
         "kind": "LinkedField",
         "name": "repositories",
         "plural": true,
-        "selections": [
-          (v1/*: any*/),
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "name",
-            "storageKey": null
-          }
-        ],
+        "selections": (v3/*: any*/),
         "storageKey": null
       },
       {
         "alias": null,
-        "args": (v3/*: any*/),
+        "args": (v4/*: any*/),
         "concreteType": "UserPullRequestType",
         "kind": "LinkedField",
         "name": "openPullRequests",
@@ -164,8 +218,8 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "ViewerOpenPullRequestsQuery",
-    "selections": (v4/*: any*/),
+    "name": "AddSubmissionQuery",
+    "selections": (v5/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -173,20 +227,20 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "ViewerOpenPullRequestsQuery",
-    "selections": (v4/*: any*/)
+    "name": "AddSubmissionQuery",
+    "selections": (v5/*: any*/)
   },
   "params": {
-    "cacheID": "4ab4295b80d51091fb357c790cfd1093",
+    "cacheID": "1cb905da3da009e29a3e29a162cc159a",
     "id": null,
     "metadata": {},
-    "name": "ViewerOpenPullRequestsQuery",
+    "name": "AddSubmissionQuery",
     "operationKind": "query",
-    "text": "query ViewerOpenPullRequestsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n    }\n    repositories(courseId: $courseId) {\n      id\n      name\n    }\n    openPullRequests(courseId: $courseId) {\n      id\n      title\n      url\n      repositoryName\n    }\n  }\n}\n"
+    "text": "query AddSubmissionQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        alreadySubmitted\n        title\n        isGroup\n      }\n      viewerGroupParticipants: viewerGroups {\n        id\n        group {\n          id\n          name\n        }\n        assignmentId\n      }\n    }\n    repositories(courseId: $courseId) {\n      id\n      name\n    }\n    openPullRequests(courseId: $courseId) {\n      id\n      title\n      url\n      repositoryName\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f65cc428da9505d94af2aef3097364a2";
+(node as any).hash = "d4117a6006b022b3d2664489448c828a";
 
 export default node;
