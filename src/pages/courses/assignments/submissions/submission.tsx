@@ -165,7 +165,7 @@ const SubmissionPage = ({
     }
   };
 
-  const reviewEnabled = submission?.reviewEnabledForViewer === true;
+  const reviewEnabled = submission?.viewerCanReview === true;
   const handleReviewButtonClick = () => {
     if (!reviewEnabled) {
       toast({

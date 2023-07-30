@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<379448ea87b9d243192338fedeb216d4>>
+ * @generated SignedSource<<1525d8270d3d55bdb3c30b9ed601dc5c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -31,7 +31,6 @@ export type SubmissionQuery$data = {
             readonly revisionRequested: boolean | null;
             readonly updatedAt: string;
           } | null;
-          readonly reviewEnabledForViewer: boolean;
           readonly reviewer: {
             readonly id: string;
             readonly reviewer: {
@@ -47,6 +46,7 @@ export type SubmissionQuery$data = {
             readonly lastName?: string;
             readonly name?: string;
           };
+          readonly viewerCanReview: boolean;
         } | null;
         readonly title: string | null;
       } | null;
@@ -151,7 +151,7 @@ v13 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "reviewEnabledForViewer",
+  "name": "viewerCanReview",
   "storageKey": null
 },
 v14 = {
@@ -425,16 +425,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "0ccf1cdd6c635ffd82ca34fc28ec0181",
+    "cacheID": "d680e8f74836910be26f90829f36153d",
     "id": null,
     "metadata": {},
     "name": "SubmissionQuery",
     "operationKind": "query",
-    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        title\n        endDate\n        submission(id: $submissionId) {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          reviewEnabledForViewer\n          submitter {\n            __typename\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            createdAt\n            updatedAt\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        title\n        endDate\n        submission(id: $submissionId) {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          viewerCanReview\n          submitter {\n            __typename\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            createdAt\n            updatedAt\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "8c6698485d9593280681f43e4d5ee252";
+(node as any).hash = "fb838edb261f8d3108f67bf8dc4205fd";
 
 export default node;
