@@ -7,11 +7,13 @@ export default graphql`
       course(id: $courseId) {
         id
         assignment(id: $id) {
+          id
           allowLateSubmissions
           courseId
+          isOpenForSubmissions
+          viewerAlreadyMadeSubmission
           description
           endDate
-          id
           link
           startDate
           title

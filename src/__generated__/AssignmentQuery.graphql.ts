@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2d91af9d7f66daa3d05a6f3e4aea2ea5>>
+ * @generated SignedSource<<ffd4fd51f006bb0cc4faf619a63294c0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -24,9 +24,11 @@ export type AssignmentQuery$data = {
         readonly endDate: string | null;
         readonly id: string;
         readonly isGroup: boolean | null;
+        readonly isOpenForSubmissions: boolean;
         readonly link: string | null;
         readonly startDate: string | null;
         readonly title: string | null;
+        readonly viewerAlreadyMadeSubmission: boolean;
       } | null;
       readonly id: string;
     } | null;
@@ -95,6 +97,7 @@ v3 = [
             "name": "assignment",
             "plural": false,
             "selections": [
+              (v2/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -113,6 +116,20 @@ v3 = [
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
+                "name": "isOpenForSubmissions",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "viewerAlreadyMadeSubmission",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
                 "name": "description",
                 "storageKey": null
               },
@@ -123,7 +140,6 @@ v3 = [
                 "name": "endDate",
                 "storageKey": null
               },
-              (v2/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -193,16 +209,16 @@ return {
     "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "789bcae41ec48c13d25081668377e836",
+    "cacheID": "7e2e8a408f23c9bb2e276c484a31d8e2",
     "id": null,
     "metadata": {},
     "name": "AssignmentQuery",
     "operationKind": "query",
-    "text": "query AssignmentQuery(\n  $id: ID!\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignment(id: $id) {\n        allowLateSubmissions\n        courseId\n        description\n        endDate\n        id\n        link\n        startDate\n        title\n        active\n        isGroup\n      }\n    }\n  }\n}\n"
+    "text": "query AssignmentQuery(\n  $id: ID!\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignment(id: $id) {\n        id\n        allowLateSubmissions\n        courseId\n        isOpenForSubmissions\n        viewerAlreadyMadeSubmission\n        description\n        endDate\n        link\n        startDate\n        title\n        active\n        isGroup\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "d880869a505e343d961b5f69ee098fcd";
+(node as any).hash = "c8143116086bacdeef18328d9d3bae82";
 
 export default node;

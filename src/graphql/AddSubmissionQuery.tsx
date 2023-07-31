@@ -1,14 +1,24 @@
 import { graphql } from 'babel-plugin-relay/macro';
 
 export default graphql`
-  query ViewerOpenPullRequestsQuery($courseId: ID!) {
+  query AddSubmissionQuery($courseId: ID!) {
     viewer {
       id
       course(id: $courseId) {
         id
         assignments {
           id
+          viewerAlreadyMadeSubmission
           title
+          isGroup
+        }
+        viewerGroupParticipants: viewerGroups {
+          id
+          group {
+            id
+            name
+          }
+          assignmentId
         }
       }
       repositories(courseId: $courseId) {
