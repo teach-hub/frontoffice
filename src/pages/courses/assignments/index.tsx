@@ -1,8 +1,6 @@
 import React, { Suspense } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link as RRLink, useNavigate } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
-
-import { Icon } from '@chakra-ui/icons';
 
 import CourseAssignmentsQueryDef from 'graphql/CourseAssignmentsQuery';
 
@@ -16,10 +14,13 @@ import Heading from 'components/Heading';
 
 import type { CourseAssignmentsQuery } from '__generated__/CourseAssignmentsQuery.graphql';
 import { Flex, Stack } from '@chakra-ui/react';
-import { PlusIcon } from '@primer/octicons-react';
 import Table, { ClickableRowPropsConfiguration } from 'components/Table';
-import Button from 'components/Button';
-import Text from 'components/Text';
+import Tooltip from 'components/Tooltip';
+import Link from 'components/Link';
+import IconButton from 'components/IconButton';
+import SubmissionIcon from 'icons/SubmissionIcon';
+import CreateIcon from 'icons/CreateIcon';
+import { ButtonWithIcon } from 'components/ButtonWithIcon';
 
 const AssignmentsPage = () => {
   const navigate = useNavigate();
@@ -36,22 +37,25 @@ const AssignmentsPage = () => {
       <Flex direction="row" gap={'20px'} align={'center'}>
         <Heading>{'Trabajos Prácticos'}</Heading>
         {courseContext.userHasPermission(Permission.CreateAssignment) && (
-          <Button
+          <ButtonWithIcon
             variant={'ghostBorder'}
             onClick={() => navigate(`create`)}
-            width={'fit-content'}
-          >
-            <Flex align="center">
-              <Icon as={PlusIcon} boxSize={6} marginRight={2} />
-              <Text>Crear</Text>
-            </Flex>
-          </Button>
+            text={'Crear'}
+            icon={CreateIcon}
+          />
         )}
       </Flex>
 
-      <Stack gap={'30px'} marginTop={'10px'}>
+      <Stack gap={'10px'} marginTop={'10px'}>
+        <ButtonWithIcon
+          // variant={'ghostBorder'}
+          onClick={() => console.log('ver entregas')}
+          text={'Ver entregas'}
+          icon={SubmissionIcon}
+        />
+
         <Table
-          headers={['Título', 'Fecha límite entrega']}
+          headers={['Título', 'Fecha límite entrega', '']}
           rowOptions={assignments.map(data => {
             return {
               rowProps: {
@@ -61,6 +65,21 @@ const AssignmentsPage = () => {
               content: [
                 `${data.title}`,
                 data.endDate ? formatAsSimpleDateTime(data.endDate) : '-',
+                <Flex>
+                  <Tooltip label={'Ver entregas'}>
+                    <Link
+                      as={RRLink}
+                      to={`${data.id}/submissions`}
+                      onClick={event => event.stopPropagation()} // Avoid row clic behaviour
+                    >
+                      <IconButton
+                        variant={'ghost'}
+                        aria-label="pull-request-link"
+                        icon={<SubmissionIcon size="medium" />}
+                      />
+                    </Link>
+                  </Tooltip>
+                </Flex>,
               ],
             };
           })}
