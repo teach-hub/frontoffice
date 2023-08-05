@@ -53,9 +53,7 @@ const AssignmentDashboardPage = ({
   const LIST_ITEM_ICON_COLOR = theme.colors.teachHub.white;
 
   const viewerCanSubmit =
-    courseContext.userHasPermission(Permission.SubmitAssignment) &&
-    assignment.isOpenForSubmissions &&
-    !assignment.viewerAlreadyMadeSubmission;
+    assignment.isOpenForSubmissions && !assignment.viewerAlreadyMadeSubmission;
 
   return (
     <PageDataContainer>
@@ -147,13 +145,18 @@ const AssignmentDashboardPage = ({
                 link={'assign-reviewers'}
               />
             )}
-            {viewerCanSubmit && (
+            {courseContext.userHasPermission(Permission.SubmitAssignment) && (
               <LinkListItem
                 listItemKey={'addSubmission'}
                 iconColor={LIST_ITEM_ICON_COLOR}
                 external={false}
-                text={'Realizar nueva entrega'}
+                text={
+                  assignment.viewerAlreadyMadeSubmission
+                    ? 'Entrega realizada'
+                    : 'Realizar nueva entrega'
+                }
                 link={'submissions/add'}
+                disabled={!viewerCanSubmit}
               />
             )}
           </List>
