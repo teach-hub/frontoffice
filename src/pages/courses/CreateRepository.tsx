@@ -29,7 +29,6 @@ import {
   CreateRepositoryMutation,
   CreateRepositoryMutation$data,
 } from '__generated__/CreateRepositoryMutation.graphql';
-import { Icon } from '@chakra-ui/icons';
 import { IdBadgeIcon, MortarBoardIcon } from '@primer/octicons-react';
 import Button from 'components/Button';
 import Text from 'components/Text';
@@ -37,6 +36,7 @@ import { removeAccentsAndSpecialCharacters } from 'utils/strings';
 import { Modal } from 'components/Modal';
 import { FormControl } from 'components/FormControl';
 import CheckboxGroup from 'components/CheckboxGroup';
+import { ButtonWithIcon } from 'components/ButtonWithIcon';
 
 type RepositoriesNameConfiguration = {
   prefix: string;
@@ -263,7 +263,12 @@ const buildGroupRepositoryPageConfiguration = ({
               ? users.map(user => user.lastName).join('_')
               : null;
             const files = useFile ? users.map(user => user.file).join('_') : null;
-            const repoName = [prefix || null, useGroupName ? groupName : null, lastNames, files]
+            const repoName = [
+              prefix || null,
+              useGroupName ? groupName : null,
+              lastNames,
+              files,
+            ]
               .filter(item => item !== null)
               .join('_')
               .toLowerCase();
@@ -538,19 +543,17 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
         <Flex direction={'column'} gap={'30px'} width={'500px'} paddingY={'20px'}>
           <Text whiteSpace="pre-wrap">{pageConfiguration.description}</Text>
 
-          <Button onClick={onOpenTeachersModal} width={'fit-content'}>
-            <Flex align="center">
-              <Icon as={MortarBoardIcon} boxSize={6} marginRight={2} />
-              <Text>Configurar rol de profesores</Text>
-            </Flex>
-          </Button>
+          <ButtonWithIcon
+            onClick={onOpenRepoNamesConfigurationModal}
+            text={'Configurar rol de profesores'}
+            icon={MortarBoardIcon}
+          />
 
-          <Button onClick={onOpenRepoNamesConfigurationModal} width={'fit-content'}>
-            <Flex align="center">
-              <Icon as={IdBadgeIcon} boxSize={6} marginRight={2} />
-              <Text>Configurar nombre repositorios</Text>
-            </Flex>
-          </Button>
+          <ButtonWithIcon
+            onClick={onOpenTeachersModal}
+            text={'Configurar nombre repositorios'}
+            icon={IdBadgeIcon}
+          />
 
           <FormControl
             label={'Ejemplo nombre repositorio'}
