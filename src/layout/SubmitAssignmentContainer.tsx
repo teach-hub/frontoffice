@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useLazyLoadQuery } from 'react-relay';
+import { useNavigate } from 'react-router-dom';
 
 import AddSubmissionQueryDef from 'graphql/AddSubmissionQuery';
 import CreateSubmissionMutation from 'graphql/CreateSubmissionMutation';
@@ -40,6 +41,8 @@ function Content({
   targetAssignment?: Assignment;
 }) {
   const { assignments, viewerGroupParticipants = [] } = course;
+
+  const navigate = useNavigate();
 
   const [commitMutation] = useMutation<CreateSubmissionMutationType>(
     CreateSubmissionMutation
@@ -193,7 +196,7 @@ function Content({
         buttonsEnabled
         onSubmitForm={{ text: 'Enviar', onClick: handleSubmit }}
         // eslint-disable-next-line
-        onCancelForm={{ text: 'Cancelar', onClick: () => {} }}
+        onCancelForm={{ text: 'Cancelar', onClick: () => navigate('../..') }}
       />
     </>
   );

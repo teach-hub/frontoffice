@@ -52,7 +52,6 @@ const SubmissionsPage = ({
         <Link
           as={RRLink}
           to={VIEW_ASSIGNMENT_LINK}
-          isExternal
           color={theme.colors.teachHub.primaryLight}
         >
           {data.viewer?.course?.assignment?.title}
