@@ -142,13 +142,15 @@ const AssignmentDashboardPage = ({
             ) : (
               <></>
             )}
-            <LinkListItem
-              listItemKey={'submissions'}
-              iconColor={LIST_ITEM_ICON_COLOR}
-              external={false}
-              text={'Ver entregas'}
-              link={'submissions'}
-            />
+            {courseContext.userIsTeacher && (
+              <LinkListItem
+                listItemKey={'submissions'}
+                iconColor={LIST_ITEM_ICON_COLOR}
+                external={false}
+                text={'Ver entregas'}
+                link={'submissions'}
+              />
+            )}
             {courseContext.userHasPermission(Permission.AssignReviewer) && (
               <LinkListItem
                 listItemKey={'assignReviewers'}

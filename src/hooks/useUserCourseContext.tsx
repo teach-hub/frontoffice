@@ -12,13 +12,16 @@ export enum Permission {
   ViewHome = 'viewHome',
   EditSubject = 'editSubject',
   InviteUser = 'inviteUser',
-  SubmitAssignment = 'submitAssignment',
   CreateAssignment = 'createAssignment',
+  ManageOwnGroups = 'manageOwnGroups',
+  SubmitAssignment = 'submitAssignment',
   EditAssignment = 'editAssignment',
   DeleteAssignment = 'deleteAssignment',
+  SetOrganization = 'setOrganization',
+  ViewSubmission = 'viewSubmission',
   CreateRepository = 'createRepository',
   AssignReviewer = 'assignReviewer',
-  ManageOwnGroups = 'manageOwnGroups',
+  SetReview = 'setReview',
 }
 
 export type EmptyContext = {
