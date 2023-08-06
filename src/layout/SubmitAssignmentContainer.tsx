@@ -9,7 +9,6 @@ import Form from 'components/Form';
 import Select from 'components/Select';
 import Input from 'components/InputField';
 import Text from 'components/Text';
-import Alert from 'components/Alert';
 
 import type {
   AddSubmissionQuery,
@@ -20,14 +19,6 @@ import type { CreateSubmissionMutation as CreateSubmissionMutationType } from '_
 type FormValues = Omit<CreateSubmissionMutationType['variables'], 'courseId'> & {
   repository: string;
 };
-
-// TODO(Tomas).
-// - Si el TP esta entregado no deberia poder acceder a esta pagina.
-// - Si el TP esta entregado --> error
-// - Si el TP esta fuera de termino --> error
-// - Si el TP esta antes de la fecha --> error
-// - Si el tipo no tiene grupo --> error
-//
 
 type Course = NonNullable<NonNullable<AddSubmissionQuery$data['viewer']>['course']>;
 type Group = Course['viewerGroupParticipants'][number];
@@ -81,7 +72,7 @@ function Content({
       )}
       <Form
         initialValues={{
-          assignmentId: '',
+          assignmentId: targetAssignment ? targetAssignment.id : '',
           pullRequestUrl: '',
           description: '',
           repository: '',
@@ -99,6 +90,22 @@ function Content({
 
           if (!viewerAssignmentGroup) {
             errors['assignmentId'] = 'No sos parte de ningún grupo en este TP.';
+          }
+
+          const target = assignments.find(
+            assignment => assignment.id === values.assignmentId
+          );
+
+          if (!target) {
+            errors['assignmentId'] = 'No pudimos encontrar el TP seleccionado.';
+          }
+
+          if (target && target.viewerAlreadyMadeSubmission) {
+            errors['assignmentId'] = 'Ya existe una entrega realizada para este TP.';
+          }
+
+          if (target && !target.isOpenForSubmissions) {
+            errors['assignmentId'] = 'Las entregas para este TP ya están cerradas.';
           }
 
           return errors;
@@ -216,10 +223,6 @@ export default function Container({
   const targetAssignment = assignmentId
     ? assignments.find(assignment => assignment.id === assignmentId)
     : assignments[0];
-
-  if (!targetAssignment) {
-    return null;
-  }
 
   return (
     <Content

@@ -9,6 +9,7 @@ export default graphql`
         assignments {
           id
           viewerAlreadyMadeSubmission
+          isOpenForSubmissions
           title
           isGroup
         }
