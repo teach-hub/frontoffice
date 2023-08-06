@@ -41,6 +41,7 @@ type Props<T> = {
   onSubmitForm: OnSubmitFormData<T>;
   onCancelForm: OnCancelFormData<T>;
   buttonsEnabled: boolean;
+  children?: React.ReactNode;
 };
 
 const Form = <T extends FormikValues>(props: Props<T>) => {
@@ -51,6 +52,7 @@ const Form = <T extends FormikValues>(props: Props<T>) => {
     onCancelForm,
     onSubmitForm,
     buttonsEnabled,
+    children,
   } = props;
 
   return (
@@ -71,6 +73,7 @@ const Form = <T extends FormikValues>(props: Props<T>) => {
         setFieldValue,
       }) => (
         <Flex direction={'column'} justifyContent={'space-evenly '} gap={'20px'}>
+          {children}
           {inputFields
             .filter(({ isFieldEnabled }) => isFieldEnabled ?? true)
             .map(({ readError, label, inputComponent, nextToLabel }) => (

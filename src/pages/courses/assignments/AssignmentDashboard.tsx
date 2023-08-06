@@ -9,7 +9,9 @@ import {
   PeopleIcon,
   PersonIcon,
   TrashIcon,
+  StarIcon,
 } from '@primer/octicons-react';
+
 import { theme } from 'theme';
 
 import { Permission, useUserContext } from 'hooks/useUserCourseContext';
@@ -70,10 +72,8 @@ const AssignmentDashboardPage = ({
         )}
         {courseContext.userHasPermission(Permission.DeleteAssignment) && (
           <IconButton
-            onClick={() =>
-              /*TODO: TH-93 Delete assignments (with a confirmation pop up) */
-              navigate(`edit`)
-            }
+            // TODO: TH-93 Delete assignments (with a confirmation pop up)
+            onClick={() => null}
             aria-label={'Delete'}
             icon={<TrashIcon size={'medium'} />}
             variant={'ghost'}
@@ -82,11 +82,20 @@ const AssignmentDashboardPage = ({
         )}
       </Flex>
       <Flex direction={'row'}>
-        <Text marginEnd="80px" width={'600px'} whiteSpace="pre-wrap">
+        <Text marginEnd="80px" w={'600px'} whiteSpace="pre-wrap">
           {assignment.description}
         </Text>
         <Card>
-          <List padding="30px">
+          <List p="30px">
+            <TextListItem
+              label="Entrega: "
+              listItemKey="?"
+              iconProps={{
+                color: LIST_ITEM_ICON_COLOR,
+                icon: StarIcon,
+              }}
+              text={assignment.viewerAlreadyMadeSubmission ? 'Entregado' : 'No entregado'}
+            />
             <TextListItem
               iconProps={{
                 color: LIST_ITEM_ICON_COLOR,
@@ -103,7 +112,7 @@ const AssignmentDashboardPage = ({
             />
             <DateListItem
               date={assignment.endDate}
-              label={'Límite de entregas: '}
+              label={'Fecha límite de entregas: '}
               listItemKey={'endDate'}
               iconColor={LIST_ITEM_ICON_COLOR}
             />

@@ -7,13 +7,10 @@ export type ListIconProps = IconProps & {
   color?: string;
 };
 
-const ListIcon = ({ color, icon, ...rest }: ListIconProps) => (
-  <ChakraListIcon
-    as={icon}
-    color={color || theme.colors.teachHub.primary}
-    boxSize={'6'}
-    {...rest}
-  />
-);
+const ListIcon = (props: ListIconProps) => {
+  const { color = theme.colors.teachHub.primary, icon, ...rest } = props;
+
+  return <ChakraListIcon as={icon} color={color} boxSize={'6'} {...rest} />;
+};
 
 export default ListIcon;

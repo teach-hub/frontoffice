@@ -9,17 +9,16 @@ export type TextListItemProps = {
   iconProps: ListIconProps;
 };
 
-export const TextListItem = ({
-  label,
-  text,
-  iconProps,
-  listItemKey,
-}: TextListItemProps) => {
+export const TextListItem = (props: TextListItemProps) => {
   const listItemProps: ListItemProps = {
-    iconProps,
-    children: <span>{text || '-'}</span>,
-    listItemKey,
-    label,
+    iconProps: props.iconProps,
+    listItemKey: props.listItemKey,
+    label: props.label,
   };
-  return <ListItem {...listItemProps} />;
+
+  return (
+    <ListItem {...listItemProps}>
+      <span>{props.text || '-'}</span>
+    </ListItem>
+  );
 };

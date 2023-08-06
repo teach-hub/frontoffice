@@ -119,7 +119,12 @@ const NavigationBar = () => {
 
   if (courseContext.userHasPermission(Permission.SubmitAssignment)) {
     /* todo: missing navigate on click */
-    studentActions.push({ content: 'Realizar entrega' });
+    studentActions.push({
+      content: 'Realizar nueva entrega',
+      action: () => {
+        navigate(`/courses/${courseContext.courseId}/addSubmission`);
+      },
+    });
   }
 
   if (courseContext.userHasPermission(Permission.ManageOwnGroups)) {
