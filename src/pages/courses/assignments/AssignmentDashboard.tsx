@@ -87,15 +87,19 @@ const AssignmentDashboardPage = ({
         </Text>
         <Card>
           <List p="30px">
-            <TextListItem
-              label="Entrega: "
-              listItemKey="?"
-              iconProps={{
-                color: LIST_ITEM_ICON_COLOR,
-                icon: StarIcon,
-              }}
-              text={assignment.viewerAlreadyMadeSubmission ? 'Entregado' : 'No entregado'}
-            />
+            {courseContext.userHasPermission(Permission.SubmitAssignment) && (
+              <TextListItem
+                label="Entrega: "
+                listItemKey="entrega"
+                iconProps={{
+                  color: LIST_ITEM_ICON_COLOR,
+                  icon: StarIcon,
+                }}
+                text={
+                  assignment.viewerAlreadyMadeSubmission ? 'Entregado' : 'No entregado'
+                }
+              />
+            )}
             <TextListItem
               iconProps={{
                 color: LIST_ITEM_ICON_COLOR,
