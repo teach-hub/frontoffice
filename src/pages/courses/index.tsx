@@ -73,9 +73,8 @@ const CourseCard = ({ userRole }: { userRole: UserRole }) => {
 };
 
 const CoursesList = ({ userRoles }: { userRoles: UserRole[] }) => {
-  const GAP = '10px';
   return (
-    <Stack gap={GAP}>
+    <Stack gap="10px">
       {userRoles.map((userRole, i) => (
         <CourseCard key={i} userRole={userRole} />
       ))}
@@ -92,20 +91,29 @@ const CoursesContainer = () => {
 
   const viewerRoles = data.viewer.userRoles.filter(userRole => !!userRole) as UserRole[];
 
-  return (
-    <PageDataContainer>
-      <Heading>Mis cursos</Heading>
-      <Box padding="30px 0px">
-        <CoursesList userRoles={viewerRoles} />
-      </Box>
-    </PageDataContainer>
-  );
+  return <CoursesList userRoles={viewerRoles} />;
 };
+
+function CourseContainerEmptyState() {
+  return (
+    <Box display="flex" flexDir="column" gap="5px">
+      <Skeleton h="80px" />
+      <Skeleton h="80px" />
+      <Skeleton h="80px" />
+      <Skeleton h="80px" />
+    </Box>
+  );
+}
 
 export default () => (
   <Navigation>
-    <Suspense fallback={<Skeleton height={'30px'} />}>
-      <CoursesContainer />
-    </Suspense>
+    <PageDataContainer>
+      <Heading>Mis cursos</Heading>
+      <Box p="30px 0px">
+        <Suspense fallback={<CourseContainerEmptyState />}>
+          <CoursesContainer />
+        </Suspense>
+      </Box>
+    </PageDataContainer>
   </Navigation>
 );

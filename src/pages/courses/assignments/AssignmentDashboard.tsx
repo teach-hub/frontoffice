@@ -17,13 +17,13 @@ import { theme } from 'theme';
 import { Permission, useUserContext } from 'hooks/useUserCourseContext';
 
 import Navigation from 'components/Navigation';
-import IconButton from 'components/IconButton';
 import Button from 'components/Button';
 import PageDataContainer from 'components/PageDataContainer';
 import Heading from 'components/Heading';
 import List from 'components/list/List';
 import Text from 'components/Text';
 import Card from 'components/Card';
+import Skeleton from 'components/Skeleton';
 
 import AssignmentQueryDef from 'graphql/AssignmentQuery';
 
@@ -192,7 +192,7 @@ const AssignmentDashboardPage = ({
   }
 
   return (
-    <PageDataContainer w="70em" gap="25px">
+    <>
       <Flex gap="50px" justifyContent={'space-between'} alignItems={'center'}>
         <Heading textOverflow={'ellipsis'} overflow={'hidden'} whiteSpace="nowrap">
           {assignment.title}
@@ -203,7 +203,18 @@ const AssignmentDashboardPage = ({
         <Text w={'50%'}>{assignment.description}</Text>
         <AssignmentDetails assignment={assignment} />
       </Flex>
-    </PageDataContainer>
+    </>
+  );
+};
+
+const EmptyState = () => {
+  return (
+    <>
+      <Skeleton h="35px" />
+      <Skeleton h="35px" />
+      <Skeleton h="35px" />
+      <Skeleton h="35px" />
+    </>
   );
 };
 
@@ -215,15 +226,19 @@ const AssignmentPageContainer = () => {
     return null;
   }
 
-  return <AssignmentDashboardPage assignmentId={assignmentId} courseId={courseId} />;
+  return (
+    <PageDataContainer w="70em" gap="25px">
+      <Suspense fallback={<EmptyState />}>
+        <AssignmentDashboardPage assignmentId={assignmentId} courseId={courseId} />
+      </Suspense>
+    </PageDataContainer>
+  );
 };
 
 export default () => {
   return (
     <Navigation>
-      <Suspense fallback={'Cargando datos'}>
-        <AssignmentPageContainer />
-      </Suspense>
+      <AssignmentPageContainer />
     </Navigation>
   );
 };
