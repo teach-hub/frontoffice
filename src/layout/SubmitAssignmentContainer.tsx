@@ -48,7 +48,15 @@ function Content({
     CreateSubmissionMutation
   );
 
-  const [group, setGroup] = useState<Group | null>(null);
+  const [group, setGroup] = useState<Group | null>(
+    targetAssignment
+      ? viewerGroupParticipants.find(gp => gp.assignmentId === targetAssignment.id) ??
+          null
+      : null
+  );
+  const [reviewer, setReviewer] = useState<
+    NonNullable<Assignment['viewerReviewer']>['reviewer'] | null
+  >(targetAssignment ? targetAssignment.viewerReviewer?.reviewer ?? null : null);
 
   const handleSubmit = (values: FormValues) => {
     if (!course.id || !values.assignmentId || !values.pullRequestUrl) {
@@ -65,14 +73,32 @@ function Content({
     });
   };
 
+  const groupText = group ? (
+    <>
+      Estás realizando una entrega en nombre del grupo: <b>{group.group.name}</b>.
+    </>
+  ) : (
+    'Estás realizando una entrega individual.'
+  );
+
+  const reviewerText = reviewer ? (
+    <>
+      Tu entrega va a ser corregida por:{' '}
+      <b>
+        {reviewer.name} {reviewer.lastName}
+      </b>
+    </>
+  ) : (
+    'Aún no tenés un corrector asignado'
+  );
+
   return (
     <>
       <Heading> Nueva entrega </Heading>
-      {group && (
-        <Text>
-          Estás realizando una entrega en nombre del grupo: <b>{group.group.name}</b>
-        </Text>
-      )}
+      <Text>
+        {groupText}
+        {reviewerText}
+      </Text>
       <Form
         initialValues={{
           assignmentId: targetAssignment ? targetAssignment.id : '',
@@ -124,6 +150,11 @@ function Content({
                     gp => gp.assignmentId === changes.currentTarget.value
                   );
                   setGroup(viewerAssignmentGroup ?? null);
+
+                  const viewerReviewerUser = assignments.find(
+                    assignment => assignment.id === changes.currentTarget.value
+                  )?.viewerReviewer?.reviewer;
+                  setReviewer(viewerReviewerUser ?? null);
                 }}
                 value={values.assignmentId}
               >
