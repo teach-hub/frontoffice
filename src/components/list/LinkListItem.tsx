@@ -2,6 +2,9 @@ import { LinkExternalIcon, LinkIcon } from '@primer/octicons-react';
 import ListItem, { ListItemProps } from 'components/list/ListItem';
 import Link from 'components/Link';
 import { Link as RRLink } from 'react-router-dom';
+import { Text } from '@chakra-ui/react';
+
+import { theme } from 'theme';
 
 export type LinkListItemProps = {
   text: string;
@@ -10,6 +13,7 @@ export type LinkListItemProps = {
   listItemKey: string;
   iconColor: string;
   external: boolean;
+  disabled?: boolean;
 };
 
 export const LinkListItem = ({
@@ -19,26 +23,36 @@ export const LinkListItem = ({
   iconColor,
   listItemKey,
   external,
+  disabled,
 }: LinkListItemProps) => {
-  const children = external ? (
-    <Link href={link} isExternal>
-      {text}
-    </Link>
-  ) : (
-    <Link as={RRLink} to={link}>
-      {text}
-    </Link>
-  );
+  let children = null;
 
-  const updatedItemProps: ListItemProps = {
+  if (disabled) {
+    children = <Text color={theme.colors.teachHub.gray}>{text}</Text>;
+  } else {
+    if (external) {
+      children = (
+        <Link href={link} isExternal>
+          {text}
+        </Link>
+      );
+    } else {
+      children = (
+        <Link as={RRLink} to={link}>
+          {text}
+        </Link>
+      );
+    }
+  }
+
+  const updatedItemProps: Omit<ListItemProps, 'children'> = {
     iconProps: {
       icon: external ? LinkExternalIcon : LinkIcon,
-      color: iconColor,
+      color: disabled ? theme.colors.teachHub.gray : iconColor,
     },
-    children,
     listItemKey,
     label,
   };
 
-  return <ListItem {...updatedItemProps} />;
+  return <ListItem {...updatedItemProps}>{children}</ListItem>;
 };

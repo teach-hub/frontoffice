@@ -12,13 +12,16 @@ export enum Permission {
   ViewHome = 'viewHome',
   EditSubject = 'editSubject',
   InviteUser = 'inviteUser',
-  SubmitAssignment = 'submitAssignment',
   CreateAssignment = 'createAssignment',
+  ManageOwnGroups = 'manageOwnGroups',
+  SubmitAssignment = 'submitAssignment',
   EditAssignment = 'editAssignment',
   DeleteAssignment = 'deleteAssignment',
+  SetOrganization = 'setOrganization',
+  ViewSubmission = 'viewSubmission',
   CreateRepository = 'createRepository',
   AssignReviewer = 'assignReviewer',
-  ManageOwnGroups = 'manageOwnGroups',
+  SetReview = 'setReview',
 }
 
 export type EmptyContext = {
@@ -61,14 +64,14 @@ const Provider = ({
     courseId,
   });
 
-  const viewerCourseContext = courseContextData.viewer?.course?.viewerRole;
-  const viewerCoursePermissions = viewerCourseContext?.permissions?.filter(
+  const viewerCourseRole = courseContextData.viewer?.course?.viewerRole;
+  const viewerCoursePermissions = viewerCourseRole?.permissions?.filter(
     (p): p is string => !!p
   );
 
   const [courseContext] = useState<CourseContext>({
     courseId,
-    userIsTeacher: viewerCourseContext?.isTeacher ?? false,
+    userIsTeacher: viewerCourseRole?.isTeacher ?? false,
     userPermissions: viewerCoursePermissions ?? [],
     userHasPermission: (p: Permission) => {
       return (viewerCoursePermissions ?? []).includes(p);

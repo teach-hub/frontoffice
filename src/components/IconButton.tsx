@@ -1,18 +1,10 @@
-import { MouseEventHandler } from 'react';
 import { IconButton as ChakraIconButton, IconButtonProps } from '@chakra-ui/react';
 
-type Props = IconButtonProps & {
-  children?: JSX.Element | string;
-  onClick?: MouseEventHandler;
-  h?: string;
-  w?: string;
-  bg?: string;
-  color?: string;
-  colorScheme?: string;
-  _hover?: Record<string, string>;
-};
+type Props = IconButtonProps;
 
-const IconButton = ({ children, ...rest }: Props): JSX.Element => {
+const IconButton = (props: Props): JSX.Element => {
+  const { children, ...rest } = props;
+
   return <ChakraIconButton {...rest}>{children}</ChakraIconButton>;
 };
 

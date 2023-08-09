@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<941448e89c4785529876e4465239e13a>>
+ * @generated SignedSource<<ec99589b64eb46bfe4df63e5a17f7b1d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,8 +18,17 @@ export type AddSubmissionQuery$data = {
       readonly assignments: ReadonlyArray<{
         readonly id: string;
         readonly isGroup: boolean | null;
+        readonly isOpenForSubmissions: boolean;
         readonly title: string | null;
         readonly viewerAlreadyMadeSubmission: boolean;
+        readonly viewerReviewer: {
+          readonly id: string;
+          readonly reviewer: {
+            readonly id: string;
+            readonly lastName: string;
+            readonly name: string;
+          };
+        } | null;
       }>;
       readonly id: string;
       readonly viewerGroupParticipants: ReadonlyArray<{
@@ -68,27 +77,28 @@ v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
+  "name": "name",
+  "storageKey": null
+},
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
   "name": "title",
   "storageKey": null
 },
-v3 = [
-  (v1/*: any*/),
-  {
-    "alias": null,
-    "args": null,
-    "kind": "ScalarField",
-    "name": "name",
-    "storageKey": null
-  }
-],
 v4 = [
+  (v1/*: any*/),
+  (v2/*: any*/)
+],
+v5 = [
   {
     "kind": "Variable",
     "name": "courseId",
     "variableName": "courseId"
   }
 ],
-v5 = [
+v6 = [
   {
     "alias": null,
     "args": null,
@@ -129,7 +139,46 @@ v5 = [
                 "name": "viewerAlreadyMadeSubmission",
                 "storageKey": null
               },
-              (v2/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "ReviewerType",
+                "kind": "LinkedField",
+                "name": "viewerReviewer",
+                "plural": false,
+                "selections": [
+                  (v1/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "UserType",
+                    "kind": "LinkedField",
+                    "name": "reviewer",
+                    "plural": false,
+                    "selections": [
+                      (v1/*: any*/),
+                      (v2/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "lastName",
+                        "storageKey": null
+                      }
+                    ],
+                    "storageKey": null
+                  }
+                ],
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "isOpenForSubmissions",
+                "storageKey": null
+              },
+              (v3/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -156,7 +205,7 @@ v5 = [
                 "kind": "LinkedField",
                 "name": "group",
                 "plural": false,
-                "selections": (v3/*: any*/),
+                "selections": (v4/*: any*/),
                 "storageKey": null
               },
               {
@@ -174,24 +223,24 @@ v5 = [
       },
       {
         "alias": null,
-        "args": (v4/*: any*/),
+        "args": (v5/*: any*/),
         "concreteType": "RepositoryType",
         "kind": "LinkedField",
         "name": "repositories",
         "plural": true,
-        "selections": (v3/*: any*/),
+        "selections": (v4/*: any*/),
         "storageKey": null
       },
       {
         "alias": null,
-        "args": (v4/*: any*/),
+        "args": (v5/*: any*/),
         "concreteType": "UserPullRequestType",
         "kind": "LinkedField",
         "name": "openPullRequests",
         "plural": true,
         "selections": [
           (v1/*: any*/),
-          (v2/*: any*/),
+          (v3/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -219,7 +268,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "AddSubmissionQuery",
-    "selections": (v5/*: any*/),
+    "selections": (v6/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -228,19 +277,19 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "AddSubmissionQuery",
-    "selections": (v5/*: any*/)
+    "selections": (v6/*: any*/)
   },
   "params": {
-    "cacheID": "41684a1adb661fb6314565f302e576a1",
+    "cacheID": "7361a4a0b27dac1e5551b402601aca95",
     "id": null,
     "metadata": {},
     "name": "AddSubmissionQuery",
     "operationKind": "query",
-    "text": "query AddSubmissionQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        viewerAlreadyMadeSubmission\n        title\n        isGroup\n      }\n      viewerGroupParticipants: viewerGroups {\n        id\n        group {\n          id\n          name\n        }\n        assignmentId\n      }\n    }\n    repositories(courseId: $courseId) {\n      id\n      name\n    }\n    openPullRequests(courseId: $courseId) {\n      id\n      title\n      url\n      repositoryName\n    }\n  }\n}\n"
+    "text": "query AddSubmissionQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        viewerAlreadyMadeSubmission\n        viewerReviewer {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n        isOpenForSubmissions\n        title\n        isGroup\n      }\n      viewerGroupParticipants: viewerGroups {\n        id\n        group {\n          id\n          name\n        }\n        assignmentId\n      }\n    }\n    repositories(courseId: $courseId) {\n      id\n      name\n    }\n    openPullRequests(courseId: $courseId) {\n      id\n      title\n      url\n      repositoryName\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "163b5649b0fdb9a0fd1d2977000521ac";
+(node as any).hash = "58004b5ea9c464c7ed67ee986ee00d1d";
 
 export default node;

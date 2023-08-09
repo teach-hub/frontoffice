@@ -106,6 +106,7 @@ const App = () => {
                 element={<CreateRepository type={RepositoryType.Groups} />}
               />
             </Route>
+            <Route path="add-submission" element={<AddSubmissionPage />} />
             <Route path="my-groups" element={<MyGroups />} />
             <Route path="assignments">
               <Route index element={<CourseAssignmentsPage />} />
