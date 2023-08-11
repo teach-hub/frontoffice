@@ -7,7 +7,11 @@ export default graphql`
       name
       course(id: $courseId) {
         id
-        assignment(id: $assignmentId) {
+        assignments {
+          id
+          title
+        }
+        assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {
           id
           title
           submissions {
@@ -15,6 +19,7 @@ export default graphql`
             description
             submittedAt
             pullRequestUrl
+            assignmentId
             submitter {
               ... on UserType {
                 id

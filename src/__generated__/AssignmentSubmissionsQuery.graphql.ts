@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<54154246fb71753a79b9574a04516dab>>
+ * @generated SignedSource<<f2645f77b93eec1a5de686b51f0904ee>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,9 +16,14 @@ export type AssignmentSubmissionsQuery$variables = {
 export type AssignmentSubmissionsQuery$data = {
   readonly viewer: {
     readonly course: {
-      readonly assignment: {
+      readonly assignments: ReadonlyArray<{
+        readonly id: string;
+        readonly title: string | null;
+      }>;
+      readonly assignmentsWithSubmissions: ReadonlyArray<{
         readonly id: string;
         readonly submissions: ReadonlyArray<{
+          readonly assignmentId: string;
           readonly description: string | null;
           readonly id: string;
           readonly pullRequestUrl: string;
@@ -46,7 +51,7 @@ export type AssignmentSubmissionsQuery$data = {
           };
         }>;
         readonly title: string | null;
-      } | null;
+      }>;
       readonly id: string;
     } | null;
     readonly id: string;
@@ -90,49 +95,69 @@ v4 = [
     "variableName": "courseId"
   }
 ],
-v5 = [
-  {
-    "kind": "Variable",
-    "name": "id",
-    "variableName": "assignmentId"
-  }
-],
-v6 = {
+v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "title",
   "storageKey": null
 },
-v7 = {
+v6 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "AssignmentType",
+  "kind": "LinkedField",
+  "name": "assignments",
+  "plural": true,
+  "selections": [
+    (v2/*: any*/),
+    (v5/*: any*/)
+  ],
+  "storageKey": null
+},
+v7 = [
+  {
+    "kind": "Variable",
+    "name": "assignmentId",
+    "variableName": "assignmentId"
+  }
+],
+v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "description",
   "storageKey": null
 },
-v8 = {
+v9 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "submittedAt",
   "storageKey": null
 },
-v9 = {
+v10 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "pullRequestUrl",
   "storageKey": null
 },
-v10 = {
+v11 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "assignmentId",
+  "storageKey": null
+},
+v12 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "lastName",
   "storageKey": null
 },
-v11 = {
+v13 = {
   "kind": "InlineFragment",
   "selections": [
     (v2/*: any*/),
@@ -144,12 +169,12 @@ v11 = {
       "storageKey": null
     },
     (v3/*: any*/),
-    (v10/*: any*/)
+    (v12/*: any*/)
   ],
   "type": "UserType",
   "abstractKey": null
 },
-v12 = {
+v14 = {
   "alias": null,
   "args": null,
   "concreteType": "ReviewerType",
@@ -168,14 +193,14 @@ v12 = {
       "selections": [
         (v2/*: any*/),
         (v3/*: any*/),
-        (v10/*: any*/)
+        (v12/*: any*/)
       ],
       "storageKey": null
     }
   ],
   "storageKey": null
 },
-v13 = {
+v15 = {
   "alias": null,
   "args": null,
   "concreteType": "InternalReviewType",
@@ -244,16 +269,17 @@ return {
             "plural": false,
             "selections": [
               (v2/*: any*/),
+              (v6/*: any*/),
               {
-                "alias": null,
-                "args": (v5/*: any*/),
+                "alias": "assignmentsWithSubmissions",
+                "args": (v7/*: any*/),
                 "concreteType": "AssignmentType",
                 "kind": "LinkedField",
-                "name": "assignment",
-                "plural": false,
+                "name": "assignments",
+                "plural": true,
                 "selections": [
                   (v2/*: any*/),
-                  (v6/*: any*/),
+                  (v5/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -263,9 +289,10 @@ return {
                     "plural": true,
                     "selections": [
                       (v2/*: any*/),
-                      (v7/*: any*/),
                       (v8/*: any*/),
                       (v9/*: any*/),
+                      (v10/*: any*/),
+                      (v11/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -274,12 +301,12 @@ return {
                         "name": "submitter",
                         "plural": false,
                         "selections": [
-                          (v11/*: any*/)
+                          (v13/*: any*/)
                         ],
                         "storageKey": null
                       },
-                      (v12/*: any*/),
-                      (v13/*: any*/)
+                      (v14/*: any*/),
+                      (v15/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -324,16 +351,17 @@ return {
             "plural": false,
             "selections": [
               (v2/*: any*/),
+              (v6/*: any*/),
               {
-                "alias": null,
-                "args": (v5/*: any*/),
+                "alias": "assignmentsWithSubmissions",
+                "args": (v7/*: any*/),
                 "concreteType": "AssignmentType",
                 "kind": "LinkedField",
-                "name": "assignment",
-                "plural": false,
+                "name": "assignments",
+                "plural": true,
                 "selections": [
                   (v2/*: any*/),
-                  (v6/*: any*/),
+                  (v5/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -343,9 +371,10 @@ return {
                     "plural": true,
                     "selections": [
                       (v2/*: any*/),
-                      (v7/*: any*/),
                       (v8/*: any*/),
                       (v9/*: any*/),
+                      (v10/*: any*/),
+                      (v11/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -361,7 +390,7 @@ return {
                             "name": "__typename",
                             "storageKey": null
                           },
-                          (v11/*: any*/),
+                          (v13/*: any*/),
                           {
                             "kind": "InlineFragment",
                             "selections": [
@@ -373,8 +402,8 @@ return {
                         ],
                         "storageKey": null
                       },
-                      (v12/*: any*/),
-                      (v13/*: any*/)
+                      (v14/*: any*/),
+                      (v15/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -390,16 +419,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "906135eef422e1e4dc6317e05bcc74f0",
+    "cacheID": "bb175358bfa1582b347271b971a679a4",
     "id": null,
     "metadata": {},
     "name": "AssignmentSubmissionsQuery",
     "operationKind": "query",
-    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        title\n        submissions {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          submitter {\n            __typename\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            createdAt\n            updatedAt\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n      assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {\n        id\n        title\n        submissions {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          assignmentId\n          submitter {\n            __typename\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            createdAt\n            updatedAt\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "abd17c58d8264ccecd654576dac5ffe8";
+(node as any).hash = "55cff41572263295c871b5b7b2b738fd";
 
 export default node;

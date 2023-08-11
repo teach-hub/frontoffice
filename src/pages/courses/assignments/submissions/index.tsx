@@ -1,14 +1,10 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 
 import { MarkGithubIcon } from '@primer/octicons-react';
-import { Link as RRLink, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
-
-import PageDataContainer from 'components/PageDataContainer';
 import Navigation from 'components/Navigation';
-import Heading from 'components/Heading';
 import Table from 'components/Table';
-import Box from 'components/Box';
 
 import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
 
@@ -22,10 +18,12 @@ import {
 import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
 import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
 import IconButton from 'components/IconButton';
-import { Flex } from '@chakra-ui/react';
+import { Flex, Select, Stack } from '@chakra-ui/react';
 import Link from 'components/Link';
 import Tooltip from 'components/Tooltip';
 import { theme } from 'theme';
+import Heading from 'components/Heading';
+import PageDataContainer from 'components/PageDataContainer';
 
 const SubmissionsPage = ({
   courseContext,
@@ -35,32 +33,57 @@ const SubmissionsPage = ({
   assignmentId: string;
 }) => {
   const navigate = useNavigate();
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState(assignmentId);
 
   const data = useLazyLoadQuery<AssignmentSubmissionsQuery>(SubmissionsQuery, {
-    assignmentId,
+    assignmentId: selectedAssignmentId,
     courseId: courseContext.courseId,
   });
 
-  const submissions = data.viewer?.course?.assignment?.submissions || [];
+  const allAssignments = data.viewer?.course?.assignments || [];
+  const assignmentsWithSubmissions =
+    data.viewer?.course?.assignmentsWithSubmissions || [];
+  const submissions = assignmentsWithSubmissions.flatMap(
+    assignment => assignment?.submissions || []
+  );
+  const [filteredSubmissions, setFilteredSubmissions] = useState(
+    submissions.filter(submission => submission?.assignmentId === selectedAssignmentId)
+  );
 
-  const VIEW_ASSIGNMENT_LINK = `..`;
+  useEffect(() => {
+    const assignmentsWithSubmissions =
+      data.viewer?.course?.assignmentsWithSubmissions || [];
+    const submissions = assignmentsWithSubmissions.flatMap(
+      assignment => assignment?.submissions || []
+    );
+    setFilteredSubmissions(
+      submissions.filter(submission => submission?.assignmentId === selectedAssignmentId)
+    );
+  }, [data]);
 
   return (
     <PageDataContainer>
-      <Heading>
-        Entregas |{' '}
-        <Link
-          as={RRLink}
-          to={VIEW_ASSIGNMENT_LINK}
-          color={theme.colors.teachHub.primaryLight}
+      <Flex direction={'row'} width={'100%'} justifyContent={'space-between'}>
+        <Heading>Entregas</Heading>
+        <Select
+          width={'fit-content'}
+          borderColor={theme.colors.teachHub.black}
+          value={selectedAssignmentId}
+          onChange={changes => {
+            setSelectedAssignmentId(changes.currentTarget.value);
+          }}
         >
-          {data.viewer?.course?.assignment?.title}
-        </Link>
-      </Heading>
-      <Box padding="30px 0px">
+          {allAssignments.map(assignment => (
+            <option value={assignment.id} key={assignment.id}>
+              {assignment.title}
+            </option>
+          ))}
+        </Select>
+      </Flex>
+      <Stack gap={'30px'} marginTop={'10px'} height={'75vh'}>
         <Table
-          headers={['Alumno', 'Corrector', 'Estado', 'Nota', '']}
-          rowOptions={submissions.map(s => {
+          headers={['Alumno', 'Trabajo Práctico', 'Corrector', 'Estado', 'Nota', '']}
+          rowOptions={filteredSubmissions.map(s => {
             const review = s?.review;
             const grade = review?.grade;
             const revisionRequested = review?.revisionRequested;
@@ -73,6 +96,9 @@ const SubmissionsPage = ({
 
             const submitter = s.submitter;
             const reviewerUser = s.reviewer?.reviewer;
+            const submissionAssignmentTitle = allAssignments.find(
+              a => a.id === s.assignmentId
+            )?.title;
 
             return {
               rowProps: {
@@ -85,6 +111,7 @@ const SubmissionsPage = ({
               },
               content: [
                 `${submitter.name} ${submitter.lastName}`, // todo: TH-170 may be group
+                submissionAssignmentTitle,
                 reviewerUser ? `${reviewerUser.name} ${reviewerUser.lastName}` : '-',
                 <ReviewStatusBadge
                   reviewStatusConfiguration={reviewStatusConfiguration}
@@ -112,7 +139,7 @@ const SubmissionsPage = ({
             };
           })}
         />
-      </Box>
+      </Stack>
     </PageDataContainer>
   );
 };

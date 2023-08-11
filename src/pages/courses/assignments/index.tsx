@@ -46,10 +46,9 @@ const AssignmentsPage = () => {
         )}
       </Flex>
 
-      <Stack gap={'10px'} marginTop={'10px'}>
+      <Stack gap={'30px'} marginTop={'10px'}>
         <ButtonWithIcon
-          // variant={'ghostBorder'}
-          onClick={() => console.log('ver entregas')}
+          onClick={() => console.log('ver entregas')} // todo: navigate to page without filter
           text={'Ver entregas'}
           icon={SubmissionIcon}
         />
