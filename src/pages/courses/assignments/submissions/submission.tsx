@@ -1,19 +1,11 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Link as RRLink, useNavigate, useParams } from 'react-router-dom';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
-
-import PageDataContainer from 'components/PageDataContainer';
-import Navigation from 'components/Navigation';
-import Heading from 'components/Heading';
+import { PayloadError } from 'relay-runtime';
 
 import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
 
-import SubmissionQueryDef from 'graphql/SubmissionQuery';
-
-import type { SubmissionQuery } from '__generated__/SubmissionQuery.graphql';
-import List from 'components/list/List';
 import { theme } from 'theme';
-import { TextListItem } from 'components/list/TextListItem';
 import {
   CheckCircleFillIcon,
   InfoIcon,
@@ -23,45 +15,58 @@ import {
   PersonFillIcon,
   XCircleFillIcon,
 } from '@primer/octicons-react';
-import Link from 'components/Link';
-import { formatAsSimpleDateTime } from 'utils/dates';
+
 import { Flex, Select, Stack, useDisclosure } from '@chakra-ui/react';
+
+import { formatAsSimpleDateTime } from 'utils/dates';
+
+import List from 'components/list/List';
+import ListItem from 'components/list/ListItem';
+import { TextListItem } from 'components/list/TextListItem';
+import Link from 'components/Link';
 import IconButton from 'components/IconButton';
 import Tooltip from 'components/Tooltip';
 import Text from 'components/Text';
 import Button from 'components/Button';
+import PageDataContainer from 'components/PageDataContainer';
+import Navigation from 'components/Navigation';
+import Heading from 'components/Heading';
 import { Modal } from 'components/Modal';
-import { Optional } from 'types';
 import { FormControl } from 'components/FormControl';
 import { Checkbox } from 'components/Checkbox';
-import {
-  CreateReviewMutation as CreateReviewMutationType,
-  CreateReviewMutation$data,
-} from '__generated__/CreateReviewMutation.graphql';
+import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
+import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
+
+import SubmissionQueryDef from 'graphql/SubmissionQuery';
 import CreateReviewMutation from 'graphql/CreateReviewMutation';
-import {
-  UpdateReviewMutation as UpdateReviewMutationType,
-  UpdateReviewMutation$data,
-} from '__generated__/UpdateReviewMutation.graphql';
 import UpdateReviewMutation from 'graphql/UpdateReviewMutation';
 import useToast from 'hooks/useToast';
-import { PayloadError } from 'relay-runtime';
-import ListItem from 'components/list/ListItem';
+
 import {
   getGradeConfiguration,
   getSubmissionReviewStatusConfiguration,
   GRADES,
 } from 'app/submissions';
-import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
-import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
 import { ButtonWithIcon } from 'components/ButtonWithIcon';
-import PullRequestIcon from 'icons/PullRequestIcon';
-import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
-import RepositoryIcon from 'icons/RepositoryIcon';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
+import RepositoryIcon from 'icons/RepositoryIcon';
+import PullRequestIcon from 'icons/PullRequestIcon';
 import BackArrowIcon from 'icons/BackArrowIcon';
 import NextArrowIcon from 'icons/NextArrowIcon';
 import { getValueOfNextIndex, getValueOfPreviousIndex } from 'utils/list';
+import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
+
+import {
+  CreateReviewMutation as CreateReviewMutationType,
+  CreateReviewMutation$data,
+} from '__generated__/CreateReviewMutation.graphql';
+import {
+  UpdateReviewMutation as UpdateReviewMutationType,
+  UpdateReviewMutation$data,
+} from '__generated__/UpdateReviewMutation.graphql';
+
+import type { Optional } from 'types';
+import type { SubmissionQuery } from '__generated__/SubmissionQuery.graphql';
 
 const SubmissionPage = ({
   context,
@@ -205,7 +210,6 @@ const SubmissionPage = ({
               {assignment.title}
             </Link>
           </Heading>
-
           <Stack direction={'row'}>
             <Tooltip label={'Ir a repositorio'}>
               <Link
