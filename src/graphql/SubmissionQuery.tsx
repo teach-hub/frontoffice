@@ -43,6 +43,7 @@ export default graphql`
             id
             title
             endDate
+            isGroup
             groupParticipants {
               group {
                 id

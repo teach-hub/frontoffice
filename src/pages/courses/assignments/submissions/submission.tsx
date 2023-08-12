@@ -13,6 +13,7 @@ import {
   NumberIcon,
   PencilIcon,
   PersonFillIcon,
+  PeopleIcon,
   XCircleFillIcon,
 } from '@primer/octicons-react';
 
@@ -36,6 +37,7 @@ import { FormControl } from 'components/FormControl';
 import { Checkbox } from 'components/Checkbox';
 import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
 import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
+import { GroupRevieweeCard } from 'components/RevieweeCard';
 
 import SubmissionQueryDef from 'graphql/SubmissionQuery';
 import CreateReviewMutation from 'graphql/CreateReviewMutation';
@@ -120,22 +122,17 @@ const SubmissionPage = ({
     return null;
   }
 
-  const { assignment } = submission;
+  const { assignment, submitter, reviewer, review } = submission;
 
-  if (!submission.reviewer?.reviewer) {
+  if (!assignment) {
     return null;
   }
 
-  const {
-    submitter,
-    reviewer: { reviewer: reviewerUser },
-    review,
-  } = submission;
+  const { isGroup, groupParticipants } = assignment;
 
   if (!submission || !assignment || !submitter) {
     return null; // todo: fix cases when null data
   }
-
 
   const LIST_ITEM_ICON_COLOR = 'teachHub.primary';
 
@@ -210,6 +207,31 @@ const SubmissionPage = ({
       });
     }
   };
+
+  const submitterItem = isGroup ? (
+    <TextListItem
+      iconProps={{
+        color: LIST_ITEM_ICON_COLOR,
+        icon: PeopleIcon,
+      }}
+      text={(
+        groupParticipants.find(p => p.group.id === submission.submitter.id)?.groupUsers ||
+        []
+      )
+        .map(p => `${p.name} ${p.lastName}`)
+        .join(', ')}
+      listItemKey={'name'}
+    />
+  ) : (
+    <TextListItem
+      iconProps={{
+        color: LIST_ITEM_ICON_COLOR,
+        icon: PersonFillIcon,
+      }}
+      text={`${submitter.name} ${submitter.lastName} (${submitter.file})`}
+      listItemKey={'name'}
+    />
+  );
 
   return (
     <PageDataContainer>
@@ -286,14 +308,7 @@ const SubmissionPage = ({
           />
         </div>
         <List paddingX="30px">
-          <TextListItem
-            iconProps={{
-              color: LIST_ITEM_ICON_COLOR,
-              icon: PersonFillIcon,
-            }}
-            text={`${submitter.name} ${submitter.lastName} (${submitter.file})`}
-            listItemKey={'name'}
-          />
+          {submitterItem}
           <TextListItem
             listItemKey={'submittedOnTime'}
             iconProps={{
@@ -315,8 +330,8 @@ const SubmissionPage = ({
               icon: MortarBoardIcon,
             }}
             text={
-              reviewerUser
-                ? `${reviewerUser.name} ${reviewerUser.lastName}`
+              reviewer
+                ? `${reviewer.reviewer.name} ${reviewer.reviewer.lastName}`
                 : 'Sin asignar'
             }
             label={'Corrector: '}
