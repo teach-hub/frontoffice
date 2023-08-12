@@ -104,24 +104,40 @@ const SubmissionPage = ({
     submissionId,
   });
 
-  const viewer = data.viewer;
-  const course = viewer?.course;
-  const submission = course?.submission;
-  const assignment = submission?.assignment;
-  const user = submission?.submitter; // TODO: TH-164 may be user or group
-  const reviewerUser = submission?.reviewer?.reviewer;
-  const review = submission?.review;
-
   const { submissionIds } = useSubmissionContext();
 
   const nextSubmissionId = getValueOfNextIndex(submissionIds, submissionId);
   const previousSubmissionId = getValueOfPreviousIndex(submissionIds, submissionId);
 
-  if (!submission || !assignment || !user) {
+  if (!data.viewer || !data.viewer.course) {
+    return null;
+  }
+
+  const { course } = data.viewer;
+  const { submission } = course;
+
+  if (!course || !submission) {
+    return null;
+  }
+
+  const { assignment } = submission;
+
+  if (!submission.reviewer?.reviewer) {
+    return null;
+  }
+
+  const {
+    submitter,
+    reviewer: { reviewer: reviewerUser },
+    review,
+  } = submission;
+
+  if (!submission || !assignment || !submitter) {
     return null; // todo: fix cases when null data
   }
 
-  const LIST_ITEM_ICON_COLOR = theme.colors.teachHub.primary;
+
+  const LIST_ITEM_ICON_COLOR = 'teachHub.primary';
 
   /* Link to assignment is going up in the path back to the assignment */
   const VIEW_ASSIGNMENT_LINK = `../../assignments/${assignment.id}`;
@@ -184,7 +200,7 @@ const SubmissionPage = ({
     }
   };
 
-  const reviewEnabled = submission?.viewerCanReview === true;
+  const reviewEnabled = !!submission?.viewerCanReview;
   const handleReviewButtonClick = () => {
     if (!reviewEnabled) {
       toast({
@@ -246,7 +262,6 @@ const SubmissionPage = ({
               </Link>
             </Tooltip>
           )}
-
           {VIEW_NEXT_SUBMISSION_LINK && (
             <Tooltip label={'Ver siguiente entrega'}>
               <Link as={RRLink} to={VIEW_NEXT_SUBMISSION_LINK}>
@@ -276,7 +291,7 @@ const SubmissionPage = ({
               color: LIST_ITEM_ICON_COLOR,
               icon: PersonFillIcon,
             }}
-            text={`${user.name} ${user.lastName} (${user.file})`}
+            text={`${submitter.name} ${submitter.lastName} (${submitter.file})`}
             listItemKey={'name'}
           />
           <TextListItem
