@@ -214,11 +214,9 @@ const SubmissionPage = ({
         color: LIST_ITEM_ICON_COLOR,
         icon: PeopleIcon,
       }}
-      text={(
-        groupParticipants.find(p => p.group.id === submission.submitter.id)?.groupUsers ||
-        []
-      )
-        .map(p => `${p.name} ${p.lastName}`)
+      text={groupParticipants
+        .filter(p => p.group.id === submission.submitter.id)
+        .map(({ user }) => `${user.name} ${user.lastName}`)
         .join(', ')}
       listItemKey={'name'}
     />
@@ -233,16 +231,19 @@ const SubmissionPage = ({
     />
   );
 
+  const headingText = isGroup
+    ? groupParticipants.find(p => p.group.id === submission.submitter.id)?.group.name
+    : submitter.lastName;
+
   return (
     <PageDataContainer>
       <Flex direction={'row'} width={'100%'} justifyContent={'space-between'}>
         <Flex direction="row" gap={'20px'} align={'center'}>
           <Heading>
-            Entrega | {user.lastName} |{' '}
+            Entrega | {headingText} |{' '}
             <Link
               as={RRLink}
               to={VIEW_ASSIGNMENT_LINK}
-              isExternal
               color={theme.colors.teachHub.primaryLight}
             >
               {assignment.title}
@@ -297,7 +298,6 @@ const SubmissionPage = ({
           )}
         </Stack>
       </Flex>
-
       <Stack gap={'30px'} marginTop={'10px'}>
         <div onClick={handleReviewButtonClick}>
           <ButtonWithIcon

@@ -30,6 +30,11 @@ export default graphql`
               id
               name
               lastName
+              file
+            }
+            group {
+              id
+              name
             }
           }
           review {
