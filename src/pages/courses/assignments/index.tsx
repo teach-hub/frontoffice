@@ -15,11 +15,11 @@ import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
 
 import type { CourseAssignmentsQuery } from '__generated__/CourseAssignmentsQuery.graphql';
-import Button from 'components/Button';
 import { Flex, Stack } from '@chakra-ui/react';
-import Text from 'components/Text';
 import { PlusIcon } from '@primer/octicons-react';
 import Table, { ClickableRowPropsConfiguration } from 'components/Table';
+import Button from 'components/Button';
+import Text from 'components/Text';
 
 const AssignmentsPage = () => {
   const navigate = useNavigate();
@@ -60,7 +60,7 @@ const AssignmentsPage = () => {
               },
               content: [
                 `${data.title}`,
-                `${data.endDate ? `${formatAsSimpleDateTime(data.endDate)}` : '-'}`,
+                data.endDate ? formatAsSimpleDateTime(data.endDate) : '-',
               ],
             };
           })}
