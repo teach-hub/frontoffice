@@ -5,7 +5,6 @@ import { PayloadError } from 'relay-runtime';
 
 import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
 
-import { theme } from 'theme';
 import {
   CheckCircleFillIcon,
   InfoIcon,
@@ -37,7 +36,7 @@ import { FormControl } from 'components/FormControl';
 import { Checkbox } from 'components/Checkbox';
 import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
 import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
-import { GroupRevieweeCard } from 'components/RevieweeCard';
+import { Timeline, TimelineItem } from 'components/Timeline';
 
 import SubmissionQueryDef from 'graphql/SubmissionQuery';
 import CreateReviewMutation from 'graphql/CreateReviewMutation';
@@ -312,9 +311,7 @@ const SubmissionPage = ({
           <TextListItem
             listItemKey={'submittedOnTime'}
             iconProps={{
-              color: submittedOnTime
-                ? theme.colors.teachHub.green
-                : theme.colors.teachHub.red,
+              color: submittedOnTime ? 'teachHub.green' : 'teachHub.red',
               icon: submittedOnTime ? CheckCircleFillIcon : XCircleFillIcon,
             }}
             label={
@@ -362,13 +359,12 @@ const SubmissionPage = ({
           </ListItem>
         </List>
         <Stack>
-          <Heading fontSize={theme.styles.global.body.fontSize}>
+          <Heading fontSize={'global.body.fontSize'}>
             Comentarios al realizar la entrega
           </Heading>
           <Text w={'40vw'}>{submission.description ? submission.description : '-'}</Text>
         </Stack>
       </Stack>
-
       <Modal
         isOpen={isOpenReviewModal}
         onClose={onCloseReviewModal}

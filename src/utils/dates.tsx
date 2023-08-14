@@ -1,5 +1,8 @@
 import { DateTime } from 'luxon';
 
+// Date format: ISO string
+// myDate = new Date()
+// formatted = formatAsSimpleDate(myDate.toISOString());
 export const formatAsSimpleDateTime = (date: string): string => {
   return formatDateString(date, "dd-MM-yyyy | HH:mm 'HS'");
 };
