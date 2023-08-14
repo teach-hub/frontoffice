@@ -24,6 +24,14 @@ type Props = {
   tableHeight?: string;
 };
 
+export const ClickableRowPropsConfiguration = {
+  style: {
+    cursor: 'pointer',
+    transition: 'background-color 0.8s',
+  },
+  _hover: { bg: theme.colors.teachHub.gray },
+};
+
 export default (props: Props) => {
   return (
     <Box
