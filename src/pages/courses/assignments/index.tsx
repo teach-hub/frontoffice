@@ -21,6 +21,7 @@ import IconButton from 'components/IconButton';
 import SubmissionIcon from 'icons/SubmissionIcon';
 import CreateIcon from 'icons/CreateIcon';
 import { ButtonWithIcon } from 'components/ButtonWithIcon';
+import { Query } from 'queries';
 
 const AssignmentsPage = () => {
   const navigate = useNavigate();
@@ -32,34 +33,42 @@ const AssignmentsPage = () => {
 
   const assignments = data.viewer?.course?.assignments || [];
 
+  const buildSubmissionLink = (assignmentId?: string) => {
+    return (
+      `../submissions` +
+      (assignmentId ? `?${Query.SubmissionAssignment}=${assignmentId}` : '')
+    );
+  };
+
   return (
     <PageDataContainer>
-      <Flex direction="row" gap={'20px'} align={'center'}>
-        <Heading>{'Trabajos Prácticos'}</Heading>
-        {courseContext.userHasPermission(Permission.CreateAssignment) && (
-          <ButtonWithIcon
-            variant={'ghostBorder'}
-            onClick={() => navigate(`create`)}
-            text={'Crear'}
-            icon={CreateIcon}
-          />
-        )}
+      <Flex direction={'row'} width={'100%'} justifyContent={'space-between'}>
+        <Flex direction="row" gap={'20px'} align={'center'}>
+          <Heading>{'Trabajos Prácticos'}</Heading>
+          {courseContext.userHasPermission(Permission.CreateAssignment) && (
+            <ButtonWithIcon
+              variant={'ghostBorder'}
+              onClick={() => navigate(`create`)}
+              text={'Crear'}
+              icon={CreateIcon}
+            />
+          )}
+        </Flex>
+        <ButtonWithIcon
+          onClick={() => navigate(buildSubmissionLink())}
+          text={'Ver todas las entregas'}
+          icon={SubmissionIcon}
+        />
       </Flex>
 
       <Stack gap={'30px'} marginTop={'10px'}>
-        <ButtonWithIcon
-          onClick={() => console.log('ver entregas')} // todo: navigate to page without filter
-          text={'Ver entregas'}
-          icon={SubmissionIcon}
-        />
-
         <Table
           headers={['Título', 'Fecha límite entrega', '']}
           rowOptions={assignments.map(data => {
             return {
               rowProps: {
                 ...ClickableRowPropsConfiguration,
-                onClick: () => navigate(data.id),
+                onClick: () => navigate(data.id), // Navigate to assignment
               },
               content: [
                 `${data.title}`,
@@ -68,7 +77,7 @@ const AssignmentsPage = () => {
                   <Tooltip label={'Ver entregas'}>
                     <Link
                       as={RRLink}
-                      to={`${data.id}/submissions`}
+                      to={buildSubmissionLink(data.id)}
                       onClick={event => event.stopPropagation()} // Avoid row clic behaviour
                     >
                       <IconButton

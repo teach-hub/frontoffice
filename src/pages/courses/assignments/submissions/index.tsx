@@ -24,10 +24,11 @@ import Tooltip from 'components/Tooltip';
 import { theme } from 'theme';
 import Heading from 'components/Heading';
 import PageDataContainer from 'components/PageDataContainer';
+import { Query } from 'queries';
 
 const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const assignmentId = searchParams.get('assignment');
+  const assignmentId = searchParams.get(Query.SubmissionAssignment);
 
   const navigate = useNavigate();
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(assignmentId);
@@ -60,12 +61,13 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
           width={'fit-content'}
           borderColor={theme.colors.teachHub.black}
           placeholder={'- Sin filtrar -'} // Placeholder works as disabling the filter when chosen
+          value={selectedAssignmentId || ''} // Set value to show selected option, or placeholder otherwise
           onChange={changes => {
             const newId = changes.currentTarget.value;
             setSelectedAssignmentId(newId);
             setSearchParams(params => {
-              if (newId) params.set('assignment', newId);
-              else params.delete('assignment');
+              if (newId) params.set(Query.SubmissionAssignment, newId);
+              else params.delete(Query.SubmissionAssignment);
               return params;
             });
           }}
