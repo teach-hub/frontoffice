@@ -106,7 +106,8 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                   transition: 'background-color 0.8s',
                 },
                 _hover: { bg: theme.colors.teachHub.gray },
-                onClick: () => navigate(s.id),
+                onClick: () =>
+                  navigate(`../assignments/${s.assignmentId}/submissions/${s.id}`),
               },
               content: [
                 `${submitter.name} ${submitter.lastName}`, // todo: TH-170 may be group
