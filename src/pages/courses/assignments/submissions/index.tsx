@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 import Navigation from 'components/Navigation';
@@ -36,7 +36,10 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const navigate = useNavigate();
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(assignmentId);
 
+  /* TODO: TH-170 may be group */
   const [selectedStudentId, setSelectedStudentId] =
+    useState<Optional<Nullable<string>>>(null);
+  const [selectedReviewerId, setSelectedReviewerId] =
     useState<Optional<Nullable<string>>>(null);
 
   const data = useLazyLoadQuery<AssignmentSubmissionsQuery>(SubmissionsQuery, {
@@ -49,20 +52,34 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const filterSubmissions = () => {
     const assignmentsWithSubmissions =
       data.viewer?.course?.assignmentsWithSubmissions || [];
-    const submissions = assignmentsWithSubmissions.flatMap(
+    let filteredSubmissions = assignmentsWithSubmissions.flatMap(
       assignment => assignment?.submissions || []
     );
-    if (!selectedStudentId) {
-      return submissions;
+
+    if (selectedStudentId) {
+      filteredSubmissions = filteredSubmissions.filter(
+        submission => submission.submitter.id === selectedStudentId
+      );
     }
-    return submissions.filter(
-      submission => submission.submitter.id === selectedStudentId
-    );
+
+    if (selectedReviewerId) {
+      filteredSubmissions = filteredSubmissions.filter(
+        submission => submission.reviewer?.id === selectedReviewerId
+      );
+    }
+
+    return filteredSubmissions;
   };
 
-  const studentsFromSubmissions = filterSubmissions()?.map(
-    submission => submission.submitter
-  );
+  const [submissions, setSubmissions] = useState(filterSubmissions());
+
+  const studentsFromSubmissions = submissions?.map(submission => submission.submitter);
+  const reviewersFromSubmissions = submissions?.map(submission => submission.reviewer);
+
+  useEffect(() => {
+    console.log('data');
+    setSubmissions(filterSubmissions());
+  }, [selectedStudentId, selectedReviewerId, data]);
 
   return (
     <PageDataContainer>
@@ -75,12 +92,30 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                 const selectedStudent = studentsFromSubmissions.find(
                   student => student.id === selectedStudentId
                 );
-                return selectedStudent
-                  ? `${selectedStudent.name} ${selectedStudent.lastName} `
-                  : '';
+                return 'Alumno/Grupo: '.concat(
+                  selectedStudent
+                    ? `${selectedStudent.name} ${selectedStudent.lastName} `
+                    : ''
+                );
               })()}
               iconAriaLabel={'student-filter'}
               onClick={() => setSelectedStudentId(null)}
+            />
+          )}
+          {selectedReviewerId && (
+            <FilterBadge
+              text={(() => {
+                const selectedReviewer = reviewersFromSubmissions.find(
+                  x => x?.id === selectedReviewerId
+                )?.reviewer;
+                return 'Corrector: '.concat(
+                  selectedReviewer
+                    ? `${selectedReviewer.name} ${selectedReviewer.lastName} `
+                    : ''
+                );
+              })()}
+              iconAriaLabel={'reviewer-filter'}
+              onClick={() => setSelectedReviewerId(null)}
             />
           )}
         </Stack>
@@ -121,7 +156,8 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
             const gradeConfiguration = getGradeConfiguration(grade);
 
             const submitter = s.submitter;
-            const reviewerUser = s.reviewer?.reviewer;
+            const reviewer = s.reviewer;
+            const reviewerUser = reviewer?.reviewer;
             const submissionAssignmentTitle = allAssignments.find(
               a => a.id === s.assignmentId
             )?.title;
@@ -147,7 +183,14 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                   {/*todo: TH-170 may be group - show column with checkbox if group and only display group name or student name?*/}
                 </Link>,
                 submissionAssignmentTitle,
-                reviewerUser ? `${reviewerUser.name} ${reviewerUser.lastName}` : '-',
+                <Link // Link without redirect
+                  onClick={event => {
+                    event.stopPropagation(); // This prevents the click from propagating to the parent row
+                    setSelectedReviewerId(reviewer?.id);
+                  }}
+                >
+                  {reviewerUser ? `${reviewerUser.name} ${reviewerUser.lastName}` : '-'}
+                </Link>,
                 <ReviewStatusBadge
                   reviewStatusConfiguration={reviewStatusConfiguration}
                 />,
