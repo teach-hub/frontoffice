@@ -11,38 +11,35 @@ export default graphql`
           id
           title
         }
-        assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {
+
+        submissions(assignmentId: $assignmentId) {
           id
-          title
-          submissions {
-            id
-            description
-            submittedAt
-            pullRequestUrl
-            assignmentId
-            submitter {
-              ... on UserType {
-                id
-                file
-                name
-                lastName
-              }
+          description
+          submittedAt
+          pullRequestUrl
+          assignmentId
+          submitter {
+            ... on UserType {
+              id
+              file
+              name
+              lastName
             }
+          }
+          reviewer {
+            id
             reviewer {
               id
-              reviewer {
-                id
-                name
-                lastName
-              }
+              name
+              lastName
             }
-            review {
-              id
-              revisionRequested
-              grade
-              createdAt
-              updatedAt
-            }
+          }
+          review {
+            id
+            revisionRequested
+            grade
+            createdAt
+            updatedAt
           }
         }
       }

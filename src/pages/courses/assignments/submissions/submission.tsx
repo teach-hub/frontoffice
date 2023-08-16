@@ -94,14 +94,13 @@ const SubmissionPage = ({
 
   const data = useLazyLoadQuery<SubmissionQuery>(SubmissionQueryDef, {
     courseId: context.courseId,
-    assignmentId,
     submissionId,
   });
 
   const viewer = data.viewer;
   const course = viewer?.course;
-  const assignment = course?.assignment;
-  const submission = assignment?.submission;
+  const submission = course?.submission;
+  const assignment = submission?.assignment;
   const user = submission?.submitter; // TODO: TH-164 may be user or group
   const reviewerUser = submission?.reviewer?.reviewer;
   const review = submission?.review;
@@ -113,6 +112,7 @@ const SubmissionPage = ({
   const LIST_ITEM_ICON_COLOR = theme.colors.teachHub.primary;
 
   /* Link to assignment is going up in the path back to the assignment */
+  /* todo TH-187 update or remove */
   const VIEW_ASSIGNMENT_LINK = `../..`;
 
   const submittedOnTime =

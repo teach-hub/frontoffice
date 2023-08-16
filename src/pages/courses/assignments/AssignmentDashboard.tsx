@@ -109,7 +109,7 @@ function AssignmentDetails({ assignment }: { assignment: Assignment }) {
             iconColor={LIST_ITEM_ICON_COLOR}
             external={false}
             text={'Ver entregas'}
-            link={`../../submissions?${buildAssignmentUrlFilter(assignment.id)}`}
+            link={`../../submissions?${buildAssignmentUrlFilter(assignment.id)}`} // todo: unificar generacion de rutas?
           />
         )}
         {courseContext.userHasPermission(Permission.AssignReviewer) && (

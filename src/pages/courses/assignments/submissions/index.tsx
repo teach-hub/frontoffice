@@ -50,11 +50,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const allAssignments = data.viewer?.course?.assignments || [];
 
   const filterSubmissions = () => {
-    const assignmentsWithSubmissions =
-      data.viewer?.course?.assignmentsWithSubmissions || [];
-    let filteredSubmissions = assignmentsWithSubmissions.flatMap(
-      assignment => assignment?.submissions || []
-    );
+    let filteredSubmissions = data.viewer?.course?.submissions || [];
 
     if (selectedStudentId) {
       filteredSubmissions = filteredSubmissions.filter(
@@ -169,7 +165,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                 },
                 _hover: { bg: theme.colors.teachHub.gray },
                 onClick: () =>
-                  navigate(`../assignments/${s.assignmentId}/submissions/${s.id}`),
+                  navigate(`../assignments/${s.assignmentId}/submissions/${s.id}`), // todo: TH-187 update path
               },
               content: [
                 <Link // Link without redirect

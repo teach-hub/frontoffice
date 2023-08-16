@@ -1,45 +1,45 @@
 import { graphql } from 'babel-plugin-relay/macro';
 
 export default graphql`
-  query SubmissionQuery($courseId: ID!, $assignmentId: ID!, $submissionId: ID!) {
+  query SubmissionQuery($courseId: ID!, $submissionId: ID!) {
     viewer {
       id
       name
       course(id: $courseId) {
         id
-        assignment(id: $assignmentId) {
+        submission(id: $submissionId) {
           id
-          title
-          endDate
-          submission(id: $submissionId) {
-            id
-            description
-            submittedAt
-            pullRequestUrl
-            viewerCanReview
-            submitter {
-              ... on UserType {
-                id
-                file
-                name
-                lastName
-              }
+          description
+          submittedAt
+          pullRequestUrl
+          viewerCanReview
+          submitter {
+            ... on UserType {
+              id
+              file
+              name
+              lastName
             }
+          }
+          reviewer {
+            id
             reviewer {
               id
-              reviewer {
-                id
-                name
-                lastName
-              }
+              name
+              lastName
             }
-            review {
-              id
-              revisionRequested
-              grade
-              createdAt
-              updatedAt
-            }
+          }
+          review {
+            id
+            revisionRequested
+            grade
+            createdAt
+            updatedAt
+          }
+          assignment {
+            id
+            title
+            endDate
           }
         }
       }
