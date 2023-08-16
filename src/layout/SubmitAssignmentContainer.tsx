@@ -227,7 +227,7 @@ function Content({
         buttonsEnabled
         onSubmitForm={{ text: 'Enviar', onClick: handleSubmit }}
         // eslint-disable-next-line
-        onCancelForm={{ text: 'Cancelar', onClick: () => navigate('../..') }} // todo: TH-187 update path
+        onCancelForm={{ text: 'Cancelar', onClick: () => navigate('../..') }}
       />
     </>
   );
