@@ -115,13 +115,13 @@ const App = () => {
                 <Route index element={<AssignmentPage />} />
                 <Route path="assign-reviewers" element={<AssignReviewersPage />} />
                 <Route path="edit" element={<CreateOrUpdateAssignmentsPage />} />
-                <Route path="submissions">
-                  <Route path="add" element={<AddSubmissionPage />} />
-                  <Route path=":submissionId" element={<SubmissionPage />} />
-                </Route>
+                <Route path="add-submission" element={<AddSubmissionPage />} />
               </Route>
             </Route>
-            <Route path="submissions" element={<SubmissionsPage />} />
+            <Route path="submissions">
+              <Route index element={<SubmissionsPage />} />
+              <Route path=":submissionId" element={<SubmissionPage />} />
+            </Route>
           </Route>
         </Route>
         {/* Using path="*"" means "match anything", so this route

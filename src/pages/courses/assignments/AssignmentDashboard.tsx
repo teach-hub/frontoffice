@@ -109,7 +109,7 @@ function AssignmentDetails({ assignment }: { assignment: Assignment }) {
             iconColor={LIST_ITEM_ICON_COLOR}
             external={false}
             text={'Ver entregas'}
-            link={`../../submissions?${buildAssignmentUrlFilter(assignment.id)}`} // todo: unificar generacion de rutas?
+            link={`../../submissions?${buildAssignmentUrlFilter(assignment.id)}`}
           />
         )}
         {courseContext.userHasPermission(Permission.AssignReviewer) && (
@@ -131,7 +131,7 @@ function AssignmentDetails({ assignment }: { assignment: Assignment }) {
                 ? 'Entrega realizada'
                 : 'Realizar nueva entrega'
             }
-            link={'submissions/add'}
+            link={'add-submission'}
             disabled={!viewerCanSubmit}
           />
         )}

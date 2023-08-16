@@ -61,11 +61,9 @@ import RepositoryIcon from 'icons/RepositoryIcon';
 
 const SubmissionPage = ({
   context,
-  assignmentId,
   submissionId,
 }: {
   context: FetchedContext;
-  assignmentId: string;
   submissionId: string;
 }) => {
   const navigate = useNavigate();
@@ -112,8 +110,7 @@ const SubmissionPage = ({
   const LIST_ITEM_ICON_COLOR = theme.colors.teachHub.primary;
 
   /* Link to assignment is going up in the path back to the assignment */
-  /* todo TH-187 update or remove */
-  const VIEW_ASSIGNMENT_LINK = `../..`;
+  const VIEW_ASSIGNMENT_LINK = `../../assignments/${assignment.id}`;
 
   const submittedOnTime =
     !submission.submittedAt || !assignment.endDate
@@ -343,19 +340,13 @@ const SubmissionPage = ({
 
 const SubmissionPageContainer = () => {
   const courseContext = useUserContext();
-  const { assignmentId, submissionId } = useParams();
+  const { submissionId } = useParams();
 
-  if (!assignmentId || !courseContext.courseId || !submissionId) {
+  if (!courseContext.courseId || !submissionId) {
     return null;
   }
 
-  return (
-    <SubmissionPage
-      context={courseContext}
-      assignmentId={assignmentId}
-      submissionId={submissionId}
-    />
-  );
+  return <SubmissionPage context={courseContext} submissionId={submissionId} />;
 };
 
 // Pantalla de entregas de un TP en particular.
