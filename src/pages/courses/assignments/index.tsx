@@ -21,7 +21,7 @@ import IconButton from 'components/IconButton';
 import SubmissionIcon from 'icons/SubmissionIcon';
 import CreateIcon from 'icons/CreateIcon';
 import { ButtonWithIcon } from 'components/ButtonWithIcon';
-import { Query } from 'queries';
+import { buildAssignmentUrlFilter } from 'queries';
 
 const AssignmentsPage = () => {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const AssignmentsPage = () => {
   const buildSubmissionLink = (assignmentId?: string) => {
     return (
       `../submissions` +
-      (assignmentId ? `?${Query.SubmissionAssignment}=${assignmentId}` : '')
+      (assignmentId ? `?${buildAssignmentUrlFilter(assignmentId)}` : '')
     );
   };
 

@@ -77,7 +77,6 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const reviewersFromSubmissions = submissions?.map(submission => submission.reviewer);
 
   useEffect(() => {
-    console.log('data');
     setSubmissions(filterSubmissions());
   }, [selectedStudentId, selectedReviewerId, data]);
 
