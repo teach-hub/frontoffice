@@ -17,7 +17,6 @@ import { TextListItem } from 'components/list/TextListItem';
 import {
   CheckCircleFillIcon,
   InfoIcon,
-  MarkGithubIcon,
   MortarBoardIcon,
   NumberIcon,
   PencilIcon,
@@ -56,6 +55,9 @@ import {
 import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
 import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
 import { ButtonWithIcon } from 'components/ButtonWithIcon';
+import PullRequestIcon from 'icons/PullRequestIcon';
+import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
+import RepositoryIcon from 'icons/RepositoryIcon';
 
 const SubmissionPage = ({
   context,
@@ -191,15 +193,29 @@ const SubmissionPage = ({
           </Link>
         </Heading>
 
-        <Tooltip label={'Ir a pull request'}>
-          <Link href={submission.pullRequestUrl} isExternal>
-            <IconButton
-              variant={'ghost'}
-              aria-label="pull-request-link"
-              icon={<MarkGithubIcon size="medium" />}
-            />
-          </Link>
-        </Tooltip>
+        <Stack direction={'row'}>
+          <Tooltip label={'Ir a repositorio'}>
+            <Link
+              href={getGithubRepoUrlFromPullRequestUrl(submission.pullRequestUrl)}
+              isExternal
+            >
+              <IconButton
+                variant={'ghost'}
+                aria-label="repository-link"
+                icon={<RepositoryIcon />}
+              />
+            </Link>
+          </Tooltip>
+          <Tooltip label={'Ir a pull request'}>
+            <Link href={submission.pullRequestUrl} isExternal>
+              <IconButton
+                variant={'ghost'}
+                aria-label="pull-request-link"
+                icon={<PullRequestIcon />}
+              />
+            </Link>
+          </Tooltip>
+        </Stack>
       </Flex>
 
       <Stack gap={'30px'} marginTop={'10px'}>

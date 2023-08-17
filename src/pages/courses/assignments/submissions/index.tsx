@@ -1,6 +1,4 @@
 import React, { Suspense, useEffect, useState } from 'react';
-
-import { MarkGithubIcon } from '@primer/octicons-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 import Navigation from 'components/Navigation';
@@ -25,6 +23,9 @@ import { theme } from 'theme';
 import Heading from 'components/Heading';
 import PageDataContainer from 'components/PageDataContainer';
 import { Query } from 'queries';
+import RepositoryIcon from 'icons/RepositoryIcon';
+import PullRequestIcon from 'icons/PullRequestIcon';
+import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
 
 const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -120,7 +121,20 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                   grade={grade}
                   gradeConfiguration={gradeConfiguration}
                 />,
-                <Flex>
+                <Stack direction={'row'}>
+                  <Tooltip label={'Ir a repositorio'}>
+                    <Link
+                      href={getGithubRepoUrlFromPullRequestUrl(s.pullRequestUrl)}
+                      isExternal
+                      onClick={event => event.stopPropagation()} // Avoid row clic behaviour
+                    >
+                      <IconButton
+                        variant={'ghost'}
+                        aria-label="repository-link"
+                        icon={<RepositoryIcon />}
+                      />
+                    </Link>
+                  </Tooltip>
                   <Tooltip label={'Ir a pull request'}>
                     <Link
                       href={s.pullRequestUrl}
@@ -130,11 +144,11 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                       <IconButton
                         variant={'ghost'}
                         aria-label="pull-request-link"
-                        icon={<MarkGithubIcon size="medium" />}
+                        icon={<PullRequestIcon />}
                       />
                     </Link>
                   </Tooltip>
-                </Flex>,
+                </Stack>,
               ],
             };
           })}
