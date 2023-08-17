@@ -1,6 +1,6 @@
 import Button, { ButtonProps } from 'components/Button';
 import React from 'react';
-import { Icon as OcticonsIcon } from '@primer/octicons-react/dist/icons';
+import { Icon as OcticonsIcon } from '@primer/octicons-react';
 import { Icon } from '@chakra-ui/icons';
 
 type Props = ButtonProps & {
@@ -9,13 +9,15 @@ type Props = ButtonProps & {
 };
 
 export const ButtonWithIcon = (props: Props) => {
+  const { text, icon, ...restProps } = props;
+
   return (
     <Button
-      leftIcon={<Icon as={props.icon} boxSize={6} marginRight={2} />}
+      leftIcon={<Icon as={icon} boxSize={6} marginRight={2} />}
       width={'fit-content'}
-      {...props}
+      {...restProps}
     >
-      {props.text}
+      {text}
     </Button>
   );
 };

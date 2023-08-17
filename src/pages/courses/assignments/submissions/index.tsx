@@ -26,6 +26,8 @@ import { Query } from 'queries';
 import RepositoryIcon from 'icons/RepositoryIcon';
 import PullRequestIcon from 'icons/PullRequestIcon';
 import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
+import { Nullable, Optional } from 'types';
+import { FilterBadge } from 'components/FilterBadge';
 
 const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -34,30 +36,88 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const navigate = useNavigate();
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(assignmentId);
 
+  /* TODO: TH-170 may be group */
+  const [selectedStudentId, setSelectedStudentId] =
+    useState<Optional<Nullable<string>>>(null);
+  const [selectedReviewerId, setSelectedReviewerId] =
+    useState<Optional<Nullable<string>>>(null);
+
   const data = useLazyLoadQuery<AssignmentSubmissionsQuery>(SubmissionsQuery, {
     assignmentId: selectedAssignmentId,
     courseId: courseContext.courseId,
   });
 
   const allAssignments = data.viewer?.course?.assignments || [];
-  const assignmentsWithSubmissions =
-    data.viewer?.course?.assignmentsWithSubmissions || [];
-  const [submissions, setSubmissions] = useState(
-    assignmentsWithSubmissions.flatMap(assignment => assignment?.submissions || [])
-  );
 
-  useEffect(() => {
+  const filterSubmissions = () => {
     const assignmentsWithSubmissions =
       data.viewer?.course?.assignmentsWithSubmissions || [];
-    setSubmissions(
-      assignmentsWithSubmissions.flatMap(assignment => assignment?.submissions || [])
+    let filteredSubmissions = assignmentsWithSubmissions.flatMap(
+      assignment => assignment?.submissions || []
     );
-  }, [data]);
+
+    if (selectedStudentId) {
+      filteredSubmissions = filteredSubmissions.filter(
+        submission => submission.submitter.id === selectedStudentId
+      );
+    }
+
+    if (selectedReviewerId) {
+      filteredSubmissions = filteredSubmissions.filter(
+        submission => submission.reviewer?.id === selectedReviewerId
+      );
+    }
+
+    return filteredSubmissions;
+  };
+
+  const [submissions, setSubmissions] = useState(filterSubmissions());
+
+  const studentsFromSubmissions = submissions?.map(submission => submission.submitter);
+  const reviewersFromSubmissions = submissions?.map(submission => submission.reviewer);
+
+  useEffect(() => {
+    setSubmissions(filterSubmissions());
+  }, [selectedStudentId, selectedReviewerId, data]);
 
   return (
     <PageDataContainer>
       <Flex direction={'row'} width={'100%'} justifyContent={'space-between'}>
-        <Heading>Entregas</Heading>
+        <Stack direction={'row'} alignItems={'center'} gap={'20px'}>
+          <Heading>Entregas</Heading>
+          {selectedStudentId && (
+            <FilterBadge
+              text={(() => {
+                const selectedStudent = studentsFromSubmissions.find(
+                  student => student.id === selectedStudentId
+                );
+                return 'Alumno/Grupo: '.concat(
+                  selectedStudent
+                    ? `${selectedStudent.name} ${selectedStudent.lastName} `
+                    : ''
+                );
+              })()}
+              iconAriaLabel={'student-filter'}
+              onClick={() => setSelectedStudentId(null)}
+            />
+          )}
+          {selectedReviewerId && (
+            <FilterBadge
+              text={(() => {
+                const selectedReviewer = reviewersFromSubmissions.find(
+                  x => x?.id === selectedReviewerId
+                )?.reviewer;
+                return 'Corrector: '.concat(
+                  selectedReviewer
+                    ? `${selectedReviewer.name} ${selectedReviewer.lastName} `
+                    : ''
+                );
+              })()}
+              iconAriaLabel={'reviewer-filter'}
+              onClick={() => setSelectedReviewerId(null)}
+            />
+          )}
+        </Stack>
         <Select
           width={'fit-content'}
           borderColor={theme.colors.teachHub.black}
@@ -83,7 +143,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
       <Stack gap={'30px'} marginTop={'10px'} height={'75vh'}>
         <Table
           headers={['Alumno', 'Trabajo Práctico', 'Corrector', 'Estado', 'Nota', '']}
-          rowOptions={submissions.map(s => {
+          rowOptions={filterSubmissions().map(s => {
             const review = s?.review;
             const grade = review?.grade;
             const revisionRequested = review?.revisionRequested;
@@ -95,7 +155,8 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
             const gradeConfiguration = getGradeConfiguration(grade);
 
             const submitter = s.submitter;
-            const reviewerUser = s.reviewer?.reviewer;
+            const reviewer = s.reviewer;
+            const reviewerUser = reviewer?.reviewer;
             const submissionAssignmentTitle = allAssignments.find(
               a => a.id === s.assignmentId
             )?.title;
@@ -111,9 +172,24 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                   navigate(`../assignments/${s.assignmentId}/submissions/${s.id}`),
               },
               content: [
-                `${submitter.name} ${submitter.lastName}`, // todo: TH-170 may be group
+                <Link // Link without redirect
+                  onClick={event => {
+                    event.stopPropagation(); // This prevents the click from propagating to the parent row
+                    setSelectedStudentId(submitter.id);
+                  }}
+                >
+                  {submitter.name} {submitter.lastName}
+                  {/*todo: TH-170 may be group - show column with checkbox if group and only display group name or student name?*/}
+                </Link>,
                 submissionAssignmentTitle,
-                reviewerUser ? `${reviewerUser.name} ${reviewerUser.lastName}` : '-',
+                <Link // Link without redirect
+                  onClick={event => {
+                    event.stopPropagation(); // This prevents the click from propagating to the parent row
+                    setSelectedReviewerId(reviewer?.id);
+                  }}
+                >
+                  {reviewerUser ? `${reviewerUser.name} ${reviewerUser.lastName}` : '-'}
+                </Link>,
                 <ReviewStatusBadge
                   reviewStatusConfiguration={reviewStatusConfiguration}
                 />,

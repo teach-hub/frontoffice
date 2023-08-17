@@ -121,9 +121,7 @@ const App = () => {
                 </Route>
               </Route>
             </Route>
-            <Route path="submissions">
-              <Route index element={<SubmissionsPage />} />
-            </Route>
+            <Route path="submissions" element={<SubmissionsPage />} />
           </Route>
         </Route>
         {/* Using path="*"" means "match anything", so this route
