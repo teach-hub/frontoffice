@@ -8,8 +8,8 @@ import {
   PencilIcon,
   PeopleIcon,
   PersonIcon,
-  TrashIcon,
   StarIcon,
+  TrashIcon,
 } from '@primer/octicons-react';
 
 import { theme } from 'theme';
@@ -34,6 +34,7 @@ import type {
 import { DateListItem } from 'components/list/DateListItem';
 import { TextListItem } from 'components/list/TextListItem';
 import { LinkListItem } from 'components/list/LinkListItem';
+import { Query } from 'queries';
 
 type Course = NonNullable<NonNullable<AssignmentQuery$data['viewer']>['course']>;
 type Assignment = NonNullable<Course['assignment']>;
@@ -108,7 +109,7 @@ function AssignmentDetails({ assignment }: { assignment: Assignment }) {
             iconColor={LIST_ITEM_ICON_COLOR}
             external={false}
             text={'Ver entregas'}
-            link={'submissions'}
+            link={`../../submissions?${Query.SubmissionAssignment}=${assignment.id}`}
           />
         )}
         {courseContext.userHasPermission(Permission.AssignReviewer) && (

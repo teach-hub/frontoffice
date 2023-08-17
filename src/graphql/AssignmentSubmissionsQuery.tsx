@@ -1,13 +1,17 @@
 import { graphql } from 'babel-plugin-relay/macro';
 
 export default graphql`
-  query AssignmentSubmissionsQuery($courseId: ID!, $assignmentId: ID!) {
+  query AssignmentSubmissionsQuery($courseId: ID!, $assignmentId: ID) {
     viewer {
       id
       name
       course(id: $courseId) {
         id
-        assignment(id: $assignmentId) {
+        assignments {
+          id
+          title
+        }
+        assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {
           id
           title
           submissions {
@@ -15,6 +19,7 @@ export default graphql`
             description
             submittedAt
             pullRequestUrl
+            assignmentId
             submitter {
               ... on UserType {
                 id

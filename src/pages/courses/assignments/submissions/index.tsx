@@ -1,14 +1,10 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 
 import { MarkGithubIcon } from '@primer/octicons-react';
-import { Link as RRLink, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
-
-import PageDataContainer from 'components/PageDataContainer';
 import Navigation from 'components/Navigation';
-import Heading from 'components/Heading';
 import Table from 'components/Table';
-import Box from 'components/Box';
 
 import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
 
@@ -22,44 +18,70 @@ import {
 import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
 import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
 import IconButton from 'components/IconButton';
-import { Flex } from '@chakra-ui/react';
+import { Flex, Select, Stack } from '@chakra-ui/react';
 import Link from 'components/Link';
 import Tooltip from 'components/Tooltip';
 import { theme } from 'theme';
+import Heading from 'components/Heading';
+import PageDataContainer from 'components/PageDataContainer';
+import { Query } from 'queries';
 
-const SubmissionsPage = ({
-  courseContext,
-  assignmentId,
-}: {
-  courseContext: FetchedContext;
-  assignmentId: string;
-}) => {
+const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const assignmentId = searchParams.get(Query.SubmissionAssignment);
+
   const navigate = useNavigate();
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState(assignmentId);
 
   const data = useLazyLoadQuery<AssignmentSubmissionsQuery>(SubmissionsQuery, {
-    assignmentId,
+    assignmentId: selectedAssignmentId,
     courseId: courseContext.courseId,
   });
 
-  const submissions = data.viewer?.course?.assignment?.submissions || [];
+  const allAssignments = data.viewer?.course?.assignments || [];
+  const assignmentsWithSubmissions =
+    data.viewer?.course?.assignmentsWithSubmissions || [];
+  const [submissions, setSubmissions] = useState(
+    assignmentsWithSubmissions.flatMap(assignment => assignment?.submissions || [])
+  );
 
-  const VIEW_ASSIGNMENT_LINK = `..`;
+  useEffect(() => {
+    const assignmentsWithSubmissions =
+      data.viewer?.course?.assignmentsWithSubmissions || [];
+    setSubmissions(
+      assignmentsWithSubmissions.flatMap(assignment => assignment?.submissions || [])
+    );
+  }, [data]);
 
   return (
     <PageDataContainer>
-      <Heading>
-        Entregas |{' '}
-        <Link
-          as={RRLink}
-          to={VIEW_ASSIGNMENT_LINK}
-          color={theme.colors.teachHub.primaryLight}
+      <Flex direction={'row'} width={'100%'} justifyContent={'space-between'}>
+        <Heading>Entregas</Heading>
+        <Select
+          width={'fit-content'}
+          borderColor={theme.colors.teachHub.black}
+          placeholder={'- Sin filtrar -'} // Placeholder works as disabling the filter when chosen
+          value={selectedAssignmentId || ''} // Set value to show selected option, or placeholder otherwise
+          onChange={changes => {
+            const newId = changes.currentTarget.value;
+            setSelectedAssignmentId(newId);
+            setSearchParams(params => {
+              if (newId) params.set(Query.SubmissionAssignment, newId);
+              else params.delete(Query.SubmissionAssignment);
+              return params;
+            });
+          }}
         >
-          {data.viewer?.course?.assignment?.title}
-        </Link>
-      </Heading>
-      <Box padding="30px 0px">
+          {allAssignments.map(assignment => (
+            <option value={assignment.id} key={assignment.id}>
+              {assignment.title}
+            </option>
+          ))}
+        </Select>
+      </Flex>
+      <Stack gap={'30px'} marginTop={'10px'} height={'75vh'}>
         <Table
-          headers={['Alumno', 'Corrector', 'Estado', 'Nota', '']}
+          headers={['Alumno', 'Trabajo Práctico', 'Corrector', 'Estado', 'Nota', '']}
           rowOptions={submissions.map(s => {
             const review = s?.review;
             const grade = review?.grade;
@@ -73,6 +95,9 @@ const SubmissionsPage = ({
 
             const submitter = s.submitter;
             const reviewerUser = s.reviewer?.reviewer;
+            const submissionAssignmentTitle = allAssignments.find(
+              a => a.id === s.assignmentId
+            )?.title;
 
             return {
               rowProps: {
@@ -81,10 +106,12 @@ const SubmissionsPage = ({
                   transition: 'background-color 0.8s',
                 },
                 _hover: { bg: theme.colors.teachHub.gray },
-                onClick: () => navigate(s.id),
+                onClick: () =>
+                  navigate(`../assignments/${s.assignmentId}/submissions/${s.id}`),
               },
               content: [
                 `${submitter.name} ${submitter.lastName}`, // todo: TH-170 may be group
+                submissionAssignmentTitle,
                 reviewerUser ? `${reviewerUser.name} ${reviewerUser.lastName}` : '-',
                 <ReviewStatusBadge
                   reviewStatusConfiguration={reviewStatusConfiguration}
@@ -112,23 +139,21 @@ const SubmissionsPage = ({
             };
           })}
         />
-      </Box>
+      </Stack>
     </PageDataContainer>
   );
 };
 
 const SubmissionsPageContainer = () => {
   const courseContext = useUserContext();
-  const { assignmentId } = useParams();
 
-  if (!assignmentId || !courseContext.courseId) {
+  if (!courseContext.courseId) {
     return null;
   }
 
-  return <SubmissionsPage courseContext={courseContext} assignmentId={assignmentId} />;
+  return <SubmissionsPage courseContext={courseContext} />;
 };
 
-// Pantalla de entregas de un TP en particular.
 export default () => {
   return (
     <Navigation>

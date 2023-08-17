@@ -31,7 +31,6 @@ import IconButton from 'components/IconButton';
 import Tooltip from 'components/Tooltip';
 import Text from 'components/Text';
 import Button from 'components/Button';
-import { Icon } from '@chakra-ui/icons';
 import { Modal } from 'components/Modal';
 import { Optional } from 'types';
 import { FormControl } from 'components/FormControl';
@@ -56,6 +55,7 @@ import {
 } from 'app/submissions';
 import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
 import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
+import { ButtonWithIcon } from 'components/ButtonWithIcon';
 
 const SubmissionPage = ({
   context,
@@ -204,16 +204,12 @@ const SubmissionPage = ({
 
       <Stack gap={'30px'} marginTop={'10px'}>
         <div onClick={handleReviewButtonClick}>
-          <Button
+          <ButtonWithIcon
             onClick={onOpenReviewModal}
-            width={'fit-content'}
+            text={'Calificar'}
+            icon={PencilIcon}
             isDisabled={!reviewEnabled}
-          >
-            <Flex align="center">
-              <Icon as={PencilIcon} boxSize={6} marginRight={2} />
-              <Text>Calificar</Text>
-            </Flex>
-          </Button>
+          />
         </div>
         <List paddingX="30px">
           <TextListItem

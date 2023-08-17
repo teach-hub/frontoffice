@@ -116,11 +116,13 @@ const App = () => {
                 <Route path="assign-reviewers" element={<AssignReviewersPage />} />
                 <Route path="edit" element={<CreateOrUpdateAssignmentsPage />} />
                 <Route path="submissions">
-                  <Route index element={<SubmissionsPage />} />
                   <Route path="add" element={<AddSubmissionPage />} />
                   <Route path=":submissionId" element={<SubmissionPage />} />
                 </Route>
               </Route>
+            </Route>
+            <Route path="submissions">
+              <Route index element={<SubmissionsPage />} />
             </Route>
           </Route>
         </Route>
