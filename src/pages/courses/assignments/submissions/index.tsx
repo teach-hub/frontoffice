@@ -50,7 +50,11 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const allAssignments = data.viewer?.course?.assignments || [];
 
   const filterSubmissions = () => {
-    let filteredSubmissions = data.viewer?.course?.submissions || [];
+    const assignmentsWithSubmissions =
+      data.viewer?.course?.assignmentsWithSubmissions || [];
+    let filteredSubmissions = assignmentsWithSubmissions.flatMap(
+      assignment => assignment?.submissions || []
+    );
 
     if (selectedStudentId) {
       filteredSubmissions = filteredSubmissions.filter(
