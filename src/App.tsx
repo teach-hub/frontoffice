@@ -34,6 +34,7 @@ import { isAuthenticated } from 'auth/utils';
 
 import { theme } from 'theme';
 import MyGroups from 'pages/courses/groups/MyGroups';
+import { SubmissionProvider } from 'hooks/useSubmissionsContext';
 
 /*
  * Way to solve protected routes, as routes can not
@@ -118,7 +119,14 @@ const App = () => {
                 <Route path="add-submission" element={<AddSubmissionPage />} />
               </Route>
             </Route>
-            <Route path="submissions">
+            <Route
+              path="submissions"
+              element={
+                <SubmissionProvider>
+                  <Outlet />
+                </SubmissionProvider>
+              }
+            >
               <Route index element={<SubmissionsPage />} />
               <Route path=":submissionId" element={<SubmissionPage />} />
             </Route>
