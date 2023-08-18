@@ -58,6 +58,10 @@ import { ButtonWithIcon } from 'components/ButtonWithIcon';
 import PullRequestIcon from 'icons/PullRequestIcon';
 import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
 import RepositoryIcon from 'icons/RepositoryIcon';
+import { useSubmissionContext } from 'hooks/useSubmissionsContext';
+import BackArrowIcon from 'icons/BackArrowIcon';
+import NextArrowIcon from 'icons/NextArrowIcon';
+import { getValueOfNextIndex, getValueOfPreviousIndex } from 'utils/list';
 
 const SubmissionPage = ({
   context,
@@ -103,6 +107,11 @@ const SubmissionPage = ({
   const reviewerUser = submission?.reviewer?.reviewer;
   const review = submission?.review;
 
+  const { submissionIds } = useSubmissionContext();
+
+  const nextSubmissionId = getValueOfNextIndex(submissionIds, submissionId);
+  const previousSubmissionId = getValueOfPreviousIndex(submissionIds, submissionId);
+
   if (!submission || !assignment || !user) {
     return null; // todo: fix cases when null data
   }
@@ -111,6 +120,12 @@ const SubmissionPage = ({
 
   /* Link to assignment is going up in the path back to the assignment */
   const VIEW_ASSIGNMENT_LINK = `../../assignments/${assignment.id}`;
+  const VIEW_NEXT_SUBMISSION_LINK = nextSubmissionId
+    ? `../${nextSubmissionId}`
+    : undefined;
+  const VIEW_PREVIOUS_SUBMISSION_LINK = previousSubmissionId
+    ? `../${previousSubmissionId}`
+    : undefined;
 
   const submittedOnTime =
     !submission.submittedAt || !assignment.endDate
@@ -177,41 +192,68 @@ const SubmissionPage = ({
 
   return (
     <PageDataContainer>
-      <Flex direction="row" gap={'20px'} align={'center'}>
-        <Heading>
-          Entrega | {user.lastName} |{' '}
-          <Link
-            as={RRLink}
-            to={VIEW_ASSIGNMENT_LINK}
-            isExternal
-            color={theme.colors.teachHub.primaryLight}
-          >
-            {assignment.title}
-          </Link>
-        </Heading>
-
-        <Stack direction={'row'}>
-          <Tooltip label={'Ir a repositorio'}>
+      <Flex direction={'row'} width={'100%'} justifyContent={'space-between'}>
+        <Flex direction="row" gap={'20px'} align={'center'}>
+          <Heading>
+            Entrega | {user.lastName} |{' '}
             <Link
-              href={getGithubRepoUrlFromPullRequestUrl(submission.pullRequestUrl)}
+              as={RRLink}
+              to={VIEW_ASSIGNMENT_LINK}
               isExternal
+              color={theme.colors.teachHub.primaryLight}
             >
-              <IconButton
-                variant={'ghost'}
-                aria-label="repository-link"
-                icon={<RepositoryIcon />}
-              />
+              {assignment.title}
             </Link>
-          </Tooltip>
-          <Tooltip label={'Ir a pull request'}>
-            <Link href={submission.pullRequestUrl} isExternal>
-              <IconButton
-                variant={'ghost'}
-                aria-label="pull-request-link"
-                icon={<PullRequestIcon />}
-              />
-            </Link>
-          </Tooltip>
+          </Heading>
+
+          <Stack direction={'row'}>
+            <Tooltip label={'Ir a repositorio'}>
+              <Link
+                href={getGithubRepoUrlFromPullRequestUrl(submission.pullRequestUrl)}
+                isExternal
+              >
+                <IconButton
+                  variant={'ghost'}
+                  aria-label="repository-link"
+                  icon={<RepositoryIcon />}
+                />
+              </Link>
+            </Tooltip>
+            <Tooltip label={'Ir a pull request'}>
+              <Link href={submission.pullRequestUrl} isExternal>
+                <IconButton
+                  variant={'ghost'}
+                  aria-label="pull-request-link"
+                  icon={<PullRequestIcon />}
+                />
+              </Link>
+            </Tooltip>
+          </Stack>
+        </Flex>
+        <Stack direction={'row'} gap={'5px'}>
+          {VIEW_PREVIOUS_SUBMISSION_LINK && (
+            <Tooltip label={'Ver entrega anterior'}>
+              <Link as={RRLink} to={VIEW_PREVIOUS_SUBMISSION_LINK}>
+                <IconButton
+                  variant={'ghost'}
+                  aria-label="previous-submission"
+                  icon={<BackArrowIcon />}
+                />
+              </Link>
+            </Tooltip>
+          )}
+
+          {VIEW_NEXT_SUBMISSION_LINK && (
+            <Tooltip label={'Ver siguiente entrega'}>
+              <Link as={RRLink} to={VIEW_NEXT_SUBMISSION_LINK}>
+                <IconButton
+                  variant={'ghost'}
+                  aria-label="next-submission"
+                  icon={<NextArrowIcon />}
+                />
+              </Link>
+            </Tooltip>
+          )}
         </Stack>
       </Flex>
 

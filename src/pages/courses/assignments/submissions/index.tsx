@@ -28,10 +28,13 @@ import PullRequestIcon from 'icons/PullRequestIcon';
 import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
 import { Nullable, Optional } from 'types';
 import { FilterBadge } from 'components/FilterBadge';
+import { useSubmissionContext } from 'hooks/useSubmissionsContext';
 
 const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const assignmentId = searchParams.get(Query.SubmissionAssignment);
+
+  const { setSubmissionIds } = useSubmissionContext();
 
   const navigate = useNavigate();
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(assignmentId);
@@ -77,7 +80,11 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const reviewersFromSubmissions = submissions?.map(submission => submission.reviewer);
 
   useEffect(() => {
-    setSubmissions(filterSubmissions());
+    const newSubmissions = filterSubmissions();
+    setSubmissions(newSubmissions);
+
+    /* Set chosen submissions to context */
+    setSubmissionIds(newSubmissions.map(submission => submission.id));
   }, [selectedStudentId, selectedReviewerId, data]);
 
   return (
