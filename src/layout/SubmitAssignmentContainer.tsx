@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useMutation, useLazyLoadQuery } from 'react-relay';
+import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { useNavigate } from 'react-router-dom';
 
 import AddSubmissionQueryDef from 'graphql/AddSubmissionQuery';

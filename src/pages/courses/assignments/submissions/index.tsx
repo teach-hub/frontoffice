@@ -168,8 +168,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                   transition: 'background-color 0.8s',
                 },
                 _hover: { bg: theme.colors.teachHub.gray },
-                onClick: () =>
-                  navigate(`../assignments/${s.assignmentId}/submissions/${s.id}`),
+                onClick: () => navigate(s.id),
               },
               content: [
                 <Link // Link without redirect

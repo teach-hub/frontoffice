@@ -131,7 +131,7 @@ function AssignmentDetails({ assignment }: { assignment: Assignment }) {
                 ? 'Entrega realizada'
                 : 'Realizar nueva entrega'
             }
-            link={'submissions/add'}
+            link={'add-submission'}
             disabled={!viewerCanSubmit}
           />
         )}
