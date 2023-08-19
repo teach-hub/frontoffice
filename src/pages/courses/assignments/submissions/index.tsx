@@ -11,6 +11,7 @@ import SubmissionsQuery from 'graphql/AssignmentSubmissionsQuery';
 import type { AssignmentSubmissionsQuery } from '__generated__/AssignmentSubmissionsQuery.graphql';
 import {
   getGradeConfiguration,
+  getSubmissionMissingStatusConfiguration,
   getSubmissionReviewStatusConfiguration,
 } from 'app/submissions';
 import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
@@ -31,30 +32,23 @@ import { FilterBadge } from 'components/FilterBadge';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
 import useToast from 'hooks/useToast';
 
-type StudentType = NonNullable<
-  NonNullable<
-    NonNullable<
-      NonNullable<AssignmentSubmissionsQuery['response']['viewer']>['course']
-    >['studentsUserRoles']
-  >[number]
->['user'];
-
+/* TODO: TH-170 may be group */
 interface RowData {
-  submitterId: string;
-  submitterName: string;
-  submitterLastName: string;
-  assignmentTitle?: Nullable<string>;
-  reviewerId?: Nullable<string>;
-  reviewerLastName?: Nullable<string>;
-  reviewerName?: Nullable<string>;
-  grade?: Nullable<number>;
+  submitterId: Optional<Nullable<string>>;
+  submitterName: Optional<Nullable<string>>;
+  submitterLastName: Optional<Nullable<string>>;
+  assignmentTitle: Optional<Nullable<string>>;
+  reviewerId: Optional<Nullable<string>>;
+  reviewerLastName: Optional<Nullable<string>>;
+  reviewerName: Optional<Nullable<string>>;
+  submissionId?: Optional<Nullable<string>>;
+  grade?: Optional<Nullable<number>>;
   revisionRequested?: Nullable<boolean>;
-  submissionId?: Nullable<string>;
-  pullRequestUrl?: Nullable<string>;
+  pullRequestUrl?: Optional<Nullable<string>>;
 }
 
 const getRowStudentName = (rowData: RowData) =>
-  `${rowData.submitterName}, ${rowData.submitterLastName}`;
+  `${rowData.submitterLastName}, ${rowData.submitterName}`;
 const getRowReviewerName = (rowData: RowData) =>
   rowData.reviewerId ? `${rowData.reviewerLastName}, ${rowData.reviewerName}` : '-';
 
@@ -81,19 +75,6 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
 
   const allAssignments = data.viewer?.course?.assignments || [];
 
-  const studentsById = new Map<string, StudentType>();
-  const courseStudents = data.viewer?.course?.studentsUserRoles || [];
-  for (const item of courseStudents) {
-    studentsById.set(item.user.id, item.user);
-  }
-  const getStudentById = (id: string): StudentType => {
-    const student = studentsById.get(id);
-    if (!student) {
-      throw new Error(`Student with id ${id} not found`);
-    }
-    return student;
-  };
-
   const filterSubmissions = () => {
     const assignmentsWithSubmissions =
       data.viewer?.course?.assignmentsWithSubmissions || [];
@@ -103,7 +84,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
 
     if (selectedStudentId) {
       filteredSubmissions = filteredSubmissions.filter(
-        submission => submission.submitterId === selectedStudentId
+        submission => submission.submitter.id === selectedStudentId
       );
     }
 
@@ -118,10 +99,8 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
 
   const [submissions, setSubmissions] = useState(filterSubmissions());
 
-  /* TODO: 173 should be all? */
-  const studentsFromSubmissions = submissions?.map(submission =>
-    getStudentById(submission.submitterId)
-  );
+  /* TODO: 173 should be all as used to filter? as student may have never submitted. Same with reviewers */
+  const studentsFromSubmissions = submissions?.map(submission => submission.submitter);
   const reviewersFromSubmissions = submissions?.map(submission => submission.reviewer);
 
   const [rowDataList, setRowDataList] = useState<RowData[]>([]);
@@ -134,7 +113,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     setSubmissionIds(newSubmissions.map(submission => submission.id));
 
     const newRowData = newSubmissions.map((submission): RowData => {
-      const submitter = getStudentById(submission.submitterId);
+      const submitter = submission.submitter;
       const reviewer = submission.reviewer;
       const review = submission?.review;
       const grade = review?.grade;
@@ -158,6 +137,30 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
         pullRequestUrl: submission.pullRequestUrl,
       };
     });
+
+    (data.viewer?.course?.assignmentsWithSubmissions || []).forEach(assignment =>
+      (assignment?.nonExistentSubmissions || []).forEach(({ reviewer, submitter }) => {
+        const validStudent = !selectedStudentId
+          ? true
+          : submitter.id === selectedStudentId;
+        const validReviewer = !selectedReviewerId
+          ? true
+          : reviewer?.id === selectedReviewerId;
+        if (validStudent && validReviewer && !assignment.isGroup) {
+          // TODO: TH-191 show group non existent submissions (change isGroup check)
+          newRowData.push({
+            submitterId: submitter.id,
+            submitterLastName: submitter.lastName,
+            submitterName: submitter.name,
+            assignmentTitle: assignment.title,
+            reviewerId: reviewer?.id,
+            reviewerName: reviewer?.reviewer?.name,
+            reviewerLastName: reviewer?.reviewer?.lastName,
+          });
+        }
+      })
+    );
+
     setRowDataList(newRowData);
   }, [selectedStudentId, selectedReviewerId, data]);
 
@@ -225,11 +228,12 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
         <Table
           headers={['Alumno', 'Trabajo Práctico', 'Corrector', 'Estado', 'Nota', '']}
           rowOptions={rowDataList.map(rowData => {
-            /* TODO: 173 add no submission case */
-            const reviewStatusConfiguration = getSubmissionReviewStatusConfiguration({
-              grade: rowData.grade,
-              revisionRequested: rowData.revisionRequested,
-            });
+            const reviewStatusConfiguration = rowData.submissionId
+              ? getSubmissionReviewStatusConfiguration({
+                  grade: rowData.grade,
+                  revisionRequested: rowData.revisionRequested,
+                })
+              : getSubmissionMissingStatusConfiguration();
             const gradeConfiguration = getGradeConfiguration(rowData.grade);
 
             return {
@@ -276,7 +280,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                   gradeConfiguration={gradeConfiguration}
                 />,
 
-                rowData.pullRequestUrl /* todo: 173 check behaviour with no submission */ && (
+                rowData.pullRequestUrl && (
                   <Stack direction={'row'}>
                     <Tooltip label={'Ir a repositorio'}>
                       <Link

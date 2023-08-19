@@ -7,15 +7,6 @@ export default graphql`
       name
       course(id: $courseId) {
         id
-        studentsUserRoles {
-          id
-          user {
-            id
-            file
-            name
-            lastName
-          }
-        }
         assignments {
           id
           title
@@ -23,13 +14,21 @@ export default graphql`
         assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {
           id
           title
+          isGroup
           submissions {
             id
             description
             submittedAt
             pullRequestUrl
             assignmentId
-            submitterId
+            submitter {
+              ... on UserType {
+                id
+                file
+                name
+                lastName
+              }
+            }
             reviewer {
               id
               reviewer {
@@ -44,6 +43,24 @@ export default graphql`
               grade
               createdAt
               updatedAt
+            }
+          }
+          nonExistentSubmissions {
+            submitter {
+              ... on UserType {
+                id
+                file
+                name
+                lastName
+              }
+            }
+            reviewer {
+              id
+              reviewer {
+                id
+                name
+                lastName
+              }
             }
           }
         }
