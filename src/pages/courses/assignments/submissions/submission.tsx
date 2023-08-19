@@ -1,19 +1,10 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Link as RRLink, useNavigate, useParams } from 'react-router-dom';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
-
-import PageDataContainer from 'components/PageDataContainer';
-import Navigation from 'components/Navigation';
-import Heading from 'components/Heading';
+import { PayloadError } from 'relay-runtime';
 
 import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
 
-import SubmissionQueryDef from 'graphql/SubmissionQuery';
-
-import type { SubmissionQuery } from '__generated__/SubmissionQuery.graphql';
-import List from 'components/list/List';
-import { theme } from 'theme';
-import { TextListItem } from 'components/list/TextListItem';
 import {
   CheckCircleFillIcon,
   InfoIcon,
@@ -21,47 +12,61 @@ import {
   NumberIcon,
   PencilIcon,
   PersonFillIcon,
+  PeopleIcon,
   XCircleFillIcon,
 } from '@primer/octicons-react';
-import Link from 'components/Link';
+
+import { Icon, Flex, Select, Stack, useDisclosure } from '@chakra-ui/react';
+
 import { formatAsSimpleDateTime } from 'utils/dates';
-import { Flex, Select, Stack, useDisclosure } from '@chakra-ui/react';
+
+import List from 'components/list/List';
+import ListItem from 'components/list/ListItem';
+import { TextListItem } from 'components/list/TextListItem';
+import Link from 'components/Link';
 import IconButton from 'components/IconButton';
 import Tooltip from 'components/Tooltip';
 import Text from 'components/Text';
 import Button from 'components/Button';
+import PageDataContainer from 'components/PageDataContainer';
+import Navigation from 'components/Navigation';
+import Heading from 'components/Heading';
 import { Modal } from 'components/Modal';
-import { Optional } from 'types';
 import { FormControl } from 'components/FormControl';
 import { Checkbox } from 'components/Checkbox';
-import {
-  CreateReviewMutation as CreateReviewMutationType,
-  CreateReviewMutation$data,
-} from '__generated__/CreateReviewMutation.graphql';
+import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
+import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
+
+import SubmissionQueryDef from 'graphql/SubmissionQuery';
 import CreateReviewMutation from 'graphql/CreateReviewMutation';
-import {
-  UpdateReviewMutation as UpdateReviewMutationType,
-  UpdateReviewMutation$data,
-} from '__generated__/UpdateReviewMutation.graphql';
 import UpdateReviewMutation from 'graphql/UpdateReviewMutation';
 import useToast from 'hooks/useToast';
-import { PayloadError } from 'relay-runtime';
-import ListItem from 'components/list/ListItem';
+
 import {
   getGradeConfiguration,
   getSubmissionReviewStatusConfiguration,
   GRADES,
 } from 'app/submissions';
-import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
-import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
 import { ButtonWithIcon } from 'components/ButtonWithIcon';
-import PullRequestIcon from 'icons/PullRequestIcon';
-import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
-import RepositoryIcon from 'icons/RepositoryIcon';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
+import RepositoryIcon from 'icons/RepositoryIcon';
+import PullRequestIcon from 'icons/PullRequestIcon';
 import BackArrowIcon from 'icons/BackArrowIcon';
 import NextArrowIcon from 'icons/NextArrowIcon';
 import { getValueOfNextIndex, getValueOfPreviousIndex } from 'utils/list';
+import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
+
+import {
+  CreateReviewMutation as CreateReviewMutationType,
+  CreateReviewMutation$data,
+} from '__generated__/CreateReviewMutation.graphql';
+import {
+  UpdateReviewMutation as UpdateReviewMutationType,
+  UpdateReviewMutation$data,
+} from '__generated__/UpdateReviewMutation.graphql';
+
+import type { Optional } from 'types';
+import type { SubmissionQuery } from '__generated__/SubmissionQuery.graphql';
 
 const SubmissionPage = ({
   context,
@@ -99,24 +104,35 @@ const SubmissionPage = ({
     submissionId,
   });
 
-  const viewer = data.viewer;
-  const course = viewer?.course;
-  const submission = course?.submission;
-  const assignment = submission?.assignment;
-  const user = submission?.submitter; // TODO: TH-164 may be user or group
-  const reviewerUser = submission?.reviewer?.reviewer;
-  const review = submission?.review;
-
   const { submissionIds } = useSubmissionContext();
 
   const nextSubmissionId = getValueOfNextIndex(submissionIds, submissionId);
   const previousSubmissionId = getValueOfPreviousIndex(submissionIds, submissionId);
 
-  if (!submission || !assignment || !user) {
+  if (!data.viewer || !data.viewer.course) {
+    return null;
+  }
+
+  const { course } = data.viewer;
+  const { submission } = course;
+
+  if (!course || !submission) {
+    return null;
+  }
+
+  const { assignment, submitter, reviewer, review } = submission;
+
+  if (!assignment) {
+    return null;
+  }
+
+  const { isGroup, groupParticipants } = assignment;
+
+  if (!submission || !assignment || !submitter) {
     return null; // todo: fix cases when null data
   }
 
-  const LIST_ITEM_ICON_COLOR = theme.colors.teachHub.primary;
+  const LIST_ITEM_ICON_COLOR = 'teachHub.primary';
 
   /* Link to assignment is going up in the path back to the assignment */
   const VIEW_ASSIGNMENT_LINK = `../../assignments/${assignment.id}`;
@@ -179,7 +195,7 @@ const SubmissionPage = ({
     }
   };
 
-  const reviewEnabled = submission?.viewerCanReview === true;
+  const reviewEnabled = !!submission?.viewerCanReview;
   const handleReviewButtonClick = () => {
     if (!reviewEnabled) {
       toast({
@@ -190,22 +206,43 @@ const SubmissionPage = ({
     }
   };
 
+  const submitterItem = isGroup ? (
+    <TextListItem
+      iconProps={{
+        color: LIST_ITEM_ICON_COLOR,
+        icon: PeopleIcon,
+      }}
+      text={groupParticipants
+        .filter(p => p.group.id === submission.submitter.id)
+        .map(({ user }) => `${user.name} ${user.lastName}`)
+        .join(', ')}
+      listItemKey={'name'}
+    />
+  ) : (
+    <TextListItem
+      iconProps={{
+        color: LIST_ITEM_ICON_COLOR,
+        icon: PersonFillIcon,
+      }}
+      text={`${submitter.name} ${submitter.lastName} (${submitter.file})`}
+      listItemKey={'name'}
+    />
+  );
+
+  const headingText = isGroup
+    ? groupParticipants.find(p => p.group.id === submission.submitter.id)?.group.name
+    : submitter.lastName;
+
   return (
     <PageDataContainer>
       <Flex direction={'row'} width={'100%'} justifyContent={'space-between'}>
         <Flex direction="row" gap={'20px'} align={'center'}>
           <Heading>
-            Entrega | {user.lastName} |{' '}
-            <Link
-              as={RRLink}
-              to={VIEW_ASSIGNMENT_LINK}
-              isExternal
-              color={theme.colors.teachHub.primaryLight}
-            >
+            Entrega | {headingText} |{' '}
+            <Link as={RRLink} to={VIEW_ASSIGNMENT_LINK} color={'teachHub.primaryLight'}>
               {assignment.title}
             </Link>
           </Heading>
-
           <Stack direction={'row'}>
             <Tooltip label={'Ir a repositorio'}>
               <Link
@@ -242,7 +279,6 @@ const SubmissionPage = ({
               </Link>
             </Tooltip>
           )}
-
           {VIEW_NEXT_SUBMISSION_LINK && (
             <Tooltip label={'Ver siguiente entrega'}>
               <Link as={RRLink} to={VIEW_NEXT_SUBMISSION_LINK}>
@@ -256,7 +292,6 @@ const SubmissionPage = ({
           )}
         </Stack>
       </Flex>
-
       <Stack gap={'30px'} marginTop={'10px'}>
         <div onClick={handleReviewButtonClick}>
           <ButtonWithIcon
@@ -267,20 +302,11 @@ const SubmissionPage = ({
           />
         </div>
         <List paddingX="30px">
-          <TextListItem
-            iconProps={{
-              color: LIST_ITEM_ICON_COLOR,
-              icon: PersonFillIcon,
-            }}
-            text={`${user.name} ${user.lastName} (${user.file})`}
-            listItemKey={'name'}
-          />
+          {submitterItem}
           <TextListItem
             listItemKey={'submittedOnTime'}
             iconProps={{
-              color: submittedOnTime
-                ? theme.colors.teachHub.green
-                : theme.colors.teachHub.red,
+              color: submittedOnTime ? 'teachHub.green' : 'teachHub.red',
               icon: submittedOnTime ? CheckCircleFillIcon : XCircleFillIcon,
             }}
             label={
@@ -296,8 +322,8 @@ const SubmissionPage = ({
               icon: MortarBoardIcon,
             }}
             text={
-              reviewerUser
-                ? `${reviewerUser.name} ${reviewerUser.lastName}`
+              reviewer
+                ? `${reviewer.reviewer.name} ${reviewer.reviewer.lastName}`
                 : 'Sin asignar'
             }
             label={'Corrector: '}
@@ -328,13 +354,12 @@ const SubmissionPage = ({
           </ListItem>
         </List>
         <Stack>
-          <Heading fontSize={theme.styles.global.body.fontSize}>
+          <Heading fontSize={'global.body.fontSize'}>
             Comentarios al realizar la entrega
           </Heading>
           <Text w={'40vw'}>{submission.description ? submission.description : '-'}</Text>
         </Stack>
       </Stack>
-
       <Modal
         isOpen={isOpenReviewModal}
         onClose={onCloseReviewModal}

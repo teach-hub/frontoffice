@@ -20,6 +20,9 @@ export default graphql`
               name
               lastName
             }
+            ... on InternalGroupType {
+              id
+            }
           }
           reviewer {
             id
@@ -40,6 +43,18 @@ export default graphql`
             id
             title
             endDate
+            isGroup
+            groupParticipants {
+              group {
+                id
+                name
+              }
+              user {
+                id
+                name
+                lastName
+              }
+            }
           }
         }
       }
