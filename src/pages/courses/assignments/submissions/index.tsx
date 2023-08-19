@@ -29,8 +29,37 @@ import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
 import { Nullable, Optional } from 'types';
 import { FilterBadge } from 'components/FilterBadge';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
+import useToast from 'hooks/useToast';
+
+type StudentType = NonNullable<
+  NonNullable<
+    NonNullable<
+      NonNullable<AssignmentSubmissionsQuery['response']['viewer']>['course']
+    >['studentsUserRoles']
+  >[number]
+>['user'];
+
+interface RowData {
+  submitterId: string;
+  submitterName: string;
+  submitterLastName: string;
+  assignmentTitle?: Nullable<string>;
+  reviewerId?: Nullable<string>;
+  reviewerLastName?: Nullable<string>;
+  reviewerName?: Nullable<string>;
+  grade?: Nullable<number>;
+  revisionRequested?: Nullable<boolean>;
+  submissionId?: Nullable<string>;
+  pullRequestUrl?: Nullable<string>;
+}
+
+const getRowStudentName = (rowData: RowData) =>
+  `${rowData.submitterName}, ${rowData.submitterLastName}`;
+const getRowReviewerName = (rowData: RowData) =>
+  rowData.reviewerId ? `${rowData.reviewerLastName}, ${rowData.reviewerName}` : '-';
 
 const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
+  const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const assignmentId = searchParams.get(Query.SubmissionAssignment);
 
@@ -52,6 +81,19 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
 
   const allAssignments = data.viewer?.course?.assignments || [];
 
+  const studentsById = new Map<string, StudentType>();
+  const courseStudents = data.viewer?.course?.studentsUserRoles || [];
+  for (const item of courseStudents) {
+    studentsById.set(item.user.id, item.user);
+  }
+  const getStudentById = (id: string): StudentType => {
+    const student = studentsById.get(id);
+    if (!student) {
+      throw new Error(`Student with id ${id} not found`);
+    }
+    return student;
+  };
+
   const filterSubmissions = () => {
     const assignmentsWithSubmissions =
       data.viewer?.course?.assignmentsWithSubmissions || [];
@@ -61,7 +103,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
 
     if (selectedStudentId) {
       filteredSubmissions = filteredSubmissions.filter(
-        submission => submission.submitter.id === selectedStudentId
+        submission => submission.submitterId === selectedStudentId
       );
     }
 
@@ -76,8 +118,13 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
 
   const [submissions, setSubmissions] = useState(filterSubmissions());
 
-  const studentsFromSubmissions = submissions?.map(submission => submission.submitter);
+  /* TODO: 173 should be all? */
+  const studentsFromSubmissions = submissions?.map(submission =>
+    getStudentById(submission.submitterId)
+  );
   const reviewersFromSubmissions = submissions?.map(submission => submission.reviewer);
+
+  const [rowDataList, setRowDataList] = useState<RowData[]>([]);
 
   useEffect(() => {
     const newSubmissions = filterSubmissions();
@@ -85,6 +132,33 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
 
     /* Set chosen submissions to context */
     setSubmissionIds(newSubmissions.map(submission => submission.id));
+
+    const newRowData = newSubmissions.map((submission): RowData => {
+      const submitter = getStudentById(submission.submitterId);
+      const reviewer = submission.reviewer;
+      const review = submission?.review;
+      const grade = review?.grade;
+      const revisionRequested = review?.revisionRequested;
+      const reviewerUser = reviewer?.reviewer;
+      const submissionAssignmentTitle = allAssignments.find(
+        a => a.id === submission.assignmentId
+      )?.title;
+
+      return {
+        submitterId: submitter.id,
+        submitterLastName: submitter.lastName,
+        submitterName: submitter.name,
+        assignmentTitle: submissionAssignmentTitle,
+        reviewerId: reviewer?.id,
+        reviewerName: reviewerUser?.name,
+        reviewerLastName: reviewerUser?.lastName,
+        grade,
+        revisionRequested,
+        submissionId: submission.id,
+        pullRequestUrl: submission.pullRequestUrl,
+      };
+    });
+    setRowDataList(newRowData);
   }, [selectedStudentId, selectedReviewerId, data]);
 
   return (
@@ -150,23 +224,13 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
       <Stack gap={'30px'} marginTop={'10px'} height={'75vh'}>
         <Table
           headers={['Alumno', 'Trabajo Práctico', 'Corrector', 'Estado', 'Nota', '']}
-          rowOptions={filterSubmissions().map(s => {
-            const review = s?.review;
-            const grade = review?.grade;
-            const revisionRequested = review?.revisionRequested;
-
+          rowOptions={rowDataList.map(rowData => {
+            /* TODO: 173 add no submission case */
             const reviewStatusConfiguration = getSubmissionReviewStatusConfiguration({
-              grade: grade,
-              revisionRequested,
+              grade: rowData.grade,
+              revisionRequested: rowData.revisionRequested,
             });
-            const gradeConfiguration = getGradeConfiguration(grade);
-
-            const submitter = s.submitter;
-            const reviewer = s.reviewer;
-            const reviewerUser = reviewer?.reviewer;
-            const submissionAssignmentTitle = allAssignments.find(
-              a => a.id === s.assignmentId
-            )?.title;
+            const gradeConfiguration = getGradeConfiguration(rowData.grade);
 
             return {
               rowProps: {
@@ -175,62 +239,73 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                   transition: 'background-color 0.8s',
                 },
                 _hover: { bg: theme.colors.teachHub.gray },
-                onClick: () => navigate(s.id),
+                onClick: () =>
+                  rowData.submissionId
+                    ? navigate(rowData.submissionId)
+                    : toast({
+                        title: 'No existe entrega asociada',
+                        description:
+                          'Para acceder al detalle primero se debe realizar la entrega',
+                        status: 'warning',
+                      }),
               },
               content: [
                 <Link // Link without redirect
                   onClick={event => {
                     event.stopPropagation(); // This prevents the click from propagating to the parent row
-                    setSelectedStudentId(submitter.id);
+                    setSelectedStudentId(rowData.submitterId);
                   }}
                 >
-                  {submitter.name} {submitter.lastName}
+                  {getRowStudentName(rowData)}
                   {/*todo: TH-170 may be group - show column with checkbox if group and only display group name or student name?*/}
                 </Link>,
-                submissionAssignmentTitle,
+                rowData.assignmentTitle,
                 <Link // Link without redirect
                   onClick={event => {
                     event.stopPropagation(); // This prevents the click from propagating to the parent row
-                    setSelectedReviewerId(reviewer?.id);
+                    setSelectedReviewerId(rowData.reviewerId);
                   }}
                 >
-                  {reviewerUser ? `${reviewerUser.name} ${reviewerUser.lastName}` : '-'}
+                  {rowData.reviewerId ? getRowReviewerName(rowData) : '-'}
                 </Link>,
                 <ReviewStatusBadge
                   reviewStatusConfiguration={reviewStatusConfiguration}
                 />,
                 <ReviewGradeBadge
-                  grade={grade}
+                  grade={rowData.grade}
                   gradeConfiguration={gradeConfiguration}
                 />,
-                <Stack direction={'row'}>
-                  <Tooltip label={'Ir a repositorio'}>
-                    <Link
-                      href={getGithubRepoUrlFromPullRequestUrl(s.pullRequestUrl)}
-                      isExternal
-                      onClick={event => event.stopPropagation()} // Avoid row clic behaviour
-                    >
-                      <IconButton
-                        variant={'ghost'}
-                        aria-label="repository-link"
-                        icon={<RepositoryIcon />}
-                      />
-                    </Link>
-                  </Tooltip>
-                  <Tooltip label={'Ir a pull request'}>
-                    <Link
-                      href={s.pullRequestUrl}
-                      isExternal
-                      onClick={event => event.stopPropagation()} // Avoid row clic behaviour
-                    >
-                      <IconButton
-                        variant={'ghost'}
-                        aria-label="pull-request-link"
-                        icon={<PullRequestIcon />}
-                      />
-                    </Link>
-                  </Tooltip>
-                </Stack>,
+
+                rowData.pullRequestUrl /* todo: 173 check behaviour with no submission */ && (
+                  <Stack direction={'row'}>
+                    <Tooltip label={'Ir a repositorio'}>
+                      <Link
+                        href={getGithubRepoUrlFromPullRequestUrl(rowData.pullRequestUrl)}
+                        isExternal
+                        onClick={event => event.stopPropagation()} // Avoid row clic behaviour
+                      >
+                        <IconButton
+                          variant={'ghost'}
+                          aria-label="repository-link"
+                          icon={<RepositoryIcon />}
+                        />
+                      </Link>
+                    </Tooltip>
+                    <Tooltip label={'Ir a pull request'}>
+                      <Link
+                        href={rowData.pullRequestUrl}
+                        isExternal
+                        onClick={event => event.stopPropagation()} // Avoid row clic behaviour
+                      >
+                        <IconButton
+                          variant={'ghost'}
+                          aria-label="pull-request-link"
+                          icon={<PullRequestIcon />}
+                        />
+                      </Link>
+                    </Tooltip>
+                  </Stack>
+                ),
               ],
             };
           })}

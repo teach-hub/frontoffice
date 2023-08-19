@@ -7,6 +7,15 @@ export default graphql`
       name
       course(id: $courseId) {
         id
+        studentsUserRoles {
+          id
+          user {
+            id
+            file
+            name
+            lastName
+          }
+        }
         assignments {
           id
           title
@@ -20,14 +29,7 @@ export default graphql`
             submittedAt
             pullRequestUrl
             assignmentId
-            submitter {
-              ... on UserType {
-                id
-                file
-                name
-                lastName
-              }
-            }
+            submitterId
             reviewer {
               id
               reviewer {
