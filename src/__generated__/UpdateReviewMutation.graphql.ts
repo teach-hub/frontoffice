@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<998595d286299f688e68de28bc294f1f>>
+ * @generated SignedSource<<118ac5848886d3d4a5a8bb954a6b45d4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,11 +17,13 @@ export type UpdateReviewMutation$variables = {
 };
 export type UpdateReviewMutation$data = {
   readonly updateReview: {
+    readonly createdAt: string;
     readonly grade: number | null;
     readonly id: string;
     readonly reviewerId: string;
     readonly revisionRequested: boolean | null;
     readonly submissionId: string;
+    readonly updatedAt: string;
   };
 };
 export type UpdateReviewMutation = {
@@ -114,6 +116,20 @@ v4 = [
         "kind": "ScalarField",
         "name": "reviewerId",
         "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "createdAt",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "updatedAt",
+        "storageKey": null
       }
     ],
     "storageKey": null
@@ -147,16 +163,16 @@ return {
     "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "34d09ff6c6a713f47c86149a35b1ab5a",
+    "cacheID": "027a3a1da652fc62ed58d2c5f4981ee0",
     "id": null,
     "metadata": {},
     "name": "UpdateReviewMutation",
     "operationKind": "mutation",
-    "text": "mutation UpdateReviewMutation(\n  $id: ID!\n  $courseId: ID!\n  $revisionRequested: Boolean!\n  $grade: Int\n) {\n  updateReview(id: $id, courseId: $courseId, revisionRequested: $revisionRequested, grade: $grade) {\n    id\n    grade\n    revisionRequested\n    submissionId\n    reviewerId\n  }\n}\n"
+    "text": "mutation UpdateReviewMutation(\n  $id: ID!\n  $courseId: ID!\n  $revisionRequested: Boolean!\n  $grade: Int\n) {\n  updateReview(id: $id, courseId: $courseId, revisionRequested: $revisionRequested, grade: $grade) {\n    id\n    grade\n    revisionRequested\n    submissionId\n    reviewerId\n    createdAt\n    updatedAt\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f9dfc5afb7ecf716d698fbf67c2c86c5";
+(node as any).hash = "ab0cc6df2641aa290db1155ad057938f";
 
 export default node;

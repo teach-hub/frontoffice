@@ -3,8 +3,6 @@ import { Link as RRLink, useNavigate, useParams } from 'react-router-dom';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { PayloadError } from 'relay-runtime';
 
-import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
-
 import {
   CheckCircleFillIcon,
   InfoIcon,
@@ -16,9 +14,15 @@ import {
   XCircleFillIcon,
 } from '@primer/octicons-react';
 
-import { Icon, Flex, Select, Stack, useDisclosure } from '@chakra-ui/react';
+import { Flex, Select, Stack, useDisclosure } from '@chakra-ui/react';
 
 import { formatAsSimpleDateTime } from 'utils/dates';
+import { getValueOfNextIndex, getValueOfPreviousIndex } from 'utils/list';
+import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
+
+import useToast from 'hooks/useToast';
+import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
+import { useSubmissionContext } from 'hooks/useSubmissionsContext';
 
 import List from 'components/list/List';
 import ListItem from 'components/list/ListItem';
@@ -36,26 +40,21 @@ import { FormControl } from 'components/FormControl';
 import { Checkbox } from 'components/Checkbox';
 import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
 import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
+import { ButtonWithIcon } from 'components/ButtonWithIcon';
 
 import SubmissionQueryDef from 'graphql/SubmissionQuery';
 import CreateReviewMutation from 'graphql/CreateReviewMutation';
 import UpdateReviewMutation from 'graphql/UpdateReviewMutation';
-import useToast from 'hooks/useToast';
 
 import {
   getGradeConfiguration,
   getSubmissionReviewStatusConfiguration,
   GRADES,
 } from 'app/submissions';
-import { ButtonWithIcon } from 'components/ButtonWithIcon';
-import { useSubmissionContext } from 'hooks/useSubmissionsContext';
 import RepositoryIcon from 'icons/RepositoryIcon';
 import PullRequestIcon from 'icons/PullRequestIcon';
 import BackArrowIcon from 'icons/BackArrowIcon';
 import NextArrowIcon from 'icons/NextArrowIcon';
-import { getValueOfNextIndex, getValueOfPreviousIndex } from 'utils/list';
-import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
-
 import {
   CreateReviewMutation as CreateReviewMutationType,
   CreateReviewMutation$data,
@@ -66,7 +65,12 @@ import {
 } from '__generated__/UpdateReviewMutation.graphql';
 
 import type { Optional } from 'types';
-import type { SubmissionQuery } from '__generated__/SubmissionQuery.graphql';
+import type {
+  SubmissionQuery,
+  SubmissionQuery$data,
+} from '__generated__/SubmissionQuery.graphql';
+
+type Course = NonNullable<NonNullable<SubmissionQuery$data['viewer']>['course']>;
 
 const SubmissionPage = ({
   context,
@@ -75,16 +79,7 @@ const SubmissionPage = ({
   context: FetchedContext;
   submissionId: string;
 }) => {
-  const navigate = useNavigate();
   const toast = useToast();
-  const {
-    isOpen: isOpenReviewModal,
-    onOpen: onOpenReviewModal,
-    onClose: onCloseReviewModal,
-  } = useDisclosure();
-
-  const [newGrade, setNewGrade] = useState<Optional<number>>(undefined);
-  const [revisionRequested, setRevisionRequested] = useState<boolean>(false);
 
   const [commitCreateMutation, _] =
     useMutation<CreateReviewMutationType>(CreateReviewMutation);
@@ -92,12 +87,11 @@ const SubmissionPage = ({
   const [commitUpdateMutation, __] =
     useMutation<UpdateReviewMutationType>(UpdateReviewMutation);
 
-  useEffect(() => {
-    if (!isOpenReviewModal) {
-      setNewGrade(undefined);
-      setRevisionRequested(false);
-    }
-  }, [isOpenReviewModal]);
+  const {
+    isOpen: isOpenReviewModal,
+    onOpen: onOpenReviewModal,
+    onClose: onCloseReviewModal,
+  } = useDisclosure();
 
   const data = useLazyLoadQuery<SubmissionQuery>(SubmissionQueryDef, {
     courseId: context.courseId,
@@ -154,19 +148,37 @@ const SubmissionPage = ({
   });
   const gradeConfiguration = getGradeConfiguration(review?.grade);
 
-  const handleReviewChange = () => {
+  const reviewEnabled = !!submission?.viewerCanReview;
+  const handleReviewButtonClick = () => {
+    if (!reviewEnabled) {
+      toast({
+        title: 'No es posible calificar',
+        description: 'Para calificar debes ser el corrector de la entrega',
+        status: 'warning',
+      });
+    }
+  };
+
+  const handleReviewChange = ({
+    grade,
+    revisionRequested,
+  }: {
+    grade: number;
+    revisionRequested: boolean;
+  }) => {
     const reviewId = review?.id;
     const baseVariables = {
       courseId: course?.id,
       revisionRequested,
-      grade: revisionRequested ? undefined : newGrade, // Only set grade if no revision requested
+      ...(revisionRequested ? { grade } : {}), // Only set grade if no revision requested
     };
-    const onCompleted = (
-      response: CreateReviewMutation$data | UpdateReviewMutation$data,
-      errors: PayloadError[] | null
-    ) => {
+
+    const onCompleted = (_: unknown, errors: PayloadError[] | null) => {
       if (!errors?.length) {
-        navigate(0); // Reload page data
+        // Esto no deberia hacer falta. La misma respuesta del servidor deberia
+        // bastar para actualizar el store de relay.
+        // navigate(0); // Reload page data
+        return;
       } else {
         toast({
           title: 'Error al actualizar la corrección, intentelo de nuevo',
@@ -191,17 +203,6 @@ const SubmissionPage = ({
           id: reviewId,
         },
         onCompleted,
-      });
-    }
-  };
-
-  const reviewEnabled = !!submission?.viewerCanReview;
-  const handleReviewButtonClick = () => {
-    if (!reviewEnabled) {
-      toast({
-        title: 'No es posible calificar',
-        description: 'Para calificar debes ser el corrector de la entrega',
-        status: 'warning',
       });
     }
   };
@@ -360,50 +361,84 @@ const SubmissionPage = ({
           <Text w={'40vw'}>{submission.description ? submission.description : '-'}</Text>
         </Stack>
       </Stack>
-      <Modal
-        isOpen={isOpenReviewModal}
+      <ReviewModal
+        onSave={handleReviewChange}
+        onOpen={onOpenReviewModal}
         onClose={onCloseReviewModal}
-        isCentered
-        headerText={'Calificar'}
-        closeOnOverlayClick={false}
-        footerChildren={
-          <Flex direction={'row'} gap={'30px'}>
-            <Button onClick={onCloseReviewModal} variant={'ghost'}>
-              {'Cancelar'}
-            </Button>
-            <Button onClick={handleReviewChange}>{'Guardar'}</Button>
-          </Flex>
-        }
-      >
-        <Stack>
-          <FormControl label={'Seleccionar nota'}>
-            <Select
-              placeholder="Selecciona una opción"
-              value={newGrade}
-              onChange={changes => setNewGrade(Number(changes.currentTarget.value))}
-              isDisabled={revisionRequested}
-            >
-              {GRADES.map(grade => (
-                <option value={grade} key={grade}>
-                  {grade}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-          <Checkbox
-            id={'revisionRequested'}
-            isChecked={revisionRequested}
-            onChange={() => {
-              setRevisionRequested(!revisionRequested);
-            }}
-          >
-            Requiere reentrega
-          </Checkbox>
-        </Stack>
-      </Modal>
+        isOpen={isOpenReviewModal}
+      />
     </PageDataContainer>
   );
 };
+
+function ReviewModal({
+  course,
+  onOpen,
+  onClose,
+  isOpen,
+  onSave,
+}: {
+  course: Course;
+  onOpen: () => void;
+  onClose: () => void;
+  isOpen: boolean;
+}) {
+  const [newGrade, setNewGrade] = useState<Optional<number>>(undefined);
+  const [revisionRequested, setRevisionRequested] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setNewGrade(undefined);
+      setRevisionRequested(false);
+    }
+  }, [isOpen]);
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      isCentered
+      headerText={'Calificar'}
+      closeOnOverlayClick={false}
+      footerChildren={
+        <Flex direction={'row'} gap={'30px'}>
+          <Button onClick={onClose} variant={'ghost'}>
+            Cancelar
+          </Button>
+          <Button onClick={() => onSave({ grade: newGrade, revisionRequested })}>
+            Guardar
+          </Button>
+        </Flex>
+      }
+    >
+      <Stack>
+        <FormControl label={'Seleccionar nota'}>
+          <Select
+            placeholder="Selecciona una opción"
+            value={newGrade}
+            onChange={changes => setNewGrade(Number(changes.currentTarget.value))}
+            isDisabled={revisionRequested}
+          >
+            {GRADES.map(grade => (
+              <option value={grade} key={grade}>
+                {grade}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
+        <Checkbox
+          id={'revisionRequested'}
+          isChecked={revisionRequested}
+          onChange={() => {
+            setRevisionRequested(!revisionRequested);
+          }}
+        >
+          Requiere reentrega
+        </Checkbox>
+      </Stack>
+    </Modal>
+  );
+}
 
 const SubmissionPageContainer = () => {
   const courseContext = useUserContext();

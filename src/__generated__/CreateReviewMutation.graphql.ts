@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<542c1d03db6545345256e4a4e555a160>>
+ * @generated SignedSource<<d840aeb836175916fb115f2d411e4bd9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,11 +17,13 @@ export type CreateReviewMutation$variables = {
 };
 export type CreateReviewMutation$data = {
   readonly createReview: {
+    readonly createdAt: string;
     readonly grade: number | null;
     readonly id: string;
     readonly reviewerId: string;
     readonly revisionRequested: boolean | null;
     readonly submissionId: string;
+    readonly updatedAt: string;
   };
 };
 export type CreateReviewMutation = {
@@ -114,6 +116,20 @@ v4 = [
         "kind": "ScalarField",
         "name": "reviewerId",
         "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "createdAt",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "updatedAt",
+        "storageKey": null
       }
     ],
     "storageKey": null
@@ -147,16 +163,16 @@ return {
     "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "5ba7583d185eeb2b88100e7712471334",
+    "cacheID": "7387d5a47defa3b6315b43f444169ace",
     "id": null,
     "metadata": {},
     "name": "CreateReviewMutation",
     "operationKind": "mutation",
-    "text": "mutation CreateReviewMutation(\n  $submissionId: ID!\n  $courseId: ID!\n  $revisionRequested: Boolean!\n  $grade: Int\n) {\n  createReview(submissionId: $submissionId, courseId: $courseId, revisionRequested: $revisionRequested, grade: $grade) {\n    id\n    grade\n    revisionRequested\n    submissionId\n    reviewerId\n  }\n}\n"
+    "text": "mutation CreateReviewMutation(\n  $submissionId: ID!\n  $courseId: ID!\n  $revisionRequested: Boolean!\n  $grade: Int\n) {\n  createReview(submissionId: $submissionId, courseId: $courseId, revisionRequested: $revisionRequested, grade: $grade) {\n    id\n    grade\n    revisionRequested\n    submissionId\n    reviewerId\n    createdAt\n    updatedAt\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "0825988084a7dd1445723d2407832b31";
+(node as any).hash = "89d1cef0583b4aef64eca5fe0788e302";
 
 export default node;
