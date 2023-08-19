@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLazyLoadQuery, useMutation } from 'react-relay';
+import { useMutation, useLazyLoadQuery } from 'react-relay';
 import { useNavigate } from 'react-router-dom';
 
 import AddSubmissionQueryDef from 'graphql/AddSubmissionQuery';
@@ -96,8 +96,7 @@ function Content({
     <>
       <Heading> Nueva entrega </Heading>
       <Text>
-        {groupText}
-        {reviewerText}
+        {groupText} {reviewerText}
       </Text>
       <Form
         initialValues={{
@@ -117,16 +116,16 @@ function Content({
             gp => gp.assignmentId === values.assignmentId
           );
 
-          if (!viewerAssignmentGroup) {
-            errors['assignmentId'] = 'No sos parte de ningún grupo en este TP.';
-          }
-
           const target = assignments.find(
             assignment => assignment.id === values.assignmentId
           );
 
           if (!target) {
             errors['assignmentId'] = 'No pudimos encontrar el TP seleccionado.';
+          }
+
+          if (target?.isGroup && !viewerAssignmentGroup) {
+            errors['assignmentId'] = 'No sos parte de ningún grupo en este TP.';
           }
 
           if (target && target.viewerAlreadyMadeSubmission) {
