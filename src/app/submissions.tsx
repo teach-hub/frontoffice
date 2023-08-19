@@ -20,9 +20,21 @@ const ErrorBadgeConfiguration: BadgeConfiguration = {
   badgeTextColor: theme.colors.teachHub.white,
 };
 
+const NonExistentBadgeConfiguration: BadgeConfiguration = {
+  badgeBackgroundColor: theme.colors.teachHub.black,
+  badgeTextColor: theme.colors.teachHub.white,
+};
+
 const WarningBadgeConfiguration: BadgeConfiguration = {
   badgeBackgroundColor: theme.colors.teachHub.warning,
   badgeTextColor: theme.colors.teachHub.black,
+};
+
+export const getSubmissionMissingStatusConfiguration = () => {
+  return {
+    text: 'Sin entregar',
+    ...NonExistentBadgeConfiguration,
+  };
 };
 
 export const getSubmissionReviewStatusConfiguration = ({
