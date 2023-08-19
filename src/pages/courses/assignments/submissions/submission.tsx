@@ -16,7 +16,7 @@ import {
   XCircleFillIcon,
 } from '@primer/octicons-react';
 
-import { Flex, Select, Stack, useDisclosure } from '@chakra-ui/react';
+import { Icon, Flex, Select, Stack, useDisclosure } from '@chakra-ui/react';
 
 import { formatAsSimpleDateTime } from 'utils/dates';
 
@@ -36,7 +36,6 @@ import { FormControl } from 'components/FormControl';
 import { Checkbox } from 'components/Checkbox';
 import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
 import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
-import { Timeline, TimelineItem } from 'components/Timeline';
 
 import SubmissionQueryDef from 'graphql/SubmissionQuery';
 import CreateReviewMutation from 'graphql/CreateReviewMutation';
@@ -240,11 +239,7 @@ const SubmissionPage = ({
         <Flex direction="row" gap={'20px'} align={'center'}>
           <Heading>
             Entrega | {headingText} |{' '}
-            <Link
-              as={RRLink}
-              to={VIEW_ASSIGNMENT_LINK}
-              color={theme.colors.teachHub.primaryLight}
-            >
+            <Link as={RRLink} to={VIEW_ASSIGNMENT_LINK} color={'teachHub.primaryLight'}>
               {assignment.title}
             </Link>
           </Heading>

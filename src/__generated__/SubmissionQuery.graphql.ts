@@ -1,9 +1,5 @@
 /**
-<<<<<<< HEAD
- * @generated SignedSource<<432a4b72f657976a8e47198db34c059c>>
-=======
- * @generated SignedSource<<305a73c544d9c30891d73d096b8c808e>>
->>>>>>> 846be96 (Use user instead of groupUsers)
+ * @generated SignedSource<<7bd26590a98e73f39e4d9fd089266074>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -20,7 +16,6 @@ export type SubmissionQuery$variables = {
 export type SubmissionQuery$data = {
   readonly viewer: {
     readonly course: {
-<<<<<<< HEAD
       readonly id: string;
       readonly submission: {
         readonly assignment: {
@@ -30,43 +25,11 @@ export type SubmissionQuery$data = {
               readonly id: string;
               readonly name: string | null;
             };
-            readonly groupUsers: ReadonlyArray<{
-=======
-      readonly assignment: {
-        readonly endDate: string | null;
-        readonly groupParticipants: ReadonlyArray<{
-          readonly group: {
-            readonly id: string;
-            readonly name: string | null;
-          };
-          readonly user: {
-            readonly file: string;
-            readonly id: string;
-            readonly lastName: string;
-            readonly name: string;
-          };
-        }>;
-        readonly id: string;
-        readonly isGroup: boolean | null;
-        readonly submission: {
-          readonly description: string | null;
-          readonly id: string;
-          readonly pullRequestUrl: string;
-          readonly review: {
-            readonly createdAt: string;
-            readonly grade: number | null;
-            readonly id: string;
-            readonly revisionRequested: boolean | null;
-            readonly updatedAt: string;
-          } | null;
-          readonly reviewer: {
-            readonly id: string;
-            readonly reviewer: {
->>>>>>> 846be96 (Use user instead of groupUsers)
+            readonly user: {
               readonly id: string;
               readonly lastName: string;
               readonly name: string;
-            }>;
+            };
           }>;
           readonly id: string;
           readonly isGroup: boolean | null;
@@ -143,81 +106,7 @@ v3 = [
     "variableName": "courseId"
   }
 ],
-<<<<<<< HEAD
 v4 = [
-=======
-v6 = [
-  {
-    "kind": "Variable",
-    "name": "id",
-    "variableName": "assignmentId"
-  }
-],
-v7 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "title",
-  "storageKey": null
-},
-v8 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "isGroup",
-  "storageKey": null
-},
-v9 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "endDate",
-  "storageKey": null
-},
-v10 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "lastName",
-  "storageKey": null
-},
-v11 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "file",
-  "storageKey": null
-},
-v12 = {
-  "alias": null,
-  "args": null,
-  "concreteType": "UserType",
-  "kind": "LinkedField",
-  "name": "user",
-  "plural": false,
-  "selections": [
-    (v3/*: any*/),
-    (v4/*: any*/),
-    (v10/*: any*/),
-    (v11/*: any*/)
-  ],
-  "storageKey": null
-},
-v13 = {
-  "alias": null,
-  "args": null,
-  "concreteType": "InternalGroupType",
-  "kind": "LinkedField",
-  "name": "group",
-  "plural": false,
-  "selections": [
-    (v3/*: any*/),
-    (v4/*: any*/)
-  ],
-  "storageKey": null
-},
-v14 = [
->>>>>>> 846be96 (Use user instead of groupUsers)
   {
     "kind": "Variable",
     "name": "id",
@@ -262,7 +151,6 @@ v9 = {
 v10 = {
   "kind": "InlineFragment",
   "selections": [
-<<<<<<< HEAD
     (v1/*: any*/),
     {
       "alias": null,
@@ -273,12 +161,6 @@ v10 = {
     },
     (v2/*: any*/),
     (v9/*: any*/)
-=======
-    (v3/*: any*/),
-    (v11/*: any*/),
-    (v4/*: any*/),
-    (v10/*: any*/)
->>>>>>> 846be96 (Use user instead of groupUsers)
   ],
   "type": "UserType",
   "abstractKey": null
@@ -312,11 +194,7 @@ v13 = {
       "kind": "LinkedField",
       "name": "reviewer",
       "plural": false,
-      "selections": [
-        (v3/*: any*/),
-        (v4/*: any*/),
-        (v10/*: any*/)
-      ],
+      "selections": (v12/*: any*/),
       "storageKey": null
     }
   ],
@@ -401,8 +279,8 @@ v19 = {
   "args": null,
   "concreteType": "UserType",
   "kind": "LinkedField",
-  "name": "groupUsers",
-  "plural": true,
+  "name": "user",
+  "plural": false,
   "selections": (v12/*: any*/),
   "storageKey": null
 };
@@ -453,13 +331,8 @@ return {
                     "name": "submitter",
                     "plural": false,
                     "selections": [
-<<<<<<< HEAD
                       (v10/*: any*/),
                       (v11/*: any*/)
-=======
-                      (v12/*: any*/),
-                      (v13/*: any*/)
->>>>>>> 846be96 (Use user instead of groupUsers)
                     ],
                     "storageKey": null
                   },
@@ -549,25 +422,7 @@ return {
                     "args": null,
                     "concreteType": null,
                     "kind": "LinkedField",
-<<<<<<< HEAD
                     "name": "submitter",
-=======
-                    "name": "groupParticipants",
-                    "plural": true,
-                    "selections": [
-                      (v12/*: any*/),
-                      (v13/*: any*/),
-                      (v3/*: any*/)
-                    ],
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": (v14/*: any*/),
-                    "concreteType": "SubmissionType",
-                    "kind": "LinkedField",
-                    "name": "submission",
->>>>>>> 846be96 (Use user instead of groupUsers)
                     "plural": false,
                     "selections": [
                       {
@@ -625,28 +480,16 @@ return {
     ]
   },
   "params": {
-<<<<<<< HEAD
-    "cacheID": "447a48bce04156e6cd47046918375d4e",
-=======
-    "cacheID": "10a0eac7acfbb021ec7554bf0a68c921",
->>>>>>> 846be96 (Use user instead of groupUsers)
+    "cacheID": "81bfe24936e9921d0b5667d4cca6db50",
     "id": null,
     "metadata": {},
     "name": "SubmissionQuery",
     "operationKind": "query",
-<<<<<<< HEAD
-    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      submission(id: $submissionId) {\n        id\n        description\n        submittedAt\n        pullRequestUrl\n        viewerCanReview\n        submitter {\n          __typename\n          ... on UserType {\n            id\n            file\n            name\n            lastName\n          }\n          ... on InternalGroupType {\n            id\n          }\n        }\n        reviewer {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n        review {\n          id\n          revisionRequested\n          grade\n          createdAt\n          updatedAt\n        }\n        assignment {\n          id\n          title\n          endDate\n          isGroup\n          groupParticipants {\n            group {\n              id\n              name\n            }\n            groupUsers {\n              id\n              name\n              lastName\n            }\n            id\n          }\n        }\n      }\n    }\n  }\n}\n"
-=======
-    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignment(id: $assignmentId) {\n        id\n        title\n        isGroup\n        endDate\n        groupParticipants {\n          user {\n            id\n            name\n            lastName\n            file\n          }\n          group {\n            id\n            name\n          }\n          id\n        }\n        submission(id: $submissionId) {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          viewerCanReview\n          submitter {\n            __typename\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            createdAt\n            updatedAt\n          }\n        }\n      }\n    }\n  }\n}\n"
->>>>>>> 846be96 (Use user instead of groupUsers)
+    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      submission(id: $submissionId) {\n        id\n        description\n        submittedAt\n        pullRequestUrl\n        viewerCanReview\n        submitter {\n          __typename\n          ... on UserType {\n            id\n            file\n            name\n            lastName\n          }\n          ... on InternalGroupType {\n            id\n          }\n        }\n        reviewer {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n        review {\n          id\n          revisionRequested\n          grade\n          createdAt\n          updatedAt\n        }\n        assignment {\n          id\n          title\n          endDate\n          isGroup\n          groupParticipants {\n            group {\n              id\n              name\n            }\n            user {\n              id\n              name\n              lastName\n            }\n            id\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-<<<<<<< HEAD
-(node as any).hash = "97c2ee4eadf0a86aa14ccca98a1b37d8";
-=======
-(node as any).hash = "610dca55196d1ec142c4047a78157183";
->>>>>>> 846be96 (Use user instead of groupUsers)
+(node as any).hash = "5c52a4560e2944b304909672eb49d6cd";
 
 export default node;
