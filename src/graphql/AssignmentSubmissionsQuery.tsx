@@ -26,6 +26,12 @@ export default graphql`
               ... on InternalGroupType {
                 id
                 groupName: name
+                usersForAssignment {
+                  id
+                  name
+                  lastName
+                  file
+                }
               }
               ... on UserType {
                 id
@@ -56,6 +62,12 @@ export default graphql`
               ... on InternalGroupType {
                 id
                 groupName: name
+                usersForAssignment {
+                  id
+                  name
+                  lastName
+                  file
+                }
               }
               ... on UserType {
                 id

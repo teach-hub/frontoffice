@@ -30,6 +30,7 @@ import { FilterBadge } from 'components/FilterBadge';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
 import useToast from 'hooks/useToast';
 import { SubmissionsTable } from 'components/SubmissionsTable';
+import Link from 'components/Link';
 
 type SubjectRowData = {
   id: Optional<Nullable<string>>;
@@ -40,6 +41,10 @@ type SubjectRowData = {
 type SubmitterRowData = SubjectRowData & {
   isGroup: boolean;
 };
+type GroupSubmitterRowData = SubmitterRowData & {
+  participants: SubjectRowData[];
+};
+
 type ReviewerRowData = SubjectRowData;
 
 type SubmissionRowData = {
@@ -93,7 +98,9 @@ const getSubmitterId = (submitter: SubmitterType): Optional<string> => {
   throw new Error('Submitter is neither a user nor a group');
 };
 
-const getSubmitterRowData = (submitter: SubmitterType): SubmitterRowData => {
+const getSubmitterRowData = (
+  submitter: SubmitterType
+): SubmitterRowData | GroupSubmitterRowData => {
   const submitterAsUser = getSubmitterAsUser(submitter);
   if (submitterAsUser) {
     return {
@@ -108,6 +115,10 @@ const getSubmitterRowData = (submitter: SubmitterType): SubmitterRowData => {
       id: submitterAsGroup.id,
       name: submitterAsGroup.groupName,
       isGroup: true,
+      participants: submitterAsGroup.usersForAssignment.map(user => ({
+        id: user.id,
+        name: `${user.lastName}, ${user.name}`,
+      })),
     };
   }
   throw new Error('Submitter is neither a user nor a group');
@@ -316,14 +327,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
             <TabPanel>
               <SubmissionsTable
                 rowDataList={nonGroupRowDataList}
-                headers={[
-                  'Alumno',
-                  'Trabajo Práctico',
-                  'Corrector',
-                  'Estado',
-                  'Nota',
-                  '',
-                ]}
+                submitterNameHeader={'Alumno'}
                 onRowClick={rowData =>
                   rowData.submission?.id
                     ? navigate(rowData.submission?.id)
@@ -345,14 +349,9 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
             <TabPanel>
               <SubmissionsTable
                 rowDataList={groupRowDataList}
-                headers={[
-                  'Grupo',
-                  'Trabajo Práctico',
-                  'Corrector',
-                  'Estado',
-                  'Nota',
-                  '',
-                ]} /*todo: show all participants and apply selected student filter to them*/
+                submitterNameHeader={
+                  'Grupo'
+                } /*todo: show all participants and apply selected student filter to them*/
                 onRowClick={rowData =>
                   rowData.submission?.id
                     ? navigate(rowData.submission?.id)
@@ -369,6 +368,27 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                 updateSelectedReviewerCallback={reviewerId =>
                   setSelectedReviewerId(reviewerId)
                 }
+                extraColumn={{
+                  header: 'Alumnos',
+                  columnIndex: 1,
+                  content: rowData => {
+                    const group = rowData.submitter as GroupSubmitterRowData;
+                    return (
+                      <Stack>
+                        {group.participants.map(participant => (
+                          <Link // Link without redirect
+                            onClick={event => {
+                              event.stopPropagation(); // This prevents the click from propagating to the parent row
+                              setSelectedSubmitterId(participant.id);
+                            }}
+                          >
+                            {participant.name}
+                          </Link>
+                        ))}
+                      </Stack>
+                    );
+                  },
+                }}
               />
             </TabPanel>
           </TabPanels>

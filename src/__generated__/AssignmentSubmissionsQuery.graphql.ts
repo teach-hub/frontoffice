@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f5f14aa70b64643a79c43e73b410dcf7>>
+ * @generated SignedSource<<cc45014cbab1acd2e5344ff7bf4b1606>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -36,6 +36,12 @@ export type AssignmentSubmissionsQuery$data = {
             readonly __typename: "InternalGroupType";
             readonly groupName: string | null;
             readonly id: string;
+            readonly usersForAssignment: ReadonlyArray<{
+              readonly file: string;
+              readonly id: string;
+              readonly lastName: string;
+              readonly name: string;
+            }>;
           } | {
             readonly __typename: "UserType";
             readonly file: string;
@@ -73,6 +79,12 @@ export type AssignmentSubmissionsQuery$data = {
             readonly __typename: "InternalGroupType";
             readonly groupName: string | null;
             readonly id: string;
+            readonly usersForAssignment: ReadonlyArray<{
+              readonly file: string;
+              readonly id: string;
+              readonly lastName: string;
+              readonly name: string;
+            }>;
           } | {
             readonly __typename: "UserType";
             readonly file: string;
@@ -140,6 +152,13 @@ v5 = {
 v6 = {
   "alias": null,
   "args": null,
+  "kind": "ScalarField",
+  "name": "file",
+  "storageKey": null
+},
+v7 = {
+  "alias": null,
+  "args": null,
   "concreteType": null,
   "kind": "LinkedField",
   "name": "submitter",
@@ -162,6 +181,21 @@ v6 = {
           "kind": "ScalarField",
           "name": "name",
           "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "concreteType": "UserType",
+          "kind": "LinkedField",
+          "name": "usersForAssignment",
+          "plural": true,
+          "selections": [
+            (v2/*: any*/),
+            (v3/*: any*/),
+            (v5/*: any*/),
+            (v6/*: any*/)
+          ],
+          "storageKey": null
         }
       ],
       "type": "InternalGroupType",
@@ -171,13 +205,7 @@ v6 = {
       "kind": "InlineFragment",
       "selections": [
         (v2/*: any*/),
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "file",
-          "storageKey": null
-        },
+        (v6/*: any*/),
         (v3/*: any*/),
         (v5/*: any*/)
       ],
@@ -187,7 +215,7 @@ v6 = {
   ],
   "storageKey": null
 },
-v7 = {
+v8 = {
   "alias": null,
   "args": null,
   "concreteType": "ReviewerType",
@@ -213,7 +241,7 @@ v7 = {
   ],
   "storageKey": null
 },
-v8 = [
+v9 = [
   {
     "alias": null,
     "args": null,
@@ -312,8 +340,8 @@ v8 = [
                     "name": "assignmentId",
                     "storageKey": null
                   },
-                  (v6/*: any*/),
                   (v7/*: any*/),
+                  (v8/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -365,8 +393,8 @@ v8 = [
                 "name": "nonExistentSubmissions",
                 "plural": true,
                 "selections": [
-                  (v6/*: any*/),
-                  (v7/*: any*/)
+                  (v7/*: any*/),
+                  (v8/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -389,7 +417,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "AssignmentSubmissionsQuery",
-    "selections": (v8/*: any*/),
+    "selections": (v9/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -401,19 +429,19 @@ return {
     ],
     "kind": "Operation",
     "name": "AssignmentSubmissionsQuery",
-    "selections": (v8/*: any*/)
+    "selections": (v9/*: any*/)
   },
   "params": {
-    "cacheID": "02678720110e43ef7b166933537f40d9",
+    "cacheID": "b7d804a0d1f4dbb5bf7eb18a74f8e514",
     "id": null,
     "metadata": {},
     "name": "AssignmentSubmissionsQuery",
     "operationKind": "query",
-    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n      assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {\n        id\n        title\n        isGroup\n        submissions {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          assignmentId\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            createdAt\n            updatedAt\n          }\n        }\n        nonExistentSubmissions {\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n      assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {\n        id\n        title\n        isGroup\n        submissions {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          assignmentId\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              usersForAssignment {\n                id\n                name\n                lastName\n                file\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            createdAt\n            updatedAt\n          }\n        }\n        nonExistentSubmissions {\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              usersForAssignment {\n                id\n                name\n                lastName\n                file\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "4ee33d26a73476cd96a1892fed9fbadc";
+(node as any).hash = "a5bf9be9deebb76429d6388ec41df02c";
 
 export default node;

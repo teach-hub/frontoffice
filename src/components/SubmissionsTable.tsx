@@ -14,23 +14,46 @@ import IconButton from 'components/IconButton';
 import RepositoryIcon from 'icons/RepositoryIcon';
 import PullRequestIcon from 'icons/PullRequestIcon';
 import Table from 'components/Table';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { RowData } from 'pages/courses/assignments/submissions';
 import { Nullable, Optional } from 'types';
 
+type ExtraColumn = {
+  header: string;
+  content: (rowData: RowData) => ReactNode;
+  columnIndex: number;
+};
+
 export const SubmissionsTable = ({
   rowDataList,
-  headers,
+  submitterNameHeader,
   onRowClick,
   updateSelectedSubmitterCallback,
   updateSelectedReviewerCallback,
+  extraColumn,
 }: {
   rowDataList: RowData[];
-  headers: string[];
+  submitterNameHeader: string;
   onRowClick: (rowData: RowData) => void;
   updateSelectedSubmitterCallback: (submitterId: Optional<Nullable<string>>) => void;
   updateSelectedReviewerCallback: (submitterId: Optional<Nullable<string>>) => void;
+  extraColumn?: ExtraColumn;
 }) => {
+  const baseHeaders = [
+    submitterNameHeader,
+    'Trabajo Práctico',
+    'Corrector',
+    'Estado',
+    'Nota',
+    '',
+  ];
+  const headers = extraColumn
+    ? [
+        ...baseHeaders.slice(0, extraColumn.columnIndex),
+        extraColumn.header,
+        ...baseHeaders.slice(extraColumn.columnIndex),
+      ]
+    : baseHeaders;
   return (
     <Table
       headers={headers}
@@ -43,6 +66,70 @@ export const SubmissionsTable = ({
           : getSubmissionMissingStatusConfiguration();
         const gradeConfiguration = getGradeConfiguration(rowData.submission?.grade);
 
+        const baseContent = [
+          <Link // Link without redirect
+            onClick={event => {
+              event.stopPropagation(); // This prevents the click from propagating to the parent row
+              updateSelectedSubmitterCallback(rowData.submitter.id);
+            }}
+          >
+            {rowData.submitter.name}
+          </Link>,
+          rowData.assignmentTitle,
+          <Link // Link without redirect
+            onClick={event => {
+              event.stopPropagation(); // This prevents the click from propagating to the parent row
+              updateSelectedReviewerCallback(rowData.reviewer?.id);
+            }}
+          >
+            {rowData.reviewer ? rowData.reviewer.name : '-'}
+          </Link>,
+          <ReviewStatusBadge reviewStatusConfiguration={reviewStatusConfiguration} />,
+          <ReviewGradeBadge
+            grade={rowData.submission?.grade}
+            gradeConfiguration={gradeConfiguration}
+          />,
+          rowData.submission?.pullRequestUrl && (
+            <Stack direction={'row'}>
+              <Tooltip label={'Ir a repositorio'}>
+                <Link
+                  href={getGithubRepoUrlFromPullRequestUrl(
+                    rowData.submission?.pullRequestUrl
+                  )}
+                  isExternal
+                  onClick={event => event.stopPropagation()} // Avoid row click behaviour
+                >
+                  <IconButton
+                    variant={'ghost'}
+                    aria-label="repository-link"
+                    icon={<RepositoryIcon />}
+                  />
+                </Link>
+              </Tooltip>
+              <Tooltip label={'Ir a pull request'}>
+                <Link
+                  href={rowData.submission?.pullRequestUrl}
+                  isExternal
+                  onClick={event => event.stopPropagation()} // Avoid row click behaviour
+                >
+                  <IconButton
+                    variant={'ghost'}
+                    aria-label="pull-request-link"
+                    icon={<PullRequestIcon />}
+                  />
+                </Link>
+              </Tooltip>
+            </Stack>
+          ),
+        ];
+        const content = extraColumn
+          ? [
+              ...baseContent.slice(0, extraColumn.columnIndex),
+              extraColumn.content(rowData),
+              ...baseContent.slice(extraColumn.columnIndex),
+            ]
+          : baseContent;
+
         return {
           rowProps: {
             style: {
@@ -52,62 +139,7 @@ export const SubmissionsTable = ({
             _hover: { bg: theme.colors.teachHub.gray },
             onClick: () => onRowClick(rowData),
           },
-          content: [
-            <Link // Link without redirect
-              onClick={event => {
-                event.stopPropagation(); // This prevents the click from propagating to the parent row
-                updateSelectedSubmitterCallback(rowData.submitter.id);
-              }}
-            >
-              {rowData.submitter.name}
-            </Link>,
-            rowData.assignmentTitle,
-            <Link // Link without redirect
-              onClick={event => {
-                event.stopPropagation(); // This prevents the click from propagating to the parent row
-                updateSelectedReviewerCallback(rowData.reviewer?.id);
-              }}
-            >
-              {rowData.reviewer ? rowData.reviewer.name : '-'}
-            </Link>,
-            <ReviewStatusBadge reviewStatusConfiguration={reviewStatusConfiguration} />,
-            <ReviewGradeBadge
-              grade={rowData.submission?.grade}
-              gradeConfiguration={gradeConfiguration}
-            />,
-            rowData.submission?.pullRequestUrl && (
-              <Stack direction={'row'}>
-                <Tooltip label={'Ir a repositorio'}>
-                  <Link
-                    href={getGithubRepoUrlFromPullRequestUrl(
-                      rowData.submission?.pullRequestUrl
-                    )}
-                    isExternal
-                    onClick={event => event.stopPropagation()} // Avoid row click behaviour
-                  >
-                    <IconButton
-                      variant={'ghost'}
-                      aria-label="repository-link"
-                      icon={<RepositoryIcon />}
-                    />
-                  </Link>
-                </Tooltip>
-                <Tooltip label={'Ir a pull request'}>
-                  <Link
-                    href={rowData.submission?.pullRequestUrl}
-                    isExternal
-                    onClick={event => event.stopPropagation()} // Avoid row click behaviour
-                  >
-                    <IconButton
-                      variant={'ghost'}
-                      aria-label="pull-request-link"
-                      icon={<PullRequestIcon />}
-                    />
-                  </Link>
-                </Tooltip>
-              </Stack>
-            ),
-          ],
+          content,
         };
       })}
     />
