@@ -2,7 +2,6 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 import Navigation from 'components/Navigation';
-import Table from 'components/Table';
 
 import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
 
@@ -13,27 +12,24 @@ import type {
   AssignmentSubmissionsQuery$data,
 } from '__generated__/AssignmentSubmissionsQuery.graphql';
 import {
-  getGradeConfiguration,
-  getSubmissionMissingStatusConfiguration,
-  getSubmissionReviewStatusConfiguration,
-} from 'app/submissions';
-import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
-import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
-import IconButton from 'components/IconButton';
-import { Flex, Select, Stack } from '@chakra-ui/react';
-import Link from 'components/Link';
-import Tooltip from 'components/Tooltip';
+  Flex,
+  Select,
+  Stack,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+} from '@chakra-ui/react';
 import { theme } from 'theme';
 import Heading from 'components/Heading';
 import PageDataContainer from 'components/PageDataContainer';
 import { Query } from 'queries';
-import RepositoryIcon from 'icons/RepositoryIcon';
-import PullRequestIcon from 'icons/PullRequestIcon';
-import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
 import { Nullable, Optional } from 'types';
 import { FilterBadge } from 'components/FilterBadge';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
 import useToast from 'hooks/useToast';
+import { SubmissionsTable } from 'components/SubmissionsTable';
 
 type SubjectRowData = {
   id: Optional<Nullable<string>>;
@@ -41,7 +37,9 @@ type SubjectRowData = {
 };
 
 /* TODO: TH-170 may be group */
-type SubmitterRowData = SubjectRowData;
+type SubmitterRowData = SubjectRowData & {
+  isGroup: boolean;
+};
 type ReviewerRowData = SubjectRowData;
 
 type SubmissionRowData = {
@@ -51,7 +49,7 @@ type SubmissionRowData = {
   pullRequestUrl?: Optional<Nullable<string>>;
 };
 
-interface RowData {
+export interface RowData {
   submitter: SubmitterRowData;
   reviewer?: ReviewerRowData;
   assignmentTitle: Optional<Nullable<string>>;
@@ -101,6 +99,7 @@ const getSubmitterRowData = (submitter: SubmitterType): SubmitterRowData => {
     return {
       id: submitterAsUser.id,
       name: `${submitterAsUser.lastName}, ${submitterAsUser.name}`,
+      isGroup: false,
     };
   }
   const submitterAsGroup = getSubmitterAsGroup(submitter);
@@ -108,6 +107,7 @@ const getSubmitterRowData = (submitter: SubmitterType): SubmitterRowData => {
     return {
       id: submitterAsGroup.id,
       name: submitterAsGroup.groupName,
+      isGroup: true,
     };
   }
   throw new Error('Submitter is neither a user nor a group');
@@ -160,9 +160,11 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     return validStudent && validReviewer;
   };
 
-  const [rowDataList, setRowDataList] = useState<RowData[]>([]);
+  const [groupRowDataList, setGroupRowDataList] = useState<RowData[]>([]);
+  const [nonGroupRowDataList, setNonGroupRowDataList] = useState<RowData[]>([]);
   const [rowsSubmitters, setRowsSubmitters] = useState<SubmitterRowData[]>([]);
   const [rowsReviewers, setRowsReviewers] = useState<ReviewerRowData[]>([]);
+  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
 
   useEffect(() => {
     const assignmentSubmissionsData =
@@ -214,7 +216,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
           }) &&
           !assignment.isGroup
         ) {
-          // TODO: TH-191 show group non existent submissions (change isGroup check)
+          // TODO: TH-191 show group non existent submissions (remove isGroup check)
           newRowData.push({
             submitter: getSubmitterRowData(submitter),
             assignmentTitle: assignment.title,
@@ -224,7 +226,20 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
       })
     );
 
-    setRowDataList(newRowData);
+    const groupRowDataList: RowData[] = [];
+    const nonGroupRowDataList: RowData[] = [];
+    newRowData.forEach(rowData => {
+      if (rowData.submitter.isGroup) {
+        groupRowDataList.push(rowData);
+      } else {
+        nonGroupRowDataList.push(rowData);
+      }
+    });
+
+    setGroupRowDataList(groupRowDataList);
+    setNonGroupRowDataList(nonGroupRowDataList);
+
+    setSelectedTabIndex(nonGroupRowDataList.length !== 0 ? 0 : 1);
 
     setRowsReviewers(
       newRowData.map(row => row.reviewer).filter(Boolean) as ReviewerRowData[]
@@ -292,25 +307,24 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
         </Select>
       </Flex>
       <Stack gap={'30px'} marginTop={'10px'} height={'75vh'}>
-        <Table
-          headers={['Alumno', 'Trabajo Práctico', 'Corrector', 'Estado', 'Nota', '']}
-          rowOptions={rowDataList.map(rowData => {
-            const reviewStatusConfiguration = rowData.submission?.id
-              ? getSubmissionReviewStatusConfiguration({
-                  grade: rowData.submission?.grade,
-                  revisionRequested: rowData.submission?.revisionRequested,
-                })
-              : getSubmissionMissingStatusConfiguration();
-            const gradeConfiguration = getGradeConfiguration(rowData.submission?.grade);
-
-            return {
-              rowProps: {
-                style: {
-                  cursor: 'pointer',
-                  transition: 'background-color 0.8s',
-                },
-                _hover: { bg: theme.colors.teachHub.gray },
-                onClick: () =>
+        <Tabs index={selectedTabIndex} onChange={index => setSelectedTabIndex(index)}>
+          <TabList>
+            <Tab isDisabled={nonGroupRowDataList.length === 0}>Individuales</Tab>
+            <Tab isDisabled={groupRowDataList.length === 0}>Grupales</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              <SubmissionsTable
+                rowDataList={nonGroupRowDataList}
+                headers={[
+                  'Alumno',
+                  'Trabajo Práctico',
+                  'Corrector',
+                  'Estado',
+                  'Nota',
+                  '',
+                ]}
+                onRowClick={rowData =>
                   rowData.submission?.id
                     ? navigate(rowData.submission?.id)
                     : toast({
@@ -318,71 +332,47 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                         description:
                           'Para acceder al detalle primero se debe realizar la entrega',
                         status: 'warning',
-                      }),
-              },
-              content: [
-                <Link // Link without redirect
-                  onClick={event => {
-                    event.stopPropagation(); // This prevents the click from propagating to the parent row
-                    setSelectedSubmitterId(rowData.submitter.id);
-                  }}
-                >
-                  {rowData.submitter.name}
-                  {/*todo: TH-170 may be group - show column with checkbox if group and only display group name or student name?*/}
-                </Link>,
-                rowData.assignmentTitle,
-                <Link // Link without redirect
-                  onClick={event => {
-                    event.stopPropagation(); // This prevents the click from propagating to the parent row
-                    setSelectedReviewerId(rowData.reviewer?.id);
-                  }}
-                >
-                  {rowData.reviewer ? rowData.reviewer.name : '-'}
-                </Link>,
-                <ReviewStatusBadge
-                  reviewStatusConfiguration={reviewStatusConfiguration}
-                />,
-                <ReviewGradeBadge
-                  grade={rowData.submission?.grade}
-                  gradeConfiguration={gradeConfiguration}
-                />,
-
-                rowData.submission?.pullRequestUrl && (
-                  <Stack direction={'row'}>
-                    <Tooltip label={'Ir a repositorio'}>
-                      <Link
-                        href={getGithubRepoUrlFromPullRequestUrl(
-                          rowData.submission?.pullRequestUrl
-                        )}
-                        isExternal
-                        onClick={event => event.stopPropagation()} // Avoid row clic behaviour
-                      >
-                        <IconButton
-                          variant={'ghost'}
-                          aria-label="repository-link"
-                          icon={<RepositoryIcon />}
-                        />
-                      </Link>
-                    </Tooltip>
-                    <Tooltip label={'Ir a pull request'}>
-                      <Link
-                        href={rowData.submission?.pullRequestUrl}
-                        isExternal
-                        onClick={event => event.stopPropagation()} // Avoid row clic behaviour
-                      >
-                        <IconButton
-                          variant={'ghost'}
-                          aria-label="pull-request-link"
-                          icon={<PullRequestIcon />}
-                        />
-                      </Link>
-                    </Tooltip>
-                  </Stack>
-                ),
-              ],
-            };
-          })}
-        />
+                      })
+                }
+                updateSelectedSubmitterCallback={submitterId =>
+                  setSelectedSubmitterId(submitterId)
+                }
+                updateSelectedReviewerCallback={reviewerId =>
+                  setSelectedReviewerId(reviewerId)
+                }
+              />
+            </TabPanel>
+            <TabPanel>
+              <SubmissionsTable
+                rowDataList={groupRowDataList}
+                headers={[
+                  'Grupo',
+                  'Trabajo Práctico',
+                  'Corrector',
+                  'Estado',
+                  'Nota',
+                  '',
+                ]} /*todo: show all participants and apply selected student filter to them*/
+                onRowClick={rowData =>
+                  rowData.submission?.id
+                    ? navigate(rowData.submission?.id)
+                    : toast({
+                        title: 'No existe entrega asociada',
+                        description:
+                          'Para acceder al detalle primero se debe realizar la entrega',
+                        status: 'warning',
+                      })
+                }
+                updateSelectedSubmitterCallback={submitterId =>
+                  setSelectedSubmitterId(submitterId)
+                }
+                updateSelectedReviewerCallback={reviewerId =>
+                  setSelectedReviewerId(reviewerId)
+                }
+              />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
       </Stack>
     </PageDataContainer>
   );
