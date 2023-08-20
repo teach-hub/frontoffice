@@ -1,9 +1,5 @@
 /**
-<<<<<<< HEAD
- * @generated SignedSource<<0350d8626902e8aa4b11edfe89bd3b26>>
-=======
- * @generated SignedSource<<11614becb0b49e22cbf0126fadb9c8ec>>
->>>>>>> 315412d (Compute state taking in account new states)
+ * @generated SignedSource<<cc512c44f3537407662ffd25919387c8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -148,66 +144,13 @@ v4 = {
   "name": "title",
   "storageKey": null
 },
-<<<<<<< HEAD
 v5 = {
-=======
-v6 = {
-  "alias": null,
-  "args": null,
-  "concreteType": "AssignmentType",
-  "kind": "LinkedField",
-  "name": "assignments",
-  "plural": true,
-  "selections": [
-    (v2/*: any*/),
-    (v5/*: any*/)
-  ],
-  "storageKey": null
-},
-v7 = [
-  {
-    "kind": "Variable",
-    "name": "assignmentId",
-    "variableName": "assignmentId"
-  }
-],
-v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "description",
+  "name": "lastName",
   "storageKey": null
 },
-v9 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "submittedAt",
-  "storageKey": null
-},
-v10 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "submittedAgainAt",
-  "storageKey": null
-},
-v11 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "pullRequestUrl",
-  "storageKey": null
-},
-v12 = {
->>>>>>> 315412d (Compute state taking in account new states)
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "assignmentId",
-  "storageKey": null
-},
-<<<<<<< HEAD
 v6 = {
   "alias": null,
   "args": null,
@@ -222,17 +165,6 @@ v7 = {
   "kind": "LinkedField",
   "name": "submitter",
   "plural": false,
-=======
-v13 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "lastName",
-  "storageKey": null
-},
-v14 = {
-  "kind": "InlineFragment",
->>>>>>> 315412d (Compute state taking in account new states)
   "selections": [
     {
       "alias": null,
@@ -241,7 +173,6 @@ v14 = {
       "name": "__typename",
       "storageKey": null
     },
-<<<<<<< HEAD
     {
       "kind": "InlineFragment",
       "selections": [
@@ -283,18 +214,10 @@ v14 = {
       "type": "UserType",
       "abstractKey": null
     }
-=======
-    (v3/*: any*/),
-    (v13/*: any*/)
->>>>>>> 315412d (Compute state taking in account new states)
   ],
   "storageKey": null
 },
-<<<<<<< HEAD
 v8 = {
-=======
-v15 = {
->>>>>>> 315412d (Compute state taking in account new states)
   "alias": null,
   "args": null,
   "concreteType": "ReviewerType",
@@ -313,18 +236,13 @@ v15 = {
       "selections": [
         (v2/*: any*/),
         (v3/*: any*/),
-<<<<<<< HEAD
         (v5/*: any*/)
-=======
-        (v13/*: any*/)
->>>>>>> 315412d (Compute state taking in account new states)
       ],
       "storageKey": null
     }
   ],
   "storageKey": null
 },
-<<<<<<< HEAD
 v9 = [
   {
     "alias": null,
@@ -333,57 +251,6 @@ v9 = [
     "kind": "LinkedField",
     "name": "viewer",
     "plural": false,
-=======
-v16 = {
-  "alias": null,
-  "args": null,
-  "concreteType": "InternalReviewType",
-  "kind": "LinkedField",
-  "name": "review",
-  "plural": false,
-  "selections": [
-    (v2/*: any*/),
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "revisionRequested",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "grade",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "reviewedAt",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "reviewedAgainAt",
-      "storageKey": null
-    }
-  ],
-  "storageKey": null
-};
-return {
-  "fragment": {
-    "argumentDefinitions": [
-      (v0/*: any*/),
-      (v1/*: any*/)
-    ],
-    "kind": "Fragment",
-    "metadata": null,
-    "name": "AssignmentSubmissionsQuery",
->>>>>>> 315412d (Compute state taking in account new states)
     "selections": [
       (v2/*: any*/),
       (v3/*: any*/),
@@ -465,6 +332,13 @@ return {
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
+                    "name": "submittedAgainAt",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
                     "name": "pullRequestUrl",
                     "storageKey": null
                   },
@@ -486,7 +360,6 @@ return {
                     "plural": false,
                     "selections": [
                       (v2/*: any*/),
-<<<<<<< HEAD
                       {
                         "alias": null,
                         "args": null,
@@ -505,37 +378,16 @@ return {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "createdAt",
+                        "name": "reviewedAt",
                         "storageKey": null
                       },
                       {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
-                        "name": "updatedAt",
+                        "name": "reviewedAgainAt",
                         "storageKey": null
                       }
-=======
-                      (v8/*: any*/),
-                      (v9/*: any*/),
-                      (v10/*: any*/),
-                      (v11/*: any*/),
-                      (v12/*: any*/),
-                      {
-                        "alias": null,
-                        "args": null,
-                        "concreteType": null,
-                        "kind": "LinkedField",
-                        "name": "submitter",
-                        "plural": false,
-                        "selections": [
-                          (v14/*: any*/)
-                        ],
-                        "storageKey": null
-                      },
-                      (v15/*: any*/),
-                      (v16/*: any*/)
->>>>>>> 315412d (Compute state taking in account new states)
                     ],
                     "storageKey": null
                   }
@@ -587,120 +439,19 @@ return {
     ],
     "kind": "Operation",
     "name": "AssignmentSubmissionsQuery",
-<<<<<<< HEAD
     "selections": (v9/*: any*/)
   },
   "params": {
-    "cacheID": "ae6761163bc261b981151c53eb339abc",
-=======
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "ViewerType",
-        "kind": "LinkedField",
-        "name": "viewer",
-        "plural": false,
-        "selections": [
-          (v2/*: any*/),
-          (v3/*: any*/),
-          {
-            "alias": null,
-            "args": (v4/*: any*/),
-            "concreteType": "CourseType",
-            "kind": "LinkedField",
-            "name": "course",
-            "plural": false,
-            "selections": [
-              (v2/*: any*/),
-              (v6/*: any*/),
-              {
-                "alias": "assignmentsWithSubmissions",
-                "args": (v7/*: any*/),
-                "concreteType": "AssignmentType",
-                "kind": "LinkedField",
-                "name": "assignments",
-                "plural": true,
-                "selections": [
-                  (v2/*: any*/),
-                  (v5/*: any*/),
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "SubmissionType",
-                    "kind": "LinkedField",
-                    "name": "submissions",
-                    "plural": true,
-                    "selections": [
-                      (v2/*: any*/),
-                      (v8/*: any*/),
-                      (v9/*: any*/),
-                      (v10/*: any*/),
-                      (v11/*: any*/),
-                      (v12/*: any*/),
-                      {
-                        "alias": null,
-                        "args": null,
-                        "concreteType": null,
-                        "kind": "LinkedField",
-                        "name": "submitter",
-                        "plural": false,
-                        "selections": [
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "__typename",
-                            "storageKey": null
-                          },
-                          (v14/*: any*/),
-                          {
-                            "kind": "InlineFragment",
-                            "selections": [
-                              (v2/*: any*/)
-                            ],
-                            "type": "InternalGroupType",
-                            "abstractKey": null
-                          }
-                        ],
-                        "storageKey": null
-                      },
-                      (v15/*: any*/),
-                      (v16/*: any*/)
-                    ],
-                    "storageKey": null
-                  }
-                ],
-                "storageKey": null
-              }
-            ],
-            "storageKey": null
-          }
-        ],
-        "storageKey": null
-      }
-    ]
-  },
-  "params": {
-    "cacheID": "aae6c87cd35e0161207706f6c0db8db7",
->>>>>>> 315412d (Compute state taking in account new states)
+    "cacheID": "dec259bd96a939b3dbe441a753c9419e",
     "id": null,
     "metadata": {},
     "name": "AssignmentSubmissionsQuery",
     "operationKind": "query",
-<<<<<<< HEAD
-    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n      assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {\n        id\n        title\n        isGroup\n        submissions {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          assignmentId\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              usersForAssignment {\n                id\n                name\n                lastName\n                file\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            createdAt\n            updatedAt\n          }\n        }\n        nonExistentSubmissions {\n          id\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              usersForAssignment {\n                id\n                name\n                lastName\n                file\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
-=======
-    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n      assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {\n        id\n        title\n        submissions {\n          id\n          description\n          submittedAt\n          submittedAgainAt\n          pullRequestUrl\n          assignmentId\n          submitter {\n            __typename\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n            ... on InternalGroupType {\n              id\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            reviewedAt\n            reviewedAgainAt\n          }\n        }\n      }\n    }\n  }\n}\n"
->>>>>>> 315412d (Compute state taking in account new states)
+    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n      assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {\n        id\n        title\n        isGroup\n        submissions {\n          id\n          description\n          submittedAt\n          submittedAgainAt\n          pullRequestUrl\n          assignmentId\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              usersForAssignment {\n                id\n                name\n                lastName\n                file\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            reviewedAt\n            reviewedAgainAt\n          }\n        }\n        nonExistentSubmissions {\n          id\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              usersForAssignment {\n                id\n                name\n                lastName\n                file\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-<<<<<<< HEAD
-(node as any).hash = "457329a0f3afd5ce66b05912534abeff";
-=======
-(node as any).hash = "221342b9012ac6d259d900c640f2a3be";
->>>>>>> 315412d (Compute state taking in account new states)
+(node as any).hash = "6bb7d6548509cb7ecf15253fb7cfa6ab";
 
 export default node;

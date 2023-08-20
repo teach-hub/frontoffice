@@ -28,8 +28,8 @@ const ErrorBadgeConfiguration: BadgeConfiguration = {
 };
 
 const NonExistentBadgeConfiguration: BadgeConfiguration = {
-  badgeBackgroundColor: theme.colors.teachHub.black,
-  badgeTextColor: theme.colors.teachHub.white,
+  badgeBackgroundColor: 'teachHub.black',
+  badgeTextColor: 'teachHub.white',
 };
 
 const WarningBadgeConfiguration: BadgeConfiguration = {
