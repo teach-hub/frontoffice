@@ -22,6 +22,11 @@ export default graphql`
             pullRequestUrl
             assignmentId
             submitter {
+              __typename
+              ... on InternalGroupType {
+                id
+                groupName: name
+              }
               ... on UserType {
                 id
                 file
@@ -47,6 +52,11 @@ export default graphql`
           }
           nonExistentSubmissions {
             submitter {
+              __typename
+              ... on InternalGroupType {
+                id
+                groupName: name
+              }
               ... on UserType {
                 id
                 file

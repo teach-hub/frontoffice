@@ -8,7 +8,10 @@ import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
 
 import SubmissionsQuery from 'graphql/AssignmentSubmissionsQuery';
 
-import type { AssignmentSubmissionsQuery } from '__generated__/AssignmentSubmissionsQuery.graphql';
+import type {
+  AssignmentSubmissionsQuery,
+  AssignmentSubmissionsQuery$data,
+} from '__generated__/AssignmentSubmissionsQuery.graphql';
 import {
   getGradeConfiguration,
   getSubmissionMissingStatusConfiguration,
@@ -32,15 +35,14 @@ import { FilterBadge } from 'components/FilterBadge';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
 import useToast from 'hooks/useToast';
 
-type UserRowData = {
+type SubjectRowData = {
   id: Optional<Nullable<string>>;
   name: Optional<Nullable<string>>;
-  lastName: Optional<Nullable<string>>;
 };
 
 /* TODO: TH-170 may be group */
-type SubmitterRowData = UserRowData;
-type ReviewerRowData = UserRowData;
+type SubmitterRowData = SubjectRowData;
+type ReviewerRowData = SubjectRowData;
 
 type SubmissionRowData = {
   id?: Optional<Nullable<string>>;
@@ -56,8 +58,71 @@ interface RowData {
   submission?: SubmissionRowData;
 }
 
-const getRowUserName = (userRowData: UserRowData) =>
-  `${userRowData.lastName}, ${userRowData.name}`;
+type SubmissionType = NonNullable<
+  NonNullable<
+    NonNullable<
+      NonNullable<AssignmentSubmissionsQuery$data['viewer']>['course']
+    >['assignmentsWithSubmissions'][number]
+  >['submissions'][number]
+>;
+
+type SubmitterType = NonNullable<SubmissionType['submitter']>;
+type ReviewerType = NonNullable<SubmissionType['reviewer']>;
+
+const getSubmitterAsUser = (submitter: SubmitterType) => {
+  if (submitter.__typename === 'UserType') {
+    return submitter;
+  }
+  return null;
+};
+
+const getSubmitterAsGroup = (submitter: SubmitterType) => {
+  if (submitter.__typename === 'InternalGroupType') {
+    return submitter;
+  }
+  return null;
+};
+
+const getSubmitterId = (submitter: SubmitterType): Optional<string> => {
+  const submitterAsUser = getSubmitterAsUser(submitter);
+  if (submitterAsUser) {
+    return submitterAsUser.id;
+  }
+  const submitterAsGroup = getSubmitterAsGroup(submitter);
+  if (submitterAsGroup) {
+    return submitterAsGroup.id;
+  }
+  throw new Error('Submitter is neither a user nor a group');
+};
+
+const getSubmitterRowData = (submitter: SubmitterType): SubmitterRowData => {
+  const submitterAsUser = getSubmitterAsUser(submitter);
+  if (submitterAsUser) {
+    return {
+      id: submitterAsUser.id,
+      name: `${submitterAsUser.lastName}, ${submitterAsUser.name}`,
+    };
+  }
+  const submitterAsGroup = getSubmitterAsGroup(submitter);
+  if (submitterAsGroup) {
+    return {
+      id: submitterAsGroup.id,
+      name: submitterAsGroup.groupName,
+    };
+  }
+  throw new Error('Submitter is neither a user nor a group');
+};
+
+const getReviewerRowData = (reviewer: ReviewerType): Optional<ReviewerRowData> => {
+  const reviewerUser = reviewer.reviewer;
+  if (reviewerUser) {
+    return {
+      id: reviewerUser.id,
+      name: `${reviewerUser.lastName}, ${reviewerUser.name}`,
+    };
+  }
+  return undefined;
+};
 
 const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const toast = useToast();
@@ -69,8 +134,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const navigate = useNavigate();
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(assignmentId);
 
-  /* TODO: TH-170 may be group */
-  const [selectedStudentId, setSelectedStudentId] =
+  const [selectedSubmitterId, setSelectedSubmitterId] =
     useState<Optional<Nullable<string>>>(null);
   const [selectedReviewerId, setSelectedReviewerId] =
     useState<Optional<Nullable<string>>>(null);
@@ -89,7 +153,9 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     submitterId?: string;
     reviewerId?: string;
   }) => {
-    const validStudent = !selectedStudentId ? true : submitterId === selectedStudentId;
+    const validStudent = !selectedSubmitterId
+      ? true
+      : submitterId === selectedSubmitterId;
     const validReviewer = !selectedReviewerId ? true : reviewerId === selectedReviewerId;
     return validStudent && validReviewer;
   };
@@ -104,7 +170,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     const newSubmissions = assignmentSubmissionsData.flatMap(assignment =>
       (assignment?.submissions || []).filter(submission => {
         return rowEnabledByFilters({
-          submitterId: submission.submitter.id,
+          submitterId: getSubmitterId(submission.submitter),
           reviewerId: submission.reviewer?.reviewer?.id,
         });
       })
@@ -114,8 +180,6 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     setSubmissionIds(newSubmissions.map(submission => submission.id));
 
     const newRowData = newSubmissions.map((submission): RowData => {
-      const submitter = submission.submitter;
-      const reviewerUser = submission.reviewer?.reviewer;
       const review = submission?.review;
       const grade = review?.grade;
       const revisionRequested = review?.revisionRequested;
@@ -124,18 +188,10 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
       )?.title;
 
       return {
-        submitter: {
-          id: submitter.id,
-          name: submitter.name,
-          lastName: submitter.lastName,
-        },
+        submitter: getSubmitterRowData(submission.submitter),
         assignmentTitle: submissionAssignmentTitle,
-        reviewer: reviewerUser
-          ? {
-              id: reviewerUser.id,
-              name: reviewerUser.name,
-              lastName: reviewerUser.lastName,
-            }
+        reviewer: submission.reviewer
+          ? getReviewerRowData(submission.reviewer)
           : undefined,
         submission: submission.id
           ? {
@@ -153,26 +209,16 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
         const reviewerUser = reviewer?.reviewer;
         if (
           rowEnabledByFilters({
-            submitterId: submitter?.id,
+            submitterId: getSubmitterId(submitter),
             reviewerId: reviewerUser?.id,
           }) &&
           !assignment.isGroup
         ) {
           // TODO: TH-191 show group non existent submissions (change isGroup check)
           newRowData.push({
-            submitter: {
-              id: submitter.id,
-              name: submitter.name,
-              lastName: submitter.lastName,
-            },
+            submitter: getSubmitterRowData(submitter),
             assignmentTitle: assignment.title,
-            reviewer: reviewerUser
-              ? {
-                  id: reviewerUser.id,
-                  name: reviewerUser.name,
-                  lastName: reviewerUser.lastName,
-                }
-              : undefined,
+            reviewer: reviewer ? getReviewerRowData(reviewer) : undefined,
           });
         }
       })
@@ -187,25 +233,25 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     setRowsSubmitters(
       newRowData.map(row => row.submitter).filter(Boolean) as SubmitterRowData[]
     );
-  }, [selectedStudentId, selectedReviewerId, data]);
+  }, [selectedSubmitterId, selectedReviewerId, data]);
 
   return (
     <PageDataContainer>
       <Flex direction={'row'} width={'100%'} justifyContent={'space-between'}>
         <Stack direction={'row'} alignItems={'center'} gap={'20px'}>
           <Heading>Entregas</Heading>
-          {selectedStudentId && (
+          {selectedSubmitterId && (
             <FilterBadge
               text={(() => {
                 const selectedStudent = rowsSubmitters.find(
-                  student => student.id === selectedStudentId
+                  student => student.id === selectedSubmitterId
                 );
                 return 'Alumno/Grupo: '.concat(
-                  selectedStudent ? getRowUserName(selectedStudent) : ''
+                  selectedStudent?.name ? selectedStudent.name : ''
                 );
               })()}
               iconAriaLabel={'student-filter'}
-              onClick={() => setSelectedStudentId(null)}
+              onClick={() => setSelectedSubmitterId(null)}
             />
           )}
           {selectedReviewerId && (
@@ -215,7 +261,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                   x => x?.id === selectedReviewerId
                 );
                 return 'Corrector: '.concat(
-                  selectedReviewer ? getRowUserName(selectedReviewer) : ''
+                  selectedReviewer?.name ? selectedReviewer?.name : ''
                 );
               })()}
               iconAriaLabel={'reviewer-filter'}
@@ -278,10 +324,10 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                 <Link // Link without redirect
                   onClick={event => {
                     event.stopPropagation(); // This prevents the click from propagating to the parent row
-                    setSelectedStudentId(rowData.submitter.id);
+                    setSelectedSubmitterId(rowData.submitter.id);
                   }}
                 >
-                  {getRowUserName(rowData.submitter)}
+                  {rowData.submitter.name}
                   {/*todo: TH-170 may be group - show column with checkbox if group and only display group name or student name?*/}
                 </Link>,
                 rowData.assignmentTitle,
@@ -291,7 +337,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                     setSelectedReviewerId(rowData.reviewer?.id);
                   }}
                 >
-                  {rowData.reviewer ? getRowUserName(rowData.reviewer) : '-'}
+                  {rowData.reviewer ? rowData.reviewer.name : '-'}
                 </Link>,
                 <ReviewStatusBadge
                   reviewStatusConfiguration={reviewStatusConfiguration}
