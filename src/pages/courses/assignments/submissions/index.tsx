@@ -344,6 +344,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
           ))}
         </Select>
       </Flex>
+<<<<<<< HEAD
       <Tabs
         index={selectedTabIndex}
         onChange={index => setSelectedTabIndex(index)}

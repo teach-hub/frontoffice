@@ -8,6 +8,7 @@ import {
   InfoIcon,
   MortarBoardIcon,
   NumberIcon,
+  IterationsIcon,
   PencilIcon,
   PersonFillIcon,
   PeopleIcon,
@@ -21,7 +22,7 @@ import { getValueOfNextIndex, getValueOfPreviousIndex } from 'utils/list';
 import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
 
 import useToast from 'hooks/useToast';
-import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
+import { FetchedContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
 
 import List from 'components/list/List';
@@ -43,6 +44,7 @@ import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
 import { ButtonWithIcon } from 'components/ButtonWithIcon';
 
 import SubmissionQueryDef from 'graphql/SubmissionQuery';
+import SubmitSubmissionMutation from 'graphql/SubmitSubmissionAgainMutation';
 import CreateReviewMutation from 'graphql/CreateReviewMutation';
 import UpdateReviewMutation from 'graphql/UpdateReviewMutation';
 
@@ -57,6 +59,7 @@ import BackArrowIcon from 'icons/BackArrowIcon';
 import NextArrowIcon from 'icons/NextArrowIcon';
 import { CreateReviewMutation as CreateReviewMutationType } from '__generated__/CreateReviewMutation.graphql';
 import { UpdateReviewMutation as UpdateReviewMutationType } from '__generated__/UpdateReviewMutation.graphql';
+import { SubmitSubmissionAgainMutation as SubmitSubmissionMutationType } from '__generated__/SubmitSubmissionAgainMutation.graphql';
 
 import type { Nullable } from 'types';
 import type { SubmissionQuery } from '__generated__/SubmissionQuery.graphql';
@@ -70,11 +73,15 @@ const SubmissionPage = ({
 }) => {
   const toast = useToast();
 
-  const [commitCreateMutation, _] =
+  const [commitCreateMutation] =
     useMutation<CreateReviewMutationType>(CreateReviewMutation);
 
-  const [commitUpdateMutation, __] =
+  const [commitUpdateMutation] =
     useMutation<UpdateReviewMutationType>(UpdateReviewMutation);
+
+  const [commitSubmitMutation] = useMutation<SubmitSubmissionMutationType>(
+    SubmitSubmissionMutation
+  );
 
   const {
     isOpen: isOpenReviewModal,
@@ -132,12 +139,14 @@ const SubmissionPage = ({
       : new Date(submission.submittedAt) <= new Date(assignment.endDate);
 
   const reviewStatusConfiguration = getSubmissionReviewStatusConfiguration({
-    grade: review?.grade,
-    revisionRequested: review?.revisionRequested,
+    review,
+    submission,
   });
   const gradeConfiguration = getGradeConfiguration(review?.grade);
 
   const reviewEnabled = !!submission?.viewerCanReview;
+  const viewerCanSubmitAgain = review?.reviewedAt && review.reviewedAt;
+
   const handleReviewButtonClick = () => {
     if (!reviewEnabled) {
       toast({
@@ -146,6 +155,26 @@ const SubmissionPage = ({
         status: 'warning',
       });
     }
+    onOpenReviewModal();
+  };
+
+  const handleSubmitButtonClick = () => {
+    commitSubmitMutation({
+      variables: {
+        courseId: course.id,
+        submissionId: submission.id,
+      },
+      onCompleted: (_: unknown, errors: Nullable<PayloadError[]>) => {
+        if (!errors?.length) {
+          return;
+        } else {
+          toast({
+            title: 'Error al re-entregar, intentelo de nuevo',
+            status: 'error',
+          });
+        }
+      },
+    });
   };
 
   const handleReviewChange = ({
@@ -283,14 +312,24 @@ const SubmissionPage = ({
         </Stack>
       </Flex>
       <Stack gap={'30px'} marginTop={'10px'}>
-        <div onClick={handleReviewButtonClick}>
-          <ButtonWithIcon
-            onClick={onOpenReviewModal}
-            text={'Calificar'}
-            icon={PencilIcon}
-            isDisabled={!reviewEnabled}
-          />
-        </div>
+        <Flex direction={'row'} gap={'5px'}>
+          {context.userHasPermission(Permission.SetReview) && (
+            <ButtonWithIcon
+              onClick={handleReviewButtonClick}
+              text={'Calificar'}
+              icon={PencilIcon}
+              isDisabled={!reviewEnabled}
+            />
+          )}
+          {context.userHasPermission(Permission.SubmitAssignment) && (
+            <ButtonWithIcon
+              text={'Re-entregar'}
+              icon={IterationsIcon}
+              isDisabled={!viewerCanSubmitAgain}
+              onClick={handleSubmitButtonClick}
+            />
+          )}
+        </Flex>
         <List paddingX="30px">
           {submitterItem}
           <TextListItem

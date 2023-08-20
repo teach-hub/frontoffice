@@ -29,17 +29,17 @@ export type EmptyContext = {
   courseId: null;
   userPermissions: never[];
   userIsTeacher: null;
+  userHasPermission: (p: Permission) => boolean;
 };
 
 export type FetchedContext = {
   courseId: string;
   userPermissions: string[];
   userIsTeacher: boolean;
-};
-
-export type CourseContext = (EmptyContext | FetchedContext) & {
   userHasPermission: (p: Permission) => boolean;
 };
+
+export type CourseContext = EmptyContext | FetchedContext;
 
 const _noop = () => false;
 
