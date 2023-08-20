@@ -35,7 +35,7 @@ export const SubmissionsTable = ({
   rowDataList: RowData[];
   submitterNameHeader: string;
   onRowClick: (rowData: RowData) => void;
-  updateSelectedSubmitterCallback: (submitterId: Optional<Nullable<string>>) => void;
+  updateSelectedSubmitterCallback?: (submitterId: Optional<Nullable<string>>) => void;
   updateSelectedReviewerCallback: (submitterId: Optional<Nullable<string>>) => void;
   extraColumn?: ExtraColumn;
 }) => {
@@ -67,14 +67,19 @@ export const SubmissionsTable = ({
         const gradeConfiguration = getGradeConfiguration(rowData.submission?.grade);
 
         const baseContent = [
-          <Link // Link without redirect
-            onClick={event => {
-              event.stopPropagation(); // This prevents the click from propagating to the parent row
-              updateSelectedSubmitterCallback(rowData.submitter.id);
-            }}
-          >
-            {rowData.submitter.name}
-          </Link>,
+          /* If no callback set, show as simple string */
+          updateSelectedSubmitterCallback ? (
+            <Link // Link without redirect
+              onClick={event => {
+                event.stopPropagation(); // This prevents the click from propagating to the parent row
+                updateSelectedSubmitterCallback(rowData.submitter.id);
+              }}
+            >
+              {rowData.submitter.name}
+            </Link>
+          ) : (
+            rowData.submitter.name
+          ),
           rowData.assignmentTitle,
           <Link // Link without redirect
             onClick={event => {

@@ -37,7 +37,6 @@ type SubjectRowData = {
   name: Optional<Nullable<string>>;
 };
 
-/* TODO: TH-170 may be group */
 type SubmitterRowData = SubjectRowData & {
   isGroup: boolean;
 };
@@ -86,18 +85,6 @@ const getSubmitterAsGroup = (submitter: SubmitterType) => {
   return null;
 };
 
-const getSubmitterId = (submitter: SubmitterType): Optional<string> => {
-  const submitterAsUser = getSubmitterAsUser(submitter);
-  if (submitterAsUser) {
-    return submitterAsUser.id;
-  }
-  const submitterAsGroup = getSubmitterAsGroup(submitter);
-  if (submitterAsGroup) {
-    return submitterAsGroup.id;
-  }
-  throw new Error('Submitter is neither a user nor a group');
-};
-
 const getSubmitterRowData = (
   submitter: SubmitterType
 ): SubmitterRowData | GroupSubmitterRowData => {
@@ -135,6 +122,11 @@ const getReviewerRowData = (reviewer: ReviewerType): Optional<ReviewerRowData> =
   return undefined;
 };
 
+const enum TabIndex {
+  NonGroup = 0,
+  Group = 1,
+}
+
 const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -145,7 +137,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const navigate = useNavigate();
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(assignmentId);
 
-  const [selectedSubmitterId, setSelectedSubmitterId] =
+  const [selectedStudentUserId, setSelectedStudentUserId] =
     useState<Optional<Nullable<string>>>(null);
   const [selectedReviewerId, setSelectedReviewerId] =
     useState<Optional<Nullable<string>>>(null);
@@ -158,24 +150,35 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const allAssignments = data.viewer?.course?.assignments || [];
 
   const rowEnabledByFilters = ({
-    submitterId,
+    submitter,
     reviewerId,
   }: {
-    submitterId?: string;
+    submitter: SubmitterType;
     reviewerId?: string;
   }) => {
-    const validStudent = !selectedSubmitterId
-      ? true
-      : submitterId === selectedSubmitterId;
+    let validStudent = true;
+    if (selectedStudentUserId) {
+      const submitterAsUser = getSubmitterAsUser(submitter);
+      if (submitterAsUser) {
+        validStudent = submitterAsUser.id === selectedStudentUserId;
+      } else {
+        const submitterAsGroup = getSubmitterAsGroup(submitter);
+        if (submitterAsGroup) {
+          validStudent = submitterAsGroup.usersForAssignment.some(
+            user => user.id === selectedStudentUserId
+          );
+        }
+      }
+    }
     const validReviewer = !selectedReviewerId ? true : reviewerId === selectedReviewerId;
     return validStudent && validReviewer;
   };
 
   const [groupRowDataList, setGroupRowDataList] = useState<RowData[]>([]);
   const [nonGroupRowDataList, setNonGroupRowDataList] = useState<RowData[]>([]);
-  const [rowsSubmitters, setRowsSubmitters] = useState<SubmitterRowData[]>([]);
+  const [rowsStudents, setRowsStudents] = useState<SubjectRowData[]>([]);
   const [rowsReviewers, setRowsReviewers] = useState<ReviewerRowData[]>([]);
-  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
+  const [selectedTabIndex, setSelectedTabIndex] = useState(TabIndex.NonGroup);
 
   useEffect(() => {
     const assignmentSubmissionsData =
@@ -183,7 +186,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     const newSubmissions = assignmentSubmissionsData.flatMap(assignment =>
       (assignment?.submissions || []).filter(submission => {
         return rowEnabledByFilters({
-          submitterId: getSubmitterId(submission.submitter),
+          submitter: submission.submitter,
           reviewerId: submission.reviewer?.reviewer?.id,
         });
       })
@@ -222,7 +225,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
         const reviewerUser = reviewer?.reviewer;
         if (
           rowEnabledByFilters({
-            submitterId: getSubmitterId(submitter),
+            submitter,
             reviewerId: reviewerUser?.id,
           }) &&
           !assignment.isGroup
@@ -237,6 +240,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
       })
     );
 
+    /* Separate group from non group rows */
     const groupRowDataList: RowData[] = [];
     const nonGroupRowDataList: RowData[] = [];
     newRowData.forEach(rowData => {
@@ -250,34 +254,59 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     setGroupRowDataList(groupRowDataList);
     setNonGroupRowDataList(nonGroupRowDataList);
 
-    setSelectedTabIndex(nonGroupRowDataList.length !== 0 ? 0 : 1);
+    const newTabIndex =
+      nonGroupRowDataList.length === 0 // If no non group submissions, show group submissions
+        ? TabIndex.Group
+        : groupRowDataList.length === 0 // If no group submissions, show non group submissions
+        ? TabIndex.NonGroup
+        : selectedTabIndex; // In any other case, keep the current tab
+    setSelectedTabIndex(newTabIndex);
 
     setRowsReviewers(
       newRowData.map(row => row.reviewer).filter(Boolean) as ReviewerRowData[]
     );
 
-    setRowsSubmitters(
-      newRowData.map(row => row.submitter).filter(Boolean) as SubmitterRowData[]
+    setRowsStudents(
+      /* Keep both ids of groups and users */
+      nonGroupRowDataList
+        .map(row => row.submitter)
+        .concat(
+          groupRowDataList
+            .flatMap(row => (row.submitter as GroupSubmitterRowData).participants)
+            .filter(Boolean) as SubmitterRowData[]
+        )
+        .filter(Boolean) as SubmitterRowData[]
     );
-  }, [selectedSubmitterId, selectedReviewerId, data]);
+  }, [selectedStudentUserId, selectedReviewerId, data]);
+
+  const onRowClick = (rowData: RowData) => {
+    rowData.submission?.id
+      ? navigate(rowData.submission?.id)
+      : toast({
+          title: 'No existe entrega asociada',
+          description: 'Para acceder al detalle primero se debe realizar la entrega',
+          status: 'warning',
+        });
+  };
 
   return (
     <PageDataContainer>
       <Flex direction={'row'} width={'100%'} justifyContent={'space-between'}>
         <Stack direction={'row'} alignItems={'center'} gap={'20px'}>
           <Heading>Entregas</Heading>
-          {selectedSubmitterId && (
+          {selectedStudentUserId && (
             <FilterBadge
               text={(() => {
-                const selectedStudent = rowsSubmitters.find(
-                  student => student.id === selectedSubmitterId
+                /* Submitter may either be a group or student */
+                const selectedStudent = rowsStudents.find(
+                  student => student.id === selectedStudentUserId
                 );
-                return 'Alumno/Grupo: '.concat(
+                return 'Alumno: '.concat(
                   selectedStudent?.name ? selectedStudent.name : ''
                 );
               })()}
               iconAriaLabel={'student-filter'}
-              onClick={() => setSelectedSubmitterId(null)}
+              onClick={() => setSelectedStudentUserId(null)}
             />
           )}
           {selectedReviewerId && (
@@ -317,54 +346,37 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
           ))}
         </Select>
       </Flex>
-      <Stack gap={'30px'} marginTop={'10px'} height={'75vh'}>
-        <Tabs index={selectedTabIndex} onChange={index => setSelectedTabIndex(index)}>
-          <TabList>
-            <Tab isDisabled={nonGroupRowDataList.length === 0}>Individuales</Tab>
-            <Tab isDisabled={groupRowDataList.length === 0}>Grupales</Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel>
+      <Tabs
+        index={selectedTabIndex}
+        onChange={index => setSelectedTabIndex(index)}
+        marginTop={'10px'}
+      >
+        <TabList>
+          <Tab isDisabled={nonGroupRowDataList.length === 0}>Individuales</Tab>
+          <Tab isDisabled={groupRowDataList.length === 0}>Grupales</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <Stack height={'70vh'}>
               <SubmissionsTable
                 rowDataList={nonGroupRowDataList}
                 submitterNameHeader={'Alumno'}
-                onRowClick={rowData =>
-                  rowData.submission?.id
-                    ? navigate(rowData.submission?.id)
-                    : toast({
-                        title: 'No existe entrega asociada',
-                        description:
-                          'Para acceder al detalle primero se debe realizar la entrega',
-                        status: 'warning',
-                      })
-                }
+                onRowClick={onRowClick}
                 updateSelectedSubmitterCallback={submitterId =>
-                  setSelectedSubmitterId(submitterId)
+                  setSelectedStudentUserId(submitterId)
                 }
                 updateSelectedReviewerCallback={reviewerId =>
                   setSelectedReviewerId(reviewerId)
                 }
               />
-            </TabPanel>
-            <TabPanel>
+            </Stack>
+          </TabPanel>
+          <TabPanel>
+            <Stack height={'70vh'}>
               <SubmissionsTable
                 rowDataList={groupRowDataList}
-                submitterNameHeader={
-                  'Grupo'
-                } /*todo: show all participants and apply selected student filter to them*/
-                onRowClick={rowData =>
-                  rowData.submission?.id
-                    ? navigate(rowData.submission?.id)
-                    : toast({
-                        title: 'No existe entrega asociada',
-                        description:
-                          'Para acceder al detalle primero se debe realizar la entrega',
-                        status: 'warning',
-                      })
-                }
-                updateSelectedSubmitterCallback={submitterId =>
-                  setSelectedSubmitterId(submitterId)
-                }
+                submitterNameHeader={'Grupo'}
+                onRowClick={onRowClick}
                 updateSelectedReviewerCallback={reviewerId =>
                   setSelectedReviewerId(reviewerId)
                 }
@@ -379,7 +391,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                           <Link // Link without redirect
                             onClick={event => {
                               event.stopPropagation(); // This prevents the click from propagating to the parent row
-                              setSelectedSubmitterId(participant.id);
+                              setSelectedStudentUserId(participant.id);
                             }}
                           >
                             {participant.name}
@@ -390,10 +402,10 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                   },
                 }}
               />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      </Stack>
+            </Stack>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </PageDataContainer>
   );
 };
