@@ -227,10 +227,8 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
           rowEnabledByFilters({
             submitter,
             reviewerId: reviewerUser?.id,
-          }) &&
-          !assignment.isGroup
+          })
         ) {
-          // TODO: TH-191 show group non existent submissions (remove isGroup check)
           newRowData.push({
             submitter: getSubmitterRowData(submitter),
             assignmentTitle: assignment.title,
