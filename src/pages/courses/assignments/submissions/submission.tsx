@@ -55,22 +55,11 @@ import RepositoryIcon from 'icons/RepositoryIcon';
 import PullRequestIcon from 'icons/PullRequestIcon';
 import BackArrowIcon from 'icons/BackArrowIcon';
 import NextArrowIcon from 'icons/NextArrowIcon';
-import {
-  CreateReviewMutation as CreateReviewMutationType,
-  CreateReviewMutation$data,
-} from '__generated__/CreateReviewMutation.graphql';
-import {
-  UpdateReviewMutation as UpdateReviewMutationType,
-  UpdateReviewMutation$data,
-} from '__generated__/UpdateReviewMutation.graphql';
+import { CreateReviewMutation as CreateReviewMutationType } from '__generated__/CreateReviewMutation.graphql';
+import { UpdateReviewMutation as UpdateReviewMutationType } from '__generated__/UpdateReviewMutation.graphql';
 
-import type { Optional } from 'types';
-import type {
-  SubmissionQuery,
-  SubmissionQuery$data,
-} from '__generated__/SubmissionQuery.graphql';
-
-type Course = NonNullable<NonNullable<SubmissionQuery$data['viewer']>['course']>;
+import type { Nullable } from 'types';
+import type { SubmissionQuery } from '__generated__/SubmissionQuery.graphql';
 
 const SubmissionPage = ({
   context,
@@ -163,7 +152,7 @@ const SubmissionPage = ({
     grade,
     revisionRequested,
   }: {
-    grade: number;
+    grade: Nullable<number>;
     revisionRequested: boolean;
   }) => {
     const reviewId = review?.id;
@@ -173,7 +162,7 @@ const SubmissionPage = ({
       ...(revisionRequested ? { grade } : {}), // Only set grade if no revision requested
     };
 
-    const onCompleted = (_: unknown, errors: PayloadError[] | null) => {
+    const onCompleted = (_: unknown, errors: Nullable<PayloadError[]>) => {
       if (!errors?.length) {
         // Esto no deberia hacer falta. La misma respuesta del servidor deberia
         // bastar para actualizar el store de relay.
@@ -363,7 +352,6 @@ const SubmissionPage = ({
       </Stack>
       <ReviewModal
         onSave={handleReviewChange}
-        onOpen={onOpenReviewModal}
         onClose={onCloseReviewModal}
         isOpen={isOpenReviewModal}
       />
@@ -372,23 +360,20 @@ const SubmissionPage = ({
 };
 
 function ReviewModal({
-  course,
-  onOpen,
   onClose,
   isOpen,
   onSave,
 }: {
-  course: Course;
-  onOpen: () => void;
   onClose: () => void;
   isOpen: boolean;
+  onSave: (_: { grade: Nullable<number>; revisionRequested: boolean }) => void;
 }) {
-  const [newGrade, setNewGrade] = useState<Optional<number>>(undefined);
+  const [newGrade, setNewGrade] = useState<Nullable<number>>(null);
   const [revisionRequested, setRevisionRequested] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isOpen) {
-      setNewGrade(undefined);
+      setNewGrade(null);
       setRevisionRequested(false);
     }
   }, [isOpen]);
@@ -415,7 +400,7 @@ function ReviewModal({
         <FormControl label={'Seleccionar nota'}>
           <Select
             placeholder="Selecciona una opción"
-            value={newGrade}
+            value={newGrade ?? undefined}
             onChange={changes => setNewGrade(Number(changes.currentTarget.value))}
             isDisabled={revisionRequested}
           >
