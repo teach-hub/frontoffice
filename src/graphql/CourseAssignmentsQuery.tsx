@@ -11,6 +11,7 @@ export default graphql`
           id
           title
           endDate
+          isGroup
         }
       }
     }

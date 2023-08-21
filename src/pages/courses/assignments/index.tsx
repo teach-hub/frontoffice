@@ -22,6 +22,7 @@ import SubmissionIcon from 'icons/SubmissionIcon';
 import CreateIcon from 'icons/CreateIcon';
 import { ButtonWithIcon } from 'components/ButtonWithIcon';
 import { buildAssignmentUrlFilter } from 'queries';
+import CreateRepositoryIcon from 'icons/CreateRepositoryIcon';
 
 const AssignmentsPage = () => {
   const navigate = useNavigate();
@@ -38,6 +39,13 @@ const AssignmentsPage = () => {
       `../submissions` +
       (assignmentId ? `?${buildAssignmentUrlFilter(assignmentId)}` : '')
     );
+  };
+
+  const buildCreateRepositoryLink = (
+    assignmentId: string,
+    isGroupAssignment: boolean
+  ) => {
+    return assignmentId + '/new-repo' + (isGroupAssignment ? '/groups' : '/students');
   };
 
   return (
@@ -73,21 +81,34 @@ const AssignmentsPage = () => {
               content: [
                 `${data.title}`,
                 data.endDate ? formatAsSimpleDateTime(data.endDate) : '-',
-                <Flex>
+                <Stack direction={'row'} alignItems={'center'} justifyContent={'center'}>
                   <Tooltip label={'Ver entregas'}>
                     <Link
                       as={RRLink}
                       to={buildSubmissionLink(data.id)}
-                      onClick={event => event.stopPropagation()} // Avoid row clic behaviour
+                      onClick={event => event.stopPropagation()} // Avoid row click behaviour
                     >
                       <IconButton
                         variant={'ghost'}
                         aria-label="pull-request-link"
-                        icon={<SubmissionIcon size="medium" />}
+                        icon={<SubmissionIcon />}
                       />
                     </Link>
                   </Tooltip>
-                </Flex>,
+                  <Tooltip label={'Crear repositorios'}>
+                    <Link
+                      as={RRLink}
+                      to={buildCreateRepositoryLink(data.id, !!data.isGroup)}
+                      onClick={event => event.stopPropagation()} // Avoid row click behaviour
+                    >
+                      <IconButton
+                        variant={'ghost'}
+                        aria-label="create-repo-link"
+                        icon={<CreateRepositoryIcon />}
+                      />
+                    </Link>
+                  </Tooltip>
+                </Stack>,
               ],
             };
           })}

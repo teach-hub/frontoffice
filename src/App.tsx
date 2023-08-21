@@ -97,16 +97,6 @@ const App = () => {
           >
             <Route index element={<CoursePage />} />
             <Route path="users" element={<CourseUsersPage />} />
-            <Route path="new-repo">
-              <Route
-                path="students"
-                element={<CreateRepository type={RepositoryType.Students} />}
-              />
-              <Route
-                path="groups"
-                element={<CreateRepository type={RepositoryType.Groups} />}
-              />
-            </Route>
             <Route path="add-submission" element={<AddSubmissionPage />} />
             <Route path="my-groups" element={<MyGroups />} />
             <Route path="assignments">
@@ -117,6 +107,16 @@ const App = () => {
                 <Route path="assign-reviewers" element={<AssignReviewersPage />} />
                 <Route path="edit" element={<CreateOrUpdateAssignmentsPage />} />
                 <Route path="add-submission" element={<AddSubmissionPage />} />
+                <Route path="new-repo">
+                  <Route
+                    path="students"
+                    element={<CreateRepository type={RepositoryType.Students} />}
+                  />
+                  <Route
+                    path="groups"
+                    element={<CreateRepository type={RepositoryType.Groups} />}
+                  />
+                </Route>
               </Route>
             </Route>
             <Route

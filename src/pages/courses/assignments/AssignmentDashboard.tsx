@@ -135,6 +135,7 @@ function AssignmentDetails({ assignment }: { assignment: Assignment }) {
             disabled={!viewerCanSubmit}
           />
         )}
+        {/* todo: TH-192 add create repository button */}
       </List>
     </Card>
   );

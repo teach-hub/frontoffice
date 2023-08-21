@@ -1,7 +1,7 @@
 import { graphql } from 'babel-plugin-relay/macro';
 
 export default graphql`
-  query CourseCreateRepositoryQuery($courseId: ID!) {
+  query CourseCreateRepositoryQuery($courseId: ID!, $assignmentId: ID!) {
     viewer {
       id
       name
@@ -9,10 +9,6 @@ export default graphql`
         id
         name
         organization
-        assignments {
-          id
-          title
-        }
         userRoles {
           id
           user {
@@ -29,16 +25,19 @@ export default graphql`
             isTeacher
           }
         }
-        groups {
+        assignments(assignmentId: $assignmentId) {
           id
-          name
-          usersByAssignments {
-            assignmentIds
-            users {
+          title
+          groupParticipants {
+            id
+            group {
+              id
+              name
+            }
+            user {
               id
               name
               lastName
-              notificationEmail
               file
             }
           }
