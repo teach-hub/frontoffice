@@ -624,7 +624,6 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
           <FormControl label={'Datos a incluir'}>
             <CheckboxGroup>
               <Stack spacing={[1, 5]} direction={['column', 'row']}>
-                {/* todo: TH-192 add assignment name as option */}
                 {type === RepositoryType.Groups && (
                   <Checkbox
                     id={'useGroupName'}
