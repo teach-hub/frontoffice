@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<59b04848b828cc49e75d08e9da9a6554>>
+ * @generated SignedSource<<442ebf70744fb311b797cd56b2254963>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,6 +18,7 @@ export type CourseAssignmentsQuery$data = {
       readonly assignments: ReadonlyArray<{
         readonly endDate: string | null;
         readonly id: string;
+        readonly isGroup: boolean | null;
         readonly title: string | null;
       }>;
       readonly id: string;
@@ -100,6 +101,13 @@ v2 = [
                 "kind": "ScalarField",
                 "name": "endDate",
                 "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "isGroup",
+                "storageKey": null
               }
             ],
             "storageKey": null
@@ -129,16 +137,16 @@ return {
     "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "9c31873fa02da03b0dae6a3996779b21",
+    "cacheID": "944c64cedc5d184f4e4c96900d0a9d74",
     "id": null,
     "metadata": {},
     "name": "CourseAssignmentsQuery",
     "operationKind": "query",
-    "text": "query CourseAssignmentsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n        endDate\n      }\n    }\n  }\n}\n"
+    "text": "query CourseAssignmentsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n        endDate\n        isGroup\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "251a1b101c5abce66b49a72fa68a96aa";
+(node as any).hash = "73bf7502f0a27261ed4a9023369c0848";
 
 export default node;

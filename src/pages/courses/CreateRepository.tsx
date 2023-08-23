@@ -6,7 +6,7 @@ import {
   Stack,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import React, { Suspense, useEffect, useState } from 'react';
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
@@ -101,22 +101,13 @@ interface GroupParticipantData {
   file: string;
 }
 
-interface GroupAssignmentData {
-  id: string;
-  title: string;
-}
-
 /**
- * Groups will be displayed in a table, joining the cases where
- * different assignments have the same participants.
- *
- * If a group has different participants for different assignments,
- * then each one will be a different object associated to this interface
+ * Props required for a row in the table
+ * to select repositories to create for groups
  * */
 interface GroupSelectionTableRowProps extends SelectionTableRowProps {
   groupName: string;
   groupId: string;
-  assignments: GroupAssignmentData[];
   participants: GroupParticipantData[];
 }
 
@@ -125,12 +116,14 @@ type CourseType = NonNullable<
 >;
 type UserRoleType = NonNullable<CourseType['userRoles']>[number];
 type AssignmentType = NonNullable<CourseType['assignments']>[number];
-type GroupType = NonNullable<CourseType['groups'][number]>;
-type UsersByAssignmentType = NonNullable<GroupType['usersByAssignments']>;
+type GroupUserType = NonNullable<
+  NonNullable<AssignmentType['groupParticipants']>[number]['user']
+>;
 
 interface GroupUsersData {
-  group: GroupType;
-  usersByAssigment: UsersByAssignmentType;
+  groupId: string;
+  groupName: string;
+  users: GroupUserType[];
 }
 
 /**
@@ -138,14 +131,10 @@ interface GroupUsersData {
  * May differ from students or groups, so a different configuration
  * should be created for each
  *
- * @param title: title of the page
- * @param description: description of the page
  * @param tableHeaders: headers of the table, must not include checkbox
  * @param tableRowData: data for each row of the table
  * */
 interface RepositoriesTypePageConfiguration {
-  title: string;
-  description: string;
   tableHeaders: string[];
   tableRowData: SelectionTableRowProps[];
 }
@@ -156,10 +145,6 @@ const buildStudentRepositoryPageConfiguration = ({
   students: UserRoleType[];
 }): RepositoriesTypePageConfiguration => {
   return {
-    title: 'Crear Repositorios (Individuales)',
-    description:
-      'Indicar la configuración de los repositorios a crear y seleccionar los alumnos a ' +
-      'quienes se les crearán sus repositorios en la organización del curso.',
     tableHeaders: ['Alumno', 'Padrón'],
     tableRowData: students
       .map(
@@ -196,108 +181,74 @@ const buildStudentRepositoryPageConfiguration = ({
 };
 
 const buildGroupRepositoryPageConfiguration = ({
-  groupUsersData,
-  courseAssignments,
+  groupUsersDataList,
 }: {
-  groupUsersData: GroupUsersData[];
-  courseAssignments: readonly AssignmentType[];
+  groupUsersDataList: GroupUsersData[];
 }): RepositoriesTypePageConfiguration => {
-  const tableRowData: GroupSelectionTableRowProps[] = groupUsersData
-    .reduce((result: GroupSelectionTableRowProps[], currentGroupUsersData) => {
-      const { group, usersByAssigment } = currentGroupUsersData;
+  const tableRowData: GroupSelectionTableRowProps[] = groupUsersDataList
+    .map(groupUsersData => {
+      const { groupId, groupName, users } = groupUsersData;
 
-      usersByAssigment.forEach(currentUsersByAssignment => {
-        const assignments = currentUsersByAssignment.assignmentIds
-          .map(assignmentId =>
-            courseAssignments.find(
-              courseAssignment => courseAssignment.id === assignmentId
-            )
-          )
-          .filter(assignment => assignment !== undefined) as AssignmentType[];
-        const users = currentUsersByAssignment.users;
-
-        /* Create stack to view better spaced */
-        const usersRowData = (
-          <Stack>
-            {users
-              .map((user): string => `${user.lastName}, ${user.name} (${user.file})`)
-              .sort((a: string, b: string) => a.localeCompare(b)) // Sort users alphabetically
-              .map((userData: string) => (
-                <Text>{userData}</Text>
-              ))}
-          </Stack>
-        );
-
-        /* Create stack to view better spaced */
-        const assignmentTitles = (
-          <Stack>
-            {assignments.map(assignment => (
-              <Text>{assignment.title}</Text>
+      /* Create stack to view better spaced */
+      const usersRowData = (
+        <Stack>
+          {users
+            .map((user): string => `${user.lastName}, ${user.name} (${user.file})`)
+            .sort((a: string, b: string) => a.localeCompare(b)) // Sort users alphabetically
+            .map((userData: string) => (
+              <Text>{userData}</Text>
             ))}
-          </Stack>
-        );
-        const groupName = group.name || '';
-        const groupId = group.id;
+        </Stack>
+      );
 
-        result.push({
-          groupId: groupId,
-          groupName: groupName,
-          assignments: assignments.map(assignment => ({
-            id: assignment.id || '',
-            title: assignment.title || '',
-          })),
-          participants: users.map(user => ({
-            userId: user.id,
-            name: user.name,
-            lastName: user.lastName,
-            file: user.file,
-          })),
-          rowData: [groupName, assignmentTitles, usersRowData],
-          checked: true,
-          id: `${groupId}-${assignments.map(a => a.id).join('-')}`,
-          getStudentIds: () => users.map(user => user.id),
-          getRepoName: (repositoryData: RepositoriesNameConfiguration) => {
-            const { prefix, useLastName, useFile, useGroupName } = repositoryData;
+      return {
+        groupId: groupId,
+        groupName: groupName,
+        participants: users.map(user => ({
+          userId: user.id,
+          name: user.name,
+          lastName: user.lastName,
+          file: user.file,
+        })),
+        rowData: [groupName, usersRowData],
+        checked: true,
+        id: groupId,
+        getStudentIds: () => users.map(user => user.id),
+        getRepoName: (repositoryData: RepositoriesNameConfiguration) => {
+          const { prefix, useLastName, useFile, useGroupName } = repositoryData;
 
-            const lastNames = useLastName
-              ? users.map(user => user.lastName).join('_')
-              : null;
-            const files = useFile ? users.map(user => user.file).join('_') : null;
-            const repoName = [
-              prefix || null,
-              useGroupName ? groupName : null,
-              lastNames,
-              files,
-            ]
-              .filter(item => item !== null)
-              .join('_')
-              .toLowerCase();
+          const lastNames = useLastName
+            ? users.map(user => user.lastName).join('_')
+            : null;
+          const files = useFile ? users.map(user => user.file).join('_') : null;
+          const repoName = [
+            prefix || null,
+            useGroupName ? groupName : null,
+            lastNames,
+            files,
+          ]
+            .filter(item => item !== null)
+            .join('_')
+            .toLowerCase();
 
-            return removeAccentsAndSpecialCharacters(repoName);
-          },
-        });
-      });
-
-      return result;
-    }, [])
+          return removeAccentsAndSpecialCharacters(repoName);
+        },
+      };
+    })
     .sort((a: GroupSelectionTableRowProps, b: GroupSelectionTableRowProps) =>
       a.groupName.localeCompare(b.groupName)
     ); // Sort by group names
 
   return {
-    title: 'Crear Repositorios (Grupales)',
-    description:
-      'Indicar la configuración de los repositorios a crear y seleccionar los grupos a ' +
-      'quienes se les crearán sus repositorios en la organización del curso.\n\n' +
-      'En caso de que un grupo tenga distintos integrantes en distintos trabajos prácticos se podrá ' +
-      'seleccionar a quienes crear el repositorio.',
-    tableHeaders: ['Grupo', 'Trabajo/s Práctico/s', 'Alumnos'],
+    tableHeaders: ['Grupo', 'Alumnos'],
     tableRowData,
   };
 };
 
 const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
   const { courseId } = useUserContext();
+  const { assignmentId } = useParams();
+
   const navigate = useNavigate();
   const toast = useToast();
   const {
@@ -316,6 +267,7 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
     CourseCreateRepositoryQueryDef,
     {
       courseId: courseId || '',
+      assignmentId: assignmentId || '',
     }
   );
 
@@ -325,12 +277,7 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
 
   const course = courseQueryData.viewer?.course;
   const courseOrganization = course?.organization;
-  const courseAssignments = course?.assignments || [];
-  const groupUsersData: GroupUsersData[] =
-    course?.groups?.map(group => ({
-      group,
-      usersByAssigment: group.usersByAssignments,
-    })) || [];
+  const selectedAssignment = course?.assignments[0]; // Expect only one assignment
 
   const students = filterUsers({
     users: course?.userRoles || [],
@@ -354,12 +301,25 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
 
   const [selectedRoles, setSelectedRoles] = useState<SelectedRoles>(getInitialRoles());
 
+  const groupDataById = new Map<string, GroupUsersData>();
+  selectedAssignment?.groupParticipants?.forEach(participant => {
+    const groupId = participant.group?.id;
+    const groupData = groupDataById.get(groupId);
+    if (!groupData) {
+      groupDataById.set(groupId, {
+        groupId: groupId,
+        groupName: participant.group.name || '-',
+        users: [],
+      });
+    }
+    groupDataById.get(groupId)?.users.push(participant.user);
+  });
+
   const getPageConfiguration = (): RepositoriesTypePageConfiguration => {
     return type === RepositoryType.Students
       ? buildStudentRepositoryPageConfiguration({ students })
       : buildGroupRepositoryPageConfiguration({
-          groupUsersData,
-          courseAssignments,
+          groupUsersDataList: Array.from(groupDataById.values()),
         });
   };
 
@@ -538,19 +498,23 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
 
   return (
     <PageDataContainer>
-      <Heading>{pageConfiguration.title}</Heading>{' '}
-      <Flex justifyContent={'space-between'}>
-        <Flex direction={'column'} gap={'30px'} width={'500px'} paddingY={'20px'}>
-          <Text whiteSpace="pre-wrap">{pageConfiguration.description}</Text>
+      <Heading>{`Crear Repositorios | ${selectedAssignment?.title}`}</Heading>{' '}
+      <Flex justifyContent={'space-between'} paddingY={'20px'}>
+        <Flex direction={'column'} gap={'30px'} width={'500px'}>
+          <Text whiteSpace="pre-wrap">
+            {'Indicar la configuración de los repositorios a crear y seleccionar a ' +
+              'quienes se les crearán sus repositorios en la organización del curso para ' +
+              'el trabajo práctico elegido.\n\n'}
+          </Text>
 
           <ButtonWithIcon
-            onClick={onOpenRepoNamesConfigurationModal}
+            onClick={onOpenTeachersModal}
             text={'Configurar rol de profesores'}
             icon={MortarBoardIcon}
           />
 
           <ButtonWithIcon
-            onClick={onOpenTeachersModal}
+            onClick={onOpenRepoNamesConfigurationModal}
             text={'Configurar nombre repositorios'}
             icon={IdBadgeIcon}
           />

@@ -135,6 +135,15 @@ function AssignmentDetails({ assignment }: { assignment: Assignment }) {
             disabled={!viewerCanSubmit}
           />
         )}
+        {courseContext.userHasPermission(Permission.CreateRepository) && (
+          <LinkListItem
+            listItemKey={'createRepository'}
+            iconColor={LIST_ITEM_ICON_COLOR}
+            external={false}
+            text={'Crear repositorios'}
+            link={`new-repo/${assignment.isGroup ? 'groups' : 'students'}`}
+          />
+        )}
       </List>
     </Card>
   );
