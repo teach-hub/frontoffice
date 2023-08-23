@@ -14,6 +14,7 @@ export default graphql`
         assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {
           id
           title
+          isGroup
           submissions {
             id
             description
@@ -42,6 +43,24 @@ export default graphql`
               grade
               createdAt
               updatedAt
+            }
+          }
+          nonExistentSubmissions {
+            submitter {
+              ... on UserType {
+                id
+                file
+                name
+                lastName
+              }
+            }
+            reviewer {
+              id
+              reviewer {
+                id
+                name
+                lastName
+              }
             }
           }
         }

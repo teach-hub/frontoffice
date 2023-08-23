@@ -11,6 +11,7 @@ import SubmissionsQuery from 'graphql/AssignmentSubmissionsQuery';
 import type { AssignmentSubmissionsQuery } from '__generated__/AssignmentSubmissionsQuery.graphql';
 import {
   getGradeConfiguration,
+  getSubmissionMissingStatusConfiguration,
   getSubmissionReviewStatusConfiguration,
 } from 'app/submissions';
 import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
@@ -29,8 +30,37 @@ import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
 import { Nullable, Optional } from 'types';
 import { FilterBadge } from 'components/FilterBadge';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
+import useToast from 'hooks/useToast';
+
+type UserRowData = {
+  id: Optional<Nullable<string>>;
+  name: Optional<Nullable<string>>;
+  lastName: Optional<Nullable<string>>;
+};
+
+/* TODO: TH-170 may be group */
+type SubmitterRowData = UserRowData;
+type ReviewerRowData = UserRowData;
+
+type SubmissionRowData = {
+  id?: Optional<Nullable<string>>;
+  grade?: Optional<Nullable<number>>;
+  revisionRequested?: Nullable<boolean>;
+  pullRequestUrl?: Optional<Nullable<string>>;
+};
+
+interface RowData {
+  submitter: SubmitterRowData;
+  reviewer?: ReviewerRowData;
+  assignmentTitle: Optional<Nullable<string>>;
+  submission?: SubmissionRowData;
+}
+
+const getRowUserName = (userRowData: UserRowData) =>
+  `${userRowData.lastName}, ${userRowData.name}`;
 
 const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
+  const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const assignmentId = searchParams.get(Query.SubmissionAssignment);
 
@@ -52,39 +82,111 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
 
   const allAssignments = data.viewer?.course?.assignments || [];
 
-  const filterSubmissions = () => {
-    const assignmentsWithSubmissions =
-      data.viewer?.course?.assignmentsWithSubmissions || [];
-    let filteredSubmissions = assignmentsWithSubmissions.flatMap(
-      assignment => assignment?.submissions || []
-    );
-
-    if (selectedStudentId) {
-      filteredSubmissions = filteredSubmissions.filter(
-        submission => submission.submitter.id === selectedStudentId
-      );
-    }
-
-    if (selectedReviewerId) {
-      filteredSubmissions = filteredSubmissions.filter(
-        submission => submission.reviewer?.id === selectedReviewerId
-      );
-    }
-
-    return filteredSubmissions;
+  const rowEnabledByFilters = ({
+    submitterId,
+    reviewerId,
+  }: {
+    submitterId?: string;
+    reviewerId?: string;
+  }) => {
+    const validStudent = !selectedStudentId ? true : submitterId === selectedStudentId;
+    const validReviewer = !selectedReviewerId ? true : reviewerId === selectedReviewerId;
+    return validStudent && validReviewer;
   };
 
-  const [submissions, setSubmissions] = useState(filterSubmissions());
-
-  const studentsFromSubmissions = submissions?.map(submission => submission.submitter);
-  const reviewersFromSubmissions = submissions?.map(submission => submission.reviewer);
+  const [rowDataList, setRowDataList] = useState<RowData[]>([]);
+  const [rowsSubmitters, setRowsSubmitters] = useState<SubmitterRowData[]>([]);
+  const [rowsReviewers, setRowsReviewers] = useState<ReviewerRowData[]>([]);
 
   useEffect(() => {
-    const newSubmissions = filterSubmissions();
-    setSubmissions(newSubmissions);
+    const assignmentSubmissionsData =
+      data.viewer?.course?.assignmentsWithSubmissions || [];
+    const newSubmissions = assignmentSubmissionsData.flatMap(assignment =>
+      (assignment?.submissions || []).filter(submission => {
+        return rowEnabledByFilters({
+          submitterId: submission.submitter.id,
+          reviewerId: submission.reviewer?.reviewer?.id,
+        });
+      })
+    );
 
     /* Set chosen submissions to context */
     setSubmissionIds(newSubmissions.map(submission => submission.id));
+
+    const newRowData = newSubmissions.map((submission): RowData => {
+      const submitter = submission.submitter;
+      const reviewerUser = submission.reviewer?.reviewer;
+      const review = submission?.review;
+      const grade = review?.grade;
+      const revisionRequested = review?.revisionRequested;
+      const submissionAssignmentTitle = allAssignments.find(
+        a => a.id === submission.assignmentId
+      )?.title;
+
+      return {
+        submitter: {
+          id: submitter.id,
+          name: submitter.name,
+          lastName: submitter.lastName,
+        },
+        assignmentTitle: submissionAssignmentTitle,
+        reviewer: reviewerUser
+          ? {
+              id: reviewerUser.id,
+              name: reviewerUser.name,
+              lastName: reviewerUser.lastName,
+            }
+          : undefined,
+        submission: submission.id
+          ? {
+              grade,
+              revisionRequested,
+              id: submission.id,
+              pullRequestUrl: submission.pullRequestUrl,
+            }
+          : undefined,
+      };
+    });
+
+    assignmentSubmissionsData.forEach(assignment =>
+      (assignment?.nonExistentSubmissions || []).forEach(({ reviewer, submitter }) => {
+        const reviewerUser = reviewer?.reviewer;
+        if (
+          rowEnabledByFilters({
+            submitterId: submitter?.id,
+            reviewerId: reviewerUser?.id,
+          }) &&
+          !assignment.isGroup
+        ) {
+          // TODO: TH-191 show group non existent submissions (change isGroup check)
+          newRowData.push({
+            submitter: {
+              id: submitter.id,
+              name: submitter.name,
+              lastName: submitter.lastName,
+            },
+            assignmentTitle: assignment.title,
+            reviewer: reviewerUser
+              ? {
+                  id: reviewerUser.id,
+                  name: reviewerUser.name,
+                  lastName: reviewerUser.lastName,
+                }
+              : undefined,
+          });
+        }
+      })
+    );
+
+    setRowDataList(newRowData);
+
+    setRowsReviewers(
+      newRowData.map(row => row.reviewer).filter(Boolean) as ReviewerRowData[]
+    );
+
+    setRowsSubmitters(
+      newRowData.map(row => row.submitter).filter(Boolean) as SubmitterRowData[]
+    );
   }, [selectedStudentId, selectedReviewerId, data]);
 
   return (
@@ -95,13 +197,11 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
           {selectedStudentId && (
             <FilterBadge
               text={(() => {
-                const selectedStudent = studentsFromSubmissions.find(
+                const selectedStudent = rowsSubmitters.find(
                   student => student.id === selectedStudentId
                 );
                 return 'Alumno/Grupo: '.concat(
-                  selectedStudent
-                    ? `${selectedStudent.name} ${selectedStudent.lastName} `
-                    : ''
+                  selectedStudent ? getRowUserName(selectedStudent) : ''
                 );
               })()}
               iconAriaLabel={'student-filter'}
@@ -111,13 +211,11 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
           {selectedReviewerId && (
             <FilterBadge
               text={(() => {
-                const selectedReviewer = reviewersFromSubmissions.find(
+                const selectedReviewer = rowsReviewers.find(
                   x => x?.id === selectedReviewerId
-                )?.reviewer;
+                );
                 return 'Corrector: '.concat(
-                  selectedReviewer
-                    ? `${selectedReviewer.name} ${selectedReviewer.lastName} `
-                    : ''
+                  selectedReviewer ? getRowUserName(selectedReviewer) : ''
                 );
               })()}
               iconAriaLabel={'reviewer-filter'}
@@ -150,23 +248,14 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
       <Stack gap={'30px'} marginTop={'10px'} height={'75vh'}>
         <Table
           headers={['Alumno', 'Trabajo Práctico', 'Corrector', 'Estado', 'Nota', '']}
-          rowOptions={filterSubmissions().map(s => {
-            const review = s?.review;
-            const grade = review?.grade;
-            const revisionRequested = review?.revisionRequested;
-
-            const reviewStatusConfiguration = getSubmissionReviewStatusConfiguration({
-              grade: grade,
-              revisionRequested,
-            });
-            const gradeConfiguration = getGradeConfiguration(grade);
-
-            const submitter = s.submitter;
-            const reviewer = s.reviewer;
-            const reviewerUser = reviewer?.reviewer;
-            const submissionAssignmentTitle = allAssignments.find(
-              a => a.id === s.assignmentId
-            )?.title;
+          rowOptions={rowDataList.map(rowData => {
+            const reviewStatusConfiguration = rowData.submission?.id
+              ? getSubmissionReviewStatusConfiguration({
+                  grade: rowData.submission?.grade,
+                  revisionRequested: rowData.submission?.revisionRequested,
+                })
+              : getSubmissionMissingStatusConfiguration();
+            const gradeConfiguration = getGradeConfiguration(rowData.submission?.grade);
 
             return {
               rowProps: {
@@ -175,62 +264,75 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                   transition: 'background-color 0.8s',
                 },
                 _hover: { bg: theme.colors.teachHub.gray },
-                onClick: () => navigate(s.id),
+                onClick: () =>
+                  rowData.submission?.id
+                    ? navigate(rowData.submission?.id)
+                    : toast({
+                        title: 'No existe entrega asociada',
+                        description:
+                          'Para acceder al detalle primero se debe realizar la entrega',
+                        status: 'warning',
+                      }),
               },
               content: [
                 <Link // Link without redirect
                   onClick={event => {
                     event.stopPropagation(); // This prevents the click from propagating to the parent row
-                    setSelectedStudentId(submitter.id);
+                    setSelectedStudentId(rowData.submitter.id);
                   }}
                 >
-                  {submitter.name} {submitter.lastName}
+                  {getRowUserName(rowData.submitter)}
                   {/*todo: TH-170 may be group - show column with checkbox if group and only display group name or student name?*/}
                 </Link>,
-                submissionAssignmentTitle,
+                rowData.assignmentTitle,
                 <Link // Link without redirect
                   onClick={event => {
                     event.stopPropagation(); // This prevents the click from propagating to the parent row
-                    setSelectedReviewerId(reviewer?.id);
+                    setSelectedReviewerId(rowData.reviewer?.id);
                   }}
                 >
-                  {reviewerUser ? `${reviewerUser.name} ${reviewerUser.lastName}` : '-'}
+                  {rowData.reviewer ? getRowUserName(rowData.reviewer) : '-'}
                 </Link>,
                 <ReviewStatusBadge
                   reviewStatusConfiguration={reviewStatusConfiguration}
                 />,
                 <ReviewGradeBadge
-                  grade={grade}
+                  grade={rowData.submission?.grade}
                   gradeConfiguration={gradeConfiguration}
                 />,
-                <Stack direction={'row'}>
-                  <Tooltip label={'Ir a repositorio'}>
-                    <Link
-                      href={getGithubRepoUrlFromPullRequestUrl(s.pullRequestUrl)}
-                      isExternal
-                      onClick={event => event.stopPropagation()} // Avoid row clic behaviour
-                    >
-                      <IconButton
-                        variant={'ghost'}
-                        aria-label="repository-link"
-                        icon={<RepositoryIcon />}
-                      />
-                    </Link>
-                  </Tooltip>
-                  <Tooltip label={'Ir a pull request'}>
-                    <Link
-                      href={s.pullRequestUrl}
-                      isExternal
-                      onClick={event => event.stopPropagation()} // Avoid row clic behaviour
-                    >
-                      <IconButton
-                        variant={'ghost'}
-                        aria-label="pull-request-link"
-                        icon={<PullRequestIcon />}
-                      />
-                    </Link>
-                  </Tooltip>
-                </Stack>,
+
+                rowData.submission?.pullRequestUrl && (
+                  <Stack direction={'row'}>
+                    <Tooltip label={'Ir a repositorio'}>
+                      <Link
+                        href={getGithubRepoUrlFromPullRequestUrl(
+                          rowData.submission?.pullRequestUrl
+                        )}
+                        isExternal
+                        onClick={event => event.stopPropagation()} // Avoid row clic behaviour
+                      >
+                        <IconButton
+                          variant={'ghost'}
+                          aria-label="repository-link"
+                          icon={<RepositoryIcon />}
+                        />
+                      </Link>
+                    </Tooltip>
+                    <Tooltip label={'Ir a pull request'}>
+                      <Link
+                        href={rowData.submission?.pullRequestUrl}
+                        isExternal
+                        onClick={event => event.stopPropagation()} // Avoid row clic behaviour
+                      >
+                        <IconButton
+                          variant={'ghost'}
+                          aria-label="pull-request-link"
+                          icon={<PullRequestIcon />}
+                        />
+                      </Link>
+                    </Tooltip>
+                  </Stack>
+                ),
               ],
             };
           })}
