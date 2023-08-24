@@ -12,6 +12,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Select,
+  Stack,
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
@@ -47,9 +48,16 @@ import type {
   CourseSetOrganizationMutation,
   CourseSetOrganizationMutation$data,
 } from '__generated__/CourseSetOrganizationMutation.graphql';
+import { StackedBarChart } from 'components/charts/StackedBarChart';
+import {
+  AssignmentSubmissionStatisticsData,
+  getAssignmentSubmissionStatusDataset,
+} from 'statistics/submissions';
+
+type CourseType = NonNullable<NonNullable<CourseInfoQuery$data['viewer']>['course']>;
 
 type Props = {
-  course: NonNullable<NonNullable<CourseInfoQuery$data['viewer']>['course']>;
+  course: CourseType;
   availableOrganizations: NonNullable<
     CourseInfoQuery$data['viewer']
   >['availableOrganizations'];
@@ -198,6 +206,64 @@ const CourseStatistics = ({ course, availableOrganizations }: Props) => {
   );
 };
 
+const CourseCharts = ({ course }: { course: CourseType }) => {
+  const assignments = course.assignments || [];
+
+  const nonGroupChartLabels: string[] = [];
+  const groupChartLabels: string[] = [];
+  const nonGroupData: AssignmentSubmissionStatisticsData[] = [];
+  const groupChartData: AssignmentSubmissionStatisticsData[] = [];
+  assignments.forEach(assignment => {
+    const title = assignment.title || '';
+    const assignmentSubmissionStatisticsData = {
+      assignmentTitle: assignment.title || '',
+      submissions: assignment.submissions.map(submission => {
+        return {
+          grade: submission.review?.grade,
+          revisionRequested: submission.review?.revisionRequested,
+        };
+      }),
+      nonExistentSubmissionsAmount: assignment.nonExistentSubmissions?.length || 0,
+    };
+    if (!assignment.isGroup) {
+      nonGroupChartLabels.push(title);
+      nonGroupData.push(assignmentSubmissionStatisticsData);
+    } else {
+      groupChartLabels.push(title);
+      groupChartData.push(assignmentSubmissionStatisticsData);
+    }
+  });
+
+  const nonGroupChartDataset = getAssignmentSubmissionStatusDataset(nonGroupData);
+  const groupChartDataset = getAssignmentSubmissionStatusDataset(groupChartData);
+
+  const CHART_WIDTH = '50vw';
+
+  return (
+    <Stack
+      overflow={'hidden'}
+      direction={'row'}
+      gap={'20px'}
+      justifyContent={'space-between'}
+    >
+      <Box width={CHART_WIDTH}>
+        <StackedBarChart
+          labels={nonGroupChartLabels}
+          data={nonGroupChartDataset}
+          title={'Estado Entregas - Individuales'}
+        />
+      </Box>
+      <Box width={CHART_WIDTH}>
+        <StackedBarChart
+          labels={groupChartLabels}
+          data={groupChartDataset}
+          title={'Estado Entregas - Grupales'}
+        />
+      </Box>
+    </Stack>
+  );
+};
+
 const CourseViewContainer = () => {
   const { courseId } = useUserContext();
 
@@ -217,7 +283,13 @@ const CourseViewContainer = () => {
       <Heading>
         {course.name} - {course.subject.name}
       </Heading>
-      <CourseStatistics course={course} availableOrganizations={availableOrganizations} />
+      <Stack gap={'30px'}>
+        <CourseStatistics
+          course={course}
+          availableOrganizations={availableOrganizations}
+        />
+        <CourseCharts course={course} />
+      </Stack>
     </PageDataContainer>
   );
 };

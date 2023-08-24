@@ -35,6 +35,15 @@ import { isAuthenticated } from 'auth/utils';
 import { theme } from 'theme';
 import MyGroups from 'pages/courses/groups/MyGroups';
 import { SubmissionProvider } from 'hooks/useSubmissionsContext';
+import {
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
+  Title,
+  Tooltip,
+} from 'chart.js';
 
 /*
  * Way to solve protected routes, as routes can not
@@ -69,6 +78,8 @@ const LoginLayout = (): JSX.Element => {
    */
   return <Navigate to={'/'} />;
 };
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const App = () => {
   return (
