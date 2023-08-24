@@ -15,6 +15,10 @@ import { Stack } from '@chakra-ui/react';
 import Text from 'components/Text';
 import { theme } from 'theme';
 import { getFirstAssignmentGroupsUsersData, mapToUserNames } from 'app/groups';
+import IconButton from 'components/IconButton';
+import CreateIcon from 'icons/CreateIcon';
+import Tooltip from 'components/Tooltip';
+import AddPersonIcon from 'icons/AddPersonIcon';
 
 const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const courseId = courseContext.courseId;
@@ -52,6 +56,19 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
                   )
                 )}
               </Stack>,
+              <Stack direction={'row'} justifyContent={'center'} alignItems={'center'}>
+                <Tooltip label={'Crear nuevo grupo'}>
+                  {/* Wrap icon in span due to not using forwardRef */}
+                  <span>
+                    <IconButton
+                      variant={'ghost'}
+                      aria-label={'create-group'}
+                      icon={<CreateIcon size="medium" />}
+                      onClick={() => console.log('Create group')}
+                    />
+                  </span>
+                </Tooltip>
+              </Stack>,
             ],
           },
         ]
@@ -63,7 +80,7 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
       <Stack paddingY={'10px'}>
         <Table
           tableHeight={'75vh'}
-          headers={['Grupo', 'Alumnos']}
+          headers={['Grupo', 'Alumnos', '']}
           rowOptions={assignmentGroupsData.groupUsersData
             .map(({ groupName, users }) => {
               {
@@ -77,7 +94,27 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
                 );
 
                 return {
-                  content: [<Text>{groupName}</Text>, usersRowData],
+                  content: [
+                    <Text>{groupName}</Text>,
+                    usersRowData,
+                    <Stack
+                      direction={'row'}
+                      justifyContent={'center'}
+                      alignItems={'center'}
+                    >
+                      <Tooltip label={'Agregar alumnos'}>
+                        {/* Wrap icon in span due to not using forwardRef */}
+                        <span>
+                          <IconButton
+                            variant={'ghost'}
+                            aria-label={'add-users-to-group'}
+                            icon={<AddPersonIcon size="medium" />}
+                            onClick={() => console.log('Edit group')}
+                          />
+                        </span>
+                      </Tooltip>
+                    </Stack>,
+                  ],
                 };
               }
             })
