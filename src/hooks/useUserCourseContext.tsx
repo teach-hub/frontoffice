@@ -22,6 +22,7 @@ export enum Permission {
   CreateRepository = 'createRepository',
   AssignReviewer = 'assignReviewer',
   SetReview = 'setReview',
+  ViewGroups = 'viewGroups',
 }
 
 export type EmptyContext = {

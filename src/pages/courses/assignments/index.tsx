@@ -23,6 +23,7 @@ import CreateIcon from 'icons/CreateIcon';
 import { ButtonWithIcon } from 'components/ButtonWithIcon';
 import { buildAssignmentUrlFilter } from 'queries';
 import CreateRepositoryIcon from 'icons/CreateRepositoryIcon';
+import GroupIcon from 'icons/GroupIcon';
 
 const AssignmentsPage = () => {
   const navigate = useNavigate();
@@ -46,6 +47,10 @@ const AssignmentsPage = () => {
     isGroupAssignment: boolean
   ) => {
     return assignmentId + '/new-repo' + (isGroupAssignment ? '/groups' : '/students');
+  };
+
+  const buildAssignmentGroupsLink = (assignmentId: string) => {
+    return assignmentId + '/groups';
   };
 
   return (
@@ -82,6 +87,22 @@ const AssignmentsPage = () => {
                 `${data.title}`,
                 data.endDate ? formatAsSimpleDateTime(data.endDate) : '-',
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'center'}>
+                  {courseContext.userHasPermission(Permission.ViewGroups) &&
+                    data.isGroup && (
+                      <Tooltip label={'Ver grupos'}>
+                        <Link
+                          as={RRLink}
+                          to={buildAssignmentGroupsLink(data.id)}
+                          onClick={event => event.stopPropagation()} // Avoid row click behaviour
+                        >
+                          <IconButton
+                            variant={'ghost'}
+                            aria-label="view-groups"
+                            icon={<GroupIcon />}
+                          />
+                        </Link>
+                      </Tooltip>
+                    )}
                   <Tooltip label={'Ver entregas'}>
                     <Link
                       as={RRLink}
@@ -90,7 +111,7 @@ const AssignmentsPage = () => {
                     >
                       <IconButton
                         variant={'ghost'}
-                        aria-label="pull-request-link"
+                        aria-label="view-submissions"
                         icon={<SubmissionIcon />}
                       />
                     </Link>

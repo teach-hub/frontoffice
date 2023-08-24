@@ -144,6 +144,15 @@ function AssignmentDetails({ assignment }: { assignment: Assignment }) {
             link={`new-repo/${assignment.isGroup ? 'groups' : 'students'}`}
           />
         )}
+        {courseContext.userHasPermission(Permission.ViewGroups) && assignment.isGroup && (
+          <LinkListItem
+            listItemKey={'viewGroups'}
+            iconColor={LIST_ITEM_ICON_COLOR}
+            external={false}
+            text={'Ver grupos'}
+            link={`groups`}
+          />
+        )}
       </List>
     </Card>
   );

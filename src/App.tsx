@@ -25,6 +25,7 @@ import CreateOrUpdateAssignmentsPage from 'pages/courses/assignments/CreateOrUpd
 import CreateRepository, { RepositoryType } from 'pages/courses/CreateRepository';
 import SubmissionsPage from 'pages/courses/assignments/submissions';
 import SubmissionPage from 'pages/courses/assignments/submissions/submission';
+import GroupsPage from 'pages/courses/assignments/groups/index';
 import AddSubmissionPage from 'pages/courses/assignments/submissions/add';
 import AssignReviewersPage from 'pages/courses/assignments/reviewers';
 
@@ -105,6 +106,7 @@ const App = () => {
               <Route path=":assignmentId">
                 <Route index element={<AssignmentPage />} />
                 <Route path="assign-reviewers" element={<AssignReviewersPage />} />
+                <Route path="groups" element={<GroupsPage />} />
                 <Route path="edit" element={<CreateOrUpdateAssignmentsPage />} />
                 <Route path="add-submission" element={<AddSubmissionPage />} />
                 <Route path="new-repo">

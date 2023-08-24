@@ -1,13 +1,12 @@
 import { graphql } from 'babel-plugin-relay/macro';
 
 export default graphql`
-  query CourseCreateRepositoryQuery($courseId: ID!, $assignmentId: ID!) {
+  query AssignmentGroupsAndUsersQuery($courseId: ID!, $assignmentId: ID) {
     viewer {
       id
       name
       course(id: $courseId) {
         id
-        name
         organization
         userRoles {
           id
@@ -28,6 +27,7 @@ export default graphql`
         assignments(assignmentId: $assignmentId) {
           id
           title
+          isGroup
           groupParticipants {
             id
             group {
