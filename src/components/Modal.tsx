@@ -3,6 +3,7 @@ import {
   Modal as ChakraModal,
   ModalBody,
   ModalContent,
+  ModalContentProps as ChakraModalContentProps,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
@@ -13,13 +14,20 @@ type Props = ChakraModalProps & {
   children?: JSX.Element;
   headerText: string;
   footerChildren?: JSX.Element;
+  contentProps?: ChakraModalContentProps;
 };
 
-export const Modal = ({ headerText, children, footerChildren, ...rest }: Props) => {
+export const Modal = ({
+  headerText,
+  children,
+  contentProps,
+  footerChildren,
+  ...rest
+}: Props) => {
   return (
     <ChakraModal {...rest}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent {...contentProps}>
         <ModalHeader>{headerText}</ModalHeader>
         <ModalBody>{children}</ModalBody>
         {footerChildren ? <ModalFooter>{footerChildren}</ModalFooter> : <ModalFooter />}

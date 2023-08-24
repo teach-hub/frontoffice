@@ -15,9 +15,9 @@ export type GroupUsersData = {
   users: GroupUserType[];
 };
 
-type AssignmentGroupsData = {
+export type AssignmentGroupsData = {
   groupUsersData: GroupUsersData[];
-  studentsNamesWithoutGroup: string[];
+  studentsWithoutGroup: GroupUserType[];
 };
 
 /**
@@ -54,20 +54,20 @@ export const getFirstAssignmentGroupsUsersData = ({
     roleFilter: UserRoleFilter.Student,
   });
 
-  const studentsWithoutGroup = mapToUserNames(
-    studentRoles
-      .filter(role => !studentsWithGroupIds.includes(role.user.id))
-      .map(role => role.user)
-  );
+  const studentsWithoutGroup = studentRoles
+    .filter(role => !studentsWithGroupIds.includes(role.user.id))
+    .map(role => role.user);
 
   return {
     groupUsersData: groupsDataList,
-    studentsNamesWithoutGroup: studentsWithoutGroup,
+    studentsWithoutGroup: studentsWithoutGroup,
   };
 };
 
+export const mapToUserName = (user: GroupUserType): string => {
+  return `${user.lastName}, ${user.name} (${user.file})`;
+};
+
 export const mapToUserNames = (users: GroupUserType[]): string[] => {
-  return users
-    .map((user): string => `${user.lastName}, ${user.name} (${user.file})`)
-    .sort((a: string, b: string) => a.localeCompare(b)); // Sort users alphabetically
+  return users.map(mapToUserName).sort((a: string, b: string) => a.localeCompare(b)); // Sort users alphabetically
 };

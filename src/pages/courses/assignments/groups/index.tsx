@@ -1,6 +1,6 @@
 import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
 import Navigation from 'components/Navigation';
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import PageDataContainer from 'components/PageDataContainer';
 import Heading from 'components/Heading';
 import { useParams } from 'react-router-dom';
@@ -11,18 +11,40 @@ import {
 } from '__generated__/AssignmentGroupsAndUsersQuery.graphql';
 import AssignmentGroupsAndUsersQueryDef from 'graphql/AssignmentGroupsAndUsersQuery';
 import Table from 'components/Table';
-import { Stack } from '@chakra-ui/react';
+import { Flex, SimpleGrid, Stack, useDisclosure } from '@chakra-ui/react';
 import Text from 'components/Text';
 import { theme } from 'theme';
-import { getFirstAssignmentGroupsUsersData, mapToUserNames } from 'app/groups';
+import {
+  AssignmentGroupsData,
+  getFirstAssignmentGroupsUsersData,
+  mapToUserName,
+  mapToUserNames,
+} from 'app/groups';
 import IconButton from 'components/IconButton';
 import CreateIcon from 'icons/CreateIcon';
 import Tooltip from 'components/Tooltip';
 import AddPersonIcon from 'icons/AddPersonIcon';
+import { Modal } from 'components/Modal';
+import { Checkbox } from 'components/Checkbox';
+import { Nullable } from 'types';
+import CheckboxGroup from 'components/CheckboxGroup';
+import Button from 'components/Button';
 
 const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const courseId = courseContext.courseId;
   const { assignmentId } = useParams();
+
+  const {
+    isOpen: isOpenAddUsersModal,
+    onOpen: onOpenAddUsersModal,
+    onClose: onCloseAddUsersModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isCreateGroupModal,
+    onOpen: onCreateGroupModal,
+    onClose: onCloseCreateGroupModal,
+  } = useDisclosure();
 
   const data: AssignmentGroupsAndUsersQuery$data =
     useLazyLoadQuery<AssignmentGroupsAndUsersQuery>(AssignmentGroupsAndUsersQueryDef, {
@@ -37,8 +59,11 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
     groupAndUsersData: data,
   });
 
+  const studentsWithoutGroupNames = mapToUserNames(
+    assignmentGroupsData.studentsWithoutGroup
+  );
   const missingGroupTableContent =
-    assignmentGroupsData.studentsNamesWithoutGroup.length !== 0
+    studentsWithoutGroupNames.length !== 0
       ? [
           {
             content: [
@@ -50,11 +75,9 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
                 Sin grupo
               </Text>,
               <Stack>
-                {assignmentGroupsData.studentsNamesWithoutGroup.map(
-                  (userName: string) => (
-                    <Text>{userName}</Text>
-                  )
-                )}
+                {studentsWithoutGroupNames.map((userName: string) => (
+                  <Text>{userName}</Text>
+                ))}
               </Stack>,
               <Stack direction={'row'} justifyContent={'center'} alignItems={'center'}>
                 <Tooltip label={'Crear nuevo grupo'}>
@@ -74,6 +97,27 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
         ]
       : [];
 
+  const [selectedGroupId, setSelectedGroupId] = useState<Nullable<string>>(null);
+  const [selectedUserIdsToAdd, setSelectedUsersIdsToAdd] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!isOpenAddUsersModal) {
+      setSelectedGroupId(null);
+      setSelectedUsersIdsToAdd([]);
+    }
+  }, [isOpenAddUsersModal]);
+
+  const handleAddUsersCheckboxGroupChange = (checkedValues: string[]) => {
+    setSelectedUsersIdsToAdd(checkedValues);
+  };
+
+  const handleAddUsersToGroup = () => {
+    /* TODO: TH-153 add mutation */
+    console.log(selectedGroupId);
+    console.log(selectedUserIdsToAdd);
+    onCloseAddUsersModal();
+  };
+
   return (
     <PageDataContainer>
       <Heading>{`Grupos | ${selectedAssignment?.title}`}</Heading>{' '}
@@ -82,7 +126,7 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
           tableHeight={'75vh'}
           headers={['Grupo', 'Alumnos', '']}
           rowOptions={assignmentGroupsData.groupUsersData
-            .map(({ groupName, users }) => {
+            .map(({ groupId, groupName, users }) => {
               {
                 /* Create stack to view better spaced */
                 const usersRowData = (
@@ -109,7 +153,10 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
                             variant={'ghost'}
                             aria-label={'add-users-to-group'}
                             icon={<AddPersonIcon size="medium" />}
-                            onClick={() => console.log('Edit group')}
+                            onClick={() => {
+                              setSelectedGroupId(groupId);
+                              onOpenAddUsersModal();
+                            }}
                           />
                         </span>
                       </Tooltip>
@@ -121,9 +168,69 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
             .concat(missingGroupTableContent)}
         />
       </Stack>
+      <AddUsersToGroupModal
+        assignmentGroupsData={assignmentGroupsData}
+        onClose={onCloseAddUsersModal}
+        isOpen={isOpenAddUsersModal}
+        handleAddUsersToGroup={handleAddUsersToGroup}
+        handleAddUsersCheckboxGroupChange={handleAddUsersCheckboxGroupChange}
+        selectedGroupId={selectedGroupId}
+      />
     </PageDataContainer>
   );
 };
+
+const AddUsersToGroupModal = ({
+  assignmentGroupsData,
+  isOpen,
+  onClose,
+  selectedGroupId,
+  handleAddUsersToGroup,
+  handleAddUsersCheckboxGroupChange,
+}: {
+  assignmentGroupsData: AssignmentGroupsData;
+  onClose: () => void;
+  isOpen: boolean;
+  handleAddUsersToGroup: () => void;
+  handleAddUsersCheckboxGroupChange: (values: string[]) => void;
+  selectedGroupId: Nullable<string>;
+}) => (
+  <Modal
+    isOpen={isOpen}
+    onClose={onClose}
+    isCentered
+    headerText={
+      `${
+        assignmentGroupsData.groupUsersData.find(
+          groupData => groupData.groupId === selectedGroupId
+        )?.groupName
+      }` + ': Agregar usuarios'
+    }
+    footerChildren={
+      <Flex direction={'row'} gap={'30px'}>
+        <Button onClick={onClose} variant={'ghost'}>
+          {'Cancelar'}
+        </Button>
+        <Button onClick={handleAddUsersToGroup}>{'Guardar'}</Button>
+      </Flex>
+    }
+    contentProps={{
+      minWidth: 'fit-content',
+    }}
+  >
+    <Stack direction={'column'} width={'100%'}>
+      <CheckboxGroup onChange={handleAddUsersCheckboxGroupChange}>
+        <SimpleGrid columns={2} spacingX={10} spacingY={4} alignItems="center">
+          {assignmentGroupsData.studentsWithoutGroup.map(student => (
+            <Checkbox id={student.id} value={student.id}>
+              {mapToUserName(student)}
+            </Checkbox>
+          ))}
+        </SimpleGrid>
+      </CheckboxGroup>
+    </Stack>
+  </Modal>
+);
 
 const GroupsPageContainer = () => {
   const courseContext = useUserContext();
