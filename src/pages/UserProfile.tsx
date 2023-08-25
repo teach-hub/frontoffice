@@ -1,11 +1,9 @@
 import { Suspense, useState } from 'react';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 
-import { Spinner } from '@chakra-ui/react';
+import { SimpleGrid, Spinner, Stack } from '@chakra-ui/react';
 
 import { PayloadError } from 'relay-runtime';
-
-import AvatarImage from 'components/AvatarImage';
 import Box from 'components/Box';
 import Heading from 'components/Heading';
 import Navigation from 'components/Navigation';
@@ -28,6 +26,8 @@ import {
 } from '__generated__/UpdateProfileMutation.graphql';
 
 import type { FormErrors, Mutable } from 'types';
+import IconButton from 'components/IconButton';
+import EditIcon from 'icons/EditIcon';
 
 type Props = {
   user: UserProfileQuery$data;
@@ -110,13 +110,27 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
 
   return (
     <PageDataContainer>
-      <Heading paddingBottom={'5vh'}>Perfil de {queryResult.name}</Heading>
-      <Box display="flex" flexDir="row" justifyContent="space-evenly">
-        <AvatarImage
-          isEditing={isEditing}
-          onEdit={() => setIsEditing(true)}
-          url="https://bit.ly/sage-adebayo" // TODO TH-67: Add avatar image to user?
-        />
+      <Stack direction={'row'} paddingBottom={'5vh'} gap={'20px'}>
+        <Heading>
+          Perfil de {queryResult.name} {queryResult.lastName}
+        </Heading>
+        <span>
+          {!isEditing && (
+            <IconButton
+              variant={'ghost'}
+              aria-label={'create-group'}
+              icon={<EditIcon size="medium" />}
+              onClick={() => {
+                setIsEditing(true);
+              }}
+            />
+          )}
+        </span>
+      </Stack>
+
+      <SimpleGrid columns={2} spacing={2} alignItems="center"></SimpleGrid>
+      <Box display="flex" flexDir="row">
+        {/* TODO: edit button setIsEditing*/}
         <Form
           buttonsEnabled={isEditing}
           initialValues={{
