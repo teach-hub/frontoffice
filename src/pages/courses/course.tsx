@@ -37,7 +37,7 @@ import CourseSetOrganizationMutationDef from 'graphql/CourseSetOrganizationMutat
 import CourseInfoQueryDef from 'graphql/CourseInfoQuery';
 
 import useToast from 'hooks/useToast';
-import { useUserContext } from 'hooks/useUserCourseContext';
+import { CourseContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
 
 import type {
   CourseInfoQuery,
@@ -61,9 +61,10 @@ type Props = {
   availableOrganizations: NonNullable<
     CourseInfoQuery$data['viewer']
   >['availableOrganizations'];
+  courseContext: CourseContext;
 };
 
-const CourseStatistics = ({ course, availableOrganizations }: Props) => {
+const CourseStatistics = ({ course, courseContext, availableOrganizations }: Props) => {
   const toast = useToast();
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -152,7 +153,11 @@ const CourseStatistics = ({ course, availableOrganizations }: Props) => {
         icon={<TerminalIcon size="large" />}
       />
       <StatCard
-        onClick={() => onOpen()}
+        onClick={() => {
+          if (courseContext.userHasPermission(Permission.SetOrganization)) {
+            onOpen();
+          }
+        }}
         title={'Organizacion de GitHub'}
         stat={!errored() ? <CheckIcon size="large" /> : <CloseIcon size="large" />}
         icon={<MarkGithubIcon size="large" />}
@@ -266,12 +271,13 @@ const CourseCharts = ({ course }: { course: CourseType }) => {
 
 const CourseViewContainer = () => {
   const courseContext = useUserContext();
+  const courseId = courseContext.courseId;
 
   const data = useLazyLoadQuery<CourseInfoQuery>(CourseInfoQueryDef, {
-    courseId: courseContext.courseId || '',
+    courseId: courseId || '',
   });
 
-  if (!data.viewer || !data.viewer.course) {
+  if (!courseId || !data.viewer || !data.viewer.course) {
     return null;
   }
 
@@ -285,6 +291,7 @@ const CourseViewContainer = () => {
       </Heading>
       <Stack gap={'30px'}>
         <CourseStatistics
+          courseContext={courseContext}
           course={course}
           availableOrganizations={availableOrganizations}
         />
