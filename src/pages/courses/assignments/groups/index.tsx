@@ -3,8 +3,8 @@ import Navigation from 'components/Navigation';
 import React, { Suspense, useEffect, useState } from 'react';
 import PageDataContainer from 'components/PageDataContainer';
 import Heading from 'components/Heading';
-import { useParams } from 'react-router-dom';
-import { useLazyLoadQuery } from 'react-relay';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useLazyLoadQuery, useMutation } from 'react-relay';
 import {
   AssignmentGroupsAndUsersQuery,
   AssignmentGroupsAndUsersQuery$data,
@@ -31,10 +31,18 @@ import CheckboxGroup from 'components/CheckboxGroup';
 import Button from 'components/Button';
 import { FormControl } from 'components/FormControl';
 import InputField from 'components/InputField';
+import {
+  CreateGroupWithParticipantsMutation,
+  CreateGroupWithParticipantsMutation$data,
+} from '__generated__/CreateGroupWithParticipantsMutation.graphql';
+import CreateGroupWithParticipantsMutationDef from 'graphql/CreateGroupWithParticipantsMutation';
+import useToast from 'hooks/useToast';
 
 const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const courseId = courseContext.courseId;
   const { assignmentId } = useParams();
+  const toast = useToast();
+  const navigate = useNavigate();
 
   const {
     isOpen: isOpenAddUsersModal,
@@ -102,31 +110,57 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
       : [];
 
   const [selectedGroupId, setSelectedGroupId] = useState<Nullable<string>>(null);
-  const [selectedUserIds, setSelectedUsersIds] = useState<string[]>([]);
+  const [selectedUserRoleIds, setSelectedUserRoleIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (!isOpenAddUsersModal) {
       setSelectedGroupId(null);
-      setSelectedUsersIds([]);
+      setSelectedUserRoleIds([]);
     }
   }, [isOpenAddUsersModal]);
 
   const handleCheckedUsersChange = (checkedValues: string[]) => {
-    setSelectedUsersIds(checkedValues);
+    setSelectedUserRoleIds(checkedValues);
   };
+
+  const [commitCreateGroupWithParticipants] =
+    useMutation<CreateGroupWithParticipantsMutation>(
+      CreateGroupWithParticipantsMutationDef
+    );
 
   const handleAddUsersToGroup = () => {
     /* TODO: TH-153 add mutation */
     console.log(selectedGroupId);
-    console.log(selectedUserIds);
+    console.log(selectedUserRoleIds);
     onCloseAddUsersModal();
   };
 
   const handleCreateGroup = (groupName: string) => {
-    /* TODO: TH-153 add mutation */
-    console.log(groupName);
-    console.log(selectedUserIds);
-    onCloseCreateGroupModal();
+    commitCreateGroupWithParticipants({
+      variables: {
+        groupName: groupName,
+        courseId,
+        assignmentId: assignmentId || '',
+        participantUserRoleIds: selectedUserRoleIds,
+      },
+      onCompleted: (response: CreateGroupWithParticipantsMutation$data, errors) => {
+        if (!errors?.length) {
+          toast({
+            title: 'Grupo creado!',
+            status: 'info',
+          });
+          onCloseCreateGroupModal();
+          navigate(0); // Reload page data
+        } else {
+          console.log({ errors });
+          toast({
+            title: 'Error',
+            description: `Error al intentar crear grupo: ${errors?.at(0)?.message}`,
+            status: 'error',
+          });
+        }
+      },
+    });
   };
 
   return (
@@ -186,6 +220,7 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
         handleSubmitAction={handleAddUsersToGroup}
         handleAddUsersCheckboxGroupChange={handleCheckedUsersChange}
         selectedGroupId={selectedGroupId}
+        submitEnabled={selectedUserRoleIds.length > 0}
       />
       <CreateGroupModal
         assignmentGroupsData={assignmentGroupsData}
@@ -193,6 +228,7 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
         isOpen={isOpenCreateGroupModal}
         handleSubmitAction={({ groupName }) => handleCreateGroup(groupName)}
         handleAddUsersCheckboxGroupChange={handleCheckedUsersChange}
+        submitEnabled={selectedUserRoleIds.length > 0}
       />
     </PageDataContainer>
   );
@@ -201,6 +237,7 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
 const AddUsersToGroupModal = ({
   assignmentGroupsData,
   isOpen,
+  submitEnabled,
   onClose,
   selectedGroupId,
   handleSubmitAction,
@@ -209,6 +246,7 @@ const AddUsersToGroupModal = ({
   assignmentGroupsData: AssignmentGroupsData;
   onClose: () => void;
   isOpen: boolean;
+  submitEnabled: boolean;
   handleSubmitAction: () => void;
   handleAddUsersCheckboxGroupChange: (values: string[]) => void;
   selectedGroupId: Nullable<string>;
@@ -216,6 +254,7 @@ const AddUsersToGroupModal = ({
   <ManageGroupModal
     isOpen={isOpen}
     onClose={onClose}
+    submitEnabled={submitEnabled}
     headerText={
       `${
         assignmentGroupsData.groupUsersData.find(
@@ -235,6 +274,7 @@ const AddUsersToGroupModal = ({
 const CreateGroupModal = ({
   assignmentGroupsData,
   isOpen,
+  submitEnabled,
   onClose,
   handleSubmitAction,
   handleAddUsersCheckboxGroupChange,
@@ -242,6 +282,7 @@ const CreateGroupModal = ({
   assignmentGroupsData: AssignmentGroupsData;
   onClose: () => void;
   isOpen: boolean;
+  submitEnabled: boolean;
   handleSubmitAction: ({ groupName }: { groupName: string }) => void;
   handleAddUsersCheckboxGroupChange: (values: string[]) => void;
 }) => {
@@ -257,6 +298,7 @@ const CreateGroupModal = ({
     <ManageGroupModal
       isOpen={isOpen}
       onClose={onClose}
+      submitEnabled={submitEnabled && !!groupName}
       headerText={'Indicar nombre del grupo y seleccionar integrantes'}
       handleSubmitAction={() => {
         handleSubmitAction({ groupName });
@@ -289,9 +331,11 @@ const ManageGroupModal = ({
   onClose,
   headerText,
   handleSubmitAction,
+  submitEnabled,
   children,
 }: {
   isOpen: boolean;
+  submitEnabled: boolean;
   onClose: () => void;
   headerText: string;
   handleSubmitAction: () => void;
@@ -308,7 +352,9 @@ const ManageGroupModal = ({
           <Button onClick={onClose} variant={'ghost'}>
             {'Cancelar'}
           </Button>
-          <Button onClick={handleSubmitAction}>{'Guardar'}</Button>
+          <Button onClick={handleSubmitAction} isDisabled={!submitEnabled}>
+            {'Guardar'}
+          </Button>{' '}
         </Flex>
       }
       contentProps={{
@@ -331,7 +377,11 @@ const ModalStudentsCheckboxGroup = ({
     <CheckboxGroup onChange={handleAddUsersCheckboxGroupChange}>
       <SimpleGrid columns={2} spacingX={10} spacingY={4} alignItems="center">
         {assignmentGroupsData.studentsWithoutGroup.map(student => (
-          <Checkbox key={student.id} id={student.id} value={student.id}>
+          <Checkbox
+            key={student.userRoleId}
+            id={student.userRoleId}
+            value={student.userRoleId}
+          >
             {mapToUserName(student)}
           </Checkbox>
         ))}

@@ -196,7 +196,7 @@ const buildGroupRepositoryPageConfiguration = ({
       return {
         groupId: groupId,
         groupName: groupName,
-        participants: users.map(user => ({
+        participants: users.map(({ user }) => ({
           userId: user.id,
           name: user.name,
           lastName: user.lastName,
@@ -205,14 +205,14 @@ const buildGroupRepositoryPageConfiguration = ({
         rowData: [groupName, usersRowData],
         checked: true,
         id: groupId,
-        getStudentIds: () => users.map(user => user.id),
+        getStudentIds: () => users.map(({ user }) => user.id),
         getRepoName: (repositoryData: RepositoriesNameConfiguration) => {
           const { prefix, useLastName, useFile, useGroupName } = repositoryData;
 
           const lastNames = useLastName
-            ? users.map(user => user.lastName).join('_')
+            ? users.map(({ user }) => user.lastName).join('_')
             : null;
-          const files = useFile ? users.map(user => user.file).join('_') : null;
+          const files = useFile ? users.map(({ user }) => user.file).join('_') : null;
           const repoName = [
             prefix || null,
             useGroupName ? groupName : null,

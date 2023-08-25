@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d514a24d7a9b431c9fe74b53af225402>>
+ * @generated SignedSource<<96969f80d8cd742588e0b5712526fae8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -29,6 +29,7 @@ export type AssignmentGroupsAndUsersQuery$data = {
             readonly lastName: string;
             readonly name: string;
           };
+          readonly userRoleId: string;
         }>;
         readonly id: string;
         readonly isGroup: boolean | null;
@@ -249,6 +250,13 @@ v6 = [
                   {
                     "alias": null,
                     "args": null,
+                    "kind": "ScalarField",
+                    "name": "userRoleId",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
                     "concreteType": "UserType",
                     "kind": "LinkedField",
                     "name": "user",
@@ -298,16 +306,16 @@ return {
     "selections": (v6/*: any*/)
   },
   "params": {
-    "cacheID": "f194aa183e4a6e55c5c58fbabf7f132a",
+    "cacheID": "0cd86b51a2cbdb3c67b20bdc88dace1e",
     "id": null,
     "metadata": {},
     "name": "AssignmentGroupsAndUsersQuery",
     "operationKind": "query",
-    "text": "query AssignmentGroupsAndUsersQuery(\n  $courseId: ID!\n  $assignmentId: ID\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      organization\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          permissions\n          isTeacher\n        }\n      }\n      assignments(assignmentId: $assignmentId) {\n        id\n        title\n        isGroup\n        groupParticipants {\n          id\n          group {\n            id\n            name\n          }\n          user {\n            id\n            name\n            lastName\n            file\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query AssignmentGroupsAndUsersQuery(\n  $courseId: ID!\n  $assignmentId: ID\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      organization\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          permissions\n          isTeacher\n        }\n      }\n      assignments(assignmentId: $assignmentId) {\n        id\n        title\n        isGroup\n        groupParticipants {\n          id\n          group {\n            id\n            name\n          }\n          userRoleId\n          user {\n            id\n            name\n            lastName\n            file\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "609fd7173611f07e9739f6a5181d4caa";
+(node as any).hash = "b98fd904e1162ea1395c773aaa051132";
 
 export default node;
