@@ -155,9 +155,13 @@ const NavigationBar = () => {
 
       <Menu
         content={{
+          // Take only first name
           menuButton: (
-            // TODO: TH-67
-            <Avatar name={`${viewerData.viewer.name} ${viewerData.viewer.lastName}`} />
+            <Avatar
+              name={`${viewerData.viewer.name.split(' ')[0]} ${
+                viewerData.viewer.lastName
+              }`}
+            />
           ),
           items: [
             { content: 'Ver perfil', action: handleGoToProfile },
