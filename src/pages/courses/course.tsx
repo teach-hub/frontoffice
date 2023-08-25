@@ -152,19 +152,21 @@ const CourseStatistics = ({ course, courseContext, availableOrganizations }: Pro
         stat={String(course.assignments.length)}
         icon={<TerminalIcon size="large" />}
       />
-      <StatCard
-        onClick={() => {
-          if (courseContext.userHasPermission(Permission.SetOrganization)) {
-            onOpen();
-          }
-        }}
-        title={'Organizacion de GitHub'}
-        stat={!errored() ? <CheckIcon size="large" /> : <CloseIcon size="large" />}
-        icon={<MarkGithubIcon size="large" />}
-        color={!errored() ? 'green' : 'red'}
-        border={'3px solid'}
-        tooltipLabel={organizationName}
-      />
+      {courseContext.userIsTeacher && (
+        <StatCard
+          onClick={() => {
+            if (courseContext.userHasPermission(Permission.SetOrganization)) {
+              onOpen();
+            }
+          }}
+          title={'Organizacion de GitHub'}
+          stat={!errored() ? <CheckIcon size="large" /> : <CloseIcon size="large" />}
+          icon={<MarkGithubIcon size="large" />}
+          color={!errored() ? 'green' : 'red'}
+          border={'3px solid'}
+          tooltipLabel={organizationName}
+        />
+      )}
 
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
