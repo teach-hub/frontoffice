@@ -265,10 +265,10 @@ const CourseCharts = ({ course }: { course: CourseType }) => {
 };
 
 const CourseViewContainer = () => {
-  const { courseId } = useUserContext();
+  const courseContext = useUserContext();
 
   const data = useLazyLoadQuery<CourseInfoQuery>(CourseInfoQueryDef, {
-    courseId: courseId || '',
+    courseId: courseContext.courseId || '',
   });
 
   if (!data.viewer || !data.viewer.course) {
@@ -288,7 +288,7 @@ const CourseViewContainer = () => {
           course={course}
           availableOrganizations={availableOrganizations}
         />
-        <CourseCharts course={course} />
+        {courseContext.userIsTeacher && <CourseCharts course={course} />}
       </Stack>
     </PageDataContainer>
   );
