@@ -9,15 +9,20 @@ type GroupUserType = NonNullable<
   NonNullable<AssignmentType['groupParticipants']>[number]['user']
 >;
 
+type GroupParticipantData = {
+  userRoleId: string;
+  user: GroupUserType;
+};
+
 export type GroupUsersData = {
   groupId: string;
   groupName: string;
-  users: GroupUserType[];
+  users: GroupParticipantData[];
 };
 
 export type AssignmentGroupsData = {
   groupUsersData: GroupUsersData[];
-  studentsWithoutGroup: GroupUserType[];
+  studentsWithoutGroup: GroupParticipantData[];
 };
 
 /**
@@ -43,11 +48,16 @@ export const getFirstAssignmentGroupsUsersData = ({
         users: [],
       });
     }
-    groupDataById.get(groupId)?.users.push(participant.user);
+    groupDataById.get(groupId)?.users.push({
+      userRoleId: participant.userRoleId,
+      user: participant.user,
+    });
   });
 
   const groupsDataList = Array.from(groupDataById.values());
-  const studentsWithGroupIds = groupsDataList.flatMap(x => x.users.map(user => user.id));
+  const studentsWithGroupIds = groupsDataList.flatMap(x =>
+    x.users.map(user => user.user.id)
+  );
 
   const studentRoles = filterUsers({
     users: course?.userRoles || [],
@@ -56,7 +66,10 @@ export const getFirstAssignmentGroupsUsersData = ({
 
   const studentsWithoutGroup = studentRoles
     .filter(role => !studentsWithGroupIds.includes(role.user.id))
-    .map(role => role.user);
+    .map(role => ({
+      user: role.user,
+      userRoleId: role.id,
+    }));
 
   return {
     groupUsersData: groupsDataList,
@@ -64,10 +77,10 @@ export const getFirstAssignmentGroupsUsersData = ({
   };
 };
 
-export const mapToUserName = (user: GroupUserType): string => {
-  return `${user.lastName}, ${user.name} (${user.file})`;
+export const mapToUserName = (participantData: GroupParticipantData): string => {
+  return `${participantData.user.lastName}, ${participantData.user.name} (${participantData.user.file})`;
 };
 
-export const mapToUserNames = (users: GroupUserType[]): string[] => {
+export const mapToUserNames = (users: GroupParticipantData[]): string[] => {
   return users.map(mapToUserName).sort((a: string, b: string) => a.localeCompare(b)); // Sort users alphabetically
 };
