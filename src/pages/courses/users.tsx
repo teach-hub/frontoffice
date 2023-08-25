@@ -39,10 +39,16 @@ const UsersList = ({
   });
 
   if (nameFilter) {
-    filteredUserRoles = userRoles.filter(userRole => {
+    const newFiltered = filterUsers({
+      users: userRoles,
+      roleFilter: roleFilter as UserRoleFilter,
+    });
+    filteredUserRoles = newFiltered.filter(userRole => {
       const normalizedFilter = nameFilter.trim().toLowerCase();
 
-      const nameMatches = userRole?.user.name.toLowerCase().match(normalizedFilter);
+      const nameMatches =
+        userRole?.user.name.toLowerCase().match(normalizedFilter) ||
+        userRole?.user.lastName.toLowerCase().match(normalizedFilter);
       const emailMatches = userRole?.user.notificationEmail
         .toLowerCase()
         .match(normalizedFilter);
