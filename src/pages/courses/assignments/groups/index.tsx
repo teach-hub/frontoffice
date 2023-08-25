@@ -36,6 +36,11 @@ import {
   CreateGroupWithParticipantsMutation$data,
 } from '__generated__/CreateGroupWithParticipantsMutation.graphql';
 import CreateGroupWithParticipantsMutationDef from 'graphql/CreateGroupWithParticipantsMutation';
+import {
+  AddParticipantsToGroupMutation,
+  AddParticipantsToGroupMutation$data,
+} from '__generated__/AddParticipantsToGroupMutation.graphql';
+import AddParticipantsToGroupMutationDef from 'graphql/AddParticipantsToGroupMutation';
 import useToast from 'hooks/useToast';
 
 const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
@@ -128,11 +133,35 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
       CreateGroupWithParticipantsMutationDef
     );
 
+  const [commitAddParticipantsToGroup] = useMutation<AddParticipantsToGroupMutation>(
+    AddParticipantsToGroupMutationDef
+  );
+
   const handleAddUsersToGroup = () => {
-    /* TODO: TH-153 add mutation */
-    console.log(selectedGroupId);
-    console.log(selectedUserRoleIds);
-    onCloseAddUsersModal();
+    commitAddParticipantsToGroup({
+      variables: {
+        groupId: selectedGroupId || '',
+        assignmentId: assignmentId || '',
+        participantUserRoleIds: selectedUserRoleIds,
+      },
+      onCompleted: (response: AddParticipantsToGroupMutation$data, errors) => {
+        if (!errors?.length) {
+          toast({
+            title: 'Alumnos agregados!',
+            status: 'info',
+          });
+          onCloseAddUsersModal();
+          navigate(0); // Reload page data
+        } else {
+          console.log({ errors });
+          toast({
+            title: 'Error',
+            description: `Error al intentar unirse a grupo: ${errors?.at(0)?.message}`,
+            status: 'error',
+          });
+        }
+      },
+    });
   };
 
   const handleCreateGroup = (groupName: string) => {
