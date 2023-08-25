@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2674085ebb694133ed6dd4a7da4fcdd8>>
+ * @generated SignedSource<<c6b10d6c1d235fd990aff0c418622fac>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,13 +12,12 @@ import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type UpdateProfileMutation$variables = {
   file: string;
   githubId: string;
-  id: string;
   lastName: string;
   name: string;
   notificationEmail: string;
 };
 export type UpdateProfileMutation$data = {
-  readonly updateUser: {
+  readonly updateViewerUser: {
     readonly file: string;
     readonly githubId: string;
     readonly id: string;
@@ -46,24 +45,19 @@ v1 = {
 v2 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "id"
+  "name": "lastName"
 },
 v3 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "lastName"
+  "name": "name"
 },
 v4 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "name"
-},
-v5 = {
-  "defaultValue": null,
-  "kind": "LocalArgument",
   "name": "notificationEmail"
 },
-v6 = [
+v5 = [
   {
     "alias": null,
     "args": [
@@ -91,16 +85,11 @@ v6 = [
         "kind": "Variable",
         "name": "notificationEmail",
         "variableName": "notificationEmail"
-      },
-      {
-        "kind": "Variable",
-        "name": "userId",
-        "variableName": "id"
       }
     ],
     "concreteType": "UserType",
     "kind": "LinkedField",
-    "name": "updateUser",
+    "name": "updateViewerUser",
     "plural": false,
     "selections": [
       {
@@ -156,41 +145,39 @@ return {
       (v1/*: any*/),
       (v2/*: any*/),
       (v3/*: any*/),
-      (v4/*: any*/),
-      (v5/*: any*/)
+      (v4/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
     "name": "UpdateProfileMutation",
-    "selections": (v6/*: any*/),
+    "selections": (v5/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
     "argumentDefinitions": [
-      (v2/*: any*/),
-      (v4/*: any*/),
       (v3/*: any*/),
+      (v2/*: any*/),
       (v0/*: any*/),
       (v1/*: any*/),
-      (v5/*: any*/)
+      (v4/*: any*/)
     ],
     "kind": "Operation",
     "name": "UpdateProfileMutation",
-    "selections": (v6/*: any*/)
+    "selections": (v5/*: any*/)
   },
   "params": {
-    "cacheID": "ab629f1d72dc087b24db0f74cfe74d69",
+    "cacheID": "ad2b1a80d399635f0a2db943c6c5eec6",
     "id": null,
     "metadata": {},
     "name": "UpdateProfileMutation",
     "operationKind": "mutation",
-    "text": "mutation UpdateProfileMutation(\n  $id: ID!\n  $name: String!\n  $lastName: String!\n  $file: String!\n  $githubId: String!\n  $notificationEmail: String!\n) {\n  updateUser(userId: $id, name: $name, lastName: $lastName, file: $file, githubId: $githubId, notificationEmail: $notificationEmail) {\n    id\n    name\n    lastName\n    file\n    githubId\n    notificationEmail\n  }\n}\n"
+    "text": "mutation UpdateProfileMutation(\n  $name: String!\n  $lastName: String!\n  $file: String!\n  $githubId: String!\n  $notificationEmail: String!\n) {\n  updateViewerUser(name: $name, lastName: $lastName, file: $file, githubId: $githubId, notificationEmail: $notificationEmail) {\n    id\n    name\n    lastName\n    file\n    githubId\n    notificationEmail\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "71451c17f7bcc7b872ca64a6ab79da6d";
+(node as any).hash = "45b71894bbfdc270d148bdf654e69cf3";
 
 export default node;

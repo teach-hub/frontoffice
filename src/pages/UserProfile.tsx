@@ -49,9 +49,9 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
     setIsEditing(false);
 
     if (!errors?.length) {
-      if (response.updateUser) {
+      if (response.updateViewerUser) {
         // @ts-expect-error: FIXME
-        setResult({ ...response.updateUser, id: queryResult.id });
+        setResult({ ...response.updateViewerUser, id: queryResult.id });
       }
       toast({
         title: '¡Usuario actualizado!',
@@ -68,15 +68,10 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
   };
 
   const onSubmit = (values: FormValues) => {
-    if (!queryResult?.id) {
-      throw new Error('No user id!');
-    }
-
     setShowSpinner(true);
 
     commitMutation({
       variables: {
-        id: queryResult.id,
         file: values?.file,
         name: values?.name,
         lastName: values?.lastName,
