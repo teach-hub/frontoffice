@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<43447d014c6d83ae265e58e75c63f846>>
+ * @generated SignedSource<<95f7105817dd66a978c0239994ae4c2d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,6 +14,7 @@ export type UserProfileQuery$data = {
   readonly viewer: {
     readonly file: string;
     readonly githubId: string;
+    readonly githubUserName: string;
     readonly id: string;
     readonly lastName: string;
     readonly name: string;
@@ -67,6 +68,13 @@ var v0 = [
         "alias": null,
         "args": null,
         "kind": "ScalarField",
+        "name": "githubUserName",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
         "name": "file",
         "storageKey": null
       },
@@ -99,16 +107,16 @@ return {
     "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "0c8ab1c402ca514bb88ffd827a5d57e2",
+    "cacheID": "a26c2227f15fc9761f15999714112b5c",
     "id": null,
     "metadata": {},
     "name": "UserProfileQuery",
     "operationKind": "query",
-    "text": "query UserProfileQuery {\n  viewer {\n    id\n    name\n    lastName\n    githubId\n    file\n    notificationEmail\n  }\n}\n"
+    "text": "query UserProfileQuery {\n  viewer {\n    id\n    name\n    lastName\n    githubId\n    githubUserName\n    file\n    notificationEmail\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "562de079d471216af1e5aa8056625876";
+(node as any).hash = "48dba6f46b753e01817744bc4840e80b";
 
 export default node;

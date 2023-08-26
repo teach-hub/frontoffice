@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c6b10d6c1d235fd990aff0c418622fac>>
+ * @generated SignedSource<<ed17a35738a2a685967126fcda61faf6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -20,6 +20,7 @@ export type UpdateProfileMutation$data = {
   readonly updateViewerUser: {
     readonly file: string;
     readonly githubId: string;
+    readonly githubUserName: string;
     readonly id: string;
     readonly lastName: string;
     readonly name: string;
@@ -131,6 +132,13 @@ v5 = [
         "alias": null,
         "args": null,
         "kind": "ScalarField",
+        "name": "githubUserName",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
         "name": "notificationEmail",
         "storageKey": null
       }
@@ -168,16 +176,16 @@ return {
     "selections": (v5/*: any*/)
   },
   "params": {
-    "cacheID": "ad2b1a80d399635f0a2db943c6c5eec6",
+    "cacheID": "b7af108e3ce9ee70c5a6ab33e3b7c955",
     "id": null,
     "metadata": {},
     "name": "UpdateProfileMutation",
     "operationKind": "mutation",
-    "text": "mutation UpdateProfileMutation(\n  $name: String!\n  $lastName: String!\n  $file: String!\n  $githubId: String!\n  $notificationEmail: String!\n) {\n  updateViewerUser(name: $name, lastName: $lastName, file: $file, githubId: $githubId, notificationEmail: $notificationEmail) {\n    id\n    name\n    lastName\n    file\n    githubId\n    notificationEmail\n  }\n}\n"
+    "text": "mutation UpdateProfileMutation(\n  $name: String!\n  $lastName: String!\n  $file: String!\n  $githubId: String!\n  $notificationEmail: String!\n) {\n  updateViewerUser(name: $name, lastName: $lastName, file: $file, githubId: $githubId, notificationEmail: $notificationEmail) {\n    id\n    name\n    lastName\n    file\n    githubId\n    githubUserName\n    notificationEmail\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "45b71894bbfdc270d148bdf654e69cf3";
+(node as any).hash = "f778bdece67b910aa56d7d5992917b11";
 
 export default node;

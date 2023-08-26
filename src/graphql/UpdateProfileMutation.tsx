@@ -20,6 +20,7 @@ export default graphql`
       lastName
       file
       githubId
+      githubUserName
       notificationEmail
     }
   }

@@ -139,6 +139,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
             file: queryResult.file || '',
             notificationEmail: queryResult.notificationEmail || '',
             githubId: queryResult.githubId || '',
+            githubUserName: queryResult.githubUserName || '',
           }}
           validateForm={validateForm}
           onCancelForm={{
@@ -209,11 +210,11 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
               readError: e => e.notificationEmail as string,
             },
             {
-              inputComponent: (values, handleChange) => (
+              inputComponent: () => (
                 <InputField
                   id={'githubId'}
-                  value={values?.githubId}
-                  onChange={handleChange}
+                  value={queryResult.githubUserName}
+                  // onChange={handleChange}
                   placeholder={'12345'}
                   type={'text'}
                   isReadOnly={true}

@@ -7,6 +7,7 @@ export default graphql`
       name
       lastName
       githubId
+      githubUserName
       file
       notificationEmail
     }
