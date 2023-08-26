@@ -7,6 +7,7 @@ import Input from 'components/InputField';
 import { Modal } from 'components/Modal';
 import { FormControl } from 'components/FormControl';
 import IconButton from 'components/IconButton';
+import useToast from 'hooks/useToast';
 
 export type Props = {
   onGenerateLink: (_: { roleId: string; expirationMinutes?: number }) => Promise<string>;
@@ -21,6 +22,7 @@ export default ({ roles, isOpen, onClose, onGenerateLink }: Props) => {
   const DEFAULT_EXPIRE_MINUTES = 60;
   const [expirationMinutes, setExpirationMinutes] =
     useState<number>(DEFAULT_EXPIRE_MINUTES);
+  const toast = useToast();
 
   const _onGenerateLink = async () => {
     if (!selectedRole) {
@@ -33,6 +35,14 @@ export default ({ roles, isOpen, onClose, onGenerateLink }: Props) => {
   const _onClose = () => {
     setValue('');
     return onClose();
+  };
+
+  const _onCopy = () => {
+    onCopy();
+    toast({
+      title: 'Link copiado',
+      status: 'success',
+    });
   };
 
   const EXPIRATION_MINUTES_OPTIONS = [
@@ -107,7 +117,7 @@ export default ({ roles, isOpen, onClose, onGenerateLink }: Props) => {
             <IconButton
               aria-label={'copy-link'}
               isDisabled={!value}
-              onClick={onCopy}
+              onClick={_onCopy}
               variant="outline"
               icon={<CopyIcon />}
             />
