@@ -1,5 +1,8 @@
 import {
   Flex,
+  Input,
+  InputGroup,
+  InputLeftElement,
   Radio,
   RadioGroup,
   SimpleGrid,
@@ -42,6 +45,8 @@ import {
   GroupUsersData,
   mapToUserNames,
 } from 'app/groups';
+import { SearchIcon } from '@chakra-ui/icons';
+import { Nullable } from 'types';
 
 type RepositoriesNameConfiguration = {
   prefix: string;
@@ -83,6 +88,7 @@ export enum RepositoryType {
 interface SelectionTableRowProps {
   id: string;
   rowData: (React.JSX.Element | string)[];
+  showRow: (filter: Nullable<string>) => boolean;
   checked: boolean;
   getStudentIds: () => string[];
   getRepoName: (repositoryConfiguration: RepositoriesNameConfiguration) => string;
@@ -131,6 +137,7 @@ type UserRoleType = NonNullable<CourseType['userRoles']>[number];
  * */
 interface RepositoriesTypePageConfiguration {
   tableHeaders: string[];
+  tableHeadersWidth: string[];
   tableRowData: SelectionTableRowProps[];
 }
 
@@ -141,14 +148,23 @@ const buildStudentRepositoryPageConfiguration = ({
 }): RepositoriesTypePageConfiguration => {
   return {
     tableHeaders: ['Alumno', 'Padrón'],
+    tableHeadersWidth: ['70%', '30%'],
     tableRowData: students
-      .map(
-        (student): StudentSelectionTableRowProps => ({
+      .map((student): StudentSelectionTableRowProps => {
+        const rowData = [
+          student.user.lastName + `, ${student.user.name}`, // FullName
+          student.user.file, // File
+        ];
+        return {
           id: student.user.file,
-          rowData: [
-            student.user.lastName + `, ${student.user.name}`, // FullName
-            student.user.file, // File
-          ],
+          rowData,
+          showRow: filter => {
+            return filter
+              ? rowData.some(value =>
+                  value.toString().toLowerCase().includes(filter.toLowerCase())
+                )
+              : true;
+          },
           checked: true,
           userId: student.user.id,
           lastName: student.user.lastName,
@@ -169,8 +185,8 @@ const buildStudentRepositoryPageConfiguration = ({
 
             return removeAccentsAndSpecialCharacters(repoName);
           },
-        })
-      )
+        };
+      })
       .sort((a, b) => a.lastName.localeCompare(b.lastName)), // Sort alphabetically
   };
 };
@@ -185,9 +201,10 @@ const buildGroupRepositoryPageConfiguration = ({
       const { groupId, groupName, users } = groupUsersData;
 
       /* Create stack to view better spaced */
+      const userData = mapToUserNames(users);
       const usersRowData = (
         <Stack>
-          {mapToUserNames(users).map((userData: string) => (
+          {userData.map((userData: string) => (
             <Text>{userData}</Text>
           ))}
         </Stack>
@@ -203,6 +220,13 @@ const buildGroupRepositoryPageConfiguration = ({
           file: user.file,
         })),
         rowData: [groupName, usersRowData],
+        showRow: (filter: Nullable<string>) =>
+          filter
+            ? groupName.toLowerCase().includes(filter.toLowerCase()) ||
+              userData.some((userData: string) =>
+                userData.toLowerCase().includes(filter.toLowerCase())
+              )
+            : true,
         checked: true,
         id: groupId,
         getStudentIds: () => users.map(({ user }) => user.id),
@@ -233,6 +257,7 @@ const buildGroupRepositoryPageConfiguration = ({
 
   return {
     tableHeaders: ['Grupo', 'Alumnos'],
+    tableHeadersWidth: ['30%', '70%'],
     tableRowData,
   };
 };
@@ -254,6 +279,8 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
     onOpen: onOpenRepoNamesConfigurationModal,
     onClose: onCloseRepoNamesConfigurationModal,
   } = useDisclosure();
+
+  const [searchFilter, setSearchFilter] = useState<Nullable<string>>(null);
 
   const courseGroupsAndUsersData = useLazyLoadQuery<AssignmentGroupsAndUsersQuery>(
     AssignmentGroupsAndUsersQueryDef,
@@ -346,56 +373,6 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
       ...prevState,
       [userId]: value,
     }));
-  };
-
-  const SelectionTable = () => {
-    const allChecked = tableData.map(i => i.checked).every(Boolean);
-    const isIndeterminate = tableData.map(i => i.checked).some(Boolean) && !allChecked;
-
-    const handleCheckAll = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const checked = event.target.checked;
-      const updatedData = tableData.map(row => ({
-        ...row,
-        checked,
-      }));
-      setTableData(updatedData);
-    };
-
-    const handleRowCheck = (rowId: string, checked: boolean) => {
-      const updatedData = tableData.map(row =>
-        row.id === rowId ? { ...row, checked } : row
-      );
-      setTableData(updatedData);
-    };
-
-    return (
-      <Table
-        tableHeight={'70vh'}
-        tableWidth={'50vw'}
-        headers={[
-          ...pageConfiguration.tableHeaders,
-          <Checkbox
-            id={'allChecked'}
-            size={'lg'}
-            borderColor={theme.colors.teachHub.white}
-            bg={undefined} // Use default
-            isChecked={allChecked}
-            isIndeterminate={isIndeterminate}
-            onChange={handleCheckAll}
-          />,
-        ]}
-        rowOptions={tableData.map(({ checked, id, rowData }) => ({
-          content: [
-            ...rowData,
-            <Checkbox
-              id={'id'}
-              isChecked={checked}
-              onChange={() => handleRowCheck(id, !checked)}
-            />,
-          ],
-        }))}
-      />
-    );
   };
 
   const onCancel = () => {
@@ -546,7 +523,28 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
             </Button>
           </Flex>
         </Flex>
-        <SelectionTable />
+        <Stack>
+          <Flex justifyContent={'flex-end'}>
+            <InputGroup w="300px">
+              <InputLeftElement pointerEvents="none">
+                <SearchIcon />
+              </InputLeftElement>
+              <Input
+                placeholder="Juan Perez"
+                borderColor="black"
+                bgColor="white"
+                onChange={event => setSearchFilter(event.target.value)}
+              />
+            </InputGroup>
+          </Flex>
+          <SelectionTable
+            tableData={tableData}
+            setTableData={setTableData}
+            tableHeaders={pageConfiguration.tableHeaders}
+            tableHeadersWidth={pageConfiguration.tableHeadersWidth}
+            searchFilter={searchFilter}
+          />
+        </Stack>
       </Flex>
       <Modal
         isOpen={isOpenTeachersModal}
@@ -661,5 +659,70 @@ export default ({ type }: { type: RepositoryType }) => {
         <CreateRepositoryPage type={type} />
       </Suspense>
     </Navigation>
+  );
+};
+
+const SelectionTable = ({
+  tableHeaders,
+  tableHeadersWidth,
+  tableData,
+  setTableData,
+  searchFilter,
+}: {
+  tableHeaders: string[];
+  tableHeadersWidth: string[];
+  tableData: SelectionTableRowProps[];
+  setTableData: (newTableData: SelectionTableRowProps[]) => void;
+  searchFilter: Nullable<string>;
+}) => {
+  const allChecked = tableData.map(i => i.checked).every(Boolean);
+  const isIndeterminate = tableData.map(i => i.checked).some(Boolean) && !allChecked;
+
+  const handleCheckAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = event.target.checked;
+    const updatedData = tableData.map(row => ({
+      ...row,
+      checked,
+    }));
+    setTableData(updatedData);
+  };
+
+  const handleRowCheck = (rowId: string, checked: boolean) => {
+    const updatedData = tableData.map(row =>
+      row.id === rowId ? { ...row, checked } : row
+    );
+    setTableData(updatedData);
+  };
+
+  return (
+    <Table
+      tableHeight={'70vh'}
+      tableWidth={'50vw'}
+      headers={[
+        ...tableHeaders,
+        <Checkbox
+          id={'allChecked'}
+          size={'lg'}
+          borderColor={theme.colors.teachHub.white}
+          bg={undefined} // Use default
+          isChecked={allChecked}
+          isIndeterminate={isIndeterminate}
+          onChange={handleCheckAll}
+        />,
+      ]}
+      headersWidths={[...tableHeadersWidth, '10px']}
+      rowOptions={tableData
+        .filter(data => data.showRow(searchFilter))
+        .map(({ checked, id, rowData }) => ({
+          content: [
+            ...rowData,
+            <Checkbox
+              id={'id'}
+              isChecked={checked}
+              onChange={() => handleRowCheck(id, !checked)}
+            />,
+          ],
+        }))}
+    />
   );
 };

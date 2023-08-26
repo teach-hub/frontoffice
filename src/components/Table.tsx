@@ -19,6 +19,7 @@ type RowOptions = {
 
 type Props = {
   headers: ReactNode[];
+  headersWidths?: string[];
   rowOptions: RowOptions[];
   tableWidth?: string;
   tableHeight?: string;
@@ -51,11 +52,15 @@ export default (props: Props) => {
             zIndex="sticky"
           >
             <Tr>
-              {props.headers.map((h, i) => (
-                <Td key={`${i}`} textAlign="center">
-                  {h}
-                </Td>
-              ))}
+              {props.headers.map((h, i) => {
+                const headerWidth = props.headersWidths?.at(i);
+                const rest = headerWidth ? { style: { width: headerWidth } } : {};
+                return (
+                  <Td key={`${i}`} textAlign="center" {...rest}>
+                    {h}
+                  </Td>
+                );
+              })}
             </Tr>
           </Thead>
           <Tbody>
