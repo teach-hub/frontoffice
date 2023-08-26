@@ -156,8 +156,7 @@ const LoginPage = (props: LoginPageProps) => {
             navigate(redirectTo ? redirectTo : '/');
             toast({
               title: 'Usuario registrado!',
-              description: 'Usuario registrado',
-              status: 'info',
+              status: 'success',
             });
           } else {
             setToken(null); // If register failed remove token
