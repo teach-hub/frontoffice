@@ -23,10 +23,16 @@ const InviteModal = ({ courseId, rootQueryRef, isOpen, onClose }: Props) => {
   );
   const toast = useToast();
 
-  const handleGenerateInviteLink = async ({ roleId }: { roleId: string }) =>
+  const handleGenerateInviteLink = async ({
+    roleId,
+    expirationMinutes,
+  }: {
+    roleId: string;
+    expirationMinutes?: number;
+  }) =>
     new Promise<string>((resolve, reject) =>
       commitGenerateInviteMutation({
-        variables: { courseId, roleId },
+        variables: { courseId, roleId, expirationMinutes },
         onCompleted: (result, errors) => {
           if (errors?.length) {
             toast({

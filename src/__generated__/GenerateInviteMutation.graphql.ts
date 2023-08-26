@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<780450a30635b8ba3555a559b28f9a70>>
+ * @generated SignedSource<<5b33aeb848801881fe80fa896e17dbd1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,6 +11,7 @@
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type GenerateInviteMutation$variables = {
   courseId: string;
+  expirationMinutes?: number | null;
   roleId: string;
 };
 export type GenerateInviteMutation$data = {
@@ -22,19 +23,22 @@ export type GenerateInviteMutation = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "courseId"
-  },
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "roleId"
-  }
-],
-v1 = [
+var v0 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "courseId"
+},
+v1 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "expirationMinutes"
+},
+v2 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "roleId"
+},
+v3 = [
   {
     "alias": null,
     "args": [
@@ -42,6 +46,11 @@ v1 = [
         "kind": "Variable",
         "name": "courseId",
         "variableName": "courseId"
+      },
+      {
+        "kind": "Variable",
+        "name": "expirationMinutes",
+        "variableName": "expirationMinutes"
       },
       {
         "kind": "Variable",
@@ -56,32 +65,40 @@ v1 = [
 ];
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v2/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "GenerateInviteMutation",
-    "selections": (v1/*: any*/),
+    "selections": (v3/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v2/*: any*/),
+      (v1/*: any*/)
+    ],
     "kind": "Operation",
     "name": "GenerateInviteMutation",
-    "selections": (v1/*: any*/)
+    "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "66e02c5ba2e03988254adae61d890c82",
+    "cacheID": "0e3288563aad5bb30f49383208d9358a",
     "id": null,
     "metadata": {},
     "name": "GenerateInviteMutation",
     "operationKind": "mutation",
-    "text": "mutation GenerateInviteMutation(\n  $courseId: ID!\n  $roleId: ID!\n) {\n  generateInviteCode(roleId: $roleId, courseId: $courseId)\n}\n"
+    "text": "mutation GenerateInviteMutation(\n  $courseId: ID!\n  $roleId: ID!\n  $expirationMinutes: Int\n) {\n  generateInviteCode(roleId: $roleId, courseId: $courseId, expirationMinutes: $expirationMinutes)\n}\n"
   }
 };
 })();
 
-(node as any).hash = "820abe75950fda4c5e9a96e33c91f29a";
+(node as any).hash = "4245cc92d20636b7634047225d102d06";
 
 export default node;
