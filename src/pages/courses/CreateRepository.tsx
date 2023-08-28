@@ -150,6 +150,7 @@ const buildStudentRepositoryPageConfiguration = ({
     tableHeaders: ['Alumno', 'Padrón'],
     tableHeadersWidth: ['70%', '30%'],
     tableRowData: students
+      .sort((a, b) => a.user.lastName.localeCompare(b.user.lastName)) // Sort alphabetically
       .map((student): StudentSelectionTableRowProps => {
         const rowData = [
           student.user.lastName + `, ${student.user.name}`, // FullName
@@ -197,6 +198,7 @@ const buildGroupRepositoryPageConfiguration = ({
   groupUsersDataList: GroupUsersData[];
 }): RepositoriesTypePageConfiguration => {
   const tableRowData: GroupSelectionTableRowProps[] = groupUsersDataList
+    .sort((a, b) => a.groupName.localeCompare(b.groupName)) // Sort alphabetically
     .map(groupUsersData => {
       const { groupId, groupName, users } = groupUsersData;
 
@@ -213,12 +215,14 @@ const buildGroupRepositoryPageConfiguration = ({
       return {
         groupId: groupId,
         groupName: groupName,
-        participants: users.map(({ user }) => ({
-          userId: user.id,
-          name: user.name,
-          lastName: user.lastName,
-          file: user.file,
-        })),
+        participants: users
+          .sort((a, b) => a.user.lastName.localeCompare(b.user.lastName)) // Sort alphabetically
+          .map(({ user }) => ({
+            userId: user.id,
+            name: user.name,
+            lastName: user.lastName,
+            file: user.file,
+          })),
         rowData: [groupName, usersRowData],
         showRow: (filter: Nullable<string>) =>
           filter
