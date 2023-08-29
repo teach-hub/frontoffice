@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<773ac31d71a3f297d07316b342184732>>
+ * @generated SignedSource<<d514a24d7a9b431c9fe74b53af225402>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,11 +9,11 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type CourseCreateRepositoryQuery$variables = {
-  assignmentId: string;
+export type AssignmentGroupsAndUsersQuery$variables = {
+  assignmentId?: string | null;
   courseId: string;
 };
-export type CourseCreateRepositoryQuery$data = {
+export type AssignmentGroupsAndUsersQuery$data = {
   readonly viewer: {
     readonly course: {
       readonly assignments: ReadonlyArray<{
@@ -31,10 +31,10 @@ export type CourseCreateRepositoryQuery$data = {
           };
         }>;
         readonly id: string;
+        readonly isGroup: boolean | null;
         readonly title: string | null;
       }>;
       readonly id: string;
-      readonly name: string;
       readonly organization: string | null;
       readonly userRoles: ReadonlyArray<{
         readonly id: string;
@@ -57,9 +57,9 @@ export type CourseCreateRepositoryQuery$data = {
     readonly name: string;
   } | null;
 };
-export type CourseCreateRepositoryQuery = {
-  response: CourseCreateRepositoryQuery$data;
-  variables: CourseCreateRepositoryQuery$variables;
+export type AssignmentGroupsAndUsersQuery = {
+  response: AssignmentGroupsAndUsersQuery$data;
+  variables: AssignmentGroupsAndUsersQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -127,7 +127,6 @@ v6 = [
         "plural": false,
         "selections": [
           (v2/*: any*/),
-          (v3/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -221,6 +220,13 @@ v6 = [
               {
                 "alias": null,
                 "args": null,
+                "kind": "ScalarField",
+                "name": "isGroup",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
                 "concreteType": "InternalGroupParticipantType",
                 "kind": "LinkedField",
                 "name": "groupParticipants",
@@ -276,7 +282,7 @@ return {
     ],
     "kind": "Fragment",
     "metadata": null,
-    "name": "CourseCreateRepositoryQuery",
+    "name": "AssignmentGroupsAndUsersQuery",
     "selections": (v6/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
@@ -288,20 +294,20 @@ return {
       (v0/*: any*/)
     ],
     "kind": "Operation",
-    "name": "CourseCreateRepositoryQuery",
+    "name": "AssignmentGroupsAndUsersQuery",
     "selections": (v6/*: any*/)
   },
   "params": {
-    "cacheID": "84fb6a98cf2807ca07eed8c7c483155c",
+    "cacheID": "f194aa183e4a6e55c5c58fbabf7f132a",
     "id": null,
     "metadata": {},
-    "name": "CourseCreateRepositoryQuery",
+    "name": "AssignmentGroupsAndUsersQuery",
     "operationKind": "query",
-    "text": "query CourseCreateRepositoryQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      organization\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          permissions\n          isTeacher\n        }\n      }\n      assignments(assignmentId: $assignmentId) {\n        id\n        title\n        groupParticipants {\n          id\n          group {\n            id\n            name\n          }\n          user {\n            id\n            name\n            lastName\n            file\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query AssignmentGroupsAndUsersQuery(\n  $courseId: ID!\n  $assignmentId: ID\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      organization\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          permissions\n          isTeacher\n        }\n      }\n      assignments(assignmentId: $assignmentId) {\n        id\n        title\n        isGroup\n        groupParticipants {\n          id\n          group {\n            id\n            name\n          }\n          user {\n            id\n            name\n            lastName\n            file\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "d9889486894f6713275693eb3eec301b";
+(node as any).hash = "609fd7173611f07e9739f6a5181d4caa";
 
 export default node;

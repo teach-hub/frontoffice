@@ -17,12 +17,7 @@ import { useLazyLoadQuery, useMutation } from 'react-relay';
 import Table from 'components/Table';
 import { theme } from 'theme';
 import { Checkbox } from 'components/Checkbox';
-import CourseCreateRepositoryQueryDef from 'graphql/CourseCreateRepositoryQuery';
 import CreateRepositoryMutationDef from 'graphql/CreateRepositoryMutation';
-import {
-  CourseCreateRepositoryQuery,
-  CourseCreateRepositoryQuery$data,
-} from '__generated__/CourseCreateRepositoryQuery.graphql';
 import { filterUsers, UserRoleFilter } from 'app/users';
 import { useUserContext } from 'hooks/useUserCourseContext';
 import {
@@ -37,6 +32,16 @@ import { Modal } from 'components/Modal';
 import { FormControl } from 'components/FormControl';
 import CheckboxGroup from 'components/CheckboxGroup';
 import { ButtonWithIcon } from 'components/ButtonWithIcon';
+import AssignmentGroupsAndUsersQueryDef from 'graphql/AssignmentGroupsAndUsersQuery';
+import {
+  AssignmentGroupsAndUsersQuery,
+  AssignmentGroupsAndUsersQuery$data,
+} from '__generated__/AssignmentGroupsAndUsersQuery.graphql';
+import {
+  getFirstAssignmentGroupsUsersData,
+  GroupUsersData,
+  mapToUserNames,
+} from 'app/groups';
 
 type RepositoriesNameConfiguration = {
   prefix: string;
@@ -112,19 +117,9 @@ interface GroupSelectionTableRowProps extends SelectionTableRowProps {
 }
 
 type CourseType = NonNullable<
-  NonNullable<CourseCreateRepositoryQuery$data['viewer']>['course']
+  NonNullable<AssignmentGroupsAndUsersQuery$data['viewer']>['course']
 >;
 type UserRoleType = NonNullable<CourseType['userRoles']>[number];
-type AssignmentType = NonNullable<CourseType['assignments']>[number];
-type GroupUserType = NonNullable<
-  NonNullable<AssignmentType['groupParticipants']>[number]['user']
->;
-
-interface GroupUsersData {
-  groupId: string;
-  groupName: string;
-  users: GroupUserType[];
-}
 
 /**
  * Configuration for the page to create repositories.
@@ -192,12 +187,9 @@ const buildGroupRepositoryPageConfiguration = ({
       /* Create stack to view better spaced */
       const usersRowData = (
         <Stack>
-          {users
-            .map((user): string => `${user.lastName}, ${user.name} (${user.file})`)
-            .sort((a: string, b: string) => a.localeCompare(b)) // Sort users alphabetically
-            .map((userData: string) => (
-              <Text>{userData}</Text>
-            ))}
+          {mapToUserNames(users).map((userData: string) => (
+            <Text>{userData}</Text>
+          ))}
         </Stack>
       );
 
@@ -263,8 +255,8 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
     onClose: onCloseRepoNamesConfigurationModal,
   } = useDisclosure();
 
-  const courseQueryData = useLazyLoadQuery<CourseCreateRepositoryQuery>(
-    CourseCreateRepositoryQueryDef,
+  const courseGroupsAndUsersData = useLazyLoadQuery<AssignmentGroupsAndUsersQuery>(
+    AssignmentGroupsAndUsersQueryDef,
     {
       courseId: courseId || '',
       assignmentId: assignmentId || '',
@@ -275,7 +267,7 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
     CreateRepositoryMutationDef
   );
 
-  const course = courseQueryData.viewer?.course;
+  const course = courseGroupsAndUsersData.viewer?.course;
   const courseOrganization = course?.organization;
   const selectedAssignment = course?.assignments[0]; // Expect only one assignment
 
@@ -301,25 +293,15 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
 
   const [selectedRoles, setSelectedRoles] = useState<SelectedRoles>(getInitialRoles());
 
-  const groupDataById = new Map<string, GroupUsersData>();
-  selectedAssignment?.groupParticipants?.forEach(participant => {
-    const groupId = participant.group?.id;
-    const groupData = groupDataById.get(groupId);
-    if (!groupData) {
-      groupDataById.set(groupId, {
-        groupId: groupId,
-        groupName: participant.group.name || '-',
-        users: [],
-      });
-    }
-    groupDataById.get(groupId)?.users.push(participant.user);
+  const assignmentGroupsData = getFirstAssignmentGroupsUsersData({
+    groupAndUsersData: courseGroupsAndUsersData,
   });
 
   const getPageConfiguration = (): RepositoriesTypePageConfiguration => {
     return type === RepositoryType.Students
       ? buildStudentRepositoryPageConfiguration({ students })
       : buildGroupRepositoryPageConfiguration({
-          groupUsersDataList: Array.from(groupDataById.values()),
+          groupUsersDataList: assignmentGroupsData.groupUsersData,
         });
   };
 
