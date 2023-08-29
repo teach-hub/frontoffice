@@ -119,9 +119,8 @@ const CreateOrUpdateAssignmentsPage = () => {
               toast({
                 title: 'Error',
                 description:
-                  `No se pudo editar el trabajo práctico` + errorMessage
-                    ? `: ${errorMessage}`
-                    : '',
+                  `No se pudo editar el trabajo práctico` +
+                  (errorMessage ? `: ${errorMessage}` : ''),
                 status: 'error',
               });
             }
@@ -152,9 +151,8 @@ const CreateOrUpdateAssignmentsPage = () => {
               toast({
                 title: 'Error',
                 description:
-                  `No se pudo crear el trabajo práctico` + errorMessage
-                    ? `: ${errorMessage}`
-                    : '',
+                  `No se pudo crear el trabajo práctico` +
+                  (errorMessage ? `: ${errorMessage}` : ''),
                 status: 'error',
               });
             }

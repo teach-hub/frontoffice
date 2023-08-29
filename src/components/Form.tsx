@@ -1,8 +1,8 @@
-import { FormikProps, FormikConfig, Formik, FormikErrors, FormikValues } from 'formik';
+import { Formik, FormikConfig, FormikErrors, FormikProps, FormikValues } from 'formik';
 import {
   Flex,
-  FormControlProps,
   FormControl,
+  FormControlProps,
   FormErrorMessage,
   FormLabel,
 } from '@chakra-ui/react';
@@ -69,6 +69,7 @@ const Form = <T extends FormikValues>(props: Props<T>) => {
         isValid,
         handleSubmit,
         setFieldValue,
+        setSubmitting,
       }) => (
         <Flex direction={'column'} justifyContent={'space-evenly '} gap={'20px'}>
           {inputFields
@@ -103,8 +104,10 @@ const Form = <T extends FormikValues>(props: Props<T>) => {
               <Button
                 w={'full'}
                 disabled={isSubmitting || !isValid}
-                // @ts-expect-error: FIXME
-                onClick={handleSubmit}
+                onClick={() => {
+                  handleSubmit();
+                  setSubmitting(false);
+                }}
               >
                 {onSubmitForm.text}
               </Button>
