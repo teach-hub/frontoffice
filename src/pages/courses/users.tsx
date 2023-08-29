@@ -2,7 +2,7 @@ import { Suspense, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
-import { AlertIcon, KebabHorizontalIcon, PersonIcon } from '@primer/octicons-react';
+import { AlertIcon, PersonIcon } from '@primer/octicons-react';
 
 import { SearchIcon } from '@chakra-ui/icons';
 import { HStack, Input, InputGroup, InputLeftElement } from '@chakra-ui/react';
@@ -10,7 +10,6 @@ import { HStack, Input, InputGroup, InputLeftElement } from '@chakra-ui/react';
 import Heading from 'components/Heading';
 import Box from 'components/Box';
 import Navigation from 'components/Navigation';
-import Button from 'components/Button';
 import Table from 'components/Table';
 import Text from 'components/Text';
 
@@ -33,16 +32,23 @@ const UsersList = ({
   roleFilter: string;
   nameFilter: string | null;
 }): JSX.Element => {
+  const roleFilterAsEnum = roleFilter as UserRoleFilter;
   let filteredUserRoles = filterUsers({
     users: userRoles,
-    roleFilter: roleFilter as UserRoleFilter,
+    roleFilter: roleFilterAsEnum,
   });
 
   if (nameFilter) {
-    filteredUserRoles = userRoles.filter(userRole => {
+    const newFiltered = filterUsers({
+      users: userRoles,
+      roleFilter: roleFilterAsEnum,
+    });
+    filteredUserRoles = newFiltered.filter(userRole => {
       const normalizedFilter = nameFilter.trim().toLowerCase();
 
-      const nameMatches = userRole?.user.name.toLowerCase().match(normalizedFilter);
+      const nameMatches =
+        userRole?.user.name.toLowerCase().match(normalizedFilter) ||
+        userRole?.user.lastName.toLowerCase().match(normalizedFilter);
       const emailMatches = userRole?.user.notificationEmail
         .toLowerCase()
         .match(normalizedFilter);
@@ -64,23 +70,30 @@ const UsersList = ({
     </Box>
   );
 
+  const TEACHER_HEADERS = ['', 'Nombre', 'Rol', 'Email'];
+  const STUDENT_HEADERS = ['', 'Nombre', 'Padrón', 'Email'];
+
+  const isTeacherPage = roleFilterAsEnum === UserRoleFilter.Teacher;
+
   return (
     <>
       <Table
-        headers={['', 'Nombre', 'Padrón', 'Email', 'Rol', 'Fecha de creación', '']}
+        headers={isTeacherPage ? TEACHER_HEADERS : STUDENT_HEADERS}
         rowOptions={filteredUserRoles.map(userRole => {
           return {
-            content: [
-              <PersonIcon size="medium" />,
-              `${userRole?.user?.name} ${userRole?.user?.lastName}`,
-              userRole?.user?.file,
-              userRole?.user?.notificationEmail,
-              userRole?.role?.name,
-              new Date().toLocaleString(),
-              <Button variant={'ghost'}>
-                <KebabHorizontalIcon />
-              </Button>,
-            ],
+            content: isTeacherPage
+              ? [
+                  <PersonIcon size="medium" />,
+                  `${userRole?.user?.lastName}, ${userRole?.user?.name}`,
+                  userRole?.role?.name,
+                  userRole?.user?.notificationEmail,
+                ]
+              : [
+                  <PersonIcon size="medium" />,
+                  `${userRole?.user?.lastName}, ${userRole?.user?.name}`,
+                  userRole?.user?.file,
+                  userRole?.user?.notificationEmail,
+                ],
           };
         })}
       />
