@@ -24,22 +24,37 @@ import { ButtonWithIcon } from 'components/ButtonWithIcon';
 import { buildAssignmentUrlFilter } from 'queries';
 import CreateRepositoryIcon from 'icons/CreateRepositoryIcon';
 import GroupIcon from 'icons/GroupIcon';
+import useToast from 'hooks/useToast';
 
 const AssignmentsPage = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const courseContext = useUserContext();
 
   const data = useLazyLoadQuery<CourseAssignmentsQuery>(CourseAssignmentsQueryDef, {
     courseId: courseContext.courseId || '',
+    includeViewerSubmissions: !courseContext.userIsTeacher, // If viewer is student, include own submissions
   });
 
   const assignments = data.viewer?.course?.assignments || [];
+  const isTeacher = courseContext.userIsTeacher === true;
 
-  const buildSubmissionLink = (assignmentId?: string) => {
-    return (
-      `../submissions` +
-      (assignmentId ? `?${buildAssignmentUrlFilter(assignmentId)}` : '')
-    );
+  const buildSubmissionLink = ({
+    assignmentId,
+    viewerSubmissionId,
+  }: {
+    assignmentId?: string;
+    viewerSubmissionId?: string;
+  }) => {
+    const SUBMISSION_BASE = `../submissions`;
+
+    if (!assignmentId && !viewerSubmissionId) return SUBMISSION_BASE; // Go to all submissions
+
+    return viewerSubmissionId
+      ? `${SUBMISSION_BASE}/${viewerSubmissionId}` // Go to viewer submission
+      : assignmentId
+      ? `${SUBMISSION_BASE}?${buildAssignmentUrlFilter(assignmentId)}` // Go to assignment submissions
+      : '#'; // Do nothing
   };
 
   const buildCreateRepositoryLink = (
@@ -67,17 +82,21 @@ const AssignmentsPage = () => {
             />
           )}
         </Flex>
-        <ButtonWithIcon
-          onClick={() => navigate(buildSubmissionLink())}
-          text={'Ver todas las entregas'}
-          icon={SubmissionIcon}
-        />
+        {/* Only show all submissions to teachers*/}
+        {isTeacher && (
+          <ButtonWithIcon
+            onClick={() => navigate(buildSubmissionLink({}))}
+            text={'Ver todas las entregas'}
+            icon={SubmissionIcon}
+          />
+        )}
       </Flex>
 
       <Stack gap={'30px'} marginTop={'10px'}>
         <Table
           headers={['Título', 'Fecha límite entrega', '']}
           rowOptions={assignments.map(data => {
+            const isStudentAndMissingSubmissions = !isTeacher && !data.viewerSubmission;
             return {
               rowProps: {
                 ...ClickableRowPropsConfiguration,
@@ -103,32 +122,47 @@ const AssignmentsPage = () => {
                         </Link>
                       </Tooltip>
                     )}
-                  <Tooltip label={'Ver entregas'}>
+                  <Tooltip label={isTeacher ? 'Ver entregas' : 'Ver entrega'}>
                     <Link
                       as={RRLink}
-                      to={buildSubmissionLink(data.id)}
+                      to={buildSubmissionLink({
+                        assignmentId: data.id,
+                        viewerSubmissionId: data.viewerSubmission?.id,
+                      })}
                       onClick={event => event.stopPropagation()} // Avoid row click behaviour
                     >
                       <IconButton
                         variant={'ghost'}
                         aria-label="view-submissions"
                         icon={<SubmissionIcon />}
+                        isDisabled={isStudentAndMissingSubmissions}
+                        onClick={() => {
+                          if (isStudentAndMissingSubmissions)
+                            toast({
+                              title: 'No existe entrega asociada',
+                              description:
+                                'Para acceder al detalle primero se debe realizar la entrega',
+                              status: 'warning',
+                            });
+                        }}
                       />
                     </Link>
                   </Tooltip>
-                  <Tooltip label={'Crear repositorios'}>
-                    <Link
-                      as={RRLink}
-                      to={buildCreateRepositoryLink(data.id, !!data.isGroup)}
-                      onClick={event => event.stopPropagation()} // Avoid row click behaviour
-                    >
-                      <IconButton
-                        variant={'ghost'}
-                        aria-label="create-repo-link"
-                        icon={<CreateRepositoryIcon />}
-                      />
-                    </Link>
-                  </Tooltip>
+                  {courseContext.userHasPermission(Permission.CreateRepository) && (
+                    <Tooltip label={'Crear repositorios'}>
+                      <Link
+                        as={RRLink}
+                        to={buildCreateRepositoryLink(data.id, !!data.isGroup)}
+                        onClick={event => event.stopPropagation()} // Avoid row click behaviour
+                      >
+                        <IconButton
+                          variant={'ghost'}
+                          aria-label="create-repo-link"
+                          icon={<CreateRepositoryIcon />}
+                        />
+                      </Link>
+                    </Tooltip>
+                  )}
                 </Stack>,
               ],
             };
