@@ -1,4 +1,4 @@
-import { TextareaProps, Textarea, Input, InputProps } from '@chakra-ui/react';
+import { Input, InputProps, Textarea, TextareaProps } from '@chakra-ui/react';
 import { theme } from 'theme';
 
 type GeneralProps = {
@@ -37,7 +37,7 @@ const InputField = (props: Props): JSX.Element => {
         placeholder={placeholder}
         _placeholder={{ color: theme.colors.teachHub.gray }}
         bg={theme.colors.teachHub.white}
-        fontSize={theme.styles.global.body.fontSize}
+        fontSize={props.fontSize ? props.fontSize : theme.styles.global.body.fontSize}
         type={type}
       />
     );
@@ -53,7 +53,7 @@ const InputField = (props: Props): JSX.Element => {
         placeholder={placeholder}
         _placeholder={{ color: theme.colors.teachHub.gray }}
         bg={theme.colors.teachHub.white}
-        fontSize={theme.styles.global.body.fontSize}
+        fontSize={props.fontSize ? props.fontSize : theme.styles.global.body.fontSize}
         type={type}
       />
     );
