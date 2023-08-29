@@ -57,6 +57,7 @@ export default graphql`
             }
           }
           nonExistentSubmissions {
+            id
             submitter {
               __typename
               ... on InternalGroupType {

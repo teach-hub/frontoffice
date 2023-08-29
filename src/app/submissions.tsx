@@ -6,6 +6,14 @@ export type BadgeConfiguration = {
   badgeTextColor: string;
 };
 
+export enum SubmissionStatus {
+  NonExistent = 'Sin entregar',
+  MissingReview = 'Sin corregir',
+  NewSubmissionRequested = 'Reentrega solicitada',
+  InReview = 'En corrección',
+  Reviewed = 'Corregido',
+}
+
 export type SubmissionReviewStatusConfiguration = BadgeConfiguration & {
   text: string;
 };
@@ -32,7 +40,7 @@ const WarningBadgeConfiguration: BadgeConfiguration = {
 
 export const getSubmissionMissingStatusConfiguration = () => {
   return {
-    text: 'Sin entregar',
+    text: SubmissionStatus.NonExistent,
     ...NonExistentBadgeConfiguration,
   };
 };
@@ -46,17 +54,17 @@ export const getSubmissionReviewStatusConfiguration = ({
 }): SubmissionReviewStatusConfiguration => {
   if (grade) {
     return {
-      text: 'Corregido',
+      text: SubmissionStatus.Reviewed,
       ...SuccessBadgeConfiguration,
     };
   } else if (revisionRequested) {
     return {
-      text: 'Reentrega solicitada',
+      text: SubmissionStatus.NewSubmissionRequested,
       ...WarningBadgeConfiguration,
     };
   } else {
     return {
-      text: 'Sin corregir',
+      text: SubmissionStatus.MissingReview,
       ...ErrorBadgeConfiguration,
     };
   }

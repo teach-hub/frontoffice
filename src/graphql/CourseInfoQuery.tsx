@@ -13,6 +13,23 @@ export default graphql`
         teachersCount
         assignments {
           id
+          title
+          isGroup
+          submissions {
+            id
+            description
+            submittedAt
+            pullRequestUrl
+            assignmentId
+            review {
+              id
+              revisionRequested
+              grade
+            }
+          }
+          nonExistentSubmissions {
+            id
+          }
         }
         subject {
           id
