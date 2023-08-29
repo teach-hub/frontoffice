@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<64defcb25f3b64a4121c9f866584d68d>>
+ * @generated SignedSource<<dcab92e88832d7981c485b7110d1c30d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,7 @@ export type UseInviteMutation$variables = {
 export type UseInviteMutation$data = {
   readonly useInvite: {
     readonly courseId: string | null;
-  };
+  } | null;
 };
 export type UseInviteMutation = {
   response: UseInviteMutation$data;
