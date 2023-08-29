@@ -34,6 +34,7 @@ export default graphql`
               id
               name
             }
+            userRoleId
             user {
               id
               name
