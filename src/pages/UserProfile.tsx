@@ -1,11 +1,9 @@
 import { Suspense, useState } from 'react';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 
-import { Spinner } from '@chakra-ui/react';
+import { SimpleGrid, Spinner, Stack } from '@chakra-ui/react';
 
 import { PayloadError } from 'relay-runtime';
-
-import AvatarImage from 'components/AvatarImage';
 import Box from 'components/Box';
 import Heading from 'components/Heading';
 import Navigation from 'components/Navigation';
@@ -28,6 +26,8 @@ import {
 } from '__generated__/UpdateProfileMutation.graphql';
 
 import type { FormErrors, Mutable } from 'types';
+import IconButton from 'components/IconButton';
+import EditIcon from 'icons/EditIcon';
 
 type Props = {
   user: UserProfileQuery$data;
@@ -49,9 +49,9 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
     setIsEditing(false);
 
     if (!errors?.length) {
-      if (response.updateUser) {
+      if (response.updateViewerUser) {
         // @ts-expect-error: FIXME
-        setResult({ ...response.updateUser, id: queryResult.id });
+        setResult({ ...response.updateViewerUser, id: queryResult.id });
       }
       toast({
         title: '¡Usuario actualizado!',
@@ -68,15 +68,10 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
   };
 
   const onSubmit = (values: FormValues) => {
-    if (!queryResult?.id) {
-      throw new Error('No user id!');
-    }
-
     setShowSpinner(true);
 
     commitMutation({
       variables: {
-        id: queryResult.id,
         file: values?.file,
         name: values?.name,
         lastName: values?.lastName,
@@ -115,13 +110,27 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
 
   return (
     <PageDataContainer>
-      <Heading paddingBottom={'5vh'}>Perfil de {queryResult.name}</Heading>
-      <Box display="flex" flexDir="row" justifyContent="space-evenly">
-        <AvatarImage
-          isEditing={isEditing}
-          onEdit={() => setIsEditing(true)}
-          url="https://bit.ly/sage-adebayo" // TODO TH-67: Add avatar image to user?
-        />
+      <Stack direction={'row'} paddingBottom={'5vh'} gap={'20px'}>
+        <Heading>
+          Perfil de {queryResult.name} {queryResult.lastName}
+        </Heading>
+        <span>
+          {!isEditing && (
+            <IconButton
+              variant={'ghost'}
+              aria-label={'create-group'}
+              icon={<EditIcon size="medium" />}
+              onClick={() => {
+                setIsEditing(true);
+              }}
+            />
+          )}
+        </span>
+      </Stack>
+
+      <SimpleGrid columns={2} spacing={2} alignItems="center"></SimpleGrid>
+      <Box display="flex" flexDir="row">
+        {/* TODO: edit button setIsEditing*/}
         <Form
           buttonsEnabled={isEditing}
           initialValues={{
@@ -130,6 +139,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
             file: queryResult.file || '',
             notificationEmail: queryResult.notificationEmail || '',
             githubId: queryResult.githubId || '',
+            githubUserName: queryResult.githubUserName || '',
           }}
           validateForm={validateForm}
           onCancelForm={{
@@ -200,11 +210,11 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
               readError: e => e.notificationEmail as string,
             },
             {
-              inputComponent: (values, handleChange) => (
+              inputComponent: () => (
                 <InputField
                   id={'githubId'}
-                  value={values?.githubId}
-                  onChange={handleChange}
+                  value={queryResult.githubUserName}
+                  // onChange={handleChange}
                   placeholder={'12345'}
                   type={'text'}
                   isReadOnly={true}
