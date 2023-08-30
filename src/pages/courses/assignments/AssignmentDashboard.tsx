@@ -14,7 +14,7 @@ import {
 
 import { theme } from 'theme';
 
-import { Permission, useUserContext } from 'hooks/useUserCourseContext';
+import { CourseContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
 
 import Navigation from 'components/Navigation';
 import Button from 'components/Button';
@@ -112,6 +112,16 @@ function AssignmentDetails({ assignment }: { assignment: Assignment }) {
             link={`../../submissions?${buildAssignmentUrlFilter(assignment.id)}`}
           />
         )}
+        {!courseContext.userIsTeacher && (
+          <LinkListItem
+            listItemKey={'submissions'}
+            iconColor={LIST_ITEM_ICON_COLOR}
+            external={false}
+            text={'Ver entrega'}
+            link={`../../submissions/${assignment.viewerSubmission?.id}`}
+            disabled={!assignment.viewerSubmission?.id}
+          />
+        )}
         {courseContext.userHasPermission(Permission.AssignReviewer) && (
           <LinkListItem
             listItemKey={'assignReviewers'}
@@ -195,13 +205,16 @@ function AssignmentActions() {
 const AssignmentDashboardPage = ({
   assignmentId,
   courseId,
+  courseContext,
 }: {
   assignmentId: string;
   courseId: string;
+  courseContext: CourseContext;
 }) => {
   const data = useLazyLoadQuery<AssignmentQuery>(AssignmentQueryDef, {
     id: assignmentId,
     courseId,
+    includeViewerSubmissions: !courseContext.userIsTeacher,
   });
 
   const assignment = data.viewer?.course?.assignment;
@@ -239,7 +252,8 @@ const EmptyState = () => {
 
 const AssignmentPageContainer = () => {
   const { assignmentId } = useParams();
-  const { courseId } = useUserContext();
+  const courseContext = useUserContext();
+  const courseId = courseContext.courseId;
 
   if (!assignmentId || !courseId) {
     return null;
@@ -248,7 +262,11 @@ const AssignmentPageContainer = () => {
   return (
     <PageDataContainer w="70em" gap="25px">
       <Suspense fallback={<EmptyState />}>
-        <AssignmentDashboardPage assignmentId={assignmentId} courseId={courseId} />
+        <AssignmentDashboardPage
+          assignmentId={assignmentId}
+          courseId={courseId}
+          courseContext={courseContext}
+        />
       </Suspense>
     </PageDataContainer>
   );
