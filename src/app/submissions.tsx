@@ -49,12 +49,12 @@ export const getSubmissionReviewStatusConfiguration = ({
   review,
 }: {
   submission: {
-    submittedAt: Nullable<string>;
-    submittedAgainAt: Nullable<string>;
+    submittedAt: Optional<Nullable<string>>;
+    submittedAgainAt: Optional<Nullable<string>>;
   };
   review: {
-    reviewedAt: Nullable<string>;
-    reviewedAgainAt: Nullable<string>;
+    reviewedAt: Optional<Nullable<string>>;
+    reviewedAgainAt: Optional<Nullable<string>>;
     grade: Optional<Nullable<number>>;
     revisionRequested: Optional<Nullable<boolean>>;
   } | null;
