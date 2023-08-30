@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<aa7203e92236b450f3de7bca3658c14f>>
+ * @generated SignedSource<<3ab53b15292c41162a6c89d407585dcb>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,9 +17,10 @@ export type CreateSubmissionMutation$variables = {
 };
 export type CreateSubmissionMutation$data = {
   readonly createSubmission: {
-    readonly errors: ReadonlyArray<string>;
-    readonly success: boolean | null;
-  } | null;
+    readonly id: string;
+    readonly submittedAgainAt: string | null;
+    readonly submittedAt: string;
+  };
 };
 export type CreateSubmissionMutation = {
   response: CreateSubmissionMutation$data;
@@ -72,7 +73,7 @@ v4 = [
         "variableName": "pullRequestUrl"
       }
     ],
-    "concreteType": "CreateSubmissionResultType",
+    "concreteType": "SubmissionType",
     "kind": "LinkedField",
     "name": "createSubmission",
     "plural": false,
@@ -81,14 +82,21 @@ v4 = [
         "alias": null,
         "args": null,
         "kind": "ScalarField",
-        "name": "success",
+        "name": "id",
         "storageKey": null
       },
       {
         "alias": null,
         "args": null,
         "kind": "ScalarField",
-        "name": "errors",
+        "name": "submittedAt",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "submittedAgainAt",
         "storageKey": null
       }
     ],
@@ -123,16 +131,16 @@ return {
     "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "9934c6a29bbbcbe8a201534de7422013",
+    "cacheID": "c5a398824f49e4221ffe928094337caf",
     "id": null,
     "metadata": {},
     "name": "CreateSubmissionMutation",
     "operationKind": "mutation",
-    "text": "mutation CreateSubmissionMutation(\n  $courseId: ID!\n  $assignmentId: ID!\n  $pullRequestUrl: String!\n  $description: String\n) {\n  createSubmission(courseId: $courseId, assignmentId: $assignmentId, pullRequestUrl: $pullRequestUrl, description: $description) {\n    success\n    errors\n  }\n}\n"
+    "text": "mutation CreateSubmissionMutation(\n  $courseId: ID!\n  $assignmentId: ID!\n  $pullRequestUrl: String!\n  $description: String\n) {\n  createSubmission(courseId: $courseId, assignmentId: $assignmentId, pullRequestUrl: $pullRequestUrl, description: $description) {\n    id\n    submittedAt\n    submittedAgainAt\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "07d4f5400c3a17f8f975301d4aaa47e8";
+(node as any).hash = "8b475be6342e1b788777a0513ebceb97";
 
 export default node;

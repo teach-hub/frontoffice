@@ -58,6 +58,7 @@ export const SubmissionsTable = ({
     <Table
       headers={headers}
       rowOptions={rowDataList.map(rowData => {
+        // FIXME
         const reviewStatusConfiguration = rowData.submission?.id
           ? getSubmissionReviewStatusConfiguration({
               grade: rowData.submission?.grade,

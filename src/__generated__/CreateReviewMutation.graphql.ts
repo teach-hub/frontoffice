@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d840aeb836175916fb115f2d411e4bd9>>
+ * @generated SignedSource<<14d5ac45c6c24dbe72febd4803c9985c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,13 +17,13 @@ export type CreateReviewMutation$variables = {
 };
 export type CreateReviewMutation$data = {
   readonly createReview: {
-    readonly createdAt: string;
+    readonly createdAt: string | null;
     readonly grade: number | null;
     readonly id: string;
     readonly reviewerId: string;
     readonly revisionRequested: boolean | null;
     readonly submissionId: string;
-    readonly updatedAt: string;
+    readonly updatedAt: string | null;
   };
 };
 export type CreateReviewMutation = {
