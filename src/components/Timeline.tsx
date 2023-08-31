@@ -21,8 +21,8 @@ const Timeline = (props: TimelineProps) => {
   const { children, title } = props;
 
   return (
-    <Container maxW="3xl" p={{ base: 0 }}>
-      <VStack textAlign="start" align="start" mb={5}>
+    <Container maxW="3xl" m={0} p={{ base: 0 }}>
+      <VStack textAlign="start" align="start" mb={0}>
         <Box zIndex={5}>
           <Heading fontSize="xl" fontWeight="600" my={5}>
             {title}
@@ -59,7 +59,7 @@ const TimelineItem: React.FC<TimelineItemProps> = ({
           pos="absolute"
           top="0.875rem"
         />
-        {!skipTrail && <Box w="1px" flex={1} bg="teachHub.black" my={1} />}
+        {!skipTrail && <Box w="1px" flex={1} bg="teachHub.black" my={0} />}
       </Flex>
       <Box pt={{ base: 0, sm: 3 }} {...boxProps}>
         {children}

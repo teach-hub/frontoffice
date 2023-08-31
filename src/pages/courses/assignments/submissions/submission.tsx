@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useState } from 'react';
-import { Link as RRLink, useNavigate, useParams } from 'react-router-dom';
+import { Link as RRLink, useParams } from 'react-router-dom';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { PayloadError } from 'relay-runtime';
 
@@ -42,6 +42,7 @@ import { Checkbox } from 'components/Checkbox';
 import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
 import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
 import { ButtonWithIcon } from 'components/ButtonWithIcon';
+import SubmissionStates from 'components/SubmissionStates';
 
 import SubmissionQueryDef from 'graphql/SubmissionQuery';
 import SubmitSubmissionMutation from 'graphql/SubmitSubmissionAgainMutation';
@@ -63,6 +64,43 @@ import { SubmitSubmissionAgainMutation as SubmitSubmissionMutationType } from '_
 
 import type { Nullable } from 'types';
 import type { SubmissionQuery } from '__generated__/SubmissionQuery.graphql';
+
+const CarrouselNavigationControls = ({ submissionId }: { submissionId: string }) => {
+  const { submissionIds } = useSubmissionContext();
+
+  const previousSubmissionId = getValueOfPreviousIndex(submissionIds, submissionId);
+  const nextSubmissionId = getValueOfNextIndex(submissionIds, submissionId);
+
+  const previousSubmissionUrl = previousSubmissionId && `../${previousSubmissionId}`;
+  const nextSubmissionUrl = nextSubmissionId && `../${nextSubmissionId}`;
+
+  return (
+    <Stack direction={'row'} gap={'5px'}>
+      {previousSubmissionUrl && (
+        <Tooltip label={'Ver entrega anterior'}>
+          <Link as={RRLink} to={previousSubmissionUrl}>
+            <IconButton
+              variant={'ghost'}
+              aria-label="previous-submission"
+              icon={<BackArrowIcon />}
+            />
+          </Link>
+        </Tooltip>
+      )}
+      {nextSubmissionUrl && (
+        <Tooltip label={'Ver siguiente entrega'}>
+          <Link as={RRLink} to={nextSubmissionUrl}>
+            <IconButton
+              variant={'ghost'}
+              aria-label="next-submission"
+              icon={<NextArrowIcon />}
+            />
+          </Link>
+        </Tooltip>
+      )}
+    </Stack>
+  );
+};
 
 const SubmissionPage = ({
   context,
@@ -94,11 +132,6 @@ const SubmissionPage = ({
     submissionId,
   });
 
-  const { submissionIds } = useSubmissionContext();
-
-  const nextSubmissionId = getValueOfNextIndex(submissionIds, submissionId);
-  const previousSubmissionId = getValueOfPreviousIndex(submissionIds, submissionId);
-
   if (!data.viewer || !data.viewer.course) {
     return null;
   }
@@ -126,12 +159,6 @@ const SubmissionPage = ({
 
   /* Link to assignment is going up in the path back to the assignment */
   const VIEW_ASSIGNMENT_LINK = `../../assignments/${assignment.id}`;
-  const VIEW_NEXT_SUBMISSION_LINK = nextSubmissionId
-    ? `../${nextSubmissionId}`
-    : undefined;
-  const VIEW_PREVIOUS_SUBMISSION_LINK = previousSubmissionId
-    ? `../${previousSubmissionId}`
-    : undefined;
 
   const submittedOnTime =
     !submission.submittedAt || !assignment.endDate
@@ -286,30 +313,7 @@ const SubmissionPage = ({
             </Tooltip>
           </Stack>
         </Flex>
-        <Stack direction={'row'} gap={'5px'}>
-          {VIEW_PREVIOUS_SUBMISSION_LINK && (
-            <Tooltip label={'Ver entrega anterior'}>
-              <Link as={RRLink} to={VIEW_PREVIOUS_SUBMISSION_LINK}>
-                <IconButton
-                  variant={'ghost'}
-                  aria-label="previous-submission"
-                  icon={<BackArrowIcon />}
-                />
-              </Link>
-            </Tooltip>
-          )}
-          {VIEW_NEXT_SUBMISSION_LINK && (
-            <Tooltip label={'Ver siguiente entrega'}>
-              <Link as={RRLink} to={VIEW_NEXT_SUBMISSION_LINK}>
-                <IconButton
-                  variant={'ghost'}
-                  aria-label="next-submission"
-                  icon={<NextArrowIcon />}
-                />
-              </Link>
-            </Tooltip>
-          )}
-        </Stack>
+        <CarrouselNavigationControls submissionId={submissionId} />
       </Flex>
       <Stack gap={'30px'} marginTop={'10px'}>
         <Flex direction={'row'} gap={'5px'}>
@@ -330,7 +334,7 @@ const SubmissionPage = ({
             />
           )}
         </Flex>
-        <List paddingX="30px">
+        <List justifyItems={'left'} alignItems={'flex-start'}>
           {submitterItem}
           <TextListItem
             listItemKey={'submittedOnTime'}
@@ -363,7 +367,7 @@ const SubmissionPage = ({
               color: LIST_ITEM_ICON_COLOR,
               icon: InfoIcon,
             }}
-            label={'Estado corrección: '}
+            label={'Estado actual corrección: '}
             listItemKey={'status'}
           >
             <ReviewStatusBadge reviewStatusConfiguration={reviewStatusConfiguration} />
@@ -380,6 +384,9 @@ const SubmissionPage = ({
               grade={review?.grade}
               gradeConfiguration={gradeConfiguration}
             />
+          </ListItem>
+          <ListItem>
+            <SubmissionStates submission={submission} review={review} />
           </ListItem>
         </List>
         <Stack>
@@ -398,7 +405,7 @@ const SubmissionPage = ({
   );
 };
 
-function ReviewModal({
+const ReviewModal = ({
   onClose,
   isOpen,
   onSave,
@@ -406,15 +413,13 @@ function ReviewModal({
   onClose: () => void;
   isOpen: boolean;
   onSave: (_: { grade: Nullable<number>; revisionRequested: boolean }) => void;
-}) {
+}) => {
   const [newGrade, setNewGrade] = useState<Nullable<number>>(null);
   const [revisionRequested, setRevisionRequested] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!isOpen) {
-      setNewGrade(null);
-      setRevisionRequested(false);
-    }
+    setNewGrade(null);
+    setRevisionRequested(false);
   }, [isOpen]);
 
   return (
@@ -462,7 +467,7 @@ function ReviewModal({
       </Stack>
     </Modal>
   );
-}
+};
 
 const SubmissionPageContainer = () => {
   const courseContext = useUserContext();
