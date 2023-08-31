@@ -10,8 +10,8 @@ import {
   NumberIcon,
   IterationsIcon,
   PencilIcon,
-  PersonFillIcon,
   PeopleIcon,
+  PersonFillIcon,
   XCircleFillIcon,
 } from '@primer/octicons-react';
 
@@ -168,6 +168,7 @@ const SubmissionPage = ({
   const reviewStatusConfiguration = getSubmissionReviewStatusConfiguration({
     review,
     submission,
+    missingSubmission: false,
   });
   const gradeConfiguration = getGradeConfiguration(review?.grade);
 

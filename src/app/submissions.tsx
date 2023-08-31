@@ -9,7 +9,6 @@ export enum SubmissionStatus {
   NonExistent = 'Sin entregar',
   MissingReview = 'Sin corregir',
   NewSubmissionRequested = 'Reentrega solicitada',
-  InReview = 'En corrección',
   Reviewed = 'Corregido',
 }
 
@@ -37,16 +36,47 @@ const WarningBadgeConfiguration: BadgeConfiguration = {
   badgeTextColor: 'teachHub.black',
 };
 
-export const getSubmissionMissingStatusConfiguration = () => {
+const getSubmissionMissingStatusConfiguration = () => {
   return {
     text: SubmissionStatus.NonExistent,
     ...NonExistentBadgeConfiguration,
   };
 };
 
+type SubmissionsReviewStatusParams = {
+  grade: Optional<Nullable<number>>;
+  revisionRequested: Optional<Nullable<boolean>>;
+  missingSubmission: boolean;
+};
+
+export const getSubmissionsReviewStatusLabel = ({
+                                                  submission,
+                                                  review,
+                                                  missingSubmission,
+                                                }: {
+  submission: {
+    submittedAt: Optional<Nullable<string>>;
+    submittedAgainAt: Optional<Nullable<string>>;
+  };
+  review: {
+    reviewedAt: Optional<Nullable<string>>;
+    reviewedAgainAt: Optional<Nullable<string>>;
+    grade: Optional<Nullable<number>>;
+    revisionRequested: Optional<Nullable<boolean>>;
+  } | null;
+  missingSubmission: boolean;
+}): string => {
+  return getSubmissionReviewStatusConfiguration({
+    submissions,
+    review,
+    missingSubmission,
+  }).text;
+};
+
 export const getSubmissionReviewStatusConfiguration = ({
   submission,
-  review,
+  review, 
+  missingSubmission,
 }: {
   submission: {
     submittedAt: Optional<Nullable<string>>;
@@ -58,7 +88,10 @@ export const getSubmissionReviewStatusConfiguration = ({
     grade: Optional<Nullable<number>>;
     revisionRequested: Optional<Nullable<boolean>>;
   } | null;
+  missingSubmission: boolean;
 }): SubmissionReviewStatusConfiguration => {
+  if (missingSubmission) return getSubmissionMissingStatusConfiguration();
+  
   if (!review) {
     return {
       text: SubmissionStatus.MissingReview,
