@@ -24,20 +24,19 @@ import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
 import PageDataContainer from 'components/PageDataContainer';
 import { FilterBadge } from 'components/FilterBadge';
+import type {
+  GroupSubmitterRowData,
+  ReviewerRowData,
+  RowData,
+  SubjectRowData,
+  SubmitterRowData,
+} from 'components/SubmissionsTable';
 import { SubmissionsTable } from 'components/SubmissionsTable';
 
 import { Query } from 'queries';
 import { Nullable, Optional } from 'types';
 import { FormControl } from 'components/FormControl';
 import { getSubmissionsReviewStatusLabel, SubmissionStatus } from 'app/submissions';
-
-import type {
-  RowData,
-  SubjectRowData,
-  ReviewerRowData,
-  SubmitterRowData,
-  GroupSubmitterRowData,
-} from 'components/SubmissionsTable';
 
 import type {
   AssignmentSubmissionsQuery,
@@ -139,13 +138,13 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const rowEnabledByFilters = ({
     submitter,
     reviewerId,
+    submission,
     review,
-    missingSubmission,
   }: {
     submitter: SubmitterType;
     reviewerId?: string;
     review: Nullable<ReviewType>;
-    missingSubmission: boolean;
+    submission: Nullable<SubmissionType>;
   }) => {
     let validStudent = true;
     if (selectedStudentUserId) {
@@ -166,9 +165,8 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     let validStatus = true;
     if (selectedSubmissionStatus) {
       const status = getSubmissionsReviewStatusLabel({
-        grade: review?.grade,
-        revisionRequested: review?.revisionRequested,
-        missingSubmission: missingSubmission,
+        submission,
+        review,
       });
       validStatus = status === selectedSubmissionStatus;
     }
@@ -191,13 +189,10 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
           submitter: submission.submitter,
           reviewerId: submission.reviewer?.reviewer?.id,
           review: submission.review,
-          missingSubmission: false,
+          submission: submission,
         });
       })
     );
-
-    /* Set chosen submissions to context */
-    setSubmissionIds(newSubmissions.map(submission => submission.id));
 
     const newRowData = newSubmissions.map((submission): RowData => {
       const review = submission?.review;
@@ -216,7 +211,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
         submission: submission.id
           ? {
               grade,
-              revisionRequested: revisionRequested ?? false,
+              revisionRequested,
               id: submission.id,
               pullRequestUrl: submission.pullRequestUrl,
               submittedAt: submission.submittedAt,
@@ -236,7 +231,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
             submitter,
             reviewerId: reviewerUser?.id,
             review: null,
-            missingSubmission: true,
+            submission: null,
           })
         ) {
           newRowData.push({
@@ -266,13 +261,24 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     setGroupRowDataList(groupRowDataList);
     setNonGroupRowDataList(nonGroupRowDataList);
 
+    const emptyNonGroupRowDataList = nonGroupRowDataList.length === 0;
+    const emptyGroupRowDataList = groupRowDataList.length === 0;
     const newTabIndex =
-      nonGroupRowDataList.length === 0 // If no non group submissions, show group submissions
+      emptyGroupRowDataList && emptyNonGroupRowDataList
+        ? selectedTabIndex
+        : emptyNonGroupRowDataList // If no non group submissions, show group submissions
         ? TabIndex.Group
-        : groupRowDataList.length === 0 // If no group submissions, show non group submissions
+        : emptyGroupRowDataList // If no group submissions, show non group submissions
         ? TabIndex.NonGroup
         : selectedTabIndex; // In any other case, keep the current tab
+
+    const isGroupTab = newTabIndex === TabIndex.Group;
     setSelectedTabIndex(newTabIndex);
+    setSubmissionIds(
+      (isGroupTab ? groupRowDataList : nonGroupRowDataList)
+        .map(rowData => rowData.submission?.id)
+        .filter(Boolean) as string[]
+    );
 
     setRowsReviewers(
       newRowData.map(row => row.reviewer).filter(Boolean) as ReviewerRowData[]
@@ -383,7 +389,20 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
           </FormControl>
         </Stack>
       </Flex>
-      <Tabs index={selectedTabIndex} onChange={index => setSelectedTabIndex(index)}>
+      <Tabs
+        index={selectedTabIndex}
+        onChange={index => {
+          const isGroupTab = index === TabIndex.Group;
+          setSelectedTabIndex(index);
+
+          /* If index is updated, also updated selected submission ids */
+          setSubmissionIds(
+            (isGroupTab ? groupRowDataList : nonGroupRowDataList)
+              .map(rowData => rowData.submission?.id)
+              .filter(Boolean) as string[]
+          );
+        }}
+      >
         <TabList>
           <Tab isDisabled={nonGroupRowDataList.length === 0}>Individuales</Tab>
           <Tab isDisabled={groupRowDataList.length === 0}>Grupales</Tab>

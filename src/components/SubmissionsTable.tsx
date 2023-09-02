@@ -18,6 +18,7 @@ import IconButton from 'components/IconButton';
 import Table from 'components/Table';
 
 import type { Nullable, Optional } from 'types';
+import { isAllEmpty } from 'utils/object';
 
 enum ColumnWidth {
   Student = '20%',
@@ -52,7 +53,7 @@ export type ReviewerRowData = SubjectRowData;
 export type SubmissionRowData = {
   id?: Optional<Nullable<string>>;
   grade: Optional<Nullable<number>>;
-  revisionRequested: Nullable<boolean>;
+  revisionRequested: Optional<Nullable<boolean>>;
   pullRequestUrl?: Optional<Nullable<string>>;
   submittedAt: Optional<Nullable<string>>;
   submittedAgainAt: Optional<Nullable<string>>;
@@ -120,10 +121,16 @@ export const SubmissionsTable = ({
       headers={columns.map(column => column.header)}
       headersWidths={columns.map(column => column.width)}
       rowOptions={rowDataList.map(rowData => {
+        const review = {
+          reviewedAt: rowData.submission?.reviewedAt,
+          reviewedAgainAt: rowData.submission?.reviewedAgainAt,
+          revisionRequested: rowData.submission?.revisionRequested,
+          grade: rowData.submission?.grade,
+        };
+
         const reviewStatusConfiguration = getSubmissionReviewStatusConfiguration({
           submission: rowData.submission,
-          review: rowData.submission,
-          missingSubmission: !rowData.submission?.id,
+          review: isAllEmpty(review) ? null : review,
         });
         const gradeConfiguration = getGradeConfiguration(rowData.submission?.grade);
 

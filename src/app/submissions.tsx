@@ -9,6 +9,7 @@ export enum SubmissionStatus {
   NonExistent = 'Sin entregar',
   MissingReview = 'Sin corregir',
   NewSubmissionRequested = 'Reentrega solicitada',
+  NewSubmissionMissingReview = 'Reentrega sin corregir',
   Reviewed = 'Corregido',
 }
 
@@ -36,62 +37,42 @@ const WarningBadgeConfiguration: BadgeConfiguration = {
   badgeTextColor: 'teachHub.black',
 };
 
-const getSubmissionMissingStatusConfiguration = () => {
-  return {
-    text: SubmissionStatus.NonExistent,
-    ...NonExistentBadgeConfiguration,
-  };
-};
-
 type SubmissionsReviewStatusParams = {
-  grade: Optional<Nullable<number>>;
-  revisionRequested: Optional<Nullable<boolean>>;
-  missingSubmission: boolean;
-};
-
-export const getSubmissionsReviewStatusLabel = ({
-                                                  submission,
-                                                  review,
-                                                  missingSubmission,
-                                                }: {
-  submission: {
-    submittedAt: Optional<Nullable<string>>;
-    submittedAgainAt: Optional<Nullable<string>>;
-  };
+  submission:
+    | {
+        submittedAt: Optional<Nullable<string>>;
+        submittedAgainAt: Optional<Nullable<string>>;
+      }
+    | null
+    | undefined;
   review: {
     reviewedAt: Optional<Nullable<string>>;
     reviewedAgainAt: Optional<Nullable<string>>;
     grade: Optional<Nullable<number>>;
     revisionRequested: Optional<Nullable<boolean>>;
   } | null;
-  missingSubmission: boolean;
-}): string => {
+};
+
+export const getSubmissionsReviewStatusLabel = ({
+  submission,
+  review,
+}: SubmissionsReviewStatusParams): string => {
   return getSubmissionReviewStatusConfiguration({
-    submissions,
+    submission,
     review,
-    missingSubmission,
   }).text;
 };
 
 export const getSubmissionReviewStatusConfiguration = ({
   submission,
-  review, 
-  missingSubmission,
-}: {
-  submission: {
-    submittedAt: Optional<Nullable<string>>;
-    submittedAgainAt: Optional<Nullable<string>>;
-  };
-  review: {
-    reviewedAt: Optional<Nullable<string>>;
-    reviewedAgainAt: Optional<Nullable<string>>;
-    grade: Optional<Nullable<number>>;
-    revisionRequested: Optional<Nullable<boolean>>;
-  } | null;
-  missingSubmission: boolean;
-}): SubmissionReviewStatusConfiguration => {
-  if (missingSubmission) return getSubmissionMissingStatusConfiguration();
-  
+  review,
+}: SubmissionsReviewStatusParams): SubmissionReviewStatusConfiguration => {
+  if (!submission)
+    return {
+      text: SubmissionStatus.NonExistent,
+      ...NonExistentBadgeConfiguration,
+    };
+
   if (!review) {
     return {
       text: SubmissionStatus.MissingReview,
@@ -113,12 +94,12 @@ export const getSubmissionReviewStatusConfiguration = ({
     };
   } else if (review.reviewedAt && !review.reviewedAgainAt) {
     return {
-      text: 'Re-entrega sin corregir',
+      text: SubmissionStatus.NewSubmissionMissingReview,
       ...ErrorBadgeConfiguration,
     };
   } else {
     return {
-      text: 'Re-entrega corregida',
+      text: SubmissionStatus.Reviewed,
       ...SuccessBadgeConfiguration,
     };
   }

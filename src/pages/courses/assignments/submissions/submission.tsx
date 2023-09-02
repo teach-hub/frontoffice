@@ -6,9 +6,9 @@ import { PayloadError } from 'relay-runtime';
 import {
   CheckCircleFillIcon,
   InfoIcon,
+  IterationsIcon,
   MortarBoardIcon,
   NumberIcon,
-  IterationsIcon,
   PencilIcon,
   PeopleIcon,
   PersonFillIcon,
@@ -67,6 +67,7 @@ import type { SubmissionQuery } from '__generated__/SubmissionQuery.graphql';
 
 const CarrouselNavigationControls = ({ submissionId }: { submissionId: string }) => {
   const { submissionIds } = useSubmissionContext();
+  console.log(submissionIds);
 
   const previousSubmissionId = getValueOfPreviousIndex(submissionIds, submissionId);
   const nextSubmissionId = getValueOfNextIndex(submissionIds, submissionId);
@@ -168,14 +169,13 @@ const SubmissionPage = ({
   const reviewStatusConfiguration = getSubmissionReviewStatusConfiguration({
     review,
     submission,
-    missingSubmission: false,
   });
   const gradeConfiguration = getGradeConfiguration(review?.grade);
 
   const reviewEnabled = submission?.viewerCanReview;
   const viewerCanSubmitAgain = review?.reviewedAt && review.revisionRequested;
 
-  const handleReviewButtonClick = () => {
+  const showWarningToastIfDisabled = () => {
     if (!reviewEnabled) {
       toast({
         title: 'No es posible calificar',
@@ -183,7 +183,6 @@ const SubmissionPage = ({
         status: 'warning',
       });
     }
-    onOpenReviewModal();
   };
 
   const handleSubmitButtonClick = () => {
@@ -319,12 +318,15 @@ const SubmissionPage = ({
       <Stack gap={'30px'} marginTop={'10px'}>
         <Flex direction={'row'} gap={'5px'}>
           {context.userHasPermission(Permission.SetReview) && (
-            <ButtonWithIcon
-              onClick={handleReviewButtonClick}
-              text={'Calificar'}
-              icon={PencilIcon}
-              isDisabled={!reviewEnabled}
-            />
+            /* Use div for toast to appear*/
+            <div onClick={showWarningToastIfDisabled}>
+              <ButtonWithIcon
+                onClick={onOpenReviewModal}
+                text={'Calificar'}
+                icon={PencilIcon}
+                isDisabled={!reviewEnabled}
+              />
+            </div>
           )}
           {context.userHasPermission(Permission.SubmitAssignment) && (
             <ButtonWithIcon
