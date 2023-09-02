@@ -24,19 +24,19 @@ import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
 import PageDataContainer from 'components/PageDataContainer';
 import { FilterBadge } from 'components/FilterBadge';
-import Link from 'components/Link';
+import type {
+  GroupSubmitterRowData,
+  ReviewerRowData,
+  RowData,
+  SubjectRowData,
+  SubmitterRowData,
+} from 'components/SubmissionsTable';
 import { SubmissionsTable } from 'components/SubmissionsTable';
 
 import { Query } from 'queries';
 import { Nullable, Optional } from 'types';
-
-import type {
-  RowData,
-  SubjectRowData,
-  ReviewerRowData,
-  SubmitterRowData,
-  GroupSubmitterRowData,
-} from 'components/SubmissionsTable';
+import { FormControl } from 'components/FormControl';
+import { getSubmissionsReviewStatusLabel, SubmissionStatus } from 'app/submissions';
 
 import type {
   AssignmentSubmissionsQuery,
@@ -53,6 +53,7 @@ type SubmissionType = NonNullable<
 
 type SubmitterType = NonNullable<SubmissionType['submitter']>;
 type ReviewerType = NonNullable<SubmissionType['reviewer']>;
+type ReviewType = NonNullable<SubmissionType['review']>;
 
 const getSubmitterAsUser = (submitter: SubmitterType) => {
   if (submitter.__typename === 'UserType') {
@@ -105,7 +106,7 @@ const getReviewerRowData = (reviewer: ReviewerType): Optional<ReviewerRowData> =
   return undefined;
 };
 
-const enum TabIndex {
+enum TabIndex {
   NonGroup = 0,
   Group = 1,
 }
@@ -119,6 +120,8 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
 
   const navigate = useNavigate();
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(assignmentId);
+  const [selectedSubmissionStatus, setSelectedSubmissionStatus] =
+    useState<Nullable<SubmissionStatus>>(null);
 
   const [selectedStudentUserId, setSelectedStudentUserId] =
     useState<Optional<Nullable<string>>>(null);
@@ -135,9 +138,13 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const rowEnabledByFilters = ({
     submitter,
     reviewerId,
+    submission,
+    review,
   }: {
     submitter: SubmitterType;
     reviewerId?: string;
+    review: Nullable<ReviewType>;
+    submission: Nullable<SubmissionType>;
   }) => {
     let validStudent = true;
     if (selectedStudentUserId) {
@@ -154,7 +161,17 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
       }
     }
     const validReviewer = !selectedReviewerId ? true : reviewerId === selectedReviewerId;
-    return validStudent && validReviewer;
+
+    let validStatus = true;
+    if (selectedSubmissionStatus) {
+      const status = getSubmissionsReviewStatusLabel({
+        submission,
+        review,
+      });
+      validStatus = status === selectedSubmissionStatus;
+    }
+
+    return validStudent && validReviewer && validStatus;
   };
 
   const [groupRowDataList, setGroupRowDataList] = useState<RowData[]>([]);
@@ -171,12 +188,11 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
         return rowEnabledByFilters({
           submitter: submission.submitter,
           reviewerId: submission.reviewer?.reviewer?.id,
+          review: submission.review,
+          submission: submission,
         });
       })
     );
-
-    /* Set chosen submissions to context */
-    setSubmissionIds(newSubmissions.map(submission => submission.id));
 
     const newRowData = newSubmissions.map((submission): RowData => {
       const review = submission?.review;
@@ -195,7 +211,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
         submission: submission.id
           ? {
               grade,
-              revisionRequested: revisionRequested ?? false,
+              revisionRequested,
               id: submission.id,
               pullRequestUrl: submission.pullRequestUrl,
               submittedAt: submission.submittedAt,
@@ -214,6 +230,8 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
           rowEnabledByFilters({
             submitter,
             reviewerId: reviewerUser?.id,
+            review: null,
+            submission: null,
           })
         ) {
           newRowData.push({
@@ -228,24 +246,39 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     /* Separate group from non group rows */
     const groupRowDataList: RowData[] = [];
     const nonGroupRowDataList: RowData[] = [];
-    newRowData.forEach(rowData => {
-      if (rowData.submitter.isGroup) {
-        groupRowDataList.push(rowData);
-      } else {
-        nonGroupRowDataList.push(rowData);
-      }
-    });
+    newRowData
+      .sort((a, b) => {
+        return a.submitter.name?.localeCompare(b.submitter.name || '') || 0;
+      }) // Sort rows by submitter name
+      .forEach(rowData => {
+        if (rowData.submitter.isGroup) {
+          groupRowDataList.push(rowData);
+        } else {
+          nonGroupRowDataList.push(rowData);
+        }
+      });
 
     setGroupRowDataList(groupRowDataList);
     setNonGroupRowDataList(nonGroupRowDataList);
 
+    const emptyNonGroupRowDataList = nonGroupRowDataList.length === 0;
+    const emptyGroupRowDataList = groupRowDataList.length === 0;
     const newTabIndex =
-      nonGroupRowDataList.length === 0 // If no non group submissions, show group submissions
+      emptyGroupRowDataList && emptyNonGroupRowDataList
+        ? selectedTabIndex
+        : emptyNonGroupRowDataList // If no non group submissions, show group submissions
         ? TabIndex.Group
-        : groupRowDataList.length === 0 // If no group submissions, show non group submissions
+        : emptyGroupRowDataList // If no group submissions, show non group submissions
         ? TabIndex.NonGroup
         : selectedTabIndex; // In any other case, keep the current tab
+
+    const isGroupTab = newTabIndex === TabIndex.Group;
     setSelectedTabIndex(newTabIndex);
+    setSubmissionIds(
+      (isGroupTab ? groupRowDataList : nonGroupRowDataList)
+        .map(rowData => rowData.submission?.id)
+        .filter(Boolean) as string[]
+    );
 
     setRowsReviewers(
       newRowData.map(row => row.reviewer).filter(Boolean) as ReviewerRowData[]
@@ -262,7 +295,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
         )
         .filter(Boolean) as SubmitterRowData[]
     );
-  }, [selectedStudentUserId, selectedReviewerId, data]);
+  }, [selectedStudentUserId, selectedReviewerId, selectedSubmissionStatus, data]);
 
   const onRowClick = (rowData: RowData) => {
     rowData.submission?.id
@@ -309,32 +342,66 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
             />
           )}
         </Stack>
-        <Select
-          width={'fit-content'}
-          borderColor={theme.colors.teachHub.black}
-          placeholder={'- Sin filtrar -'} // Placeholder works as disabling the filter when chosen
-          value={selectedAssignmentId || ''} // Set value to show selected option, or placeholder otherwise
-          onChange={changes => {
-            const newId = changes.currentTarget.value;
-            setSelectedAssignmentId(newId);
-            setSearchParams(params => {
-              if (newId) params.set(Query.SubmissionAssignment, newId);
-              else params.delete(Query.SubmissionAssignment);
-              return params;
-            });
-          }}
-        >
-          {allAssignments.map(assignment => (
-            <option value={assignment.id} key={assignment.id}>
-              {assignment.title}
-            </option>
-          ))}
-        </Select>
+        <Stack gap={'10px'} direction={'row'}>
+          <FormControl label={'Estado'}>
+            <Select
+              borderColor={theme.colors.teachHub.black}
+              placeholder={'- Sin filtrar -'} // Placeholder works as disabling the filter when chosen
+              value={selectedSubmissionStatus || ''} // Set value to show selected option, or placeholder otherwise
+              onChange={changes => {
+                const newValue = changes.currentTarget.value;
+                setSelectedSubmissionStatus(
+                  newValue ? (newValue as SubmissionStatus) : null
+                );
+              }}
+            >
+              {(Object.keys(SubmissionStatus) as (keyof typeof SubmissionStatus)[]).map(
+                key => (
+                  <option value={SubmissionStatus[key]} key={SubmissionStatus[key]}>
+                    {SubmissionStatus[key]}
+                  </option>
+                )
+              )}
+            </Select>
+          </FormControl>
+          <FormControl label={'Trabajo Práctico'}>
+            <Select
+              width={'fit-content'}
+              borderColor={theme.colors.teachHub.black}
+              placeholder={'- Sin filtrar -'} // Placeholder works as disabling the filter when chosen
+              value={selectedAssignmentId || ''} // Set value to show selected option, or placeholder otherwise
+              onChange={changes => {
+                const newId = changes.currentTarget.value;
+                setSelectedAssignmentId(newId);
+                setSearchParams(params => {
+                  if (newId) params.set(Query.SubmissionAssignment, newId);
+                  else params.delete(Query.SubmissionAssignment);
+                  return params;
+                });
+              }}
+            >
+              {allAssignments.map(assignment => (
+                <option value={assignment.id} key={assignment.id}>
+                  {assignment.title}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+        </Stack>
       </Flex>
       <Tabs
         index={selectedTabIndex}
-        onChange={index => setSelectedTabIndex(index)}
-        marginTop={'10px'}
+        onChange={index => {
+          const isGroupTab = index === TabIndex.Group;
+          setSelectedTabIndex(index);
+
+          /* If index is updated, also updated selected submission ids */
+          setSubmissionIds(
+            (isGroupTab ? groupRowDataList : nonGroupRowDataList)
+              .map(rowData => rowData.submission?.id)
+              .filter(Boolean) as string[]
+          );
+        }}
       >
         <TabList>
           <Tab isDisabled={nonGroupRowDataList.length === 0}>Individuales</Tab>
@@ -345,9 +412,8 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
             <Stack height={'70vh'}>
               <SubmissionsTable
                 rowDataList={nonGroupRowDataList}
-                submitterNameHeader={'Alumno'}
                 onRowClick={onRowClick}
-                updateSelectedSubmitterCallback={submitterId =>
+                updateSelectedStudentCallback={submitterId =>
                   setSelectedStudentUserId(submitterId)
                 }
                 updateSelectedReviewerCallback={reviewerId =>
@@ -360,32 +426,16 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
             <Stack height={'70vh'}>
               <SubmissionsTable
                 rowDataList={groupRowDataList}
-                submitterNameHeader={'Grupo'}
                 onRowClick={onRowClick}
                 updateSelectedReviewerCallback={reviewerId =>
                   setSelectedReviewerId(reviewerId)
                 }
-                extraColumn={{
-                  header: 'Alumnos',
-                  columnIndex: 1,
-                  content: rowData => {
-                    const group = rowData.submitter as GroupSubmitterRowData;
-                    return (
-                      <Stack>
-                        {group.participants.map(participant => (
-                          <Link // Link without redirect
-                            onClick={event => {
-                              event.stopPropagation(); // This prevents the click from propagating to the parent row
-                              setSelectedStudentUserId(participant.id);
-                            }}
-                          >
-                            {participant.name}
-                          </Link>
-                        ))}
-                      </Stack>
-                    );
-                  },
-                }}
+                updateSelectedStudentCallback={submitterId =>
+                  setSelectedStudentUserId(submitterId)
+                }
+                groupParticipantsGetter={rowData =>
+                  (rowData.submitter as GroupSubmitterRowData).participants
+                }
               />
             </Stack>
           </TabPanel>

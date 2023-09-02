@@ -9,7 +9,7 @@ export enum SubmissionStatus {
   NonExistent = 'Sin entregar',
   MissingReview = 'Sin corregir',
   NewSubmissionRequested = 'Reentrega solicitada',
-  InReview = 'En corrección',
+  NewSubmissionMissingReview = 'Reentrega sin corregir',
   Reviewed = 'Corregido',
 }
 
@@ -37,28 +37,42 @@ const WarningBadgeConfiguration: BadgeConfiguration = {
   badgeTextColor: 'teachHub.black',
 };
 
-export const getSubmissionMissingStatusConfiguration = () => {
-  return {
-    text: SubmissionStatus.NonExistent,
-    ...NonExistentBadgeConfiguration,
-  };
-};
-
-export const getSubmissionReviewStatusConfiguration = ({
-  submission,
-  review,
-}: {
-  submission: {
-    submittedAt: Optional<Nullable<string>>;
-    submittedAgainAt: Optional<Nullable<string>>;
-  };
+type SubmissionsReviewStatusParams = {
+  submission:
+    | {
+        submittedAt: Optional<Nullable<string>>;
+        submittedAgainAt: Optional<Nullable<string>>;
+      }
+    | null
+    | undefined;
   review: {
     reviewedAt: Optional<Nullable<string>>;
     reviewedAgainAt: Optional<Nullable<string>>;
     grade: Optional<Nullable<number>>;
     revisionRequested: Optional<Nullable<boolean>>;
   } | null;
-}): SubmissionReviewStatusConfiguration => {
+};
+
+export const getSubmissionsReviewStatusLabel = ({
+  submission,
+  review,
+}: SubmissionsReviewStatusParams): string => {
+  return getSubmissionReviewStatusConfiguration({
+    submission,
+    review,
+  }).text;
+};
+
+export const getSubmissionReviewStatusConfiguration = ({
+  submission,
+  review,
+}: SubmissionsReviewStatusParams): SubmissionReviewStatusConfiguration => {
+  if (!submission)
+    return {
+      text: SubmissionStatus.NonExistent,
+      ...NonExistentBadgeConfiguration,
+    };
+
   if (!review) {
     return {
       text: SubmissionStatus.MissingReview,
@@ -80,12 +94,12 @@ export const getSubmissionReviewStatusConfiguration = ({
     };
   } else if (review.reviewedAt && !review.reviewedAgainAt) {
     return {
-      text: 'Re-entrega sin corregir',
+      text: SubmissionStatus.NewSubmissionMissingReview,
       ...ErrorBadgeConfiguration,
     };
   } else {
     return {
-      text: 'Re-entrega corregida',
+      text: SubmissionStatus.Reviewed,
       ...SuccessBadgeConfiguration,
     };
   }

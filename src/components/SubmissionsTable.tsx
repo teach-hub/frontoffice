@@ -1,9 +1,7 @@
-import { ReactNode } from 'react';
 import { Stack } from '@chakra-ui/react';
 
 import {
   getGradeConfiguration,
-  getSubmissionMissingStatusConfiguration,
   getSubmissionReviewStatusConfiguration,
 } from 'app/submissions';
 import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
@@ -20,11 +18,21 @@ import IconButton from 'components/IconButton';
 import Table from 'components/Table';
 
 import type { Nullable, Optional } from 'types';
+import { isAllEmpty } from 'utils/object';
 
-type ExtraColumn = {
+enum ColumnWidth {
+  Student = '20%',
+  GroupName = '20%',
+  Assignment = '20%',
+  SubmissionStatus = '10%',
+  Reviewer = '20%',
+  Grade = '5%',
+  Actions = '5%',
+}
+
+type ColumnData = {
   header: string;
-  content: (rowData: RowData) => ReactNode;
-  columnIndex: number;
+  width: ColumnWidth;
 };
 
 export type SubjectRowData = {
@@ -45,7 +53,7 @@ export type ReviewerRowData = SubjectRowData;
 export type SubmissionRowData = {
   id?: Optional<Nullable<string>>;
   grade: Optional<Nullable<number>>;
-  revisionRequested: Nullable<boolean>;
+  revisionRequested: Optional<Nullable<boolean>>;
   pullRequestUrl?: Optional<Nullable<string>>;
   submittedAt: Optional<Nullable<string>>;
   submittedAgainAt: Optional<Nullable<string>>;
@@ -62,54 +70,79 @@ export interface RowData {
 
 export const SubmissionsTable = ({
   rowDataList,
-  submitterNameHeader,
   onRowClick,
-  updateSelectedSubmitterCallback,
+  updateSelectedStudentCallback,
   updateSelectedReviewerCallback,
-  extraColumn,
+  groupParticipantsGetter,
 }: {
   rowDataList: RowData[];
-  submitterNameHeader: string;
   onRowClick: (rowData: RowData) => void;
-  updateSelectedSubmitterCallback?: (submitterId: Optional<Nullable<string>>) => void;
+  updateSelectedStudentCallback: (submitterId: Optional<Nullable<string>>) => void;
   updateSelectedReviewerCallback: (submitterId: Optional<Nullable<string>>) => void;
-  extraColumn?: ExtraColumn;
+  groupParticipantsGetter?: (rowData: RowData) => SubjectRowData[];
 }) => {
-  const baseHeaders = [
-    submitterNameHeader,
-    'Trabajo Práctico',
-    'Corrector',
-    'Estado',
-    'Nota',
-    '',
-  ];
-  const headers = extraColumn
-    ? [
-        ...baseHeaders.slice(0, extraColumn.columnIndex),
-        extraColumn.header,
-        ...baseHeaders.slice(extraColumn.columnIndex),
-      ]
-    : baseHeaders;
+  const isGroupTable = !!groupParticipantsGetter;
+
+  const columns: ColumnData[] = [
+    {
+      header: isGroupTable ? 'Grupo' : 'Alumno',
+      width: isGroupTable ? ColumnWidth.GroupName : ColumnWidth.Student,
+    },
+    isGroupTable
+      ? {
+          header: 'Alumnos',
+          width: ColumnWidth.Student,
+        }
+      : null,
+    {
+      header: 'Trabajo Práctico',
+      width: ColumnWidth.Assignment,
+    },
+    {
+      header: 'Corrector',
+      width: ColumnWidth.Reviewer,
+    },
+    {
+      header: 'Estado',
+      width: ColumnWidth.SubmissionStatus,
+    },
+    {
+      header: 'Nota',
+      width: ColumnWidth.Grade,
+    },
+    {
+      header: '',
+      width: ColumnWidth.Actions,
+    },
+  ].filter(Boolean) as ColumnData[];
+
   return (
     <Table
-      headers={headers}
+      headers={columns.map(column => column.header)}
+      headersWidths={columns.map(column => column.width)}
       rowOptions={rowDataList.map(rowData => {
-        // FIXME
-        const reviewStatusConfiguration = rowData.submission?.id
-          ? getSubmissionReviewStatusConfiguration({
-              submission: rowData.submission,
-              review: rowData.submission,
-            })
-          : getSubmissionMissingStatusConfiguration();
+        const review = {
+          reviewedAt: rowData.submission?.reviewedAt,
+          reviewedAgainAt: rowData.submission?.reviewedAgainAt,
+          revisionRequested: rowData.submission?.revisionRequested,
+          grade: rowData.submission?.grade,
+        };
+
+        const reviewStatusConfiguration = getSubmissionReviewStatusConfiguration({
+          submission: rowData.submission,
+          review: isAllEmpty(review) ? null : review,
+        });
         const gradeConfiguration = getGradeConfiguration(rowData.submission?.grade);
 
-        const baseContent = [
-          /* If no callback set, show as simple string */
-          updateSelectedSubmitterCallback ? (
+        const pullRequestUrl = rowData.submission?.pullRequestUrl;
+
+        const content = [
+          /* If group table, show as simple string */
+          !isGroupTable ? (
             <Link // Link without redirect
               onClick={event => {
                 event.stopPropagation(); // This prevents the click from propagating to the parent row
-                updateSelectedSubmitterCallback(rowData.submitter.id);
+                updateSelectedStudentCallback(rowData.submitter.id);
               }}
             >
               {rowData.submitter.name}
@@ -117,6 +150,20 @@ export const SubmissionsTable = ({
           ) : (
             rowData.submitter.name
           ),
+          isGroupTable ? (
+            <Stack>
+              {groupParticipantsGetter(rowData).map(participant => (
+                <Link // Link without redirect
+                  onClick={event => {
+                    event.stopPropagation(); // This prevents the click from propagating to the parent row
+                    updateSelectedStudentCallback(participant.id);
+                  }}
+                >
+                  {participant.name}
+                </Link>
+              ))}
+            </Stack>
+          ) : null,
           rowData.assignmentTitle,
           <Link // Link without redirect
             onClick={event => {
@@ -131,46 +178,41 @@ export const SubmissionsTable = ({
             grade={rowData.submission?.grade}
             gradeConfiguration={gradeConfiguration}
           />,
-          rowData.submission?.pullRequestUrl && (
-            <Stack direction={'row'}>
-              <Tooltip label={'Ir a repositorio'}>
-                <Link
-                  href={getGithubRepoUrlFromPullRequestUrl(
-                    rowData.submission?.pullRequestUrl
-                  )}
-                  isExternal
-                  onClick={event => event.stopPropagation()} // Avoid row click behaviour
-                >
-                  <IconButton
-                    variant={'ghost'}
-                    aria-label="repository-link"
-                    icon={<RepositoryIcon />}
-                  />
-                </Link>
-              </Tooltip>
-              <Tooltip label={'Ir a pull request'}>
-                <Link
-                  href={rowData.submission?.pullRequestUrl}
-                  isExternal
-                  onClick={event => event.stopPropagation()} // Avoid row click behaviour
-                >
-                  <IconButton
-                    variant={'ghost'}
-                    aria-label="pull-request-link"
-                    icon={<PullRequestIcon />}
-                  />
-                </Link>
-              </Tooltip>
-            </Stack>
-          ),
-        ];
-        const content = extraColumn
-          ? [
-              ...baseContent.slice(0, extraColumn.columnIndex),
-              extraColumn.content(rowData),
-              ...baseContent.slice(extraColumn.columnIndex),
-            ]
-          : baseContent;
+          <Stack direction={'row'}>
+            <Tooltip label={'Ir a repositorio'}>
+              <Link
+                href={
+                  pullRequestUrl
+                    ? getGithubRepoUrlFromPullRequestUrl(pullRequestUrl)
+                    : undefined
+                }
+                isExternal
+                onClick={event => event.stopPropagation()} // Avoid row click behaviour
+              >
+                <IconButton
+                  variant={'ghost'}
+                  aria-label="repository-link"
+                  icon={<RepositoryIcon />}
+                  disabled={!rowData.submission?.pullRequestUrl}
+                />
+              </Link>
+            </Tooltip>
+            <Tooltip label={'Ir a pull request'}>
+              <Link
+                href={pullRequestUrl ? pullRequestUrl : undefined}
+                isExternal
+                onClick={event => event.stopPropagation()} // Avoid row click behaviour
+              >
+                <IconButton
+                  variant={'ghost'}
+                  aria-label="pull-request-link"
+                  icon={<PullRequestIcon />}
+                  disabled={!rowData.submission?.pullRequestUrl}
+                />
+              </Link>
+            </Tooltip>
+          </Stack>,
+        ].filter(Boolean);
 
         return {
           rowProps: {

@@ -2,9 +2,15 @@ import { Nullable, Optional } from 'types';
 import { SubmissionStatus } from 'app/submissions';
 import { theme } from 'theme';
 
-const getSubmissionStatus = (
+/*
+ * Handle separated status for statistics, that groups statuses
+ * that are in review
+ * */
+const SUBMISSION_IN_REVIEW_LABEL = 'En corrección';
+
+const getSubmissionStatusLabel = (
   submissionStatisticsData: SubmissionStatisticsData
-): SubmissionStatus => {
+): string => {
   const { grade, revisionRequested } = submissionStatisticsData;
   const hasGrade = !!grade;
   const missingReview = !hasGrade && !revisionRequested;
@@ -13,7 +19,7 @@ const getSubmissionStatus = (
   } else if (hasGrade) {
     return SubmissionStatus.Reviewed;
   } else {
-    return SubmissionStatus.InReview;
+    return SUBMISSION_IN_REVIEW_LABEL;
   }
 };
 
@@ -33,7 +39,7 @@ export const getAssignmentSubmissionStatusDataset = (
 ) => {
   const assignmentsStatusList = assignmentSubmissionsStatisticsData.map(item => {
     return item.submissions
-      .map(getSubmissionStatus)
+      .map(getSubmissionStatusLabel)
       .concat(
         Array(item.nonExistentSubmissionsAmount).fill(SubmissionStatus.NonExistent)
       );
@@ -45,7 +51,7 @@ export const getAssignmentSubmissionStatusDataset = (
       backgroundColor: `${theme.colors.teachHub.green}`,
     },
     {
-      status: SubmissionStatus.InReview,
+      status: SUBMISSION_IN_REVIEW_LABEL,
       backgroundColor: `${theme.colors.teachHub.yellow}`,
     },
     {
