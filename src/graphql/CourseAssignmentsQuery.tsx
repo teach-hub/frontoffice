@@ -1,7 +1,7 @@
 import { graphql } from 'babel-plugin-relay/macro';
 
 export default graphql`
-  query CourseAssignmentsQuery($courseId: ID!) {
+  query CourseAssignmentsQuery($courseId: ID!, $includeViewerSubmissions: Boolean!) {
     viewer {
       id
       name
@@ -12,6 +12,9 @@ export default graphql`
           title
           endDate
           isGroup
+          viewerSubmission @include(if: $includeViewerSubmissions) {
+            id
+          }
         }
       }
     }

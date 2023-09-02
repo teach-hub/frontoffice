@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<442ebf70744fb311b797cd56b2254963>>
+ * @generated SignedSource<<47a22a54a42084baa5a7ccb23fd06966>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,6 +11,7 @@
 import { ConcreteRequest, Query } from 'relay-runtime';
 export type CourseAssignmentsQuery$variables = {
   courseId: string;
+  includeViewerSubmissions: boolean;
 };
 export type CourseAssignmentsQuery$data = {
   readonly viewer: {
@@ -20,6 +21,9 @@ export type CourseAssignmentsQuery$data = {
         readonly id: string;
         readonly isGroup: boolean | null;
         readonly title: string | null;
+        readonly viewerSubmission?: {
+          readonly id: string;
+        } | null;
       }>;
       readonly id: string;
     } | null;
@@ -38,6 +42,11 @@ var v0 = [
     "defaultValue": null,
     "kind": "LocalArgument",
     "name": "courseId"
+  },
+  {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "includeViewerSubmissions"
   }
 ],
 v1 = {
@@ -108,6 +117,25 @@ v2 = [
                 "kind": "ScalarField",
                 "name": "isGroup",
                 "storageKey": null
+              },
+              {
+                "condition": "includeViewerSubmissions",
+                "kind": "Condition",
+                "passingValue": true,
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "SubmissionType",
+                    "kind": "LinkedField",
+                    "name": "viewerSubmission",
+                    "plural": false,
+                    "selections": [
+                      (v1/*: any*/)
+                    ],
+                    "storageKey": null
+                  }
+                ]
               }
             ],
             "storageKey": null
@@ -137,16 +165,16 @@ return {
     "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "944c64cedc5d184f4e4c96900d0a9d74",
+    "cacheID": "093ba39f00dd7d91533131b7c06b2ee0",
     "id": null,
     "metadata": {},
     "name": "CourseAssignmentsQuery",
     "operationKind": "query",
-    "text": "query CourseAssignmentsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n        endDate\n        isGroup\n      }\n    }\n  }\n}\n"
+    "text": "query CourseAssignmentsQuery(\n  $courseId: ID!\n  $includeViewerSubmissions: Boolean!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n        endDate\n        isGroup\n        viewerSubmission @include(if: $includeViewerSubmissions) {\n          id\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "73bf7502f0a27261ed4a9023369c0848";
+(node as any).hash = "e052d4b264824f9aa8d79c08bb32ca12";
 
 export default node;
