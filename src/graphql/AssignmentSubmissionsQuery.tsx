@@ -19,6 +19,7 @@ export default graphql`
             id
             description
             submittedAt
+            submittedAgainAt
             pullRequestUrl
             assignmentId
             submitter {
@@ -52,8 +53,8 @@ export default graphql`
               id
               revisionRequested
               grade
-              createdAt
-              updatedAt
+              reviewedAt
+              reviewedAgainAt
             }
           }
           nonExistentSubmissions {

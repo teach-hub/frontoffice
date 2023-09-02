@@ -54,6 +54,13 @@ type LoginPageProps = {
   redirectTo?: string;
 };
 
+// Este form functiona de la siguiente forma
+// - Redireccionamos al usuario a la pagina de github para que se loguee. (Linea 20).
+// - Cuando el usuario se loguea, github nos redirecciona a la pagina con un codigo en la url.
+// - Si el codigo esta en la url, hacemos un request a nuestro backend para intercambiar el codigo por un token.
+// - Si el usuario no esta registrado, el backend nos devuelve un error y mostramos el form de registro.
+// - Si el usuario esta registrado, el backend nos devuelve un token y lo guardamos en el local storage.
+
 const LoginPage = (props: LoginPageProps) => {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -82,10 +89,14 @@ const LoginPage = (props: LoginPageProps) => {
         if (!errors?.length || response.login?.token) {
           const token = response.login?.token;
           const userRegistered = response.login?.userRegistered || false;
-          setToken(token); // Set token both if logged in, or if sign up is required
+
+          // Set token either if user is logged in, or sign up is required.
+          setToken(token);
 
           if (userRegistered) {
             setIsLoggingIn(false);
+
+            // Volvemos a la pagina de la que venimos.
             navigate(redirectTo ? redirectTo : '/');
           } else {
             onOpen(); // Open register form
@@ -127,7 +138,7 @@ const LoginPage = (props: LoginPageProps) => {
 
   const RegisterForm = ({ initialValues }: Props): JSX.Element => {
     const [hasFile, setHasFile] = useState(true);
-    const [commitRegisterMutation, isRegisterMutationInFlight] =
+    const [commitRegisterMutation] =
       useMutation<RegisterUserMutation>(RegisterMutationDef);
 
     type FormValues = Mutable<NonNullable<RegisterData>>;
@@ -135,9 +146,15 @@ const LoginPage = (props: LoginPageProps) => {
     const validateForm = (values: FormValues): FormErrors<FormValues> => {
       const errors: FormErrors<FormValues> = {};
 
-      if (!values?.name) errors.name = 'Obligatorio';
-      if (!values?.lastName) errors.lastName = 'Obligatorio';
-      if (!values?.file && hasFile) errors.file = 'Obligatorio';
+      if (!values?.name) {
+        errors.name = 'Obligatorio';
+      }
+      if (!values?.lastName) {
+        errors.lastName = 'Obligatorio';
+      }
+      if (!values?.file && hasFile) {
+        errors.file = 'Obligatorio';
+      }
 
       return errors;
     };

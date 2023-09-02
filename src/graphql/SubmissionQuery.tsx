@@ -11,6 +11,7 @@ export default graphql`
           id
           description
           submittedAt
+          submittedAgainAt
           pullRequestUrl
           viewerCanReview
           submitter {
@@ -36,8 +37,8 @@ export default graphql`
             id
             revisionRequested
             grade
-            createdAt
-            updatedAt
+            reviewedAt
+            reviewedAgainAt
           }
           assignment {
             id

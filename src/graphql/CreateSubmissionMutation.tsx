@@ -13,8 +13,9 @@ export default graphql`
       pullRequestUrl: $pullRequestUrl
       description: $description
     ) {
-      success
-      errors
+      id
+      submittedAt
+      submittedAgainAt
     }
   }
 `;

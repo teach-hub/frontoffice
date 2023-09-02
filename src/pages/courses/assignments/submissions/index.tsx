@@ -1,16 +1,13 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
-import Navigation from 'components/Navigation';
 
 import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
+import { useSubmissionContext } from 'hooks/useSubmissionsContext';
+import useToast from 'hooks/useToast';
 
 import SubmissionsQuery from 'graphql/AssignmentSubmissionsQuery';
 
-import type {
-  AssignmentSubmissionsQuery,
-  AssignmentSubmissionsQuery$data,
-} from '__generated__/AssignmentSubmissionsQuery.graphql';
 import {
   Flex,
   Select,
@@ -22,43 +19,29 @@ import {
   Tabs,
 } from '@chakra-ui/react';
 import { theme } from 'theme';
+
+import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
 import PageDataContainer from 'components/PageDataContainer';
+import { FilterBadge } from 'components/FilterBadge';
+import Link from 'components/Link';
+import { SubmissionsTable } from 'components/SubmissionsTable';
+
 import { Query } from 'queries';
 import { Nullable, Optional } from 'types';
-import { FilterBadge } from 'components/FilterBadge';
-import { useSubmissionContext } from 'hooks/useSubmissionsContext';
-import useToast from 'hooks/useToast';
-import { SubmissionsTable } from 'components/SubmissionsTable';
-import Link from 'components/Link';
 
-type SubjectRowData = {
-  id: Optional<Nullable<string>>;
-  name: Optional<Nullable<string>>;
-};
+import type {
+  RowData,
+  SubjectRowData,
+  ReviewerRowData,
+  SubmitterRowData,
+  GroupSubmitterRowData,
+} from 'components/SubmissionsTable';
 
-type SubmitterRowData = SubjectRowData & {
-  isGroup: boolean;
-};
-type GroupSubmitterRowData = SubmitterRowData & {
-  participants: SubjectRowData[];
-};
-
-type ReviewerRowData = SubjectRowData;
-
-type SubmissionRowData = {
-  id?: Optional<Nullable<string>>;
-  grade?: Optional<Nullable<number>>;
-  revisionRequested?: Nullable<boolean>;
-  pullRequestUrl?: Optional<Nullable<string>>;
-};
-
-export interface RowData {
-  submitter: SubmitterRowData;
-  reviewer?: ReviewerRowData;
-  assignmentTitle: Optional<Nullable<string>>;
-  submission?: SubmissionRowData;
-}
+import type {
+  AssignmentSubmissionsQuery,
+  AssignmentSubmissionsQuery$data,
+} from '__generated__/AssignmentSubmissionsQuery.graphql';
 
 type SubmissionType = NonNullable<
   NonNullable<
@@ -212,9 +195,13 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
         submission: submission.id
           ? {
               grade,
-              revisionRequested,
+              revisionRequested: revisionRequested ?? false,
               id: submission.id,
               pullRequestUrl: submission.pullRequestUrl,
+              submittedAt: submission.submittedAt,
+              submittedAgainAt: submission.submittedAgainAt,
+              reviewedAt: review?.reviewedAt,
+              reviewedAgainAt: review?.reviewedAgainAt,
             }
           : undefined,
       };

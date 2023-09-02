@@ -8,7 +8,7 @@ import {
 import ListIcon, { ListIconProps } from 'components/list/ListIcon';
 
 export type ListItemProps = ChakraListItemProps & {
-  iconProps: ListIconProps;
+  iconProps?: ListIconProps;
   label?: string;
   listItemKey?: string;
 } & Pick<StackProps, 'children'>;
@@ -19,7 +19,7 @@ const ListItem = (props: ListItemProps) => {
   return (
     <ChakraListItem {...rest}>
       <HStack>
-        <ListIcon {...iconProps} key={listItemKey} />
+        {iconProps && <ListIcon {...iconProps} key={listItemKey} />}
         {label && <span style={{ fontWeight: 'bold' }}>{label}</span>}
         {children}
       </HStack>

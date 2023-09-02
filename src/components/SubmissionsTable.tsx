@@ -1,28 +1,64 @@
+import { ReactNode } from 'react';
+import { Stack } from '@chakra-ui/react';
+
 import {
   getGradeConfiguration,
   getSubmissionMissingStatusConfiguration,
   getSubmissionReviewStatusConfiguration,
 } from 'app/submissions';
-import { theme } from 'theme';
-import Link from 'components/Link';
-import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
-import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
-import { Stack } from '@chakra-ui/react';
-import Tooltip from 'components/Tooltip';
 import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
-import IconButton from 'components/IconButton';
+
+import { theme } from 'theme';
 import RepositoryIcon from 'icons/RepositoryIcon';
 import PullRequestIcon from 'icons/PullRequestIcon';
+
+import Link from 'components/Link';
+import Tooltip from 'components/Tooltip';
+import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
+import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
+import IconButton from 'components/IconButton';
 import Table from 'components/Table';
-import React, { ReactNode } from 'react';
-import { RowData } from 'pages/courses/assignments/submissions';
-import { Nullable, Optional } from 'types';
+
+import type { Nullable, Optional } from 'types';
 
 type ExtraColumn = {
   header: string;
   content: (rowData: RowData) => ReactNode;
   columnIndex: number;
 };
+
+export type SubjectRowData = {
+  id: Optional<Nullable<string>>;
+  name: Optional<Nullable<string>>;
+};
+
+export type SubmitterRowData = SubjectRowData & {
+  isGroup: boolean;
+};
+
+export type GroupSubmitterRowData = SubmitterRowData & {
+  participants: SubjectRowData[];
+};
+
+export type ReviewerRowData = SubjectRowData;
+
+export type SubmissionRowData = {
+  id?: Optional<Nullable<string>>;
+  grade: Optional<Nullable<number>>;
+  revisionRequested: Nullable<boolean>;
+  pullRequestUrl?: Optional<Nullable<string>>;
+  submittedAt: Optional<Nullable<string>>;
+  submittedAgainAt: Optional<Nullable<string>>;
+  reviewedAt: Optional<Nullable<string>>;
+  reviewedAgainAt: Optional<Nullable<string>>;
+};
+
+export interface RowData {
+  submitter: SubmitterRowData;
+  reviewer?: ReviewerRowData;
+  assignmentTitle: Optional<Nullable<string>>;
+  submission?: SubmissionRowData;
+}
 
 export const SubmissionsTable = ({
   rowDataList,
@@ -58,10 +94,11 @@ export const SubmissionsTable = ({
     <Table
       headers={headers}
       rowOptions={rowDataList.map(rowData => {
+        // FIXME
         const reviewStatusConfiguration = rowData.submission?.id
           ? getSubmissionReviewStatusConfiguration({
-              grade: rowData.submission?.grade,
-              revisionRequested: rowData.submission?.revisionRequested,
+              submission: rowData.submission,
+              review: rowData.submission,
             })
           : getSubmissionMissingStatusConfiguration();
         const gradeConfiguration = getGradeConfiguration(rowData.submission?.grade);
