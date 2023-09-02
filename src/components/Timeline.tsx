@@ -35,8 +35,7 @@ const Timeline = (props: TimelineProps) => {
 };
 
 interface TimelineItemProps extends BoxProps {
-  // eslint-disable-next-line
-  icon?: any;
+  icon?: React.ElementType;
   boxProps?: BoxProps;
   skipTrail?: boolean;
 }

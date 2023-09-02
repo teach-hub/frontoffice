@@ -172,7 +172,7 @@ const SubmissionPage = ({
   const gradeConfiguration = getGradeConfiguration(review?.grade);
 
   const reviewEnabled = submission?.viewerCanReview;
-  const viewerCanSubmitAgain = review?.reviewedAt && review.reviewedAt;
+  const viewerCanSubmitAgain = review?.reviewedAt && review.revisionRequested;
 
   const handleReviewButtonClick = () => {
     if (!reviewEnabled) {
