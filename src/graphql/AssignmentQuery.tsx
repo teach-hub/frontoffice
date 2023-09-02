@@ -8,16 +8,16 @@ export default graphql`
         id
         assignment(id: $id) {
           id
+          viewerSubmission {
+            id
+          }
           allowLateSubmissions
-          courseId
           isOpenForSubmissions
-          viewerAlreadyMadeSubmission
+          title
           description
-          endDate
           link
           startDate
-          title
-          active
+          endDate
           isGroup
           viewerSubmission @include(if: $includeViewerSubmissions) {
             id

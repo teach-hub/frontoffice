@@ -44,8 +44,7 @@ const LIST_ITEM_ICON_COLOR = theme.colors.teachHub.white;
 function AssignmentDetails({ assignment }: { assignment: Assignment }) {
   const courseContext = useUserContext();
 
-  const viewerCanSubmit =
-    assignment.isOpenForSubmissions && !assignment.viewerAlreadyMadeSubmission;
+  const viewerCanSubmit = assignment.isOpenForSubmissions && !assignment.viewerSubmission;
 
   return (
     <Card>
@@ -58,7 +57,7 @@ function AssignmentDetails({ assignment }: { assignment: Assignment }) {
               color: LIST_ITEM_ICON_COLOR,
               icon: StarIcon,
             }}
-            text={assignment.viewerAlreadyMadeSubmission ? 'Entregado' : 'No entregado'}
+            text={assignment.viewerSubmission ? 'Entregado' : 'No entregado'}
           />
         )}
         <TextListItem
@@ -137,9 +136,7 @@ function AssignmentDetails({ assignment }: { assignment: Assignment }) {
             iconColor={LIST_ITEM_ICON_COLOR}
             external={false}
             text={
-              assignment.viewerAlreadyMadeSubmission
-                ? 'Entrega realizada'
-                : 'Realizar nueva entrega'
+              assignment.viewerSubmission ? 'Entrega realizada' : 'Realizar nueva entrega'
             }
             link={'add-submission'}
             disabled={!viewerCanSubmit}

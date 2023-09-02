@@ -128,7 +128,7 @@ function Content({
             errors['assignmentId'] = 'No sos parte de ningún grupo en este TP.';
           }
 
-          if (target && target.viewerAlreadyMadeSubmission) {
+          if (target && target.viewerSubmission) {
             errors['assignmentId'] = 'Ya existe una entrega realizada para este TP.';
           }
 

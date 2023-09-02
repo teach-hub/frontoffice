@@ -25,7 +25,7 @@ export default function SubmissionStates({ submission, review }: Props) {
   const wasReviewedAgain = !!review?.reviewedAgainAt;
 
   return (
-    <Timeline title="Historial">
+    <Timeline title="Historial de cambios">
       {wasSubmitted && (
         <TimelineItem icon={CheckIcon} skipTrail={!wasReviewed}>
           {`${formatAsSimpleDateTime(submission.submittedAt!)}`} - Entregado

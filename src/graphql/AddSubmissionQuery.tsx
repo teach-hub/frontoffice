@@ -8,7 +8,9 @@ export default graphql`
         id
         assignments {
           id
-          viewerAlreadyMadeSubmission
+          viewerSubmission {
+            id
+          }
           viewerReviewer {
             id
             reviewer {
