@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2940bcbe0defa6a31383c2d105bfd33d>>
+ * @generated SignedSource<<dedca0719be26293cc662a40e5eb278f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -30,9 +30,6 @@ export type AddSubmissionQuery$data = {
         } | null;
         readonly viewerSubmission: {
           readonly id: string;
-          readonly review: {
-            readonly id: string;
-          } | null;
         } | null;
       }>;
       readonly id: string;
@@ -145,19 +142,7 @@ v6 = [
                 "name": "viewerSubmission",
                 "plural": false,
                 "selections": [
-                  (v1/*: any*/),
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "InternalReviewType",
-                    "kind": "LinkedField",
-                    "name": "review",
-                    "plural": false,
-                    "selections": [
-                      (v1/*: any*/)
-                    ],
-                    "storageKey": null
-                  }
+                  (v1/*: any*/)
                 ],
                 "storageKey": null
               },
@@ -302,16 +287,16 @@ return {
     "selections": (v6/*: any*/)
   },
   "params": {
-    "cacheID": "15a951cd66a9dbdb8a55a97c6a226bd8",
+    "cacheID": "a63ded52c28708bf58129904990eb5f0",
     "id": null,
     "metadata": {},
     "name": "AddSubmissionQuery",
     "operationKind": "query",
-    "text": "query AddSubmissionQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        viewerSubmission {\n          id\n          review {\n            id\n          }\n        }\n        viewerReviewer {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n        isOpenForSubmissions\n        title\n        isGroup\n      }\n      viewerGroupParticipants: viewerGroups {\n        id\n        group {\n          id\n          name\n        }\n        assignmentId\n      }\n    }\n    repositories(courseId: $courseId) {\n      id\n      name\n    }\n    openPullRequests(courseId: $courseId) {\n      id\n      title\n      url\n      repositoryName\n    }\n  }\n}\n"
+    "text": "query AddSubmissionQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        viewerSubmission {\n          id\n        }\n        viewerReviewer {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n        isOpenForSubmissions\n        title\n        isGroup\n      }\n      viewerGroupParticipants: viewerGroups {\n        id\n        group {\n          id\n          name\n        }\n        assignmentId\n      }\n    }\n    repositories(courseId: $courseId) {\n      id\n      name\n    }\n    openPullRequests(courseId: $courseId) {\n      id\n      title\n      url\n      repositoryName\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "6ce4f7575c0466ba08f51825ce2c1e4c";
+(node as any).hash = "a71ba5cdc577fde21d901fd761f0967a";
 
 export default node;

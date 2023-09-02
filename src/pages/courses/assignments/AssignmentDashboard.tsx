@@ -14,7 +14,7 @@ import {
 
 import { theme } from 'theme';
 
-import { CourseContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
+import { Permission, useUserContext } from 'hooks/useUserCourseContext';
 
 import Navigation from 'components/Navigation';
 import Button from 'components/Button';
@@ -202,16 +202,13 @@ function AssignmentActions() {
 const AssignmentDashboardPage = ({
   assignmentId,
   courseId,
-  courseContext,
 }: {
   assignmentId: string;
   courseId: string;
-  courseContext: CourseContext;
 }) => {
   const data = useLazyLoadQuery<AssignmentQuery>(AssignmentQueryDef, {
     id: assignmentId,
     courseId,
-    includeViewerSubmissions: !courseContext.userIsTeacher,
   });
 
   const assignment = data.viewer?.course?.assignment;
@@ -259,11 +256,7 @@ const AssignmentPageContainer = () => {
   return (
     <PageDataContainer w="70em" gap="25px">
       <Suspense fallback={<EmptyState />}>
-        <AssignmentDashboardPage
-          assignmentId={assignmentId}
-          courseId={courseId}
-          courseContext={courseContext}
-        />
+        <AssignmentDashboardPage assignmentId={assignmentId} courseId={courseId} />
       </Suspense>
     </PageDataContainer>
   );
