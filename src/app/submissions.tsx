@@ -67,6 +67,10 @@ export const getSubmissionReviewStatusConfiguration = ({
   submission,
   review,
 }: SubmissionsReviewStatusParams): SubmissionReviewStatusConfiguration => {
+  console.log('Ouch');
+  console.log(review);
+  console.log(submission);
+
   if (!submission)
     return {
       text: SubmissionStatus.NonExistent,

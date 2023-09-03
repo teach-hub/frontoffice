@@ -112,12 +112,15 @@ const SubmissionPage = ({
 }) => {
   const toast = useToast();
 
+  const data = useLazyLoadQuery<SubmissionQuery>(SubmissionQueryDef, {
+    courseId: context.courseId,
+    submissionId,
+  });
+
   const [commitCreateMutation] =
     useMutation<CreateReviewMutationType>(CreateReviewMutation);
-
   const [commitUpdateMutation] =
     useMutation<UpdateReviewMutationType>(UpdateReviewMutation);
-
   const [commitSubmitMutation] = useMutation<SubmitSubmissionMutationType>(
     SubmitSubmissionMutation
   );
@@ -127,11 +130,6 @@ const SubmissionPage = ({
     onOpen: onOpenReviewModal,
     onClose: onCloseReviewModal,
   } = useDisclosure();
-
-  const data = useLazyLoadQuery<SubmissionQuery>(SubmissionQueryDef, {
-    courseId: context.courseId,
-    submissionId,
-  });
 
   if (!data.viewer || !data.viewer.course) {
     return null;
@@ -192,9 +190,7 @@ const SubmissionPage = ({
         submissionId: submission.id,
       },
       onCompleted: (_: unknown, errors: Nullable<PayloadError[]>) => {
-        if (!errors?.length) {
-          return;
-        } else {
+        if (errors?.length) {
           toast({
             title: 'Error al re-entregar, intentelo de nuevo',
             status: 'error',
@@ -220,10 +216,11 @@ const SubmissionPage = ({
 
     const onCompleted = (_: unknown, errors: Nullable<PayloadError[]>) => {
       if (!errors?.length) {
-        // Esto no deberia hacer falta. La misma respuesta del servidor deberia
-        // bastar para actualizar el store de relay.
-        // navigate(0); // Reload page data
-        return;
+        console.log('updated');
+        toast({
+          title: 'Corrección actualizada',
+          status: 'success',
+        });
       } else {
         toast({
           title: 'Error al actualizar la corrección, intentelo de nuevo',
@@ -425,6 +422,11 @@ const ReviewModal = ({
     setRevisionRequested(false);
   }, [isOpen]);
 
+  const handleSave = () => {
+    onSave({ grade: newGrade, revisionRequested });
+    onClose();
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -437,9 +439,7 @@ const ReviewModal = ({
           <Button onClick={onClose} variant={'ghost'}>
             Cancelar
           </Button>
-          <Button onClick={() => onSave({ grade: newGrade, revisionRequested })}>
-            Guardar
-          </Button>
+          <Button onClick={handleSave}>Guardar</Button>
         </Flex>
       }
     >
