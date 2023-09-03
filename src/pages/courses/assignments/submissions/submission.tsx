@@ -431,7 +431,6 @@ const ReviewModal = ({
   }, [isOpen]);
 
   const handleSave = () => {
-    console.log('Saving', { grade, revisionRequested });
     onSave({ grade, revisionRequested });
     onClose();
   };

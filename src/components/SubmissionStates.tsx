@@ -32,13 +32,13 @@ export default function SubmissionStates({ submission, review }: Props) {
         </TimelineItem>
       )}
       {wasReviewed && (
-        <TimelineItem icon={CheckIcon} skipTrail={wasSubmittedAgain}>
+        <TimelineItem icon={CheckIcon} skipTrail={!wasSubmittedAgain}>
           {`${formatAsSimpleDateTime(review.reviewedAt!)}`} -{' '}
-          {review.revisionRequested ? 'Re-entrega solicitada' : 'Corregido'}:
+          {review.revisionRequested ? 'Re-entrega solicitada' : 'Corregido'}
         </TimelineItem>
       )}
       {wasSubmittedAgain && (
-        <TimelineItem icon={CheckIcon} skipTrail={wasReviewedAgain}>
+        <TimelineItem icon={CheckIcon} skipTrail={!wasReviewedAgain}>
           {`${formatAsSimpleDateTime(submission.submittedAgainAt!)}`} - Re-entregado
         </TimelineItem>
       )}
