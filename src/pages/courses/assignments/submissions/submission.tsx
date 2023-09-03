@@ -67,7 +67,6 @@ import type { SubmissionQuery } from '__generated__/SubmissionQuery.graphql';
 
 const CarrouselNavigationControls = ({ submissionId }: { submissionId: string }) => {
   const { submissionIds } = useSubmissionContext();
-  console.log(submissionIds);
 
   const previousSubmissionId = getValueOfPreviousIndex(submissionIds, submissionId);
   const nextSubmissionId = getValueOfNextIndex(submissionIds, submissionId);
@@ -195,6 +194,11 @@ const SubmissionPage = ({
             title: 'Error al re-entregar, intentelo de nuevo',
             status: 'error',
           });
+        } else {
+          toast({
+            title: 'Re-entrega enviada',
+            status: 'success',
+          });
         }
       },
     });
@@ -216,7 +220,6 @@ const SubmissionPage = ({
 
     const onCompleted = (_: unknown, errors: Nullable<PayloadError[]>) => {
       if (!errors?.length) {
-        console.log('updated');
         toast({
           title: 'Corrección actualizada',
           status: 'success',
@@ -400,6 +403,7 @@ const SubmissionPage = ({
         onSave={handleReviewChange}
         onClose={onCloseReviewModal}
         isOpen={isOpenReviewModal}
+        isSecondTimeReview={!!review}
       />
     </PageDataContainer>
   );
@@ -409,21 +413,24 @@ const ReviewModal = ({
   onClose,
   isOpen,
   onSave,
+  isSecondTimeReview,
 }: {
   onClose: () => void;
   isOpen: boolean;
   onSave: (_: { grade: Nullable<number>; revisionRequested: boolean }) => void;
+  isSecondTimeReview: boolean;
 }) => {
-  const [newGrade, setNewGrade] = useState<Nullable<number>>(null);
+  const [grade, setGrade] = useState<Nullable<number>>(null);
   const [revisionRequested, setRevisionRequested] = useState<boolean>(false);
 
   useEffect(() => {
-    setNewGrade(null);
+    setGrade(null);
     setRevisionRequested(false);
   }, [isOpen]);
 
   const handleSave = () => {
-    onSave({ grade: newGrade, revisionRequested });
+    console.log('Saving', { grade, revisionRequested });
+    onSave({ grade, revisionRequested });
     onClose();
   };
 
@@ -447,8 +454,8 @@ const ReviewModal = ({
         <FormControl label={'Seleccionar nota'}>
           <Select
             placeholder="Selecciona una opción"
-            value={newGrade ?? undefined}
-            onChange={changes => setNewGrade(Number(changes.currentTarget.value))}
+            value={grade ?? undefined}
+            onChange={changes => setGrade(Number(changes.currentTarget.value))}
             isDisabled={revisionRequested}
           >
             {GRADES.map(grade => (
@@ -461,6 +468,7 @@ const ReviewModal = ({
         <Checkbox
           id={'revisionRequested'}
           isChecked={revisionRequested}
+          isDisabled={isSecondTimeReview}
           onChange={() => {
             setRevisionRequested(!revisionRequested);
           }}

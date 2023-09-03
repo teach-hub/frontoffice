@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e5be54641d3ffccfdb014bf7b51ca11d>>
+ * @generated SignedSource<<07a5e169785db1e7e84d4ad85727c053>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,16 +17,13 @@ export type UpdateReviewMutation$variables = {
 };
 export type UpdateReviewMutation$data = {
   readonly updateReview: {
+    readonly grade: number | null;
     readonly id: string;
-    readonly review: {
-      readonly grade: number | null;
-      readonly id: string;
-      readonly reviewedAgainAt: string | null;
-      readonly reviewedAt: string;
-      readonly reviewerId: string;
-      readonly revisionRequested: boolean | null;
-      readonly submissionId: string;
-    } | null;
+    readonly reviewedAgainAt: string | null;
+    readonly reviewedAt: string;
+    readonly reviewerId: string;
+    readonly revisionRequested: boolean | null;
+    readonly submissionId: string;
   };
 };
 export type UpdateReviewMutation = {
@@ -55,14 +52,7 @@ v3 = {
   "kind": "LocalArgument",
   "name": "revisionRequested"
 },
-v4 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-},
-v5 = [
+v4 = [
   {
     "alias": null,
     "args": [
@@ -87,64 +77,58 @@ v5 = [
         "variableName": "revisionRequested"
       }
     ],
-    "concreteType": "SubmissionType",
+    "concreteType": "InternalReviewType",
     "kind": "LinkedField",
     "name": "updateReview",
     "plural": false,
     "selections": [
-      (v4/*: any*/),
       {
         "alias": null,
         "args": null,
-        "concreteType": "InternalReviewType",
-        "kind": "LinkedField",
-        "name": "review",
-        "plural": false,
-        "selections": [
-          (v4/*: any*/),
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "grade",
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "revisionRequested",
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "submissionId",
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "reviewerId",
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "reviewedAt",
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "reviewedAgainAt",
-            "storageKey": null
-          }
-        ],
+        "kind": "ScalarField",
+        "name": "id",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "grade",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "revisionRequested",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "submissionId",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "reviewerId",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "reviewedAt",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "reviewedAgainAt",
         "storageKey": null
       }
     ],
@@ -162,7 +146,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "UpdateReviewMutation",
-    "selections": (v5/*: any*/),
+    "selections": (v4/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
@@ -176,19 +160,19 @@ return {
     ],
     "kind": "Operation",
     "name": "UpdateReviewMutation",
-    "selections": (v5/*: any*/)
+    "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "77c6ad0a1e7a43a6fca84d849edab7cf",
+    "cacheID": "e92721d45c944325fce722fc5a8699a9",
     "id": null,
     "metadata": {},
     "name": "UpdateReviewMutation",
     "operationKind": "mutation",
-    "text": "mutation UpdateReviewMutation(\n  $id: ID!\n  $courseId: ID!\n  $revisionRequested: Boolean!\n  $grade: Int\n) {\n  updateReview(id: $id, courseId: $courseId, revisionRequested: $revisionRequested, grade: $grade) {\n    id\n    review {\n      id\n      grade\n      revisionRequested\n      submissionId\n      reviewerId\n      reviewedAt\n      reviewedAgainAt\n    }\n  }\n}\n"
+    "text": "mutation UpdateReviewMutation(\n  $id: ID!\n  $courseId: ID!\n  $revisionRequested: Boolean!\n  $grade: Int\n) {\n  updateReview(id: $id, courseId: $courseId, revisionRequested: $revisionRequested, grade: $grade) {\n    id\n    grade\n    revisionRequested\n    submissionId\n    reviewerId\n    reviewedAt\n    reviewedAgainAt\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "816b24b43ac63520e255381cbb6f0285";
+(node as any).hash = "97f8d1fdc9324694b6f453f8ad6caa4c";
 
 export default node;

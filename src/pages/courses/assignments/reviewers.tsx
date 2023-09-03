@@ -273,7 +273,6 @@ function ReviewersPageContainer({
           console.log('Error while commiting reviewers', errors);
           toast({ title: 'No pudimos asignar los correctores', status: 'error' });
         } else {
-          console.log('Reviewers assigned');
           setReviewers(response.assignReviewers);
           setPreviewReviewers([]);
           toast({ title: 'Correctores asignados', status: 'success' });

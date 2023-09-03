@@ -14,15 +14,12 @@ export default graphql`
       grade: $grade
     ) {
       id
-      review {
-        id
-        grade
-        revisionRequested
-        submissionId
-        reviewerId
-        reviewedAt
-        reviewedAgainAt
-      }
+      grade
+      revisionRequested
+      submissionId
+      reviewerId
+      reviewedAt
+      reviewedAgainAt
     }
   }
 `;
