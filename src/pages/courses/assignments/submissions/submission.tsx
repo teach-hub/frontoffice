@@ -169,8 +169,10 @@ const SubmissionPage = ({
   });
   const gradeConfiguration = getGradeConfiguration(review?.grade);
 
-  const reviewEnabled = submission?.viewerCanReview;
-  const viewerCanSubmitAgain = review?.reviewedAt && review.revisionRequested;
+  // submission.viewerCanReview nos dice si nosotros somos el corrector.
+  const reviewEnabled =
+    submission?.viewerIsReviewer && (!review || review.revisionRequested);
+  const viewerCanSubmitAgain = review?.revisionRequested && !review?.reviewedAgainAt;
 
   const showWarningToastIfDisabled = () => {
     if (!reviewEnabled) {
@@ -215,7 +217,7 @@ const SubmissionPage = ({
     const baseVariables = {
       courseId: course?.id,
       revisionRequested,
-      ...(revisionRequested ? { grade } : {}), // Only set grade if no revision requested
+      ...(!revisionRequested ? { grade } : {}), // Only set grade if no revision requested
     };
 
     const onCompleted = (_: unknown, errors: Nullable<PayloadError[]>) => {
