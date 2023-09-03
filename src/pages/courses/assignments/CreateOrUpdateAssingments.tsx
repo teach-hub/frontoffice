@@ -62,8 +62,6 @@ const CreateOrUpdateAssignmentsPage = ({ assignmentId, courseId }: Props) => {
 
   const initialValues: AssignmentData = {};
 
-  // FIXME. Los hooks no se pueden llamar condicionalmente.
-  // eslint-disable-next-line
   const data = useLazyLoadQuery<AssignmentQuery>(AssignmentQueryDef, {
     id: assignmentId,
     courseId: courseId || '',
