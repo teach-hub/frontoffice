@@ -19,31 +19,32 @@ type Props = {
 };
 
 export default function SubmissionStates({ submission, review }: Props) {
+  const wasSubmitted = !!submission?.submittedAt;
+  const wasReviewed = !!review?.reviewedAt;
+  const wasSubmittedAgain = !!submission?.submittedAgainAt;
+  const wasReviewedAgain = !!review?.reviewedAgainAt;
+
   return (
-    <Timeline title="Historial">
-      {submission.submittedAt && (
-        <TimelineItem icon={CheckIcon}>
-          {`${formatAsSimpleDateTime(submission.submittedAt)}`} - Entregado
+    <Timeline title="Historial de cambios">
+      {wasSubmitted && (
+        <TimelineItem icon={CheckIcon} skipTrail={!wasReviewed}>
+          {`${formatAsSimpleDateTime(submission.submittedAt!)}`} - Entregado
         </TimelineItem>
       )}
-      {review?.reviewedAt && review.revisionRequested && (
-        <TimelineItem icon={CheckIcon}>
-          {`${formatAsSimpleDateTime(review.reviewedAt)}`} - Re-entrega solicitada
+      {wasReviewed && (
+        <TimelineItem icon={CheckIcon} skipTrail={!wasSubmittedAgain}>
+          {`${formatAsSimpleDateTime(review.reviewedAt!)}`} -{' '}
+          {review.revisionRequested ? 'Reentrega solicitada' : 'Corregido'}
         </TimelineItem>
       )}
-      {review?.reviewedAt && !review.revisionRequested && (
-        <TimelineItem icon={CheckIcon}>
-          {`${formatAsSimpleDateTime(review.reviewedAt)}`} - Corregido
+      {wasSubmittedAgain && (
+        <TimelineItem icon={CheckIcon} skipTrail={!wasReviewedAgain}>
+          {`${formatAsSimpleDateTime(submission.submittedAgainAt!)}`} - Reentregado
         </TimelineItem>
       )}
-      {submission?.submittedAgainAt && (
-        <TimelineItem icon={CheckIcon}>
-          {`${formatAsSimpleDateTime(submission.submittedAgainAt)}`} - Re-entregado
-        </TimelineItem>
-      )}
-      {review?.reviewedAgainAt && (
+      {wasReviewedAgain && (
         <TimelineItem icon={CheckIcon} skipTrail>
-          {`${formatAsSimpleDateTime(review.reviewedAgainAt)}`} - Re-entrega corregida
+          {`${formatAsSimpleDateTime(review.reviewedAgainAt!)}`} - Corregido
         </TimelineItem>
       )}
     </Timeline>

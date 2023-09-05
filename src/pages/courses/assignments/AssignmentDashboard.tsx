@@ -14,7 +14,7 @@ import {
 
 import { theme } from 'theme';
 
-import { CourseContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
+import { Permission, useUserContext } from 'hooks/useUserCourseContext';
 
 import Navigation from 'components/Navigation';
 import Button from 'components/Button';
@@ -44,8 +44,7 @@ const LIST_ITEM_ICON_COLOR = theme.colors.teachHub.white;
 function AssignmentDetails({ assignment }: { assignment: Assignment }) {
   const courseContext = useUserContext();
 
-  const viewerCanSubmit =
-    assignment.isOpenForSubmissions && !assignment.viewerAlreadyMadeSubmission;
+  const viewerCanSubmit = assignment.isOpenForSubmissions && !assignment.viewerSubmission;
 
   return (
     <Card>
@@ -58,7 +57,7 @@ function AssignmentDetails({ assignment }: { assignment: Assignment }) {
               color: LIST_ITEM_ICON_COLOR,
               icon: StarIcon,
             }}
-            text={assignment.viewerAlreadyMadeSubmission ? 'Entregado' : 'No entregado'}
+            text={assignment.viewerSubmission ? 'Entregado' : 'No entregado'}
           />
         )}
         <TextListItem
@@ -137,9 +136,7 @@ function AssignmentDetails({ assignment }: { assignment: Assignment }) {
             iconColor={LIST_ITEM_ICON_COLOR}
             external={false}
             text={
-              assignment.viewerAlreadyMadeSubmission
-                ? 'Entrega realizada'
-                : 'Realizar nueva entrega'
+              assignment.viewerSubmission ? 'Entrega realizada' : 'Realizar nueva entrega'
             }
             link={'add-submission'}
             disabled={!viewerCanSubmit}
@@ -205,16 +202,13 @@ function AssignmentActions() {
 const AssignmentDashboardPage = ({
   assignmentId,
   courseId,
-  courseContext,
 }: {
   assignmentId: string;
   courseId: string;
-  courseContext: CourseContext;
 }) => {
   const data = useLazyLoadQuery<AssignmentQuery>(AssignmentQueryDef, {
     id: assignmentId,
     courseId,
-    includeViewerSubmissions: !courseContext.userIsTeacher,
   });
 
   const assignment = data.viewer?.course?.assignment;
@@ -262,11 +256,7 @@ const AssignmentPageContainer = () => {
   return (
     <PageDataContainer w="70em" gap="25px">
       <Suspense fallback={<EmptyState />}>
-        <AssignmentDashboardPage
-          assignmentId={assignmentId}
-          courseId={courseId}
-          courseContext={courseContext}
-        />
+        <AssignmentDashboardPage assignmentId={assignmentId} courseId={courseId} />
       </Suspense>
     </PageDataContainer>
   );

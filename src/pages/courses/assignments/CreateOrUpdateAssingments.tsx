@@ -11,6 +11,7 @@ import UpdateAssignmentMutationDef from 'graphql/UpdateAssignmentMutation';
 import AssignmentQueryDef from 'graphql/AssignmentQuery';
 
 import useToast from 'hooks/useToast';
+import { useUserContext } from 'hooks/useUserCourseContext';
 import { formatDateAsLocaleIsoString } from 'utils/dates';
 
 import Form from 'components/Form';
@@ -43,10 +44,15 @@ type AssignmentData = {
   isGroup?: Nullable<boolean>;
 };
 
-const CreateOrUpdateAssignmentsPage = () => {
-  const { assignmentId, courseId } = useParams();
+type Props = {
+  assignmentId: string;
+  courseId: string;
+};
+
+const CreateOrUpdateAssignmentsPage = ({ assignmentId, courseId }: Props) => {
   const navigate = useNavigate();
   const toast = useToast();
+
   const [commitCreateAssignment] = useMutation<CreateAssignmentMutation>(
     CreateAssignmentMutationDef
   );
@@ -56,26 +62,21 @@ const CreateOrUpdateAssignmentsPage = () => {
 
   const initialValues: AssignmentData = {};
 
-  if (assignmentId) {
-    // FIXME. Los hooks no se pueden llamar condicionalmente.
-    // eslint-disable-next-line
-    const data = useLazyLoadQuery<AssignmentQuery>(AssignmentQueryDef, {
-      id: assignmentId,
-      courseId: courseId || '',
-      includeViewerSubmissions: false,
-    });
+  const data = useLazyLoadQuery<AssignmentQuery>(AssignmentQueryDef, {
+    id: assignmentId,
+    courseId: courseId || '',
+  });
 
-    const assignment = data.viewer?.course?.assignment;
+  const assignment = data.viewer?.course?.assignment;
 
-    initialValues.id = assignmentId;
-    initialValues.title = assignment?.title;
-    initialValues.description = assignment?.description;
-    initialValues.startDate = assignment?.startDate;
-    initialValues.endDate = assignment?.endDate;
-    initialValues.link = assignment?.link;
-    initialValues.allowLateSubmissions = assignment?.allowLateSubmissions;
-    initialValues.isGroup = assignment?.isGroup;
-  }
+  initialValues.id = assignmentId;
+  initialValues.title = assignment?.title;
+  initialValues.description = assignment?.description;
+  initialValues.startDate = assignment?.startDate;
+  initialValues.endDate = assignment?.endDate;
+  initialValues.link = assignment?.link;
+  initialValues.allowLateSubmissions = assignment?.allowLateSubmissions;
+  initialValues.isGroup = assignment?.isGroup;
 
   type FormValues = Mutable<NonNullable<AssignmentData>>;
 
@@ -290,12 +291,27 @@ const CreateOrUpdateAssignmentsPage = () => {
   );
 };
 
+const PageContainer = () => {
+  const courseContext = useUserContext();
+  const { assignmentId } = useParams();
+
+  if (!courseContext.courseId || !assignmentId) {
+    return null;
+  }
+
+  return (
+    <Suspense>
+      <CreateOrUpdateAssignmentsPage
+        courseId={courseContext.courseId}
+        assignmentId={assignmentId}
+      />
+    </Suspense>
+  );
+};
 export default () => {
   return (
     <Navigation>
-      <Suspense>
-        <CreateOrUpdateAssignmentsPage />
-      </Suspense>
+      <PageContainer />
     </Navigation>
   );
 };

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0f1d7cabc2cbe3f941b414261d631870>>
+ * @generated SignedSource<<7d8a1dcec0a802a30b0023014192ceff>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,15 +12,12 @@ import { ConcreteRequest, Query } from 'relay-runtime';
 export type AssignmentQuery$variables = {
   courseId: string;
   id: string;
-  includeViewerSubmissions: boolean;
 };
 export type AssignmentQuery$data = {
   readonly viewer: {
     readonly course: {
       readonly assignment: {
-        readonly active: boolean | null;
         readonly allowLateSubmissions: boolean | null;
-        readonly courseId: string;
         readonly description: string | null;
         readonly endDate: string | null;
         readonly id: string;
@@ -29,8 +26,7 @@ export type AssignmentQuery$data = {
         readonly link: string | null;
         readonly startDate: string | null;
         readonly title: string | null;
-        readonly viewerAlreadyMadeSubmission: boolean;
-        readonly viewerSubmission?: {
+        readonly viewerSubmission: {
           readonly id: string;
         } | null;
       } | null;
@@ -56,18 +52,13 @@ v1 = {
   "name": "id"
 },
 v2 = {
-  "defaultValue": null,
-  "kind": "LocalArgument",
-  "name": "includeViewerSubmissions"
-},
-v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v4 = [
+v3 = [
   {
     "alias": null,
     "args": null,
@@ -76,7 +67,7 @@ v4 = [
     "name": "viewer",
     "plural": false,
     "selections": [
-      (v3/*: any*/),
+      (v2/*: any*/),
       {
         "alias": null,
         "args": [
@@ -91,7 +82,7 @@ v4 = [
         "name": "course",
         "plural": false,
         "selections": [
-          (v3/*: any*/),
+          (v2/*: any*/),
           {
             "alias": null,
             "args": [
@@ -106,19 +97,24 @@ v4 = [
             "name": "assignment",
             "plural": false,
             "selections": [
-              (v3/*: any*/),
+              (v2/*: any*/),
               {
                 "alias": null,
                 "args": null,
-                "kind": "ScalarField",
-                "name": "allowLateSubmissions",
+                "concreteType": "SubmissionType",
+                "kind": "LinkedField",
+                "name": "viewerSubmission",
+                "plural": false,
+                "selections": [
+                  (v2/*: any*/)
+                ],
                 "storageKey": null
               },
               {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "courseId",
+                "name": "allowLateSubmissions",
                 "storageKey": null
               },
               {
@@ -132,7 +128,7 @@ v4 = [
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "viewerAlreadyMadeSubmission",
+                "name": "title",
                 "storageKey": null
               },
               {
@@ -140,13 +136,6 @@ v4 = [
                 "args": null,
                 "kind": "ScalarField",
                 "name": "description",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "endDate",
                 "storageKey": null
               },
               {
@@ -167,14 +156,7 @@ v4 = [
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "title",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "active",
+                "name": "endDate",
                 "storageKey": null
               },
               {
@@ -183,25 +165,6 @@ v4 = [
                 "kind": "ScalarField",
                 "name": "isGroup",
                 "storageKey": null
-              },
-              {
-                "condition": "includeViewerSubmissions",
-                "kind": "Condition",
-                "passingValue": true,
-                "selections": [
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "SubmissionType",
-                    "kind": "LinkedField",
-                    "name": "viewerSubmission",
-                    "plural": false,
-                    "selections": [
-                      (v3/*: any*/)
-                    ],
-                    "storageKey": null
-                  }
-                ]
               }
             ],
             "storageKey": null
@@ -217,13 +180,12 @@ return {
   "fragment": {
     "argumentDefinitions": [
       (v0/*: any*/),
-      (v1/*: any*/),
-      (v2/*: any*/)
+      (v1/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
     "name": "AssignmentQuery",
-    "selections": (v4/*: any*/),
+    "selections": (v3/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -231,24 +193,23 @@ return {
   "operation": {
     "argumentDefinitions": [
       (v1/*: any*/),
-      (v0/*: any*/),
-      (v2/*: any*/)
+      (v0/*: any*/)
     ],
     "kind": "Operation",
     "name": "AssignmentQuery",
-    "selections": (v4/*: any*/)
+    "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "2ed8c9e3f87a1be2e5d35437b966bf50",
+    "cacheID": "891c12bb8295402b94549831d60cda59",
     "id": null,
     "metadata": {},
     "name": "AssignmentQuery",
     "operationKind": "query",
-    "text": "query AssignmentQuery(\n  $id: ID!\n  $courseId: ID!\n  $includeViewerSubmissions: Boolean!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignment(id: $id) {\n        id\n        allowLateSubmissions\n        courseId\n        isOpenForSubmissions\n        viewerAlreadyMadeSubmission\n        description\n        endDate\n        link\n        startDate\n        title\n        active\n        isGroup\n        viewerSubmission @include(if: $includeViewerSubmissions) {\n          id\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query AssignmentQuery(\n  $id: ID!\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignment(id: $id) {\n        id\n        viewerSubmission {\n          id\n        }\n        allowLateSubmissions\n        isOpenForSubmissions\n        title\n        description\n        link\n        startDate\n        endDate\n        isGroup\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "c8cd4623e66c2fdea215796b7887fa4d";
+(node as any).hash = "fbdf7c521c0b54f01562df58b93f6b5a";
 
 export default node;

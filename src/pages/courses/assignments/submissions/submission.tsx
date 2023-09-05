@@ -67,7 +67,6 @@ import type { SubmissionQuery } from '__generated__/SubmissionQuery.graphql';
 
 const CarrouselNavigationControls = ({ submissionId }: { submissionId: string }) => {
   const { submissionIds } = useSubmissionContext();
-  console.log(submissionIds);
 
   const previousSubmissionId = getValueOfPreviousIndex(submissionIds, submissionId);
   const nextSubmissionId = getValueOfNextIndex(submissionIds, submissionId);
@@ -112,12 +111,15 @@ const SubmissionPage = ({
 }) => {
   const toast = useToast();
 
+  const data = useLazyLoadQuery<SubmissionQuery>(SubmissionQueryDef, {
+    courseId: context.courseId,
+    submissionId,
+  });
+
   const [commitCreateMutation] =
     useMutation<CreateReviewMutationType>(CreateReviewMutation);
-
   const [commitUpdateMutation] =
     useMutation<UpdateReviewMutationType>(UpdateReviewMutation);
-
   const [commitSubmitMutation] = useMutation<SubmitSubmissionMutationType>(
     SubmitSubmissionMutation
   );
@@ -127,11 +129,6 @@ const SubmissionPage = ({
     onOpen: onOpenReviewModal,
     onClose: onCloseReviewModal,
   } = useDisclosure();
-
-  const data = useLazyLoadQuery<SubmissionQuery>(SubmissionQueryDef, {
-    courseId: context.courseId,
-    submissionId,
-  });
 
   if (!data.viewer || !data.viewer.course) {
     return null;
@@ -172,8 +169,9 @@ const SubmissionPage = ({
   });
   const gradeConfiguration = getGradeConfiguration(review?.grade);
 
-  const reviewEnabled = submission?.viewerCanReview;
-  const viewerCanSubmitAgain = review?.reviewedAt && review.revisionRequested;
+  const reviewEnabled =
+    submission?.viewerIsReviewer && (!review || review.revisionRequested);
+  const viewerCanSubmitAgain = review?.revisionRequested && !review?.reviewedAgainAt;
 
   const showWarningToastIfDisabled = () => {
     if (!reviewEnabled) {
@@ -192,12 +190,15 @@ const SubmissionPage = ({
         submissionId: submission.id,
       },
       onCompleted: (_: unknown, errors: Nullable<PayloadError[]>) => {
-        if (!errors?.length) {
-          return;
-        } else {
+        if (errors?.length) {
           toast({
             title: 'Error al re-entregar, intentelo de nuevo',
             status: 'error',
+          });
+        } else {
+          toast({
+            title: 'Re-entrega enviada',
+            status: 'success',
           });
         }
       },
@@ -215,15 +216,15 @@ const SubmissionPage = ({
     const baseVariables = {
       courseId: course?.id,
       revisionRequested,
-      ...(revisionRequested ? { grade } : {}), // Only set grade if no revision requested
+      ...(!revisionRequested ? { grade } : {}), // Only set grade if no revision requested
     };
 
     const onCompleted = (_: unknown, errors: Nullable<PayloadError[]>) => {
       if (!errors?.length) {
-        // Esto no deberia hacer falta. La misma respuesta del servidor deberia
-        // bastar para actualizar el store de relay.
-        // navigate(0); // Reload page data
-        return;
+        toast({
+          title: 'Corrección actualizada',
+          status: 'success',
+        });
       } else {
         toast({
           title: 'Error al actualizar la corrección, intentelo de nuevo',
@@ -403,6 +404,7 @@ const SubmissionPage = ({
         onSave={handleReviewChange}
         onClose={onCloseReviewModal}
         isOpen={isOpenReviewModal}
+        isSecondTimeReview={!!review}
       />
     </PageDataContainer>
   );
@@ -412,18 +414,25 @@ const ReviewModal = ({
   onClose,
   isOpen,
   onSave,
+  isSecondTimeReview,
 }: {
   onClose: () => void;
   isOpen: boolean;
   onSave: (_: { grade: Nullable<number>; revisionRequested: boolean }) => void;
+  isSecondTimeReview: boolean;
 }) => {
-  const [newGrade, setNewGrade] = useState<Nullable<number>>(null);
+  const [grade, setGrade] = useState<Nullable<number>>(null);
   const [revisionRequested, setRevisionRequested] = useState<boolean>(false);
 
   useEffect(() => {
-    setNewGrade(null);
+    setGrade(null);
     setRevisionRequested(false);
   }, [isOpen]);
+
+  const handleSave = () => {
+    onSave({ grade, revisionRequested });
+    onClose();
+  };
 
   return (
     <Modal
@@ -437,9 +446,7 @@ const ReviewModal = ({
           <Button onClick={onClose} variant={'ghost'}>
             Cancelar
           </Button>
-          <Button onClick={() => onSave({ grade: newGrade, revisionRequested })}>
-            Guardar
-          </Button>
+          <Button onClick={handleSave}>Guardar</Button>
         </Flex>
       }
     >
@@ -447,8 +454,8 @@ const ReviewModal = ({
         <FormControl label={'Seleccionar nota'}>
           <Select
             placeholder="Selecciona una opción"
-            value={newGrade ?? undefined}
-            onChange={changes => setNewGrade(Number(changes.currentTarget.value))}
+            value={grade ?? undefined}
+            onChange={changes => setGrade(Number(changes.currentTarget.value))}
             isDisabled={revisionRequested}
           >
             {GRADES.map(grade => (
@@ -461,6 +468,7 @@ const ReviewModal = ({
         <Checkbox
           id={'revisionRequested'}
           isChecked={revisionRequested}
+          isDisabled={isSecondTimeReview}
           onChange={() => {
             setRevisionRequested(!revisionRequested);
           }}

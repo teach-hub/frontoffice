@@ -18,8 +18,8 @@ export default graphql`
       revisionRequested
       submissionId
       reviewerId
-      createdAt
-      updatedAt
+      reviewedAt
+      reviewedAgainAt
     }
   }
 `;

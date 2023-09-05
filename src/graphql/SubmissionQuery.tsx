@@ -13,7 +13,7 @@ export default graphql`
           submittedAt
           submittedAgainAt
           pullRequestUrl
-          viewerCanReview
+          viewerIsReviewer: viewerCanReview
           submitter {
             ... on UserType {
               id
