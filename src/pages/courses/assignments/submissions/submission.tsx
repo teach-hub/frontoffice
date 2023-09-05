@@ -169,7 +169,6 @@ const SubmissionPage = ({
   });
   const gradeConfiguration = getGradeConfiguration(review?.grade);
 
-  // submission.viewerCanReview nos dice si nosotros somos el corrector.
   const reviewEnabled =
     submission?.viewerIsReviewer && (!review || review.revisionRequested);
   const viewerCanSubmitAgain = review?.revisionRequested && !review?.reviewedAgainAt;
