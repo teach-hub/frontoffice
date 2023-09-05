@@ -30,7 +30,7 @@ import AddSubmissionPage from 'pages/courses/assignments/submissions/add';
 import AssignReviewersPage from 'pages/courses/assignments/reviewers';
 
 import { ContextProvider } from 'hooks/useUserCourseContext';
-import { useLocalStorage } from 'hooks/useLocalStorage';
+import useLocalStorage from 'hooks/useLocalStorage';
 import { isAuthenticated } from 'auth/utils';
 
 import { theme } from 'theme';
@@ -51,7 +51,7 @@ import {
  * be wrapped in other components
  * */
 const ProtectedLayout = ({ children }: { children: JSX.Element }): JSX.Element => {
-  const [token] = useLocalStorage('token', null);
+  const [token] = useLocalStorage('token', []);
   const location = useLocation();
 
   if (isAuthenticated(token)) {
@@ -64,7 +64,7 @@ const ProtectedLayout = ({ children }: { children: JSX.Element }): JSX.Element =
 };
 
 const LoginLayout = (): JSX.Element => {
-  const [token] = useLocalStorage('token', null);
+  const [token] = useLocalStorage('token', []);
   const { state: locationState } = useLocation();
 
   if (!isAuthenticated(token)) {

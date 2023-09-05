@@ -20,7 +20,7 @@ import logo from 'assets/logo_wo_text.png';
 import LoginMutationDef from 'graphql/LoginMutation';
 import RegisterMutationDef from 'graphql/RegisterUserMutation';
 
-import { useLocalStorage } from 'hooks/useLocalStorage';
+import useLocalStorage from 'hooks/useLocalStorage';
 import useToast from 'hooks/useToast';
 
 import { FormErrors, Mutable } from 'types';

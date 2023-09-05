@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
-// TODO. Mover a default export
-
-export const useLocalStorage = (keyName: string, defaultValue: object | null) => {
+const useLocalStorage = (keyName: string, defaultValue: object | null) => {
   const [storedValue, setStoredValue] = useState(() => {
     try {
       const value = window.localStorage.getItem(keyName);
@@ -13,6 +11,7 @@ export const useLocalStorage = (keyName: string, defaultValue: object | null) =>
         return defaultValue;
       }
     } catch (err) {
+      console.log('Failed parsing JSON value in local storage, returning default value');
       return defaultValue;
     }
   });
@@ -20,10 +19,13 @@ export const useLocalStorage = (keyName: string, defaultValue: object | null) =>
   const setValue = (newValue: string) => {
     try {
       window.localStorage.setItem(keyName, JSON.stringify(newValue));
-      // eslint-disable-next-line no-empty
-    } catch {}
+    } catch {
+      console.log('Failed setting JSON value in local storage');
+    }
     setStoredValue(newValue);
   };
 
   return [storedValue, setValue];
 };
+
+export default useLocalStorage;
