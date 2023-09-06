@@ -1,6 +1,6 @@
 import { Environment, Network, RecordSource, Store } from 'relay-runtime';
 
-import { storeSetValue, storeGetValue } from 'hooks/useLocalStorage';
+import { storeGetValue } from 'hooks/useLocalStorage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:4000';
 
@@ -19,13 +19,14 @@ const fetchQuery = async (operation: { text: string | null }, variables: unknown
     Accept: '*/*',
   };
 
-  const token = storeGetValue('token')
-    ? JSON.parse(storeGetValue('token') as string)
-    : null;
+  const token = storeGetValue('token') ? storeGetValue('token') : null;
 
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
+
+  // TODO. Si recibimos una respuesta de token invalido
+  // deberiamos limpiar el store.
 
   return fetch(url, { method: 'POST', body, headers }).then(response => response.json());
 };

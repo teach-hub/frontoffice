@@ -12,7 +12,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useMutation } from 'react-relay';
 
 import logo from 'assets/logo_wo_text.png';
@@ -22,6 +22,7 @@ import RegisterMutationDef from 'graphql/RegisterUserMutation';
 
 import { storeRemoveValue, storeGetValue, storeSetValue } from 'hooks/useLocalStorage';
 import useToast from 'hooks/useToast';
+import { isAuthenticated } from 'auth/utils';
 
 import { FormErrors, Mutable } from 'types';
 
@@ -46,15 +47,17 @@ type RegisterData = {
   githubId?: string;
 };
 
-type Props = {
-  initialValues: RegisterData;
-};
-
 type LoginPageProps = {
   redirectTo?: string;
 };
 
-// Este form functiona de la siguiente forma
+const CLIENT_ID = process.env.REACT_APP_GITHUB_CLIENT_ID || 'fake-id';
+const SCOPE = process.env.REACT_APP_GITHUB_SCOPE || 'repo';
+
+const buildGithubAuthURL = () =>
+  `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=${SCOPE}`;
+
+// Este form funciona de la siguiente forma
 // - Redireccionamos al usuario a la pagina de github para que se loguee. (Linea 20).
 // - Cuando el usuario se loguea, github nos redirecciona a la pagina con un codigo en la url.
 // - Si el codigo esta en la url, hacemos un request a nuestro backend para intercambiar el codigo por un token.
@@ -66,18 +69,35 @@ const LoginPage = (props: LoginPageProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [commitLoginMutation, isLoginMutationInFlight] =
     useMutation<LoginMutation>(LoginMutationDef);
+
   const navigate = useNavigate();
 
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [data, setData] = useState({ errorMessage: '', isLoading: false });
 
-  const CLIENT_ID = process.env.REACT_APP_GITHUB_CLIENT_ID || 'fake-id';
-  const SCOPE = process.env.REACT_APP_GITHUB_SCOPE || 'repo';
+  useEffect(() => {
+    if (!isLoggingIn && !isLoginMutationInFlight) {
+      const url = window.location.href;
+      const [baseUrl, code] = url.split('?code='); // Get Github code
+
+      // If Github API returns the code parameter
+      if (code) {
+        window.history.pushState({}, '', baseUrl);
+        setData({ ...data, isLoading: true });
+
+        loginAndRedirect(code);
+      }
+    }
+  }, [isLoggingIn, isLoginMutationInFlight]);
 
   const handleGithubLogin = () => {
-    props.redirectTo && storeSetValue('redirectTo', props.redirectTo);
+    if (props.redirectTo) {
+      // Guardamos el valor del estado para tenerlo cuando volvamos de Github.
+      storeSetValue('redirectTo', props.redirectTo);
+    }
+
     setIsLoggingIn(true);
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=${SCOPE}`;
+    window.location.href = buildGithubAuthURL();
   };
 
   const loginAndRedirect = async (code: string) => {
@@ -85,17 +105,18 @@ const LoginPage = (props: LoginPageProps) => {
       variables: { code },
       onCompleted: (response: LoginMutation$data, errors) => {
         if (!errors?.length || response.login?.token) {
-          const token = response.login?.token;
-          const userRegistered = response.login?.userRegistered || false;
+          const { token, userRegistered = false } = response.login || {};
 
           // Set token either if user is logged in, or sign up is required.
-          token && storeSetValue('token', token);
+          if (token) {
+            storeSetValue('token', token);
+          }
 
           if (userRegistered) {
             setIsLoggingIn(false);
 
-            // Volvemos a la pagina de la que venimos.
-            navigate(storeGetValue('redirectTo') ? storeGetValue('redirectTo')! : '/');
+            const savedRedirectTo = storeGetValue('redirectTo');
+            navigate(savedRedirectTo ? savedRedirectTo : '/');
           } else {
             onOpen(); // Open register form
           }
@@ -110,170 +131,9 @@ const LoginPage = (props: LoginPageProps) => {
     });
   };
 
-  useEffect(() => {
-    if (!isLoggingIn && !isLoginMutationInFlight) {
-      const url = window.location.href;
-      const hasCode = url.includes('?code='); // Get Github code
-
-      // If Github API returns the code parameter
-      if (hasCode) {
-        const newUrl = url.split('?code=');
-        window.history.pushState({}, '', newUrl[0]);
-        setData({ ...data, isLoading: true });
-
-        const requestData = {
-          code: newUrl[1],
-        };
-
-        loginAndRedirect(requestData.code);
-      }
-    }
-  }, [isLoggingIn, isLoginMutationInFlight]);
-
   if (isLoggingIn || isLoginMutationInFlight) {
     return <div>Logging in...</div>;
   }
-
-  const RegisterForm = ({ initialValues }: Props): JSX.Element => {
-    const [hasFile, setHasFile] = useState(true);
-    const [commitRegisterMutation] =
-      useMutation<RegisterUserMutation>(RegisterMutationDef);
-
-    type FormValues = Mutable<NonNullable<RegisterData>>;
-
-    const validateForm = (values: FormValues): FormErrors<FormValues> => {
-      const errors: FormErrors<FormValues> = {};
-
-      if (!values?.name) {
-        errors.name = 'Obligatorio';
-      }
-      if (!values?.lastName) {
-        errors.lastName = 'Obligatorio';
-      }
-      if (!values?.file && hasFile) {
-        errors.file = 'Obligatorio';
-      }
-
-      return errors;
-    };
-
-    const onSubmit = (variables: FormValues) => {
-      commitRegisterMutation({
-        variables: {
-          ...variables,
-          file: variables.file ? String(variables.file) : variables.file,
-        },
-        onCompleted: (response: RegisterUserMutation$data, errors) => {
-          const token = response.registerUser?.token;
-          if (!errors?.length) {
-            token && storeSetValue('token', token);
-            onClose(); // Close modal
-            const redirectTo = storeGetValue('redirectTo');
-            navigate(redirectTo ? redirectTo : '/');
-            toast({
-              title: 'Usuario registrado!',
-              status: 'success',
-            });
-          } else {
-            storeRemoveValue('token'); // If register failed remove token
-            onClose();
-            toast({
-              title: 'Error',
-              description: `No ha sido posible registrarse: ${errors[0].message}`,
-              status: 'error',
-            });
-          }
-        },
-      });
-    };
-
-    return (
-      <Flex direction="column" gap={'30px'}>
-        <Flex width={'full'} justifyContent={'flex-start'} gap={'20px'}>
-          <Text fontWeight="bold">¿Tenes padrón?</Text>
-          <Switch
-            id="has-file"
-            isChecked={hasFile}
-            onChange={() => setHasFile(!hasFile)}
-          />
-        </Flex>
-        <Form
-          buttonsEnabled={true}
-          initialValues={{
-            name: initialValues.name || '',
-            lastName: initialValues.lastName || '',
-            file: initialValues.file || '',
-            notificationEmail: initialValues.notificationEmail || '',
-          }}
-          validateForm={validateForm}
-          onCancelForm={{
-            text: 'Cancelar',
-            onClick: onClose,
-          }}
-          onSubmitForm={{
-            text: 'Registrarme',
-            onClick: onSubmit,
-          }}
-          inputFields={[
-            {
-              inputComponent: (values, handleChange) => (
-                <InputField
-                  id={'name'}
-                  value={values?.name}
-                  onChange={handleChange}
-                  placeholder={'Nombre'}
-                  type={'text'}
-                />
-              ),
-              label: 'Nombre',
-              readError: e => e.name as string,
-            },
-            {
-              inputComponent: (values, handleChange) => (
-                <InputField
-                  id={'lastName'}
-                  value={values?.lastName}
-                  onChange={handleChange}
-                  placeholder={'Apellido'}
-                  type={'text'}
-                />
-              ),
-              label: 'Apellido',
-              readError: e => e.lastName as string,
-            },
-            {
-              inputComponent: (values, handleChange) => (
-                <InputField
-                  id={'notificationEmail'}
-                  value={values?.notificationEmail}
-                  onChange={handleChange}
-                  placeholder={'mail@mail.com'}
-                  type={'email'}
-                />
-              ),
-              label: 'Email (notificaciones)',
-              readError: e => e.notificationEmail as string,
-            },
-            {
-              inputComponent: (values, handleChange) => (
-                <InputField
-                  id={'file'}
-                  value={values?.file}
-                  onChange={handleChange}
-                  placeholder={'12345'}
-                  type={'number'}
-                  pattern={'[0-9]*'} // allow only digits
-                  inputMode={'numeric'}
-                />
-              ),
-              label: 'Padrón',
-              readError: e => e.file as string,
-            },
-          ]}
-        />
-      </Flex>
-    );
-  };
 
   return (
     <Flex
@@ -299,7 +159,7 @@ const LoginPage = (props: LoginPageProps) => {
         <ModalContent>
           <ModalHeader>Completa tus datos</ModalHeader>
           <ModalBody>
-            <RegisterForm initialValues={{}} />
+            <RegisterForm onClose={onClose} />
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -307,4 +167,165 @@ const LoginPage = (props: LoginPageProps) => {
   );
 };
 
-export default LoginPage;
+type Props = {
+  onClose: () => void;
+};
+
+const RegisterForm = ({ onClose }: Props): JSX.Element => {
+  const toast = useToast();
+  const navigate = useNavigate();
+
+  const [hasFile, setHasFile] = useState(true);
+  const [commitRegisterMutation] = useMutation<RegisterUserMutation>(RegisterMutationDef);
+
+  type FormValues = Mutable<NonNullable<RegisterData>>;
+
+  const validateForm = (values: FormValues): FormErrors<FormValues> => {
+    const errors: FormErrors<FormValues> = {};
+
+    if (!values?.name) {
+      errors.name = 'Obligatorio';
+    }
+    if (!values?.lastName) {
+      errors.lastName = 'Obligatorio';
+    }
+    if (!values?.file && hasFile) {
+      errors.file = 'Obligatorio';
+    }
+
+    return errors;
+  };
+
+  const onSubmit = (variables: FormValues) => {
+    commitRegisterMutation({
+      variables: {
+        ...variables,
+        file: variables.file ? String(variables.file) : variables.file,
+      },
+      onCompleted: (response: RegisterUserMutation$data, errors) => {
+        const token = response.registerUser?.token;
+        if (!errors?.length) {
+          token && storeSetValue('token', token);
+          onClose();
+
+          const redirectTo = storeGetValue('redirectTo');
+          navigate(redirectTo ? redirectTo : '/');
+          toast({
+            title: 'Usuario registrado!',
+            status: 'success',
+          });
+        } else {
+          storeRemoveValue('token'); // If register failed remove token
+          onClose();
+
+          toast({
+            title: 'Error',
+            description: `No ha sido posible registrarse: ${errors[0].message}`,
+            status: 'error',
+          });
+        }
+      },
+    });
+  };
+
+  return (
+    <Flex direction="column" gap={'30px'}>
+      <Flex width={'full'} justifyContent={'flex-start'} gap={'20px'}>
+        <Text fontWeight="bold">¿Tenes padrón?</Text>
+        <Switch id="has-file" isChecked={hasFile} onChange={() => setHasFile(!hasFile)} />
+      </Flex>
+      <Form
+        initialValues={{}}
+        buttonsEnabled={true}
+        validateForm={validateForm}
+        onCancelForm={{
+          text: 'Cancelar',
+          onClick: onClose,
+        }}
+        onSubmitForm={{
+          text: 'Registrarme',
+          onClick: onSubmit,
+        }}
+        inputFields={[
+          {
+            inputComponent: (values, handleChange) => (
+              <InputField
+                id={'name'}
+                value={values?.name}
+                onChange={handleChange}
+                placeholder={'Nombre'}
+                type={'text'}
+              />
+            ),
+            label: 'Nombre',
+            readError: e => e.name as string,
+          },
+          {
+            inputComponent: (values, handleChange) => (
+              <InputField
+                id={'lastName'}
+                value={values?.lastName}
+                onChange={handleChange}
+                placeholder={'Apellido'}
+                type={'text'}
+              />
+            ),
+            label: 'Apellido',
+            readError: e => e.lastName as string,
+          },
+          {
+            inputComponent: (values, handleChange) => (
+              <InputField
+                id={'notificationEmail'}
+                value={values?.notificationEmail}
+                onChange={handleChange}
+                placeholder={'mail@mail.com'}
+                type={'email'}
+              />
+            ),
+            label: 'Email (notificaciones)',
+            readError: e => e.notificationEmail as string,
+          },
+          {
+            inputComponent: (values, handleChange) => (
+              <InputField
+                id={'file'}
+                value={values?.file}
+                onChange={handleChange}
+                placeholder={'12345'}
+                type={'number'}
+                pattern={'[0-9]*'} // allow only digits
+                inputMode={'numeric'}
+              />
+            ),
+            label: 'Padrón',
+            readError: e => e.file as string,
+          },
+        ]}
+      />
+    </Flex>
+  );
+};
+
+// Wrapper alrededor del LoginPage para que no se pueda acceder a /login
+// si el usuario ya esta logueado.
+
+const LoginLayout = (): JSX.Element => {
+  const token = storeGetValue('token');
+
+  // Puede ser que el usuario tenga una ruta previa a /login
+  // en ese caso se redirige a esa ruta luego de loguearse.
+  const { state: locationState } = useLocation();
+
+  if (isAuthenticated(token)) {
+    /*
+     * Si el usuario ya esta logueado /login devuelve a Home.
+     */
+    return <Navigate to={'/'} />;
+  }
+
+  const redirectTo = locationState ? locationState.redirectTo : undefined;
+  return <LoginPage redirectTo={redirectTo} />;
+};
+
+export default LoginLayout;
