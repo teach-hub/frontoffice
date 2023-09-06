@@ -1,5 +1,7 @@
 import { Environment, Network, RecordSource, Store } from 'relay-runtime';
 
+import { storeSetValue, storeGetValue } from 'hooks/useLocalStorage';
+
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:4000';
 
 const fetchQuery = async (operation: { text: string | null }, variables: unknown) => {
@@ -17,20 +19,15 @@ const fetchQuery = async (operation: { text: string | null }, variables: unknown
     Accept: '*/*',
   };
 
-  const token = localStorage.getItem('token')
-    ? JSON.parse(localStorage.getItem('token') as string)
+  const token = storeGetValue('token')
+    ? JSON.parse(storeGetValue('token') as string)
     : null;
-  if (token) headers.Authorization = `Bearer ${token}`;
 
-  return fetch(url, {
-    method: 'POST',
-    body,
-    headers: {
-      ...headers,
-    },
-  }).then(response => {
-    return response.json();
-  });
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return fetch(url, { method: 'POST', body, headers }).then(response => response.json());
 };
 
 const source = new RecordSource();

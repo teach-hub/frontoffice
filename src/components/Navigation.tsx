@@ -15,7 +15,7 @@ import HomeButton from 'components/HomeButton';
 
 import { theme } from 'theme';
 
-import useLocalStorage from 'hooks/useLocalStorage';
+import { storeGetValue, storeRemoveValue } from 'hooks/useLocalStorage';
 import { Permission, useUserContext } from 'hooks/useUserCourseContext';
 import useToast from 'hooks/useToast';
 
@@ -43,7 +43,6 @@ const NAVIGATION_HEIGHT_PX = 95;
 
 const NavigationBar = () => {
   const toast = useToast();
-  const [token, setToken] = useLocalStorage('token', null);
   const [commitLogoutMutation] = useMutation<LogoutMutation>(LogoutMutationDef);
 
   const courseContext = useUserContext();
@@ -70,21 +69,25 @@ const NavigationBar = () => {
   }
 
   const handleLogout = () => {
-    commitLogoutMutation({
-      variables: { token },
-      onCompleted: (_: LogoutMutation$data, errors) => {
-        if (!errors?.length) {
-          setToken(null);
-          navigate('/login');
-        } else {
-          toast({
-            title: 'Error',
-            description: 'No ha sido posible cerrar sesión, intenta de nuevo',
-            status: 'error',
-          });
-        }
-      },
-    });
+    const currentToken = storeGetValue('token');
+    currentToken &&
+      commitLogoutMutation({
+        variables: {
+          token: currentToken,
+        },
+        onCompleted: (_: LogoutMutation$data, errors) => {
+          if (!errors?.length) {
+            storeRemoveValue('token');
+            navigate('/login');
+          } else {
+            toast({
+              title: 'Error',
+              description: 'No ha sido posible cerrar sesión, intenta de nuevo',
+              status: 'error',
+            });
+          }
+        },
+      });
   };
 
   const handleGoToProfile = () => {

@@ -20,7 +20,7 @@ import logo from 'assets/logo_wo_text.png';
 import LoginMutationDef from 'graphql/LoginMutation';
 import RegisterMutationDef from 'graphql/RegisterUserMutation';
 
-import useLocalStorage from 'hooks/useLocalStorage';
+import { storeRemoveValue, storeGetValue, storeSetValue } from 'hooks/useLocalStorage';
 import useToast from 'hooks/useToast';
 
 import { FormErrors, Mutable } from 'types';
@@ -68,8 +68,6 @@ const LoginPage = (props: LoginPageProps) => {
     useMutation<LoginMutation>(LoginMutationDef);
   const navigate = useNavigate();
 
-  const [, setToken] = useLocalStorage('token', null);
-  const [redirectTo, setRedirectTo] = useLocalStorage('redirectTo', null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [data, setData] = useState({ errorMessage: '', isLoading: false });
 
@@ -77,7 +75,7 @@ const LoginPage = (props: LoginPageProps) => {
   const SCOPE = process.env.REACT_APP_GITHUB_SCOPE || 'repo';
 
   const handleGithubLogin = () => {
-    setRedirectTo(props.redirectTo);
+    props.redirectTo && storeSetValue('redirectTo', props.redirectTo);
     setIsLoggingIn(true);
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=${SCOPE}`;
   };
@@ -91,13 +89,13 @@ const LoginPage = (props: LoginPageProps) => {
           const userRegistered = response.login?.userRegistered || false;
 
           // Set token either if user is logged in, or sign up is required.
-          setToken(token);
+          token && storeSetValue('token', token);
 
           if (userRegistered) {
             setIsLoggingIn(false);
 
             // Volvemos a la pagina de la que venimos.
-            navigate(redirectTo ? redirectTo : '/');
+            navigate(storeGetValue('redirectTo') ? storeGetValue('redirectTo')! : '/');
           } else {
             onOpen(); // Open register form
           }
@@ -168,15 +166,16 @@ const LoginPage = (props: LoginPageProps) => {
         onCompleted: (response: RegisterUserMutation$data, errors) => {
           const token = response.registerUser?.token;
           if (!errors?.length) {
-            setToken(token);
+            token && storeSetValue('token', token);
             onClose(); // Close modal
+            const redirectTo = storeGetValue('redirectTo');
             navigate(redirectTo ? redirectTo : '/');
             toast({
               title: 'Usuario registrado!',
               status: 'success',
             });
           } else {
-            setToken(null); // If register failed remove token
+            storeRemoveValue('token'); // If register failed remove token
             onClose();
             toast({
               title: 'Error',

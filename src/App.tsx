@@ -30,7 +30,7 @@ import AddSubmissionPage from 'pages/courses/assignments/submissions/add';
 import AssignReviewersPage from 'pages/courses/assignments/reviewers';
 
 import { ContextProvider } from 'hooks/useUserCourseContext';
-import useLocalStorage from 'hooks/useLocalStorage';
+import { storeGetValue, storeSetValue } from 'hooks/useLocalStorage';
 import { isAuthenticated } from 'auth/utils';
 
 import { theme } from 'theme';
@@ -51,20 +51,20 @@ import {
  * be wrapped in other components
  * */
 const ProtectedLayout = ({ children }: { children: JSX.Element }): JSX.Element => {
-  const [token] = useLocalStorage('token', []);
+  const token = storeGetValue('token');
   const location = useLocation();
 
   if (isAuthenticated(token)) {
     return children;
   }
 
-  console.log(`User not authenticated, redirecting to ${location.pathname}`);
+  console.log(`User not authenticated, redirecting to /login`);
 
   return <Navigate to="/login" state={{ redirectTo: location.pathname }} />;
 };
 
 const LoginLayout = (): JSX.Element => {
-  const [token] = useLocalStorage('token', []);
+  const token = storeGetValue('token');
   const { state: locationState } = useLocation();
 
   if (!isAuthenticated(token)) {
@@ -75,14 +75,13 @@ const LoginLayout = (): JSX.Element => {
 
   /*
    * Si el usuario ya esta logueado /login devuelve a Home.
-   *
    */
   return <Navigate to={'/'} />;
 };
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-
 const App = () => {
+  ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
   return (
     <Routes>
       <Route path="login" element={<LoginLayout />} />
