@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7211e8d7720c525bbbb6d6203e0dfee0>>
+ * @generated SignedSource<<50014847aaad6933435d2a452b9a85a1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -35,6 +35,14 @@ export type SubmissionQuery$data = {
           readonly isGroup: boolean | null;
           readonly title: string | null;
         } | null;
+        readonly comments: ReadonlyArray<{
+          readonly body: string | null;
+          readonly createdAt: string | null;
+          readonly githubUserId: string | null;
+          readonly githubUsername: string | null;
+          readonly id: string | null;
+          readonly updatedAt: string | null;
+        }>;
         readonly description: string | null;
         readonly id: string;
         readonly pullRequestUrl: string;
@@ -64,6 +72,7 @@ export type SubmissionQuery$data = {
         readonly viewerIsReviewer: boolean;
       } | null;
     } | null;
+    readonly githubId: string;
     readonly id: string;
     readonly name: string;
   } | null;
@@ -100,63 +109,70 @@ v2 = {
   "name": "name",
   "storageKey": null
 },
-v3 = [
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "githubId",
+  "storageKey": null
+},
+v4 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "courseId"
   }
 ],
-v4 = [
+v5 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "submissionId"
   }
 ],
-v5 = {
+v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "description",
   "storageKey": null
 },
-v6 = {
+v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "submittedAt",
   "storageKey": null
 },
-v7 = {
+v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "submittedAgainAt",
   "storageKey": null
 },
-v8 = {
+v9 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "pullRequestUrl",
   "storageKey": null
 },
-v9 = {
+v10 = {
   "alias": "viewerIsReviewer",
   "args": null,
   "kind": "ScalarField",
   "name": "viewerCanReview",
   "storageKey": null
 },
-v10 = {
+v11 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "lastName",
   "storageKey": null
 },
-v11 = {
+v12 = {
   "kind": "InlineFragment",
   "selections": [
     (v1/*: any*/),
@@ -168,12 +184,12 @@ v11 = {
       "storageKey": null
     },
     (v2/*: any*/),
-    (v10/*: any*/)
+    (v11/*: any*/)
   ],
   "type": "UserType",
   "abstractKey": null
 },
-v12 = {
+v13 = {
   "kind": "InlineFragment",
   "selections": [
     (v1/*: any*/)
@@ -181,12 +197,12 @@ v12 = {
   "type": "InternalGroupType",
   "abstractKey": null
 },
-v13 = [
+v14 = [
   (v1/*: any*/),
   (v2/*: any*/),
-  (v10/*: any*/)
+  (v11/*: any*/)
 ],
-v14 = {
+v15 = {
   "alias": null,
   "args": null,
   "concreteType": "ReviewerType",
@@ -202,13 +218,13 @@ v14 = {
       "kind": "LinkedField",
       "name": "reviewer",
       "plural": false,
-      "selections": (v13/*: any*/),
+      "selections": (v14/*: any*/),
       "storageKey": null
     }
   ],
   "storageKey": null
 },
-v15 = {
+v16 = {
   "alias": null,
   "args": null,
   "concreteType": "InternalReviewType",
@@ -248,28 +264,28 @@ v15 = {
   ],
   "storageKey": null
 },
-v16 = {
+v17 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "title",
   "storageKey": null
 },
-v17 = {
+v18 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "endDate",
   "storageKey": null
 },
-v18 = {
+v19 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "isGroup",
   "storageKey": null
 },
-v19 = {
+v20 = {
   "alias": null,
   "args": null,
   "concreteType": "InternalGroupType",
@@ -282,14 +298,61 @@ v19 = {
   ],
   "storageKey": null
 },
-v20 = {
+v21 = {
   "alias": null,
   "args": null,
   "concreteType": "UserType",
   "kind": "LinkedField",
   "name": "user",
   "plural": false,
-  "selections": (v13/*: any*/),
+  "selections": (v14/*: any*/),
+  "storageKey": null
+},
+v22 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "Comment",
+  "kind": "LinkedField",
+  "name": "comments",
+  "plural": true,
+  "selections": [
+    (v1/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "body",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "createdAt",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "updatedAt",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "githubUserId",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "githubUsername",
+      "storageKey": null
+    }
+  ],
   "storageKey": null
 };
 return {
@@ -309,9 +372,10 @@ return {
         "selections": [
           (v1/*: any*/),
           (v2/*: any*/),
+          (v3/*: any*/),
           {
             "alias": null,
-            "args": (v3/*: any*/),
+            "args": (v4/*: any*/),
             "concreteType": "CourseType",
             "kind": "LinkedField",
             "name": "course",
@@ -320,18 +384,18 @@ return {
               (v1/*: any*/),
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v5/*: any*/),
                 "concreteType": "SubmissionType",
                 "kind": "LinkedField",
                 "name": "submission",
                 "plural": false,
                 "selections": [
                   (v1/*: any*/),
-                  (v5/*: any*/),
                   (v6/*: any*/),
                   (v7/*: any*/),
                   (v8/*: any*/),
                   (v9/*: any*/),
+                  (v10/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -340,13 +404,13 @@ return {
                     "name": "submitter",
                     "plural": false,
                     "selections": [
-                      (v11/*: any*/),
-                      (v12/*: any*/)
+                      (v12/*: any*/),
+                      (v13/*: any*/)
                     ],
                     "storageKey": null
                   },
-                  (v14/*: any*/),
                   (v15/*: any*/),
+                  (v16/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -356,9 +420,9 @@ return {
                     "plural": false,
                     "selections": [
                       (v1/*: any*/),
-                      (v16/*: any*/),
                       (v17/*: any*/),
                       (v18/*: any*/),
+                      (v19/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -367,14 +431,15 @@ return {
                         "name": "groupParticipants",
                         "plural": true,
                         "selections": [
-                          (v19/*: any*/),
-                          (v20/*: any*/)
+                          (v20/*: any*/),
+                          (v21/*: any*/)
                         ],
                         "storageKey": null
                       }
                     ],
                     "storageKey": null
-                  }
+                  },
+                  (v22/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -404,9 +469,10 @@ return {
         "selections": [
           (v1/*: any*/),
           (v2/*: any*/),
+          (v3/*: any*/),
           {
             "alias": null,
-            "args": (v3/*: any*/),
+            "args": (v4/*: any*/),
             "concreteType": "CourseType",
             "kind": "LinkedField",
             "name": "course",
@@ -415,18 +481,18 @@ return {
               (v1/*: any*/),
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v5/*: any*/),
                 "concreteType": "SubmissionType",
                 "kind": "LinkedField",
                 "name": "submission",
                 "plural": false,
                 "selections": [
                   (v1/*: any*/),
-                  (v5/*: any*/),
                   (v6/*: any*/),
                   (v7/*: any*/),
                   (v8/*: any*/),
                   (v9/*: any*/),
+                  (v10/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -442,13 +508,13 @@ return {
                         "name": "__typename",
                         "storageKey": null
                       },
-                      (v11/*: any*/),
-                      (v12/*: any*/)
+                      (v12/*: any*/),
+                      (v13/*: any*/)
                     ],
                     "storageKey": null
                   },
-                  (v14/*: any*/),
                   (v15/*: any*/),
+                  (v16/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -458,9 +524,9 @@ return {
                     "plural": false,
                     "selections": [
                       (v1/*: any*/),
-                      (v16/*: any*/),
                       (v17/*: any*/),
                       (v18/*: any*/),
+                      (v19/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -469,15 +535,16 @@ return {
                         "name": "groupParticipants",
                         "plural": true,
                         "selections": [
-                          (v19/*: any*/),
                           (v20/*: any*/),
+                          (v21/*: any*/),
                           (v1/*: any*/)
                         ],
                         "storageKey": null
                       }
                     ],
                     "storageKey": null
-                  }
+                  },
+                  (v22/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -490,7 +557,7 @@ return {
     ]
   },
   "params": {
-    "cacheID": "c8ba73547d0673594e889d822a4ae364",
+    "cacheID": "1ec7c935db128a154cca4af5631f15ca",
     "id": null,
     "metadata": {},
     "name": "SubmissionQuery",
