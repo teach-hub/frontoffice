@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<50014847aaad6933435d2a452b9a85a1>>
+ * @generated SignedSource<<b6cf734bf66db865058a59cf41ad9ff4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -43,7 +43,6 @@ export type SubmissionQuery$data = {
           readonly id: string | null;
           readonly updatedAt: string | null;
         }>;
-        readonly description: string | null;
         readonly id: string;
         readonly pullRequestUrl: string;
         readonly review: {
@@ -134,45 +133,38 @@ v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "description",
+  "name": "submittedAt",
   "storageKey": null
 },
 v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "submittedAt",
+  "name": "submittedAgainAt",
   "storageKey": null
 },
 v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "submittedAgainAt",
-  "storageKey": null
-},
-v9 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
   "name": "pullRequestUrl",
   "storageKey": null
 },
-v10 = {
+v9 = {
   "alias": "viewerIsReviewer",
   "args": null,
   "kind": "ScalarField",
   "name": "viewerCanReview",
   "storageKey": null
 },
-v11 = {
+v10 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "lastName",
   "storageKey": null
 },
-v12 = {
+v11 = {
   "kind": "InlineFragment",
   "selections": [
     (v1/*: any*/),
@@ -184,12 +176,12 @@ v12 = {
       "storageKey": null
     },
     (v2/*: any*/),
-    (v11/*: any*/)
+    (v10/*: any*/)
   ],
   "type": "UserType",
   "abstractKey": null
 },
-v13 = {
+v12 = {
   "kind": "InlineFragment",
   "selections": [
     (v1/*: any*/)
@@ -197,12 +189,12 @@ v13 = {
   "type": "InternalGroupType",
   "abstractKey": null
 },
-v14 = [
+v13 = [
   (v1/*: any*/),
   (v2/*: any*/),
-  (v11/*: any*/)
+  (v10/*: any*/)
 ],
-v15 = {
+v14 = {
   "alias": null,
   "args": null,
   "concreteType": "ReviewerType",
@@ -218,13 +210,13 @@ v15 = {
       "kind": "LinkedField",
       "name": "reviewer",
       "plural": false,
-      "selections": (v14/*: any*/),
+      "selections": (v13/*: any*/),
       "storageKey": null
     }
   ],
   "storageKey": null
 },
-v16 = {
+v15 = {
   "alias": null,
   "args": null,
   "concreteType": "InternalReviewType",
@@ -264,28 +256,28 @@ v16 = {
   ],
   "storageKey": null
 },
-v17 = {
+v16 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "title",
   "storageKey": null
 },
-v18 = {
+v17 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "endDate",
   "storageKey": null
 },
-v19 = {
+v18 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "isGroup",
   "storageKey": null
 },
-v20 = {
+v19 = {
   "alias": null,
   "args": null,
   "concreteType": "InternalGroupType",
@@ -298,17 +290,17 @@ v20 = {
   ],
   "storageKey": null
 },
-v21 = {
+v20 = {
   "alias": null,
   "args": null,
   "concreteType": "UserType",
   "kind": "LinkedField",
   "name": "user",
   "plural": false,
-  "selections": (v14/*: any*/),
+  "selections": (v13/*: any*/),
   "storageKey": null
 },
-v22 = {
+v21 = {
   "alias": null,
   "args": null,
   "concreteType": "Comment",
@@ -395,7 +387,6 @@ return {
                   (v7/*: any*/),
                   (v8/*: any*/),
                   (v9/*: any*/),
-                  (v10/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -404,13 +395,13 @@ return {
                     "name": "submitter",
                     "plural": false,
                     "selections": [
-                      (v12/*: any*/),
-                      (v13/*: any*/)
+                      (v11/*: any*/),
+                      (v12/*: any*/)
                     ],
                     "storageKey": null
                   },
+                  (v14/*: any*/),
                   (v15/*: any*/),
-                  (v16/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -420,9 +411,9 @@ return {
                     "plural": false,
                     "selections": [
                       (v1/*: any*/),
+                      (v16/*: any*/),
                       (v17/*: any*/),
                       (v18/*: any*/),
-                      (v19/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -431,15 +422,15 @@ return {
                         "name": "groupParticipants",
                         "plural": true,
                         "selections": [
-                          (v20/*: any*/),
-                          (v21/*: any*/)
+                          (v19/*: any*/),
+                          (v20/*: any*/)
                         ],
                         "storageKey": null
                       }
                     ],
                     "storageKey": null
                   },
-                  (v22/*: any*/)
+                  (v21/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -492,7 +483,6 @@ return {
                   (v7/*: any*/),
                   (v8/*: any*/),
                   (v9/*: any*/),
-                  (v10/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -508,13 +498,13 @@ return {
                         "name": "__typename",
                         "storageKey": null
                       },
-                      (v12/*: any*/),
-                      (v13/*: any*/)
+                      (v11/*: any*/),
+                      (v12/*: any*/)
                     ],
                     "storageKey": null
                   },
+                  (v14/*: any*/),
                   (v15/*: any*/),
-                  (v16/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -524,9 +514,9 @@ return {
                     "plural": false,
                     "selections": [
                       (v1/*: any*/),
+                      (v16/*: any*/),
                       (v17/*: any*/),
                       (v18/*: any*/),
-                      (v19/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -535,8 +525,8 @@ return {
                         "name": "groupParticipants",
                         "plural": true,
                         "selections": [
+                          (v19/*: any*/),
                           (v20/*: any*/),
-                          (v21/*: any*/),
                           (v1/*: any*/)
                         ],
                         "storageKey": null
@@ -544,7 +534,7 @@ return {
                     ],
                     "storageKey": null
                   },
-                  (v22/*: any*/)
+                  (v21/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -557,16 +547,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "1ec7c935db128a154cca4af5631f15ca",
+    "cacheID": "6bfe2c1be042e985338c40709651176d",
     "id": null,
     "metadata": {},
     "name": "SubmissionQuery",
     "operationKind": "query",
-    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      submission(id: $submissionId) {\n        id\n        description\n        submittedAt\n        submittedAgainAt\n        pullRequestUrl\n        viewerIsReviewer: viewerCanReview\n        submitter {\n          __typename\n          ... on UserType {\n            id\n            file\n            name\n            lastName\n          }\n          ... on InternalGroupType {\n            id\n          }\n        }\n        reviewer {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n        review {\n          id\n          revisionRequested\n          grade\n          reviewedAt\n          reviewedAgainAt\n        }\n        assignment {\n          id\n          title\n          endDate\n          isGroup\n          groupParticipants {\n            group {\n              id\n              name\n            }\n            user {\n              id\n              name\n              lastName\n            }\n            id\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    githubId\n    course(id: $courseId) {\n      id\n      submission(id: $submissionId) {\n        id\n        submittedAt\n        submittedAgainAt\n        pullRequestUrl\n        viewerIsReviewer: viewerCanReview\n        submitter {\n          __typename\n          ... on UserType {\n            id\n            file\n            name\n            lastName\n          }\n          ... on InternalGroupType {\n            id\n          }\n        }\n        reviewer {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n        review {\n          id\n          revisionRequested\n          grade\n          reviewedAt\n          reviewedAgainAt\n        }\n        assignment {\n          id\n          title\n          endDate\n          isGroup\n          groupParticipants {\n            group {\n              id\n              name\n            }\n            user {\n              id\n              name\n              lastName\n            }\n            id\n          }\n        }\n        comments {\n          id\n          body\n          createdAt\n          updatedAt\n          githubUserId\n          githubUsername\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "a4e68467453e714391cd50fdc7d5d542";
+(node as any).hash = "4de4f9fac2f26edbd959fe0592576147";
 
 export default node;

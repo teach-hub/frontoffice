@@ -10,7 +10,6 @@ export default graphql`
         id
         submission(id: $submissionId) {
           id
-          description
           submittedAt
           submittedAgainAt
           pullRequestUrl

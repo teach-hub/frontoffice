@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3ab53b15292c41162a6c89d407585dcb>>
+ * @generated SignedSource<<d0ed5ee5b9e9f4b73404e37859f4ce4f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,7 +12,6 @@ import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type CreateSubmissionMutation$variables = {
   assignmentId: string;
   courseId: string;
-  description?: string | null;
   pullRequestUrl: string;
 };
 export type CreateSubmissionMutation$data = {
@@ -41,14 +40,9 @@ v1 = {
 v2 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "description"
-},
-v3 = {
-  "defaultValue": null,
-  "kind": "LocalArgument",
   "name": "pullRequestUrl"
 },
-v4 = [
+v3 = [
   {
     "alias": null,
     "args": [
@@ -61,11 +55,6 @@ v4 = [
         "kind": "Variable",
         "name": "courseId",
         "variableName": "courseId"
-      },
-      {
-        "kind": "Variable",
-        "name": "description",
-        "variableName": "description"
       },
       {
         "kind": "Variable",
@@ -108,13 +97,12 @@ return {
     "argumentDefinitions": [
       (v0/*: any*/),
       (v1/*: any*/),
-      (v2/*: any*/),
-      (v3/*: any*/)
+      (v2/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
     "name": "CreateSubmissionMutation",
-    "selections": (v4/*: any*/),
+    "selections": (v3/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
@@ -123,24 +111,23 @@ return {
     "argumentDefinitions": [
       (v1/*: any*/),
       (v0/*: any*/),
-      (v3/*: any*/),
       (v2/*: any*/)
     ],
     "kind": "Operation",
     "name": "CreateSubmissionMutation",
-    "selections": (v4/*: any*/)
+    "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "c5a398824f49e4221ffe928094337caf",
+    "cacheID": "8bdbafd440af9c86338386d110193a20",
     "id": null,
     "metadata": {},
     "name": "CreateSubmissionMutation",
     "operationKind": "mutation",
-    "text": "mutation CreateSubmissionMutation(\n  $courseId: ID!\n  $assignmentId: ID!\n  $pullRequestUrl: String!\n  $description: String\n) {\n  createSubmission(courseId: $courseId, assignmentId: $assignmentId, pullRequestUrl: $pullRequestUrl, description: $description) {\n    id\n    submittedAt\n    submittedAgainAt\n  }\n}\n"
+    "text": "mutation CreateSubmissionMutation(\n  $courseId: ID!\n  $assignmentId: ID!\n  $pullRequestUrl: String!\n) {\n  createSubmission(courseId: $courseId, assignmentId: $assignmentId, pullRequestUrl: $pullRequestUrl) {\n    id\n    submittedAt\n    submittedAgainAt\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "8b475be6342e1b788777a0513ebceb97";
+(node as any).hash = "f01b8cae47e89abfc99a43cf5a5602bf";
 
 export default node;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e59790e901c50d15c62e506a5966c0b1>>
+ * @generated SignedSource<<e5a5dd5035d72ba2053a289f5afbd31a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -26,7 +26,6 @@ export type CourseInfoQuery$data = {
         }>;
         readonly submissions: ReadonlyArray<{
           readonly assignmentId: string;
-          readonly description: string | null;
           readonly id: string;
           readonly pullRequestUrl: string;
           readonly review: {
@@ -163,13 +162,6 @@ v3 = [
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
-                    "name": "description",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
                     "name": "submittedAt",
                     "storageKey": null
                   },
@@ -287,16 +279,16 @@ return {
     "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "43ba55bd2afc6044fbf4cf59571fb568",
+    "cacheID": "49dc71d7cdbe0d412bd79dbd100f4e9c",
     "id": null,
     "metadata": {},
     "name": "CourseInfoQuery",
     "operationKind": "query",
-    "text": "query CourseInfoQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      organization\n      studentsCount\n      teachersCount\n      assignments {\n        id\n        title\n        isGroup\n        submissions {\n          id\n          description\n          submittedAt\n          pullRequestUrl\n          assignmentId\n          review {\n            id\n            revisionRequested\n            grade\n          }\n        }\n        nonExistentSubmissions {\n          id\n        }\n      }\n      subject {\n        id\n        name\n      }\n    }\n    availableOrganizations {\n      names\n    }\n  }\n}\n"
+    "text": "query CourseInfoQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      organization\n      studentsCount\n      teachersCount\n      assignments {\n        id\n        title\n        isGroup\n        submissions {\n          id\n          submittedAt\n          pullRequestUrl\n          assignmentId\n          review {\n            id\n            revisionRequested\n            grade\n          }\n        }\n        nonExistentSubmissions {\n          id\n        }\n      }\n      subject {\n        id\n        name\n      }\n    }\n    availableOrganizations {\n      names\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "2403c5c125fb65ab09dcef0486de02ab";
+(node as any).hash = "e2e2e8393ff71f4314eac07c55a45a00";
 
 export default node;
