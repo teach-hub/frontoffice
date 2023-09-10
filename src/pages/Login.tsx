@@ -104,15 +104,16 @@ const LoginPage = (props: LoginPageProps) => {
     commitLoginMutation({
       variables: { code },
       onCompleted: (response: LoginMutation$data, errors) => {
-        if (!errors?.length || response.login?.token) {
-          const { token, userRegistered = false } = response.login || {};
+        if (!errors?.length) {
+          const { token, shouldPerformRegistration } = response.login || {};
 
           // Set token either if user is logged in, or sign up is required.
           if (token) {
+            console.log('Setting new token value.');
             storeSetValue('token', token);
           }
 
-          if (userRegistered) {
+          if (!shouldPerformRegistration) {
             setIsLoggingIn(false);
 
             const savedRedirectTo = storeGetValue('redirectTo');
@@ -203,19 +204,15 @@ const RegisterForm = ({ onClose }: Props): JSX.Element => {
         file: variables.file ? String(variables.file) : variables.file,
       },
       onCompleted: (response: RegisterUserMutation$data, errors) => {
-        const token = response.registerUser?.token;
+        const name = response.registerUser?.name;
         if (!errors?.length) {
-          token && storeSetValue('token', token);
-          onClose();
-
           const redirectTo = storeGetValue('redirectTo');
           navigate(redirectTo ? redirectTo : '/');
           toast({
-            title: 'Usuario registrado!',
+            title: `Bienvenido ${name}!`,
             status: 'success',
           });
         } else {
-          storeRemoveValue('token'); // If register failed remove token
           onClose();
 
           toast({

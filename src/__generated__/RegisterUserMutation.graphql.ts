@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<33dd5732bbc71d912dc14d41814a242b>>
+ * @generated SignedSource<<f78092a40da31c80e13e81e98b9c871f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,8 +17,11 @@ export type RegisterUserMutation$variables = {
 };
 export type RegisterUserMutation$data = {
   readonly registerUser: {
-    readonly token: string | null;
-  } | null;
+    readonly file: string;
+    readonly id: string;
+    readonly lastName: string;
+    readonly name: string;
+  };
 };
 export type RegisterUserMutation = {
   response: RegisterUserMutation$data;
@@ -71,7 +74,7 @@ v4 = [
         "variableName": "notificationEmail"
       }
     ],
-    "concreteType": "RegisterType",
+    "concreteType": "UserType",
     "kind": "LinkedField",
     "name": "registerUser",
     "plural": false,
@@ -80,7 +83,28 @@ v4 = [
         "alias": null,
         "args": null,
         "kind": "ScalarField",
-        "name": "token",
+        "name": "id",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "name",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "lastName",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "file",
         "storageKey": null
       }
     ],
@@ -115,16 +139,16 @@ return {
     "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "a813a8474f7a9503a4bb7aa31c533221",
+    "cacheID": "0cbb5123f8870056870a24eed422b097",
     "id": null,
     "metadata": {},
     "name": "RegisterUserMutation",
     "operationKind": "mutation",
-    "text": "mutation RegisterUserMutation(\n  $name: String\n  $lastName: String\n  $file: String\n  $notificationEmail: String\n) {\n  registerUser(name: $name, lastName: $lastName, file: $file, notificationEmail: $notificationEmail) {\n    token\n  }\n}\n"
+    "text": "mutation RegisterUserMutation(\n  $name: String\n  $lastName: String\n  $file: String\n  $notificationEmail: String\n) {\n  registerUser(name: $name, lastName: $lastName, file: $file, notificationEmail: $notificationEmail) {\n    id\n    name\n    lastName\n    file\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "2fccae2336fec03819563b01685848e5";
+(node as any).hash = "f1e3af6f138f3c83facf91fde696f94f";
 
 export default node;

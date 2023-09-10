@@ -13,7 +13,10 @@ export default graphql`
       file: $file
       notificationEmail: $notificationEmail
     ) {
-      token
+      id
+      name
+      lastName
+      file
     }
   }
 `;
