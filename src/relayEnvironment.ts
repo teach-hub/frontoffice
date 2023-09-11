@@ -1,6 +1,15 @@
 import { Environment, Network, RecordSource, Store } from 'relay-runtime';
 
+import { storeRemoveValue, storeGetValue } from 'hooks/useLocalStorage';
+
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:4000';
+
+const isUnauthorizedResponse = (response: { errors: { message: string }[] }) => {
+  if ('errors' in response) {
+    const errors = response['errors'] as { message: string }[];
+    return errors.some(error => error.message.includes('UNAUTHORIZED_ERROR'));
+  }
+};
 
 const fetchQuery = async (operation: { text: string | null }, variables: unknown) => {
   const url = `${BACKEND_URL}/graphql`;
@@ -17,20 +26,21 @@ const fetchQuery = async (operation: { text: string | null }, variables: unknown
     Accept: '*/*',
   };
 
-  const token = localStorage.getItem('token')
-    ? JSON.parse(localStorage.getItem('token') as string)
-    : null;
-  if (token) headers.Authorization = `Bearer ${token}`;
+  const token = storeGetValue('token') ? storeGetValue('token') : null;
 
-  return fetch(url, {
-    method: 'POST',
-    body,
-    headers: {
-      ...headers,
-    },
-  }).then(response => {
-    return response.json();
-  });
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return fetch(url, { method: 'POST', body, headers })
+    .then(response => response.json())
+    .then(response => {
+      if (isUnauthorizedResponse(response)) {
+        storeRemoveValue('token');
+        window.location.href = '/login';
+      }
+      return response;
+    });
 };
 
 const source = new RecordSource();
