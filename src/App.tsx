@@ -21,7 +21,8 @@ import CourseAssignmentsPage from 'pages/courses/assignments';
 import LoginPage from 'pages/Login';
 import AssignmentPage from 'pages/courses/assignments/AssignmentDashboard';
 import InvitePage from 'pages/Invite';
-import CreateOrUpdateAssignmentsPage from 'pages/courses/assignments/CreateOrUpdateAssingments';
+import CreateAssignmentPage from 'pages/courses/assignments/create';
+import UpdateAssignmentPage from 'pages/courses/assignments/update';
 import CreateRepository, { RepositoryType } from 'pages/courses/CreateRepository';
 import SubmissionsPage from 'pages/courses/assignments/submissions';
 import SubmissionPage from 'pages/courses/assignments/submissions/submission';
@@ -96,12 +97,12 @@ const App = () => {
             <Route path="my-groups" element={<MyGroups />} />
             <Route path="assignments">
               <Route index element={<CourseAssignmentsPage />} />
-              <Route path="create" element={<CreateOrUpdateAssignmentsPage />} />
+              <Route path="create" element={<CreateAssignmentPage />} />
               <Route path=":assignmentId">
                 <Route index element={<AssignmentPage />} />
                 <Route path="assign-reviewers" element={<AssignReviewersPage />} />
                 <Route path="groups" element={<GroupsPage />} />
-                <Route path="edit" element={<CreateOrUpdateAssignmentsPage />} />
+                <Route path="edit" element={<UpdateAssignmentPage />} />
                 <Route path="add-submission" element={<AddSubmissionPage />} />
                 <Route path="new-repo">
                   <Route
