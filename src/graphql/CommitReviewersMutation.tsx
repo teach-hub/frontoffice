@@ -4,22 +4,25 @@ export default graphql`
   mutation CommitReviewersMutation($input: AssignReviewersInputType!, $courseId: ID!) {
     assignReviewers(input: $input, courseId: $courseId) {
       id
-      reviewer {
+      reviewers {
         id
-        name
-        lastName
-      }
-      reviewee {
-        __typename
-        ... on InternalGroupType {
-          id
-          groupName: name
-        }
-        ... on UserType {
+        reviewer {
           id
           name
           lastName
-          file
+        }
+        reviewee {
+          __typename
+          ... on InternalGroupType {
+            id
+            groupName: name
+          }
+          ... on UserType {
+            id
+            name
+            lastName
+            file
+          }
         }
       }
     }

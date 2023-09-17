@@ -252,7 +252,7 @@ function ReviewersPageContainer({
 
     setPreviewReviewers(previewReviewers);
     setReviewers(reviewers);
-  }, [viewer]);
+  }, [courseId, assignmentId]);
 
   const onCommit = (
     toCommitData: readonly { reviewer: { id: string }; reviewee: { id: string } }[]
@@ -273,8 +273,9 @@ function ReviewersPageContainer({
           console.log('Error while commiting reviewers', errors);
           toast({ title: 'No pudimos asignar los correctores', status: 'error' });
         } else {
-          setReviewers(response.assignReviewers);
+          console.log('Reviewers set!');
           setPreviewReviewers([]);
+          setReviewers(response.assignReviewers.reviewers);
           toast({ title: 'Correctores asignados', status: 'success' });
         }
         setIsLoading(false);

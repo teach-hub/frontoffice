@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3c1a75f8125d1e1dec4c28ba0b7892f0>>
+ * @generated SignedSource<<b020585d4c9b1ff54607400f229ff9ab>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -22,29 +22,32 @@ export type CommitReviewersMutation$variables = {
   input: AssignReviewersInputType;
 };
 export type CommitReviewersMutation$data = {
-  readonly assignReviewers: ReadonlyArray<{
+  readonly assignReviewers: {
     readonly id: string;
-    readonly reviewee: {
-      readonly __typename: "InternalGroupType";
-      readonly groupName: string | null;
+    readonly reviewers: ReadonlyArray<{
       readonly id: string;
-    } | {
-      readonly __typename: "UserType";
-      readonly file: string;
-      readonly id: string;
-      readonly lastName: string;
-      readonly name: string;
-    } | {
-      // This will never be '%other', but we need some
-      // value in case none of the concrete values match.
-      readonly __typename: "%other";
-    };
-    readonly reviewer: {
-      readonly id: string;
-      readonly lastName: string;
-      readonly name: string;
-    };
-  }>;
+      readonly reviewee: {
+        readonly __typename: "InternalGroupType";
+        readonly groupName: string | null;
+        readonly id: string;
+      } | {
+        readonly __typename: "UserType";
+        readonly file: string;
+        readonly id: string;
+        readonly lastName: string;
+        readonly name: string;
+      } | {
+        // This will never be '%other', but we need some
+        // value in case none of the concrete values match.
+        readonly __typename: "%other";
+      };
+      readonly reviewer: {
+        readonly id: string;
+        readonly lastName: string;
+        readonly name: string;
+      };
+    }>;
+  };
 };
 export type CommitReviewersMutation = {
   response: CommitReviewersMutation$data;
@@ -98,72 +101,84 @@ v5 = [
         "variableName": "input"
       }
     ],
-    "concreteType": "ReviewerType",
+    "concreteType": "AssignmentType",
     "kind": "LinkedField",
     "name": "assignReviewers",
-    "plural": true,
+    "plural": false,
     "selections": [
       (v2/*: any*/),
       {
         "alias": null,
         "args": null,
-        "concreteType": "UserType",
+        "concreteType": "ReviewerType",
         "kind": "LinkedField",
-        "name": "reviewer",
-        "plural": false,
+        "name": "reviewers",
+        "plural": true,
         "selections": [
           (v2/*: any*/),
-          (v3/*: any*/),
-          (v4/*: any*/)
-        ],
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": null,
-        "kind": "LinkedField",
-        "name": "reviewee",
-        "plural": false,
-        "selections": [
           {
             "alias": null,
             "args": null,
-            "kind": "ScalarField",
-            "name": "__typename",
-            "storageKey": null
-          },
-          {
-            "kind": "InlineFragment",
-            "selections": [
-              (v2/*: any*/),
-              {
-                "alias": "groupName",
-                "args": null,
-                "kind": "ScalarField",
-                "name": "name",
-                "storageKey": null
-              }
-            ],
-            "type": "InternalGroupType",
-            "abstractKey": null
-          },
-          {
-            "kind": "InlineFragment",
+            "concreteType": "UserType",
+            "kind": "LinkedField",
+            "name": "reviewer",
+            "plural": false,
             "selections": [
               (v2/*: any*/),
               (v3/*: any*/),
-              (v4/*: any*/),
+              (v4/*: any*/)
+            ],
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": null,
+            "kind": "LinkedField",
+            "name": "reviewee",
+            "plural": false,
+            "selections": [
               {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "file",
+                "name": "__typename",
                 "storageKey": null
+              },
+              {
+                "kind": "InlineFragment",
+                "selections": [
+                  (v2/*: any*/),
+                  {
+                    "alias": "groupName",
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "name",
+                    "storageKey": null
+                  }
+                ],
+                "type": "InternalGroupType",
+                "abstractKey": null
+              },
+              {
+                "kind": "InlineFragment",
+                "selections": [
+                  (v2/*: any*/),
+                  (v3/*: any*/),
+                  (v4/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "file",
+                    "storageKey": null
+                  }
+                ],
+                "type": "UserType",
+                "abstractKey": null
               }
             ],
-            "type": "UserType",
-            "abstractKey": null
+            "storageKey": null
           }
         ],
         "storageKey": null
@@ -196,16 +211,16 @@ return {
     "selections": (v5/*: any*/)
   },
   "params": {
-    "cacheID": "6a96c4b8e7e9b9ea77b99d0e735baf3e",
+    "cacheID": "47fc66a9bac719efc6b63fd62c564ca9",
     "id": null,
     "metadata": {},
     "name": "CommitReviewersMutation",
     "operationKind": "mutation",
-    "text": "mutation CommitReviewersMutation(\n  $input: AssignReviewersInputType!\n  $courseId: ID!\n) {\n  assignReviewers(input: $input, courseId: $courseId) {\n    id\n    reviewer {\n      id\n      name\n      lastName\n    }\n    reviewee {\n      __typename\n      ... on InternalGroupType {\n        id\n        groupName: name\n      }\n      ... on UserType {\n        id\n        name\n        lastName\n        file\n      }\n    }\n  }\n}\n"
+    "text": "mutation CommitReviewersMutation(\n  $input: AssignReviewersInputType!\n  $courseId: ID!\n) {\n  assignReviewers(input: $input, courseId: $courseId) {\n    id\n    reviewers {\n      id\n      reviewer {\n        id\n        name\n        lastName\n      }\n      reviewee {\n        __typename\n        ... on InternalGroupType {\n          id\n          groupName: name\n        }\n        ... on UserType {\n          id\n          name\n          lastName\n          file\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "dc70fc94ab6f1b99fc1699ad5ac059b7";
+(node as any).hash = "91246d4864f17542296a3d53eef07758";
 
 export default node;

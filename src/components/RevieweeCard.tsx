@@ -34,8 +34,8 @@ const UserRevieweeCard = ({
 const GroupRevieweeCard = ({ revieweeInfo }: GroupRevieweeCardProps) => (
   <_Card>
     <AvatarGroup max={2} size="sm" textColor="black">
-      {revieweeInfo.participants.map(reviewee => (
-        <Avatar name={`${reviewee.name}`} />
+      {revieweeInfo.participants.map((reviewee, i) => (
+        <Avatar key={i} name={`${reviewee.name}`} />
       ))}
     </AvatarGroup>
     <Text>
