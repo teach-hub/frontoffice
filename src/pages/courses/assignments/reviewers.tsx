@@ -260,6 +260,10 @@ function ReviewersPageContainer({
     commitMutation({
       variables: {
         courseId,
+        filters: {
+          consecutive: filters.consecutives,
+          teachersUserIds: filters.teacherIds,
+        },
         input: {
           assignmentId,
           reviewers: toCommitData.map(x => ({
