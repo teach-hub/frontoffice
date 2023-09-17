@@ -63,7 +63,19 @@ import { UpdateReviewMutation as UpdateReviewMutationType } from '__generated__/
 import { SubmitSubmissionAgainMutation as SubmitSubmissionMutationType } from '__generated__/SubmitSubmissionAgainMutation.graphql';
 
 import type { Nullable } from 'types';
-import type { SubmissionQuery } from '__generated__/SubmissionQuery.graphql';
+import type {
+  SubmissionQuery,
+  SubmissionQuery$data,
+} from '__generated__/SubmissionQuery.graphql';
+import ReactMarkdown from 'react-markdown';
+import Divider from 'components/Divider';
+import CommentIcon from 'icons/CommentIcon';
+
+type CommentType = NonNullable<
+  NonNullable<
+    NonNullable<NonNullable<SubmissionQuery$data['viewer']>['course']>['submission']
+  >['comments'][number]
+>;
 
 const CarrouselNavigationControls = ({ submissionId }: { submissionId: string }) => {
   const { submissionIds } = useSubmissionContext();
@@ -130,6 +142,12 @@ const SubmissionPage = ({
     onClose: onCloseReviewModal,
   } = useDisclosure();
 
+  const {
+    isOpen: isOpenCommentsModal,
+    onOpen: onOpenCommentsModal,
+    onClose: onCloseCommentsModal,
+  } = useDisclosure();
+
   if (!data.viewer || !data.viewer.course) {
     return null;
   }
@@ -141,7 +159,7 @@ const SubmissionPage = ({
     return null;
   }
 
-  const { assignment, submitter, reviewer, review } = submission;
+  const { assignment, submitter, reviewer, review, comments } = submission;
 
   if (!assignment) {
     return null;
@@ -393,18 +411,29 @@ const SubmissionPage = ({
             <SubmissionStates submission={submission} review={review} />
           </ListItem>
         </List>
-        <Stack>
-          <Heading fontSize={'global.body.fontSize'}>
-            Comentarios al realizar la entrega
-          </Heading>
-          <Text w={'40vw'}>{submission.description ? submission.description : '-'}</Text>
-        </Stack>
+        {/* Show comments button if not empty */}
+        {comments.length !== 0 && (
+          <ButtonWithIcon
+            onClick={onOpenCommentsModal}
+            text={'Ver comentarios del PR'}
+            icon={CommentIcon}
+            variant={'ghost'}
+            borderWidth={'1px'}
+            borderColor={'teachHub.black'}
+          />
+        )}
       </Stack>
       <ReviewModal
         onSave={handleReviewChange}
         onClose={onCloseReviewModal}
         isOpen={isOpenReviewModal}
         isSecondTimeReview={!!review}
+      />
+      <CommentsModal
+        onClose={onCloseCommentsModal}
+        isOpen={isOpenCommentsModal}
+        comments={comments as CommentType[]}
+        viewerGithubUserId={data.viewer?.githubId}
       />
     </PageDataContainer>
   );
@@ -475,6 +504,80 @@ const ReviewModal = ({
         >
           Requiere reentrega
         </Checkbox>
+      </Stack>
+    </Modal>
+  );
+};
+
+const CommentsModal = ({
+  onClose,
+  isOpen,
+  comments,
+  viewerGithubUserId,
+}: {
+  onClose: () => void;
+  isOpen: boolean;
+  comments: CommentType[];
+  viewerGithubUserId: Nullable<string>;
+}) => {
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      isCentered
+      headerText={'Comentarios del Pull Request'}
+      contentProps={{
+        maxHeight: '80vh',
+        overflowY: 'auto', // Make modal scrollable
+        minWidth: '60vw',
+        maxWidth: '60vw',
+      }}
+    >
+      <Stack gap={'20px'}>
+        {comments.map(comment => {
+          const currentViewerComment = comment.githubUserId === viewerGithubUserId;
+
+          return (
+            comment.body && (
+              <Flex
+                width={'100%'}
+                justifyContent={!currentViewerComment ? 'flex-start' : 'flex-end'} // If own comment, on right, otherwise on left
+              >
+                <Flex
+                  bg={
+                    currentViewerComment
+                      ? 'teachHub.chatOwnBackground'
+                      : 'teachHub.chatOtherBackground'
+                  }
+                  padding={'30px'}
+                  borderRadius={'20'}
+                  maxWidth={'90%'}
+                >
+                  <Stack direction={'column'} width={'100%'} justifyContent={'flex-end'}>
+                    <Text>
+                      <Text
+                        color={
+                          currentViewerComment
+                            ? 'teachHub.chatOwnText'
+                            : 'teachHub.chatOtherText'
+                        }
+                        fontWeight={'bold'}
+                        display="inline" // Text within another text
+                      >
+                        {comment.githubUsername}
+                      </Text>
+                      {comment.createdAt
+                        ? ` (${formatAsSimpleDateTime(comment.createdAt)})`
+                        : ''}
+                    </Text>
+                    <Divider orientation={'horizontal'} borderColor={'teachHub.black'} />
+                    <ReactMarkdown>{comment.body}</ReactMarkdown>
+                  </Stack>
+                </Flex>
+              </Flex>
+            )
+          );
+        })}
       </Stack>
     </Modal>
   );

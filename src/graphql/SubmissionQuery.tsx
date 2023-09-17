@@ -5,11 +5,11 @@ export default graphql`
     viewer {
       id
       name
+      githubId
       course(id: $courseId) {
         id
         submission(id: $submissionId) {
           id
-          description
           submittedAt
           submittedAgainAt
           pullRequestUrl
@@ -56,6 +56,14 @@ export default graphql`
                 lastName
               }
             }
+          }
+          comments {
+            id
+            body
+            createdAt
+            updatedAt
+            githubUserId
+            githubUsername
           }
         }
       }

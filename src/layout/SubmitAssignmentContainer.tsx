@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useMutation, useLazyLoadQuery } from 'react-relay';
+import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { useNavigate } from 'react-router-dom';
 
 import AddSubmissionQueryDef from 'graphql/AddSubmissionQuery';
@@ -8,7 +8,6 @@ import CreateSubmissionMutation from 'graphql/CreateSubmissionMutation';
 import Heading from 'components/Heading';
 import Form from 'components/Form';
 import Select from 'components/Select';
-import Input from 'components/InputField';
 import Text from 'components/Text';
 
 import type {
@@ -68,7 +67,6 @@ function Content({
         courseId: course.id,
         assignmentId: values.assignmentId,
         pullRequestUrl: values.pullRequestUrl,
-        description: values.description,
       },
     });
   };
@@ -102,7 +100,6 @@ function Content({
         initialValues={{
           assignmentId: targetAssignment ? targetAssignment.id : '',
           pullRequestUrl: '',
-          description: '',
           repository: '',
         }}
         validateForm={values => {
@@ -214,13 +211,6 @@ function Content({
             },
             label: 'Pull request',
             readError: errors => errors.pullRequestUrl as string,
-          },
-          {
-            inputComponent: (_, handleChange) => (
-              <Input id={'description'} multiline onChange={handleChange} />
-            ),
-            label: 'Comentarios adicionales',
-            readError: errors => errors.description as string,
           },
         ]}
         buttonsEnabled

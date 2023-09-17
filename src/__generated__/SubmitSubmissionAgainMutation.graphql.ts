@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<179ac1be2eaf7a5a368ab7fe83d8d5a6>>
+ * @generated SignedSource<<2cd23722e61cbe5d8c5050d24f2f3632>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,6 @@ export type SubmitSubmissionAgainMutation$variables = {
 };
 export type SubmitSubmissionAgainMutation$data = {
   readonly submitSubmissionAgain: {
-    readonly description: string | null;
     readonly id: string;
     readonly submittedAgainAt: string | null;
     readonly submittedAt: string;
@@ -70,13 +69,6 @@ v1 = [
         "alias": null,
         "args": null,
         "kind": "ScalarField",
-        "name": "description",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
         "name": "submittedAt",
         "storageKey": null
       },
@@ -109,16 +101,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "a21f71f2f51f74c2af82a023dcb38d1f",
+    "cacheID": "2cac0d03f9f4040065ea965d8a39d866",
     "id": null,
     "metadata": {},
     "name": "SubmitSubmissionAgainMutation",
     "operationKind": "mutation",
-    "text": "mutation SubmitSubmissionAgainMutation(\n  $courseId: ID!\n  $submissionId: ID!\n) {\n  submitSubmissionAgain(courseId: $courseId, submissionId: $submissionId) {\n    id\n    description\n    submittedAt\n    submittedAgainAt\n  }\n}\n"
+    "text": "mutation SubmitSubmissionAgainMutation(\n  $courseId: ID!\n  $submissionId: ID!\n) {\n  submitSubmissionAgain(courseId: $courseId, submissionId: $submissionId) {\n    id\n    submittedAt\n    submittedAgainAt\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "4206fb07cc7127e355ed998df9fd2bb4";
+(node as any).hash = "a8816e8a67e8280cde0ef259d3d67a27";
 
 export default node;

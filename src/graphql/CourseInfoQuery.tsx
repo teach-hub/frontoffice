@@ -17,7 +17,6 @@ export default graphql`
           isGroup
           submissions {
             id
-            description
             submittedAt
             pullRequestUrl
             assignmentId

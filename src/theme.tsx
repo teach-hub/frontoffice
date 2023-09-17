@@ -24,6 +24,12 @@ export const theme = extendTheme({
       success: 'teachHub.green',
       error: 'teachHub.red',
       warning: 'teachHub.yellow',
+      // chatOwnBackground: '#D4FCC3',
+      chatOwnBackground: '#AEBFD6',
+      chatOwnText: '#090909',
+      // chatOtherBackground: '#E0DBCD',
+      chatOtherBackground: '#E0DBCD',
+      chatOtherText: '#090909',
     },
   },
   styles: {

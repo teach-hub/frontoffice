@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7211e8d7720c525bbbb6d6203e0dfee0>>
+ * @generated SignedSource<<b6cf734bf66db865058a59cf41ad9ff4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -35,7 +35,14 @@ export type SubmissionQuery$data = {
           readonly isGroup: boolean | null;
           readonly title: string | null;
         } | null;
-        readonly description: string | null;
+        readonly comments: ReadonlyArray<{
+          readonly body: string | null;
+          readonly createdAt: string | null;
+          readonly githubUserId: string | null;
+          readonly githubUsername: string | null;
+          readonly id: string | null;
+          readonly updatedAt: string | null;
+        }>;
         readonly id: string;
         readonly pullRequestUrl: string;
         readonly review: {
@@ -64,6 +71,7 @@ export type SubmissionQuery$data = {
         readonly viewerIsReviewer: boolean;
       } | null;
     } | null;
+    readonly githubId: string;
     readonly id: string;
     readonly name: string;
   } | null;
@@ -100,27 +108,27 @@ v2 = {
   "name": "name",
   "storageKey": null
 },
-v3 = [
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "githubId",
+  "storageKey": null
+},
+v4 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "courseId"
   }
 ],
-v4 = [
+v5 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "submissionId"
   }
 ],
-v5 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "description",
-  "storageKey": null
-},
 v6 = {
   "alias": null,
   "args": null,
@@ -291,6 +299,53 @@ v20 = {
   "plural": false,
   "selections": (v13/*: any*/),
   "storageKey": null
+},
+v21 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "Comment",
+  "kind": "LinkedField",
+  "name": "comments",
+  "plural": true,
+  "selections": [
+    (v1/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "body",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "createdAt",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "updatedAt",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "githubUserId",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "githubUsername",
+      "storageKey": null
+    }
+  ],
+  "storageKey": null
 };
 return {
   "fragment": {
@@ -309,9 +364,10 @@ return {
         "selections": [
           (v1/*: any*/),
           (v2/*: any*/),
+          (v3/*: any*/),
           {
             "alias": null,
-            "args": (v3/*: any*/),
+            "args": (v4/*: any*/),
             "concreteType": "CourseType",
             "kind": "LinkedField",
             "name": "course",
@@ -320,14 +376,13 @@ return {
               (v1/*: any*/),
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v5/*: any*/),
                 "concreteType": "SubmissionType",
                 "kind": "LinkedField",
                 "name": "submission",
                 "plural": false,
                 "selections": [
                   (v1/*: any*/),
-                  (v5/*: any*/),
                   (v6/*: any*/),
                   (v7/*: any*/),
                   (v8/*: any*/),
@@ -374,7 +429,8 @@ return {
                       }
                     ],
                     "storageKey": null
-                  }
+                  },
+                  (v21/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -404,9 +460,10 @@ return {
         "selections": [
           (v1/*: any*/),
           (v2/*: any*/),
+          (v3/*: any*/),
           {
             "alias": null,
-            "args": (v3/*: any*/),
+            "args": (v4/*: any*/),
             "concreteType": "CourseType",
             "kind": "LinkedField",
             "name": "course",
@@ -415,14 +472,13 @@ return {
               (v1/*: any*/),
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v5/*: any*/),
                 "concreteType": "SubmissionType",
                 "kind": "LinkedField",
                 "name": "submission",
                 "plural": false,
                 "selections": [
                   (v1/*: any*/),
-                  (v5/*: any*/),
                   (v6/*: any*/),
                   (v7/*: any*/),
                   (v8/*: any*/),
@@ -477,7 +533,8 @@ return {
                       }
                     ],
                     "storageKey": null
-                  }
+                  },
+                  (v21/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -490,16 +547,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "c8ba73547d0673594e889d822a4ae364",
+    "cacheID": "6bfe2c1be042e985338c40709651176d",
     "id": null,
     "metadata": {},
     "name": "SubmissionQuery",
     "operationKind": "query",
-    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      submission(id: $submissionId) {\n        id\n        description\n        submittedAt\n        submittedAgainAt\n        pullRequestUrl\n        viewerIsReviewer: viewerCanReview\n        submitter {\n          __typename\n          ... on UserType {\n            id\n            file\n            name\n            lastName\n          }\n          ... on InternalGroupType {\n            id\n          }\n        }\n        reviewer {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n        review {\n          id\n          revisionRequested\n          grade\n          reviewedAt\n          reviewedAgainAt\n        }\n        assignment {\n          id\n          title\n          endDate\n          isGroup\n          groupParticipants {\n            group {\n              id\n              name\n            }\n            user {\n              id\n              name\n              lastName\n            }\n            id\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    githubId\n    course(id: $courseId) {\n      id\n      submission(id: $submissionId) {\n        id\n        submittedAt\n        submittedAgainAt\n        pullRequestUrl\n        viewerIsReviewer: viewerCanReview\n        submitter {\n          __typename\n          ... on UserType {\n            id\n            file\n            name\n            lastName\n          }\n          ... on InternalGroupType {\n            id\n          }\n        }\n        reviewer {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n        review {\n          id\n          revisionRequested\n          grade\n          reviewedAt\n          reviewedAgainAt\n        }\n        assignment {\n          id\n          title\n          endDate\n          isGroup\n          groupParticipants {\n            group {\n              id\n              name\n            }\n            user {\n              id\n              name\n              lastName\n            }\n            id\n          }\n        }\n        comments {\n          id\n          body\n          createdAt\n          updatedAt\n          githubUserId\n          githubUsername\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "a4e68467453e714391cd50fdc7d5d542";
+(node as any).hash = "4de4f9fac2f26edbd959fe0592576147";
 
 export default node;
