@@ -6,7 +6,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { FormErrors, Mutable, Nullable } from 'types';
 import { theme } from 'theme';
 
-import CreateAssignmentMutationDef from 'graphql/CreateAssignmentMutation';
 import UpdateAssignmentMutationDef from 'graphql/UpdateAssignmentMutation';
 import AssignmentQueryDef from 'graphql/AssignmentQuery';
 
@@ -21,10 +20,6 @@ import Heading from 'components/Heading';
 import InputField from 'components/InputField';
 import PageDataContainer from 'components/PageDataContainer';
 
-import type {
-  CreateAssignmentMutation,
-  CreateAssignmentMutation$data,
-} from '__generated__/CreateAssignmentMutation.graphql';
 import type {
   UpdateAssignmentMutation,
   UpdateAssignmentMutation$data,
@@ -44,18 +39,17 @@ type AssignmentData = {
   isGroup?: Nullable<boolean>;
 };
 
-type Props = {
+type UpdatePageProps = {
   assignmentId: string;
   courseId: string;
 };
 
-const CreateOrUpdateAssignmentsPage = ({ assignmentId, courseId }: Props) => {
+type FormValues = Mutable<NonNullable<AssignmentData>>;
+
+const UpdateAssignmentPage = ({ assignmentId, courseId }: UpdatePageProps) => {
   const navigate = useNavigate();
   const toast = useToast();
 
-  const [commitCreateAssignment] = useMutation<CreateAssignmentMutation>(
-    CreateAssignmentMutationDef
-  );
   const [commitUpdateAssignment] = useMutation<UpdateAssignmentMutation>(
     UpdateAssignmentMutationDef
   );
@@ -78,89 +72,53 @@ const CreateOrUpdateAssignmentsPage = ({ assignmentId, courseId }: Props) => {
   initialValues.allowLateSubmissions = assignment?.allowLateSubmissions;
   initialValues.isGroup = assignment?.isGroup;
 
-  type FormValues = Mutable<NonNullable<AssignmentData>>;
-
   const validateForm = (values: FormValues): FormErrors<FormValues> => {
     const errors: FormErrors<FormValues> = {};
 
-    if (!values?.title) errors.title = 'Obligatorio';
+    if (!values?.title) {
+      errors.title = 'Obligatorio';
+    }
 
     return errors;
   };
 
-  const onCancel = () => {
-    navigate(`..`);
-  };
+  const onCancel = () => navigate(`..`);
 
   const onSubmit = (values: FormValues) => {
-    if (courseId) {
-      if (assignmentId) {
-        commitUpdateAssignment({
-          variables: {
-            ...values,
-            courseId: courseId,
-            id: assignmentId,
-            startDate: values.startDate
-              ? formatDateAsLocaleIsoString(values.startDate)
-              : undefined,
-            endDate: values.endDate
-              ? formatDateAsLocaleIsoString(values.endDate)
-              : undefined,
-            active: true,
-          },
-          onCompleted: (response: UpdateAssignmentMutation$data, errors) => {
-            const data = response.updateAssignment;
-            if (!errors?.length && data) {
-              toast({
-                title: 'Trabajo práctico guardado!',
-                status: 'info',
-              });
-              navigate(`..`);
-            } else {
-              const errorMessage = errors ? errors[0].message : null;
-              toast({
-                title: 'Error',
-                description:
-                  `No se pudo editar el trabajo práctico` +
-                  (errorMessage ? `: ${errorMessage}` : ''),
-                status: 'error',
-              });
-            }
-          },
-        });
-      } else {
-        commitCreateAssignment({
-          variables: {
-            ...values,
-            courseId: courseId,
-            startDate: values.startDate
-              ? formatDateAsLocaleIsoString(values.startDate)
-              : undefined,
-            endDate: values.endDate
-              ? formatDateAsLocaleIsoString(values.endDate)
-              : undefined,
-          },
-          onCompleted: (response: CreateAssignmentMutation$data, errors) => {
-            const data = response.createAssignment;
-            if (!errors?.length && data) {
-              toast({
-                title: 'Trabajo práctico guardado!',
-                status: 'info',
-              });
-              navigate(`../${data.id}`);
-            } else {
-              const errorMessage = errors ? errors[0].message : null;
-              toast({
-                title: 'Error',
-                description:
-                  `No se pudo crear el trabajo práctico` +
-                  (errorMessage ? `: ${errorMessage}` : ''),
-                status: 'error',
-              });
-            }
-          },
-        });
-      }
+    if (courseId && assignmentId) {
+      commitUpdateAssignment({
+        variables: {
+          ...values,
+          courseId: courseId,
+          id: assignmentId,
+          startDate: values.startDate
+            ? formatDateAsLocaleIsoString(values.startDate)
+            : undefined,
+          endDate: values.endDate
+            ? formatDateAsLocaleIsoString(values.endDate)
+            : undefined,
+          active: true,
+        },
+        onCompleted: (response: UpdateAssignmentMutation$data, errors) => {
+          const data = response.updateAssignment;
+          if (!errors?.length && data) {
+            toast({
+              title: 'Trabajo práctico guardado!',
+              status: 'info',
+            });
+            navigate(`..`);
+          } else {
+            const errorMessage = errors ? errors[0].message : null;
+            toast({
+              title: 'Error',
+              description:
+                `No se pudo editar el trabajo práctico` +
+                (errorMessage ? `: ${errorMessage}` : ''),
+              status: 'error',
+            });
+          }
+        },
+      });
     } else {
       throw new Error('No courseId');
     }
@@ -175,7 +133,7 @@ const CreateOrUpdateAssignmentsPage = ({ assignmentId, courseId }: Props) => {
       )}
       <Flex direction={'column'} gap={'30px'} width={'400px'} paddingY={'20px'}>
         <Form
-          buttonsEnabled={true} // In this page always can use buttons
+          buttonsEnabled // In this page always can use buttons
           initialValues={{
             title: initialValues.title || undefined,
             description: initialValues.description || undefined,
@@ -301,7 +259,7 @@ const PageContainer = () => {
 
   return (
     <Suspense>
-      <CreateOrUpdateAssignmentsPage
+      <UpdateAssignmentPage
         courseId={courseContext.courseId}
         assignmentId={assignmentId}
       />
