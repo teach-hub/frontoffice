@@ -43,7 +43,9 @@ const InviteModal = ({ courseId, rootQueryRef, isOpen, onClose }: Props) => {
             return reject(null);
           }
 
-          return resolve(`http://localhost:3000/invites/${result.generateInviteCode}`);
+          return resolve(
+            `http://${window.location.host}/invites/${result.generateInviteCode}`
+          );
         },
       })
     );
