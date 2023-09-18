@@ -1,6 +1,7 @@
 import { Suspense, Dispatch, useEffect, useState } from 'react';
 import { useMutation, useLazyLoadQuery } from 'react-relay';
 import { useParams } from 'react-router-dom';
+import { cloneDeep } from 'lodash';
 
 import { Skeleton, Switch, Stack, Flex, HStack, Checkbox } from '@chakra-ui/react';
 
@@ -23,6 +24,7 @@ import { UserRevieweeCard, GroupRevieweeCard } from 'components/RevieweeCard';
 
 import ReviewersAssignmentQueryDef from 'graphql/ReviewersAssignmentQuery';
 import CommitReviewersMutationDef from 'graphql/CommitReviewersMutation';
+import type { Mutable } from 'types';
 
 import type {
   ReviewersAssignmentQuery,
@@ -30,17 +32,21 @@ import type {
 } from '__generated__/ReviewersAssignmentQuery.graphql';
 import type { CommitReviewersMutation } from '__generated__/CommitReviewersMutation.graphql';
 
-type Assignment = NonNullable<
+type Assignment = Mutable<
   NonNullable<
-    NonNullable<ReviewersAssignmentQuery$data['viewer']>['course']
-  >['assignment']
+    NonNullable<
+      NonNullable<ReviewersAssignmentQuery$data['viewer']>['course']
+    >['assignment']
+  >
 >;
 
 type ReviewerInfo = Assignment['previewReviewers'][number];
 
-type Teacher = NonNullable<
-  NonNullable<ReviewersAssignmentQuery$data['viewer']>['course']
->['teachersUserRoles'][number]['user'];
+type Teacher = Mutable<
+  NonNullable<
+    NonNullable<ReviewersAssignmentQuery$data['viewer']>['course']
+  >['teachersUserRoles'][number]['user']
+>;
 
 type Filters = {
   teacherIds: string[];
@@ -131,15 +137,19 @@ function AssignmentSettings(
 }
 
 function AssignmentsContainer({
+  teachers,
   reviewers,
   title,
   fallbackText,
   groupsParticipants,
+  setPreviewReviewers,
 }: {
-  reviewers: readonly ReviewerInfo[];
+  teachers: Teacher[];
+  reviewers: ReviewerInfo[];
   title?: string;
   fallbackText?: string;
   groupsParticipants: Assignment['groupParticipants'];
+  setPreviewReviewers: Dispatch<ReviewerInfo[]>;
 }) {
   const buildRevieweeCard = (reviewee: ReviewerInfo['reviewee']) => {
     if (reviewee.__typename === 'UserType')
@@ -164,6 +174,8 @@ function AssignmentsContainer({
     return null;
   };
 
+  const reviewersClone = cloneDeep(reviewers);
+
   return (
     <Flex flex="1" direction="column" gap="20px">
       <Heading size="md">{title}</Heading>
@@ -171,7 +183,24 @@ function AssignmentsContainer({
         {reviewers.length ? (
           reviewers.map(({ reviewer, reviewee }, i) => (
             <Box display="flex" gap="25px" key={i} h="70px" fontSize="15px">
-              <ReviewerCard reviewerInfo={reviewer} w="300px" />
+              <ReviewerCard
+                availableReviewers={teachers}
+                onChangeReviewer={reviewerId => {
+                  // @ts-expect-error: FIXME
+                  const target = reviewersClone.find(x => x.reviewee.id === reviewee.id);
+
+                  if (!target?.reviewer) {
+                    return null;
+                  }
+
+                  target.reviewer = teachers.find(x => x.id === reviewerId)!;
+
+                  setPreviewReviewers(reviewersClone);
+                }}
+                reviewerInfo={reviewer}
+                h="70px"
+                w="200px"
+              />
               <ArrowForwardIcon alignSelf={'center'} boxSize={'30px'} />
               {buildRevieweeCard(reviewee)}
             </Box>
@@ -225,7 +254,7 @@ function ReviewersPageContainer({
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { viewer } = useLazyLoadQuery<ReviewersAssignmentQuery>(
+  const { viewer } = useLazyLoadQuery<Mutable<ReviewersAssignmentQuery>>(
     ReviewersAssignmentQueryDef,
     {
       courseId,
@@ -234,10 +263,10 @@ function ReviewersPageContainer({
     }
   );
 
-  const [reviewers, setReviewers] = useState<readonly ReviewerInfo[]>(
+  const [reviewers, setReviewers] = useState<ReviewerInfo[]>(
     viewer?.course?.assignment?.reviewers || []
   );
-  const [previewReviewers, setPreviewReviewers] = useState<readonly ReviewerInfo[]>(
+  const [previewReviewers, setPreviewReviewers] = useState<ReviewerInfo[]>(
     viewer?.course?.assignment?.previewReviewers || []
   );
 
@@ -260,6 +289,8 @@ function ReviewersPageContainer({
     commitMutation({
       variables: {
         courseId,
+        // Necesario para poder updatear el cache con los filtros que tenemos
+        // actualmente.
         filters: {
           consecutive: filters.consecutives,
           teachersUserIds: filters.teacherIds,
@@ -279,7 +310,7 @@ function ReviewersPageContainer({
         } else {
           console.log('Reviewers set!');
           setPreviewReviewers([]);
-          setReviewers(response.assignReviewers.reviewers);
+          setReviewers(response.assignReviewers.reviewers as ReviewerInfo[]);
           toast({ title: 'Correctores asignados', status: 'success' });
         }
         setIsLoading(false);
@@ -300,6 +331,8 @@ function ReviewersPageContainer({
         editable={!!previewReviewers.length}
       />
       <AssignmentsContainer
+        setPreviewReviewers={setPreviewReviewers}
+        teachers={viewer?.course?.teachersUserRoles.map(x => x.user) || []}
         title="Pendientes"
         reviewers={previewReviewers}
         fallbackText="No hay alumnos pendientes a los cuales asignar correctores"
@@ -317,6 +350,9 @@ function ReviewersPageContainer({
         isDisabled={!previewReviewers.length}
       />
       <AssignmentsContainer
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        setPreviewReviewers={() => {}}
+        teachers={[]}
         title="Asignados"
         reviewers={reviewers}
         groupsParticipants={groupsParticipants}

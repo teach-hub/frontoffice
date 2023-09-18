@@ -12,7 +12,7 @@ type GroupRevieweeCardProps = {
   readonly revieweeInfo: { groupName: string; participants: { name: string }[] };
 };
 
-const _Card = ({ children }: { children: JSX.Element[] }) => {
+const _Card = ({ children }: { children: Array<JSX.Element> | JSX.Element }) => {
   return (
     <Card bodyProps={{ gap: '10px' }} w="100%" opacity={'80%'}>
       {children}
