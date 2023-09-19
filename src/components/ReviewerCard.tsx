@@ -39,26 +39,29 @@ const ReviewerCard = ({
           </Text>
         </HStack>
       </MenuButton>
-      <MenuList>
-        {availableReviewers.map((reviewer, i) => {
-          return (
-            <MenuItem
-              key={i}
-              onClick={() => {
-                console.log('Setting', reviewer);
-                return onChangeReviewer(reviewer.id);
-              }}
-            >
-              <HStack>
-                <Avatar name={`${reviewer.name} ${reviewer.lastName}`} size="sm" />
-                <Text>
-                  {reviewer.name} {reviewer.lastName}
-                </Text>
-              </HStack>
-            </MenuItem>
-          );
-        })}
-      </MenuList>
+      {(availableReviewers.length && (
+        <MenuList>
+          {availableReviewers.map((reviewer, i) => {
+            return (
+              <MenuItem
+                key={i}
+                onClick={() => {
+                  console.log('Setting', reviewer);
+                  return onChangeReviewer(reviewer.id);
+                }}
+              >
+                <HStack>
+                  <Avatar name={`${reviewer.name} ${reviewer.lastName}`} size="sm" />
+                  <Text>
+                    {reviewer.name} {reviewer.lastName}
+                  </Text>
+                </HStack>
+              </MenuItem>
+            );
+          })}
+        </MenuList>
+      )) ||
+        null}
     </Menu>
   );
 };

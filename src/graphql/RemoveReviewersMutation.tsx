@@ -1,0 +1,61 @@
+import { graphql } from 'babel-plugin-relay/macro';
+
+export default graphql`
+  mutation RemoveReviewersMutation(
+    $reviewerIds: [ID!]!
+    $courseId: ID!
+    $assignmentId: ID!
+    $filters: PreviewReviewersFilterInputType!
+  ) {
+    removeReviewers(
+      reviewers: $reviewerIds
+      assignmentId: $assignmentId
+      courseId: $courseId
+    ) {
+      id
+      # Necesario para actualizar el store con los nuevos reviewers.
+      previewReviewers(input: $filters) {
+        id
+        reviewee {
+          __typename
+          ... on InternalGroupType {
+            id
+            groupName: name
+          }
+          ... on UserType {
+            id
+            name
+            lastName
+            file
+          }
+        }
+        reviewer {
+          id
+          name
+          lastName
+        }
+      }
+      reviewers {
+        id
+        reviewer {
+          id
+          name
+          lastName
+        }
+        reviewee {
+          __typename
+          ... on InternalGroupType {
+            id
+            groupName: name
+          }
+          ... on UserType {
+            id
+            name
+            lastName
+            file
+          }
+        }
+      }
+    }
+  }
+`;

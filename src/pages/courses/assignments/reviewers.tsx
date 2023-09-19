@@ -18,14 +18,20 @@ import PageDataContainer from 'components/PageDataContainer';
 import Card from 'components/Card';
 import Text from 'components/Text';
 import Box from 'components/Box';
+import CrossIcon from 'icons/CrossIcon';
 
 import ReviewerCard from 'components/ReviewerCard';
 import { UserRevieweeCard, GroupRevieweeCard } from 'components/RevieweeCard';
 
 import ReviewersAssignmentQueryDef from 'graphql/ReviewersAssignmentQuery';
 import CommitReviewersMutationDef from 'graphql/CommitReviewersMutation';
+import RemoveReviewersMutationDef from 'graphql/RemoveReviewersMutation';
 import type { Mutable } from 'types';
 
+import type {
+  RemoveReviewersMutation,
+  RemoveReviewersMutation$data,
+} from '__generated__/RemoveReviewersMutation.graphql';
 import type {
   ReviewersAssignmentQuery,
   ReviewersAssignmentQuery$data,
@@ -143,6 +149,7 @@ function AssignmentsContainer({
   fallbackText,
   groupsParticipants,
   setPreviewReviewers,
+  handleRemoveReviewer,
 }: {
   teachers: Teacher[];
   reviewers: ReviewerInfo[];
@@ -150,6 +157,7 @@ function AssignmentsContainer({
   fallbackText?: string;
   groupsParticipants: Assignment['groupParticipants'];
   setPreviewReviewers: Dispatch<ReviewerInfo[]>;
+  handleRemoveReviewer?: (reviewerId: string, revieweeId: string) => void;
 }) {
   const buildRevieweeCard = (reviewee: ReviewerInfo['reviewee']) => {
     if (reviewee.__typename === 'UserType')
@@ -203,6 +211,14 @@ function AssignmentsContainer({
               />
               <ArrowForwardIcon alignSelf={'center'} boxSize={'30px'} />
               {buildRevieweeCard(reviewee)}
+              <Box
+                onClick={() =>
+                  // @ts-expect-error: FIXME
+                  handleRemoveReviewer && handleRemoveReviewer(reviewer.id, reviewee.id)
+                }
+              >
+                <CrossIcon />
+              </Box>
             </Box>
           ))
         ) : (
@@ -246,6 +262,10 @@ function ReviewersPageContainer({
 
   const [commitMutation] = useMutation<CommitReviewersMutation>(
     CommitReviewersMutationDef
+  );
+
+  const [commitRemoveReviewersMutation] = useMutation<RemoveReviewersMutation>(
+    RemoveReviewersMutationDef
   );
 
   const [filters, setFilters] = useState<Filters>({
@@ -318,6 +338,50 @@ function ReviewersPageContainer({
     });
   };
 
+  const hasValidReviewee = (
+    reviewer: ReviewerInfo
+  ): reviewer is UserReviewee | InternalGroupType => {
+    return reviewer.reviewee.__typename !== '%other';
+  };
+
+  const handleRemoveReviewer = (reviewerId: string, revieweeId: string) => {
+    const t = reviewers
+      .filter(hasValidReviewee)
+      .find(x => x.reviewer.id === reviewerId && x.reviewee.id === revieweeId);
+
+    if (t) {
+      commitRemoveReviewersMutation({
+        variables: {
+          reviewerIds: [t?.id],
+          courseId,
+          assignmentId,
+          // Necesario para poder updatear el cache con los filtros que tenemos
+          // actualmente.
+          filters: {
+            consecutive: filters.consecutives,
+            teachersUserIds: filters.teacherIds,
+          },
+        },
+        onCompleted(response, errors) {
+          if (errors?.length) {
+            console.log('Error while commiting reviewers', errors);
+            toast({ title: 'No pudimos asignar los correctores', status: 'error' });
+          } else {
+            console.log('Reviewers set!');
+            setPreviewReviewers(
+              response.removeReviewers.previewReviewers as ReviewerInfo[]
+            );
+            setReviewers(response.removeReviewers.reviewers as ReviewerInfo[]);
+            toast({ title: 'Correctores asignados', status: 'success' });
+          }
+          setIsLoading(false);
+        },
+      });
+    }
+
+    // onCommit(cleanedReviewers.map(x => ({ reviewer: { id: x.reviewer.id }, reviewee: { id: x.reviewee.id } })));
+  };
+
   if (isLoading) {
     return <LoadingPageContainer />;
   }
@@ -357,6 +421,7 @@ function ReviewersPageContainer({
         reviewers={reviewers}
         groupsParticipants={groupsParticipants}
         fallbackText="Asigna los correctores seleccionando los profesores y clickeando en el boton"
+        handleRemoveReviewer={handleRemoveReviewer}
       />
     </ContainerLayout>
   );
