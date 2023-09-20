@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9c9746898abf12f3aa968f2e184bed8d>>
+ * @generated SignedSource<<f5562b99f99043148c77ac565f831b02>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -31,6 +31,26 @@ export type CommitReviewersMutation$data = {
     readonly id: string;
     readonly previewReviewers: ReadonlyArray<{
       readonly id: string;
+      readonly reviewee: {
+        readonly __typename: "InternalGroupType";
+        readonly groupName: string | null;
+        readonly id: string;
+      } | {
+        readonly __typename: "UserType";
+        readonly file: string;
+        readonly id: string;
+        readonly lastName: string;
+        readonly name: string;
+      } | {
+        // This will never be '%other', but we need some
+        // value in case none of the concrete values match.
+        readonly __typename: "%other";
+      };
+      readonly reviewer: {
+        readonly id: string;
+        readonly lastName: string;
+        readonly name: string;
+      };
     }>;
     readonly reviewers: ReadonlyArray<{
       readonly id: string;
@@ -99,7 +119,71 @@ v5 = {
   "name": "lastName",
   "storageKey": null
 },
-v6 = [
+v6 = {
+  "alias": null,
+  "args": null,
+  "concreteType": null,
+  "kind": "LinkedField",
+  "name": "reviewee",
+  "plural": false,
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "__typename",
+      "storageKey": null
+    },
+    {
+      "kind": "InlineFragment",
+      "selections": [
+        (v3/*: any*/),
+        {
+          "alias": "groupName",
+          "args": null,
+          "kind": "ScalarField",
+          "name": "name",
+          "storageKey": null
+        }
+      ],
+      "type": "InternalGroupType",
+      "abstractKey": null
+    },
+    {
+      "kind": "InlineFragment",
+      "selections": [
+        (v3/*: any*/),
+        (v4/*: any*/),
+        (v5/*: any*/),
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "file",
+          "storageKey": null
+        }
+      ],
+      "type": "UserType",
+      "abstractKey": null
+    }
+  ],
+  "storageKey": null
+},
+v7 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "UserType",
+  "kind": "LinkedField",
+  "name": "reviewer",
+  "plural": false,
+  "selections": [
+    (v3/*: any*/),
+    (v4/*: any*/),
+    (v5/*: any*/)
+  ],
+  "storageKey": null
+},
+v8 = [
   {
     "alias": null,
     "args": [
@@ -134,7 +218,9 @@ v6 = [
         "name": "previewReviewers",
         "plural": true,
         "selections": [
-          (v3/*: any*/)
+          (v3/*: any*/),
+          (v6/*: any*/),
+          (v7/*: any*/)
         ],
         "storageKey": null
       },
@@ -147,70 +233,8 @@ v6 = [
         "plural": true,
         "selections": [
           (v3/*: any*/),
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "UserType",
-            "kind": "LinkedField",
-            "name": "reviewer",
-            "plural": false,
-            "selections": [
-              (v3/*: any*/),
-              (v4/*: any*/),
-              (v5/*: any*/)
-            ],
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": null,
-            "kind": "LinkedField",
-            "name": "reviewee",
-            "plural": false,
-            "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "__typename",
-                "storageKey": null
-              },
-              {
-                "kind": "InlineFragment",
-                "selections": [
-                  (v3/*: any*/),
-                  {
-                    "alias": "groupName",
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "name",
-                    "storageKey": null
-                  }
-                ],
-                "type": "InternalGroupType",
-                "abstractKey": null
-              },
-              {
-                "kind": "InlineFragment",
-                "selections": [
-                  (v3/*: any*/),
-                  (v4/*: any*/),
-                  (v5/*: any*/),
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "file",
-                    "storageKey": null
-                  }
-                ],
-                "type": "UserType",
-                "abstractKey": null
-              }
-            ],
-            "storageKey": null
-          }
+          (v7/*: any*/),
+          (v6/*: any*/)
         ],
         "storageKey": null
       }
@@ -228,7 +252,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "CommitReviewersMutation",
-    "selections": (v6/*: any*/),
+    "selections": (v8/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
@@ -241,19 +265,19 @@ return {
     ],
     "kind": "Operation",
     "name": "CommitReviewersMutation",
-    "selections": (v6/*: any*/)
+    "selections": (v8/*: any*/)
   },
   "params": {
-    "cacheID": "c4146c5130d5f43eab3030c480666997",
+    "cacheID": "57048f03ef03268c3dcac29a3971e2c1",
     "id": null,
     "metadata": {},
     "name": "CommitReviewersMutation",
     "operationKind": "mutation",
-    "text": "mutation CommitReviewersMutation(\n  $input: AssignReviewersInputType!\n  $courseId: ID!\n  $filters: PreviewReviewersFilterInputType!\n) {\n  assignReviewers(input: $input, courseId: $courseId) {\n    id\n    previewReviewers(input: $filters) {\n      id\n    }\n    reviewers {\n      id\n      reviewer {\n        id\n        name\n        lastName\n      }\n      reviewee {\n        __typename\n        ... on InternalGroupType {\n          id\n          groupName: name\n        }\n        ... on UserType {\n          id\n          name\n          lastName\n          file\n        }\n      }\n    }\n  }\n}\n"
+    "text": "mutation CommitReviewersMutation(\n  $input: AssignReviewersInputType!\n  $courseId: ID!\n  $filters: PreviewReviewersFilterInputType!\n) {\n  assignReviewers(input: $input, courseId: $courseId) {\n    id\n    previewReviewers(input: $filters) {\n      id\n      reviewee {\n        __typename\n        ... on InternalGroupType {\n          id\n          groupName: name\n        }\n        ... on UserType {\n          id\n          name\n          lastName\n          file\n        }\n      }\n      reviewer {\n        id\n        name\n        lastName\n      }\n    }\n    reviewers {\n      id\n      reviewer {\n        id\n        name\n        lastName\n      }\n      reviewee {\n        __typename\n        ... on InternalGroupType {\n          id\n          groupName: name\n        }\n        ... on UserType {\n          id\n          name\n          lastName\n          file\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b48c0ffad8384d1d493211c12077625d";
+(node as any).hash = "22f855d3f7b7fb8a2fb363fd1287ba51";
 
 export default node;

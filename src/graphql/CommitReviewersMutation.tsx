@@ -11,6 +11,24 @@ export default graphql`
       # Necesario para actualizar el store con los nuevos reviewers.
       previewReviewers(input: $filters) {
         id
+        reviewee {
+          __typename
+          ... on InternalGroupType {
+            id
+            groupName: name
+          }
+          ... on UserType {
+            id
+            name
+            lastName
+            file
+          }
+        }
+        reviewer {
+          id
+          name
+          lastName
+        }
       }
       reviewers {
         id

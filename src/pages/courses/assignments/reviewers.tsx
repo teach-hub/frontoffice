@@ -1,7 +1,7 @@
 import { Suspense, Dispatch, useEffect, useState } from 'react';
 import { useMutation, useLazyLoadQuery } from 'react-relay';
 import { useParams } from 'react-router-dom';
-import { cloneDeep } from 'lodash';
+import { uniq, cloneDeep } from 'lodash';
 
 import { Skeleton, Switch, Stack, Flex, HStack, Checkbox } from '@chakra-ui/react';
 
@@ -28,10 +28,7 @@ import CommitReviewersMutationDef from 'graphql/CommitReviewersMutation';
 import RemoveReviewersMutationDef from 'graphql/RemoveReviewersMutation';
 import type { Mutable } from 'types';
 
-import type {
-  RemoveReviewersMutation,
-  RemoveReviewersMutation$data,
-} from '__generated__/RemoveReviewersMutation.graphql';
+import type { RemoveReviewersMutation } from '__generated__/RemoveReviewersMutation.graphql';
 import type {
   ReviewersAssignmentQuery,
   ReviewersAssignmentQuery$data,
@@ -95,6 +92,14 @@ function AssignmentSettings(
   const { setFilters, filters, teachers } = props;
 
   const buildOnTeacherChange = (teacher: Teacher) => () => {
+    if (filters.teacherIds.length === 1 && filters.teacherIds.includes(teacher.id)) {
+      return setFilters({ ...filters, teacherIds: [] });
+    }
+
+    if (uniq([...filters.teacherIds, teacher.id]).length === teachers.length) {
+      return setFilters({ ...filters, teacherIds: [] });
+    }
+
     return setFilters({
       ...filters,
 
@@ -130,7 +135,9 @@ function AssignmentSettings(
             <Checkbox
               key={k}
               disabled={!props.editable}
-              isChecked={filters.teacherIds.includes(teacher.id)}
+              isChecked={
+                filters.teacherIds.includes(teacher.id) || filters.teacherIds.length === 0
+              }
               onChange={buildOnTeacherChange(teacher)}
             >
               {teacher.name} {teacher.lastName}
@@ -159,9 +166,19 @@ function AssignmentsContainer({
   setPreviewReviewers: Dispatch<ReviewerInfo[]>;
   handleRemoveReviewer?: (reviewerId: string, revieweeId: string) => void;
 }) {
-  const buildRevieweeCard = (reviewee: ReviewerInfo['reviewee']) => {
+  const buildRevieweeCard = (
+    reviewerId: ReviewerInfo['reviewer']['id'],
+    reviewee: ReviewerInfo['reviewee']
+  ) => {
     if (reviewee.__typename === 'UserType')
-      return <UserRevieweeCard revieweeInfo={{ ...reviewee }} />;
+      return (
+        <UserRevieweeCard
+          revieweeInfo={{ ...reviewee }}
+          onRemove={
+            handleRemoveReviewer && (() => handleRemoveReviewer(reviewerId, reviewee.id))
+          }
+        />
+      );
 
     if (reviewee.__typename === 'InternalGroupType') {
       // Reviewee puede ser un grupo entero asi que agarramos sus integrates.
@@ -171,6 +188,9 @@ function AssignmentsContainer({
 
       return (
         <GroupRevieweeCard
+          onRemove={
+            handleRemoveReviewer && (() => handleRemoveReviewer(reviewerId, reviewee.id))
+          }
           revieweeInfo={{
             groupName: reviewee.groupName!,
             participants: groupParticipants,
@@ -210,15 +230,7 @@ function AssignmentsContainer({
                 w="200px"
               />
               <ArrowForwardIcon alignSelf={'center'} boxSize={'30px'} />
-              {buildRevieweeCard(reviewee)}
-              <Box
-                onClick={() =>
-                  // @ts-expect-error: FIXME
-                  handleRemoveReviewer && handleRemoveReviewer(reviewer.id, reviewee.id)
-                }
-              >
-                <CrossIcon />
-              </Box>
+              {buildRevieweeCard(reviewer.id, reviewee)}
             </Box>
           ))
         ) : (
@@ -280,7 +292,8 @@ function ReviewersPageContainer({
       courseId,
       assignmentId,
       filters: { consecutive: filters.consecutives, teachersUserIds: filters.teacherIds },
-    }
+    },
+    { fetchPolicy: 'network-only' }
   );
 
   const [reviewers, setReviewers] = useState<ReviewerInfo[]>(
@@ -301,7 +314,8 @@ function ReviewersPageContainer({
 
     setPreviewReviewers(previewReviewers);
     setReviewers(reviewers);
-  }, [courseId, assignmentId]);
+    // setFilters({ consecutives: false, teacherIds: uniq(previewReviewers.map(x => x.reviewer.id)) })
+  }, [viewer, courseId, assignmentId]);
 
   const onCommit = (
     toCommitData: readonly { reviewer: { id: string }; reviewee: { id: string } }[]
@@ -329,7 +343,9 @@ function ReviewersPageContainer({
           toast({ title: 'No pudimos asignar los correctores', status: 'error' });
         } else {
           console.log('Reviewers set!');
-          setPreviewReviewers([]);
+          setPreviewReviewers(
+            response.assignReviewers.previewReviewers as ReviewerInfo[]
+          );
           setReviewers(response.assignReviewers.reviewers as ReviewerInfo[]);
           toast({ title: 'Correctores asignados', status: 'success' });
         }
@@ -378,8 +394,6 @@ function ReviewersPageContainer({
         },
       });
     }
-
-    // onCommit(cleanedReviewers.map(x => ({ reviewer: { id: x.reviewer.id }, reviewee: { id: x.reviewee.id } })));
   };
 
   if (isLoading) {
@@ -390,7 +404,7 @@ function ReviewersPageContainer({
     <ContainerLayout>
       <AssignmentSettings
         teachers={viewer?.course?.teachersUserRoles.map(x => x.user) || []}
-        filters={{ ...filters, teacherIds: previewReviewers.map(x => x.reviewer.id) }}
+        filters={filters}
         setFilters={setFilters}
         editable={!!previewReviewers.length}
       />
