@@ -18,7 +18,6 @@ import PageDataContainer from 'components/PageDataContainer';
 import Card from 'components/Card';
 import Text from 'components/Text';
 import Box from 'components/Box';
-import CrossIcon from 'icons/CrossIcon';
 
 import ReviewerCard from 'components/ReviewerCard';
 import { UserRevieweeCard, GroupRevieweeCard } from 'components/RevieweeCard';
@@ -163,7 +162,7 @@ function AssignmentsContainer({
   title?: string;
   fallbackText?: string;
   groupsParticipants: Assignment['groupParticipants'];
-  setPreviewReviewers: Dispatch<ReviewerInfo[]>;
+  setPreviewReviewers?: Dispatch<ReviewerInfo[]>;
   handleRemoveReviewer?: (reviewerId: string, revieweeId: string) => void;
 }) {
   const buildRevieweeCard = (
@@ -202,8 +201,6 @@ function AssignmentsContainer({
     return null;
   };
 
-  const reviewersClone = cloneDeep(reviewers);
-
   return (
     <Flex flex="1" direction="column" gap="20px">
       <Heading size="md">{title}</Heading>
@@ -214,6 +211,9 @@ function AssignmentsContainer({
               <ReviewerCard
                 availableReviewers={teachers}
                 onChangeReviewer={reviewerId => {
+                  // Clonamos la lista para hacerla mutable.
+                  const reviewersClone = cloneDeep(reviewers);
+
                   // @ts-expect-error: FIXME
                   const target = reviewersClone.find(x => x.reviewee.id === reviewee.id);
 
@@ -223,7 +223,7 @@ function AssignmentsContainer({
 
                   target.reviewer = teachers.find(x => x.id === reviewerId)!;
 
-                  setPreviewReviewers(reviewersClone);
+                  setPreviewReviewers && setPreviewReviewers(reviewersClone);
                 }}
                 reviewerInfo={reviewer}
                 h="70px"
@@ -314,7 +314,6 @@ function ReviewersPageContainer({
 
     setPreviewReviewers(previewReviewers);
     setReviewers(reviewers);
-    // setFilters({ consecutives: false, teacherIds: uniq(previewReviewers.map(x => x.reviewer.id)) })
   }, [viewer, courseId, assignmentId]);
 
   const onCommit = (
@@ -436,8 +435,6 @@ function ReviewersPageContainer({
         isDisabled={!previewReviewers.length}
       />
       <AssignmentsContainer
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        setPreviewReviewers={() => {}}
         teachers={[]}
         title="Asignados"
         reviewers={reviewers}
