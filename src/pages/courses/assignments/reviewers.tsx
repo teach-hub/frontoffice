@@ -380,8 +380,16 @@ function ReviewersPageContainer({
         },
         onCompleted(response, errors) {
           if (errors?.length) {
-            console.log('Error while commiting reviewers', errors);
-            toast({ title: 'No pudimos asignar los correctores', status: 'error' });
+            if (errors.map(error => error.message.includes('ALREADY_REVIEWED'))) {
+              toast({
+                title: 'No es posible eliminar',
+                description: 'El reviewer ya realizo correcciones.',
+                status: 'error',
+              });
+            } else {
+              console.log('Error while commiting reviewers', errors);
+              toast({ title: 'No pudimos asignar los correctores', status: 'error' });
+            }
           } else {
             console.log('Reviewers set!');
             setPreviewReviewers(

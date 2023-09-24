@@ -4,11 +4,12 @@ import { storeRemoveValue, storeGetValue } from 'hooks/useLocalStorage';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:4000';
 
-const isUnauthorizedResponse = (response: { errors: { message: string }[] }) => {
+const isUnauthorizedResponse = (response: { errors: { message: string }[] }): boolean => {
   if ('errors' in response) {
     const errors = response['errors'] as { message: string }[];
     return errors.some(error => error.message.includes('UNAUTHORIZED_ERROR'));
   }
+  return false;
 };
 
 const fetchQuery = async (operation: { text: string | null }, variables: unknown) => {
