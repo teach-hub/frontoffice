@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f5562b99f99043148c77ac565f831b02>>
+ * @generated SignedSource<<df8cae687ba271e5291c6547e317467e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -75,7 +75,7 @@ export type CommitReviewersMutation$data = {
         readonly name: string;
       };
     }>;
-  };
+  } | null;
 };
 export type CommitReviewersMutation = {
   response: CommitReviewersMutation$data;

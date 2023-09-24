@@ -349,9 +349,9 @@ function ReviewersPageContainer({
         } else {
           console.log('Reviewers set!');
           setPreviewReviewers(
-            response.assignReviewers.previewReviewers as SanitizedReviewer[]
+            response?.assignReviewers?.previewReviewers as SanitizedReviewer[]
           );
-          setReviewers(response.assignReviewers.reviewers as SanitizedReviewer[]);
+          setReviewers(response?.assignReviewers?.reviewers as SanitizedReviewer[]);
           toast({ title: 'Correctores asignados', status: 'success' });
         }
         setIsLoading(false);
@@ -392,9 +392,9 @@ function ReviewersPageContainer({
           } else {
             console.log('Reviewers set!');
             setPreviewReviewers(
-              response.removeReviewers.previewReviewers as SanitizedReviewer[]
+              response?.removeReviewers?.previewReviewers as SanitizedReviewer[]
             );
-            setReviewers(response.removeReviewers.reviewers as SanitizedReviewer[]);
+            setReviewers(response?.removeReviewers?.reviewers as SanitizedReviewer[]);
             toast({ title: 'Correctores asignados', status: 'success' });
           }
           setIsLoading(false);

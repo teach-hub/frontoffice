@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<824a72d3af4cc1920e62f0b906c1ca95>>
+ * @generated SignedSource<<e85e5cca6bba97487de1141d4bbe7f76>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -68,7 +68,7 @@ export type RemoveReviewersMutation$data = {
         readonly name: string;
       };
     }>;
-  };
+  } | null;
 };
 export type RemoveReviewersMutation = {
   response: RemoveReviewersMutation$data;
