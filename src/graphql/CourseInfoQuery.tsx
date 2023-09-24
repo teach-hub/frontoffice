@@ -15,7 +15,7 @@ export default graphql`
           id
           title
           isGroup
-          submissions {
+          submissions(onlyReviewerSubmissions: false) {
             id
             submittedAt
             pullRequestUrl
@@ -26,7 +26,7 @@ export default graphql`
               grade
             }
           }
-          nonExistentSubmissions {
+          nonExistentSubmissions(onlyReviewerSubmissions: false) {
             id
           }
         }
