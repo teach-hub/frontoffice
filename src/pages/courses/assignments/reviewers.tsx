@@ -1,6 +1,7 @@
 import { Suspense, Dispatch, useEffect, useState } from 'react';
 import { useMutation, useLazyLoadQuery } from 'react-relay';
 import { useParams } from 'react-router-dom';
+import { uniq, cloneDeep } from 'lodash';
 
 import { Skeleton, Switch, Stack, Flex, HStack, Checkbox } from '@chakra-ui/react';
 
@@ -23,24 +24,29 @@ import { UserRevieweeCard, GroupRevieweeCard } from 'components/RevieweeCard';
 
 import ReviewersAssignmentQueryDef from 'graphql/ReviewersAssignmentQuery';
 import CommitReviewersMutationDef from 'graphql/CommitReviewersMutation';
+import RemoveReviewersMutationDef from 'graphql/RemoveReviewersMutation';
+import type { Mutable } from 'types';
 
+import type { RemoveReviewersMutation } from '__generated__/RemoveReviewersMutation.graphql';
 import type {
   ReviewersAssignmentQuery,
   ReviewersAssignmentQuery$data,
 } from '__generated__/ReviewersAssignmentQuery.graphql';
 import type { CommitReviewersMutation } from '__generated__/CommitReviewersMutation.graphql';
 
-type Assignment = NonNullable<
+type Assignment = Mutable<
   NonNullable<
-    NonNullable<ReviewersAssignmentQuery$data['viewer']>['course']
-  >['assignment']
+    NonNullable<
+      NonNullable<ReviewersAssignmentQuery$data['viewer']>['course']
+    >['assignment']
+  >
 >;
 
-type ReviewerInfo = Assignment['previewReviewers'][number];
-
-type Teacher = NonNullable<
-  NonNullable<ReviewersAssignmentQuery$data['viewer']>['course']
->['teachersUserRoles'][number]['user'];
+type Teacher = Mutable<
+  NonNullable<
+    NonNullable<ReviewersAssignmentQuery$data['viewer']>['course']
+  >['teachersUserRoles'][number]['user']
+>;
 
 type Filters = {
   teacherIds: string[];
@@ -51,9 +57,12 @@ type UserReviewee = Omit<ReviewerInfo, 'reviewee'> & {
   reviewee: Extract<ReviewerInfo['reviewee'], { __typename: 'UserType' }>;
 };
 
-type InternalGroupType = Omit<ReviewerInfo, 'reviewee'> & {
+type GroupReviewee = Omit<ReviewerInfo, 'reviewee'> & {
   reviewee: Extract<ReviewerInfo['reviewee'], { __typename: 'InternalGroupType' }>;
 };
+
+type ReviewerInfo = Assignment['previewReviewers'][number];
+type SanitizedReviewer = (Omit<ReviewerInfo, 'reviewee'> & UserReviewee) | GroupReviewee;
 
 function AssignmentSettings(
   props:
@@ -83,6 +92,14 @@ function AssignmentSettings(
   const { setFilters, filters, teachers } = props;
 
   const buildOnTeacherChange = (teacher: Teacher) => () => {
+    if (filters.teacherIds.length === 1 && filters.teacherIds.includes(teacher.id)) {
+      return setFilters({ ...filters, teacherIds: [] });
+    }
+
+    if (uniq([...filters.teacherIds, teacher.id]).length === teachers.length) {
+      return setFilters({ ...filters, teacherIds: [] });
+    }
+
     return setFilters({
       ...filters,
 
@@ -118,7 +135,9 @@ function AssignmentSettings(
             <Checkbox
               key={k}
               disabled={!props.editable}
-              isChecked={filters.teacherIds.includes(teacher.id)}
+              isChecked={
+                filters.teacherIds.includes(teacher.id) || filters.teacherIds.length === 0
+              }
               onChange={buildOnTeacherChange(teacher)}
             >
               {teacher.name} {teacher.lastName}
@@ -131,19 +150,35 @@ function AssignmentSettings(
 }
 
 function AssignmentsContainer({
+  teachers,
   reviewers,
   title,
   fallbackText,
   groupsParticipants,
+  setPreviewReviewers,
+  handleRemoveReviewer,
 }: {
-  reviewers: readonly ReviewerInfo[];
+  teachers: Teacher[];
+  reviewers: SanitizedReviewer[];
   title?: string;
   fallbackText?: string;
   groupsParticipants: Assignment['groupParticipants'];
+  setPreviewReviewers?: Dispatch<SanitizedReviewer[]>;
+  handleRemoveReviewer?: (reviewerId: string, revieweeId: string) => void;
 }) {
-  const buildRevieweeCard = (reviewee: ReviewerInfo['reviewee']) => {
+  const buildRevieweeCard = (
+    reviewerId: ReviewerInfo['reviewer']['id'],
+    reviewee: ReviewerInfo['reviewee']
+  ) => {
     if (reviewee.__typename === 'UserType')
-      return <UserRevieweeCard revieweeInfo={{ ...reviewee }} />;
+      return (
+        <UserRevieweeCard
+          revieweeInfo={{ ...reviewee }}
+          onRemove={
+            handleRemoveReviewer && (() => handleRemoveReviewer(reviewerId, reviewee.id))
+          }
+        />
+      );
 
     if (reviewee.__typename === 'InternalGroupType') {
       // Reviewee puede ser un grupo entero asi que agarramos sus integrates.
@@ -153,6 +188,9 @@ function AssignmentsContainer({
 
       return (
         <GroupRevieweeCard
+          onRemove={
+            handleRemoveReviewer && (() => handleRemoveReviewer(reviewerId, reviewee.id))
+          }
           revieweeInfo={{
             groupName: reviewee.groupName!,
             participants: groupParticipants,
@@ -171,9 +209,28 @@ function AssignmentsContainer({
         {reviewers.length ? (
           reviewers.map(({ reviewer, reviewee }, i) => (
             <Box display="flex" gap="25px" key={i} h="70px" fontSize="15px">
-              <ReviewerCard reviewerInfo={reviewer} w="300px" />
+              <ReviewerCard
+                availableReviewers={teachers}
+                onChangeReviewer={reviewerId => {
+                  // Clonamos la lista para hacerla mutable.
+                  const reviewersClone = cloneDeep(reviewers);
+
+                  const target = reviewersClone.find(x => x.reviewee.id === reviewee.id);
+
+                  if (!target?.reviewer) {
+                    return null;
+                  }
+
+                  target.reviewer = teachers.find(x => x.id === reviewerId)!;
+
+                  setPreviewReviewers && setPreviewReviewers(reviewersClone);
+                }}
+                reviewerInfo={reviewer}
+                h="70px"
+                w="200px"
+              />
               <ArrowForwardIcon alignSelf={'center'} boxSize={'30px'} />
-              {buildRevieweeCard(reviewee)}
+              {buildRevieweeCard(reviewer.id, reviewee)}
             </Box>
           ))
         ) : (
@@ -206,6 +263,12 @@ function AssignButton({
   );
 }
 
+const sanitizeReviewers = (reviewers: ReviewerInfo[]): SanitizedReviewer[] => {
+  return reviewers.filter(
+    (x): x is SanitizedReviewer => x.reviewee.__typename !== '%other'
+  );
+};
+
 function ReviewersPageContainer({
   courseId,
   assignmentId,
@@ -219,26 +282,31 @@ function ReviewersPageContainer({
     CommitReviewersMutationDef
   );
 
+  const [commitRemoveReviewersMutation] = useMutation<RemoveReviewersMutation>(
+    RemoveReviewersMutationDef
+  );
+
   const [filters, setFilters] = useState<Filters>({
     consecutives: false,
     teacherIds: [],
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { viewer } = useLazyLoadQuery<ReviewersAssignmentQuery>(
+  const { viewer } = useLazyLoadQuery<Mutable<ReviewersAssignmentQuery>>(
     ReviewersAssignmentQueryDef,
     {
       courseId,
       assignmentId,
       filters: { consecutive: filters.consecutives, teachersUserIds: filters.teacherIds },
-    }
+    },
+    { fetchPolicy: 'network-only' }
   );
 
-  const [reviewers, setReviewers] = useState<readonly ReviewerInfo[]>(
-    viewer?.course?.assignment?.reviewers || []
+  const [reviewers, setReviewers] = useState<SanitizedReviewer[]>(
+    sanitizeReviewers(viewer?.course?.assignment?.reviewers || [])
   );
-  const [previewReviewers, setPreviewReviewers] = useState<readonly ReviewerInfo[]>(
-    viewer?.course?.assignment?.previewReviewers || []
+  const [previewReviewers, setPreviewReviewers] = useState<SanitizedReviewer[]>(
+    sanitizeReviewers(viewer?.course?.assignment?.previewReviewers || [])
   );
 
   const groupsParticipants = viewer?.course?.assignment?.groupParticipants ?? [];
@@ -250,9 +318,9 @@ function ReviewersPageContainer({
 
     const { previewReviewers, reviewers } = viewer.course.assignment;
 
-    setPreviewReviewers(previewReviewers);
-    setReviewers(reviewers);
-  }, [courseId, assignmentId]);
+    setPreviewReviewers(sanitizeReviewers(previewReviewers));
+    setReviewers(sanitizeReviewers(reviewers));
+  }, [viewer, courseId, assignmentId]);
 
   const onCommit = (
     toCommitData: readonly { reviewer: { id: string }; reviewee: { id: string } }[]
@@ -260,6 +328,8 @@ function ReviewersPageContainer({
     commitMutation({
       variables: {
         courseId,
+        // Necesario para poder updatear el cache con los filtros que tenemos
+        // actualmente.
         filters: {
           consecutive: filters.consecutives,
           teachersUserIds: filters.teacherIds,
@@ -278,13 +348,59 @@ function ReviewersPageContainer({
           toast({ title: 'No pudimos asignar los correctores', status: 'error' });
         } else {
           console.log('Reviewers set!');
-          setPreviewReviewers([]);
-          setReviewers(response.assignReviewers.reviewers);
+          setPreviewReviewers(
+            response.assignReviewers.previewReviewers as SanitizedReviewer[]
+          );
+          setReviewers(response.assignReviewers.reviewers as SanitizedReviewer[]);
           toast({ title: 'Correctores asignados', status: 'success' });
         }
         setIsLoading(false);
       },
     });
+  };
+
+  const handleRemoveReviewer = (reviewerId: string, revieweeId: string) => {
+    const t = reviewers.find(
+      x => x.reviewer.id === reviewerId && x.reviewee.id === revieweeId
+    );
+
+    if (t) {
+      commitRemoveReviewersMutation({
+        variables: {
+          reviewerIds: [t?.id],
+          courseId,
+          assignmentId,
+          // Necesario para poder updatear el cache con los filtros que tenemos
+          // actualmente.
+          filters: {
+            consecutive: filters.consecutives,
+            teachersUserIds: filters.teacherIds,
+          },
+        },
+        onCompleted(response, errors) {
+          if (errors?.length) {
+            if (errors.map(error => error.message.includes('ALREADY_REVIEWED'))) {
+              toast({
+                title: 'No es posible eliminar',
+                description: 'El reviewer ya realizo correcciones.',
+                status: 'error',
+              });
+            } else {
+              console.log('Error while commiting reviewers', errors);
+              toast({ title: 'No pudimos asignar los correctores', status: 'error' });
+            }
+          } else {
+            console.log('Reviewers set!');
+            setPreviewReviewers(
+              response.removeReviewers.previewReviewers as SanitizedReviewer[]
+            );
+            setReviewers(response.removeReviewers.reviewers as SanitizedReviewer[]);
+            toast({ title: 'Correctores asignados', status: 'success' });
+          }
+          setIsLoading(false);
+        },
+      });
+    }
   };
 
   if (isLoading) {
@@ -295,11 +411,13 @@ function ReviewersPageContainer({
     <ContainerLayout>
       <AssignmentSettings
         teachers={viewer?.course?.teachersUserRoles.map(x => x.user) || []}
-        filters={{ ...filters, teacherIds: previewReviewers.map(x => x.reviewer.id) }}
+        filters={filters}
         setFilters={setFilters}
         editable={!!previewReviewers.length}
       />
       <AssignmentsContainer
+        setPreviewReviewers={setPreviewReviewers}
+        teachers={viewer?.course?.teachersUserRoles.map(x => x.user) || []}
         title="Pendientes"
         reviewers={previewReviewers}
         fallbackText="No hay alumnos pendientes a los cuales asignar correctores"
@@ -307,20 +425,18 @@ function ReviewersPageContainer({
       />
       <AssignButton
         onClick={() => {
-          onCommit(
-            previewReviewers.filter((x): x is UserReviewee | InternalGroupType =>
-              ['UserType', 'InternalGroupType'].includes(x.reviewee.__typename)
-            )
-          );
+          onCommit(previewReviewers);
           setIsLoading(true);
         }}
         isDisabled={!previewReviewers.length}
       />
       <AssignmentsContainer
+        teachers={[]}
         title="Asignados"
         reviewers={reviewers}
         groupsParticipants={groupsParticipants}
         fallbackText="Asigna los correctores seleccionando los profesores y clickeando en el boton"
+        handleRemoveReviewer={handleRemoveReviewer}
       />
     </ContainerLayout>
   );

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f5562b99f99043148c77ac565f831b02>>
+ * @generated SignedSource<<824a72d3af4cc1920e62f0b906c1ca95>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,25 +9,18 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
-export type AssignReviewersInputType = {
-  assignmentId: string;
-  reviewers: ReadonlyArray<ReviewersAssignmentInputType>;
-};
-export type ReviewersAssignmentInputType = {
-  revieweeId: string;
-  reviewerUserId: string;
-};
 export type PreviewReviewersFilterInputType = {
   consecutive: boolean;
   teachersUserIds: ReadonlyArray<string | null>;
 };
-export type CommitReviewersMutation$variables = {
+export type RemoveReviewersMutation$variables = {
+  assignmentId: string;
   courseId: string;
   filters: PreviewReviewersFilterInputType;
-  input: AssignReviewersInputType;
+  reviewerIds: ReadonlyArray<string>;
 };
-export type CommitReviewersMutation$data = {
-  readonly assignReviewers: {
+export type RemoveReviewersMutation$data = {
+  readonly removeReviewers: {
     readonly id: string;
     readonly previewReviewers: ReadonlyArray<{
       readonly id: string;
@@ -77,49 +70,54 @@ export type CommitReviewersMutation$data = {
     }>;
   };
 };
-export type CommitReviewersMutation = {
-  response: CommitReviewersMutation$data;
-  variables: CommitReviewersMutation$variables;
+export type RemoveReviewersMutation = {
+  response: RemoveReviewersMutation$data;
+  variables: RemoveReviewersMutation$variables;
 };
 
 const node: ConcreteRequest = (function(){
 var v0 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "courseId"
+  "name": "assignmentId"
 },
 v1 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "filters"
+  "name": "courseId"
 },
 v2 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "input"
+  "name": "filters"
 },
 v3 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "reviewerIds"
+},
+v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v4 = {
+v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "name",
   "storageKey": null
 },
-v5 = {
+v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "lastName",
   "storageKey": null
 },
-v6 = {
+v7 = {
   "alias": null,
   "args": null,
   "concreteType": null,
@@ -137,7 +135,7 @@ v6 = {
     {
       "kind": "InlineFragment",
       "selections": [
-        (v3/*: any*/),
+        (v4/*: any*/),
         {
           "alias": "groupName",
           "args": null,
@@ -152,9 +150,9 @@ v6 = {
     {
       "kind": "InlineFragment",
       "selections": [
-        (v3/*: any*/),
         (v4/*: any*/),
         (v5/*: any*/),
+        (v6/*: any*/),
         {
           "alias": null,
           "args": null,
@@ -169,7 +167,7 @@ v6 = {
   ],
   "storageKey": null
 },
-v7 = {
+v8 = {
   "alias": null,
   "args": null,
   "concreteType": "UserType",
@@ -177,16 +175,21 @@ v7 = {
   "name": "reviewer",
   "plural": false,
   "selections": [
-    (v3/*: any*/),
     (v4/*: any*/),
-    (v5/*: any*/)
+    (v5/*: any*/),
+    (v6/*: any*/)
   ],
   "storageKey": null
 },
-v8 = [
+v9 = [
   {
     "alias": null,
     "args": [
+      {
+        "kind": "Variable",
+        "name": "assignmentId",
+        "variableName": "assignmentId"
+      },
       {
         "kind": "Variable",
         "name": "courseId",
@@ -194,16 +197,16 @@ v8 = [
       },
       {
         "kind": "Variable",
-        "name": "input",
-        "variableName": "input"
+        "name": "reviewers",
+        "variableName": "reviewerIds"
       }
     ],
     "concreteType": "AssignmentType",
     "kind": "LinkedField",
-    "name": "assignReviewers",
+    "name": "removeReviewers",
     "plural": false,
     "selections": [
-      (v3/*: any*/),
+      (v4/*: any*/),
       {
         "alias": null,
         "args": [
@@ -218,9 +221,9 @@ v8 = [
         "name": "previewReviewers",
         "plural": true,
         "selections": [
-          (v3/*: any*/),
-          (v6/*: any*/),
-          (v7/*: any*/)
+          (v4/*: any*/),
+          (v7/*: any*/),
+          (v8/*: any*/)
         ],
         "storageKey": null
       },
@@ -232,9 +235,9 @@ v8 = [
         "name": "reviewers",
         "plural": true,
         "selections": [
-          (v3/*: any*/),
-          (v7/*: any*/),
-          (v6/*: any*/)
+          (v4/*: any*/),
+          (v8/*: any*/),
+          (v7/*: any*/)
         ],
         "storageKey": null
       }
@@ -247,37 +250,39 @@ return {
     "argumentDefinitions": [
       (v0/*: any*/),
       (v1/*: any*/),
-      (v2/*: any*/)
+      (v2/*: any*/),
+      (v3/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
-    "name": "CommitReviewersMutation",
-    "selections": (v8/*: any*/),
+    "name": "RemoveReviewersMutation",
+    "selections": (v9/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
     "argumentDefinitions": [
-      (v2/*: any*/),
+      (v3/*: any*/),
+      (v1/*: any*/),
       (v0/*: any*/),
-      (v1/*: any*/)
+      (v2/*: any*/)
     ],
     "kind": "Operation",
-    "name": "CommitReviewersMutation",
-    "selections": (v8/*: any*/)
+    "name": "RemoveReviewersMutation",
+    "selections": (v9/*: any*/)
   },
   "params": {
-    "cacheID": "57048f03ef03268c3dcac29a3971e2c1",
+    "cacheID": "5ca87aa4ef50247bbd7506187c7185fe",
     "id": null,
     "metadata": {},
-    "name": "CommitReviewersMutation",
+    "name": "RemoveReviewersMutation",
     "operationKind": "mutation",
-    "text": "mutation CommitReviewersMutation(\n  $input: AssignReviewersInputType!\n  $courseId: ID!\n  $filters: PreviewReviewersFilterInputType!\n) {\n  assignReviewers(input: $input, courseId: $courseId) {\n    id\n    previewReviewers(input: $filters) {\n      id\n      reviewee {\n        __typename\n        ... on InternalGroupType {\n          id\n          groupName: name\n        }\n        ... on UserType {\n          id\n          name\n          lastName\n          file\n        }\n      }\n      reviewer {\n        id\n        name\n        lastName\n      }\n    }\n    reviewers {\n      id\n      reviewer {\n        id\n        name\n        lastName\n      }\n      reviewee {\n        __typename\n        ... on InternalGroupType {\n          id\n          groupName: name\n        }\n        ... on UserType {\n          id\n          name\n          lastName\n          file\n        }\n      }\n    }\n  }\n}\n"
+    "text": "mutation RemoveReviewersMutation(\n  $reviewerIds: [ID!]!\n  $courseId: ID!\n  $assignmentId: ID!\n  $filters: PreviewReviewersFilterInputType!\n) {\n  removeReviewers(reviewers: $reviewerIds, assignmentId: $assignmentId, courseId: $courseId) {\n    id\n    previewReviewers(input: $filters) {\n      id\n      reviewee {\n        __typename\n        ... on InternalGroupType {\n          id\n          groupName: name\n        }\n        ... on UserType {\n          id\n          name\n          lastName\n          file\n        }\n      }\n      reviewer {\n        id\n        name\n        lastName\n      }\n    }\n    reviewers {\n      id\n      reviewer {\n        id\n        name\n        lastName\n      }\n      reviewee {\n        __typename\n        ... on InternalGroupType {\n          id\n          groupName: name\n        }\n        ... on UserType {\n          id\n          name\n          lastName\n          file\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "22f855d3f7b7fb8a2fb363fd1287ba51";
+(node as any).hash = "ed9b9078bd31dff4a508cb88d858c989";
 
 export default node;

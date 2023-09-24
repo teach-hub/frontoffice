@@ -1,12 +1,17 @@
 import { graphql } from 'babel-plugin-relay/macro';
 
 export default graphql`
-  mutation CommitReviewersMutation(
-    $input: AssignReviewersInputType!
+  mutation RemoveReviewersMutation(
+    $reviewerIds: [ID!]!
     $courseId: ID!
+    $assignmentId: ID!
     $filters: PreviewReviewersFilterInputType!
   ) {
-    assignReviewers(input: $input, courseId: $courseId) {
+    removeReviewers(
+      reviewers: $reviewerIds
+      assignmentId: $assignmentId
+      courseId: $courseId
+    ) {
       id
       # Necesario para actualizar el store con los nuevos reviewers.
       previewReviewers(input: $filters) {
