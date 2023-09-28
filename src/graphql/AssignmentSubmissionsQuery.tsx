@@ -35,6 +35,7 @@ export default graphql`
                   name
                   lastName
                   file
+                  notificationEmail
                 }
               }
               ... on UserType {
@@ -42,6 +43,7 @@ export default graphql`
                 file
                 name
                 lastName
+                notificationEmail
               }
             }
             reviewer {
@@ -72,6 +74,7 @@ export default graphql`
                   name
                   lastName
                   file
+                  notificationEmail
                 }
               }
               ... on UserType {
@@ -79,6 +82,7 @@ export default graphql`
                 file
                 name
                 lastName
+                notificationEmail
               }
             }
             reviewer {
