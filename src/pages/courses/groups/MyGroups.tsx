@@ -65,7 +65,7 @@ const mapToAssignmentGroupData = (
   viewerGroups: NonNullable<ViewerCourseData['viewerGroups']>
 ) => {
   return assignments
-    .filter(assignment => assignment.isGroup === true) // Keep only group assignments
+    .filter(assignment => assignment.isGroup) // Keep only group assignments
     .map(assignment => {
       const assignmentViewerGroup = viewerGroups.find(
         viewerGroup => viewerGroup.assignmentId === assignment.id
@@ -113,11 +113,14 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
       courseId,
     }
   );
+
   const assignments = userCourseGroupsQuery.viewer?.course?.assignments ?? [];
   const viewerGroups = userCourseGroupsQuery.viewer?.course?.viewerGroups ?? [];
+
+  // Sort groups by ascending name
   const availableGroups = [...(userCourseGroupsQuery.viewer?.course?.groups ?? [])].sort(
     (a, b) => a?.name?.localeCompare(b?.name || '') || 0
-  ); // Sort groups by ascending name
+  );
 
   const groupsData: AssignmentGroupData[] = mapToAssignmentGroupData(
     assignments,
