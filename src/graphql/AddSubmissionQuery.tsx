@@ -28,8 +28,8 @@ export default graphql`
           group {
             id
             name
+            assignmentId
           }
-          assignmentId
         }
       }
       repositories(courseId: $courseId) {

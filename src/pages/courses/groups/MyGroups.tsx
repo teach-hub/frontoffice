@@ -68,7 +68,7 @@ const mapToAssignmentGroupData = (
     .filter(assignment => assignment.isGroup) // Keep only group assignments
     .map(assignment => {
       const assignmentViewerGroup = viewerGroups.find(
-        viewerGroup => viewerGroup.assignmentId === assignment.id
+        viewerGroup => viewerGroup.group.assignmentId === assignment.id
       );
 
       const participantsData = assignmentViewerGroup?.groupUsers?.map(
@@ -87,9 +87,7 @@ const mapToAssignmentGroupData = (
           }
         : undefined;
     })
-    .filter(
-      assignmentGroupData => assignmentGroupData !== undefined
-    ) as AssignmentGroupData[];
+    .filter(assignmentGroupData => !!assignmentGroupData) as AssignmentGroupData[];
 };
 
 const MyGroupsPage = ({ courseId }: { courseId: string }) => {
@@ -115,7 +113,8 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
   );
 
   const assignments = userCourseGroupsQuery.viewer?.course?.assignments ?? [];
-  const viewerGroups = userCourseGroupsQuery.viewer?.course?.viewerGroups ?? [];
+  const viewerGroupsParticipants =
+    userCourseGroupsQuery.viewer?.course?.viewerGroups ?? [];
 
   // Sort groups by ascending name
   const availableGroups = [...(userCourseGroupsQuery.viewer?.course?.groups ?? [])].sort(
@@ -124,7 +123,7 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
 
   const groupsData: AssignmentGroupData[] = mapToAssignmentGroupData(
     assignments,
-    viewerGroups
+    viewerGroupsParticipants
   );
 
   const { isOpen, onOpen, onClose } = useDisclosure();

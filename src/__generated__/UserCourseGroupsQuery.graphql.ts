@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<190a1fa5599b5891b02886a1c6ff5bd9>>
+ * @generated SignedSource<<edb178f6e4ea5797c3629ac376a67cb2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -26,8 +26,8 @@ export type UserCourseGroupsQuery$data = {
       }>;
       readonly id: string;
       readonly viewerGroups: ReadonlyArray<{
-        readonly assignmentId: string;
         readonly group: {
+          readonly assignmentId: string;
           readonly id: string;
           readonly name: string | null;
         };
@@ -72,10 +72,6 @@ v2 = {
   "storageKey": null
 },
 v3 = [
-  (v1/*: any*/),
-  (v2/*: any*/)
-],
-v4 = [
   {
     "alias": null,
     "args": null,
@@ -138,18 +134,21 @@ v4 = [
               {
                 "alias": null,
                 "args": null,
-                "kind": "ScalarField",
-                "name": "assignmentId",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
                 "concreteType": "InternalGroupType",
                 "kind": "LinkedField",
                 "name": "group",
                 "plural": false,
-                "selections": (v3/*: any*/),
+                "selections": [
+                  (v1/*: any*/),
+                  (v2/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "assignmentId",
+                    "storageKey": null
+                  }
+                ],
                 "storageKey": null
               },
               {
@@ -196,7 +195,10 @@ v4 = [
             "kind": "LinkedField",
             "name": "groups",
             "plural": true,
-            "selections": (v3/*: any*/),
+            "selections": [
+              (v1/*: any*/),
+              (v2/*: any*/)
+            ],
             "storageKey": null
           }
         ],
@@ -212,7 +214,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "UserCourseGroupsQuery",
-    "selections": (v4/*: any*/),
+    "selections": (v3/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -221,19 +223,19 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "UserCourseGroupsQuery",
-    "selections": (v4/*: any*/)
+    "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "5ddede8801f768f4107a82306b3c46d3",
+    "cacheID": "83f0386800508dd4eeff65417b44b7a0",
     "id": null,
     "metadata": {},
     "name": "UserCourseGroupsQuery",
     "operationKind": "query",
-    "text": "query UserCourseGroupsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n        isGroup\n      }\n      viewerGroups {\n        id\n        assignmentId\n        group {\n          id\n          name\n        }\n        groupUsers {\n          id\n          name\n          lastName\n          notificationEmail\n          file\n        }\n      }\n      groups {\n        id\n        name\n      }\n    }\n  }\n}\n"
+    "text": "query UserCourseGroupsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n        isGroup\n      }\n      viewerGroups {\n        id\n        group {\n          id\n          name\n          assignmentId\n        }\n        groupUsers {\n          id\n          name\n          lastName\n          notificationEmail\n          file\n        }\n      }\n      groups {\n        id\n        name\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "0085e7f9240d881e1863432a4dcb84d6";
+(node as any).hash = "c9d83cf4d4f8f5f4d9601740b8c697cb";
 
 export default node;

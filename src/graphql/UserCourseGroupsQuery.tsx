@@ -13,10 +13,10 @@ export default graphql`
         }
         viewerGroups {
           id
-          assignmentId
           group {
             id
             name
+            assignmentId
           }
           groupUsers {
             id

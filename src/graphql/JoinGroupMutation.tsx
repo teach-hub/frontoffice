@@ -9,7 +9,7 @@ export default graphql`
         name
         courseId
       }
-      assignmentId
+      # assignmentId
     }
   }
 `;

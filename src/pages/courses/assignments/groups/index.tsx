@@ -77,42 +77,41 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const studentsWithoutGroupNames = mapToUserNames(
     assignmentGroupsData.studentsWithoutGroup
   );
-  const missingGroupTableContent =
-    studentsWithoutGroupNames.length !== 0
-      ? [
-          {
-            content: [
-              <Text
-                fontWeight={'bold'}
-                fontStyle={'italic'}
-                color={theme.colors.teachHub.red}
-              >
-                Sin grupo
-              </Text>,
-              <Stack>
-                {studentsWithoutGroupNames.map((userName: string) => (
-                  <Text key={userName}>{userName}</Text>
-                ))}
-              </Stack>,
-              <Stack direction={'row'} justifyContent={'center'} alignItems={'center'}>
-                <Tooltip label={'Crear nuevo grupo'}>
-                  {/* Wrap icon in span due to not using forwardRef */}
-                  <span>
-                    <IconButton
-                      variant={'ghost'}
-                      aria-label={'create-group'}
-                      icon={<CreateIcon size="medium" />}
-                      onClick={() => {
-                        onOpenCreateGroupModal();
-                      }}
-                    />
-                  </span>
-                </Tooltip>
-              </Stack>,
-            ],
-          },
-        ]
-      : [];
+  const missingGroupTableContent = studentsWithoutGroupNames.length
+    ? [
+        {
+          content: [
+            <Text
+              fontWeight={'bold'}
+              fontStyle={'italic'}
+              color={theme.colors.teachHub.red}
+            >
+              Sin grupo
+            </Text>,
+            <Stack>
+              {studentsWithoutGroupNames.map((userName: string) => (
+                <Text key={userName}>{userName}</Text>
+              ))}
+            </Stack>,
+            <Stack direction={'row'} justifyContent={'center'} alignItems={'center'}>
+              <Tooltip label={'Crear nuevo grupo'}>
+                {/* Wrap icon in span due to not using forwardRef */}
+                <span>
+                  <IconButton
+                    variant={'ghost'}
+                    aria-label={'create-group'}
+                    icon={<CreateIcon size="medium" />}
+                    onClick={() => {
+                      onOpenCreateGroupModal();
+                    }}
+                  />
+                </span>
+              </Tooltip>
+            </Stack>,
+          ],
+        },
+      ]
+    : [];
 
   const [selectedGroupId, setSelectedGroupId] = useState<Nullable<string>>(null);
   const [selectedUserRoleIds, setSelectedUserRoleIds] = useState<string[]>([]);
@@ -140,8 +139,8 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const handleAddUsersToGroup = () => {
     commitAddParticipantsToGroup({
       variables: {
-        groupId: selectedGroupId || '',
         assignmentId: assignmentId || '',
+        groupId: selectedGroupId || '',
         participantUserRoleIds: selectedUserRoleIds,
       },
       onCompleted: (response: AddParticipantsToGroupMutation$data, errors) => {
@@ -167,9 +166,9 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const handleCreateGroup = (groupName: string) => {
     commitCreateGroupWithParticipants({
       variables: {
-        groupName: groupName,
-        courseId,
         assignmentId: assignmentId || '',
+        groupName,
+        courseId,
         participantUserRoleIds: selectedUserRoleIds,
       },
       onCompleted: (response: CreateGroupWithParticipantsMutation$data, errors) => {
