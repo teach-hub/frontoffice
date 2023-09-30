@@ -2,7 +2,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
-import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
+import { FetchedContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
 import useToast from 'hooks/useToast';
 
@@ -128,9 +128,14 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const [selectedReviewerId, setSelectedReviewerId] =
     useState<Optional<Nullable<string>>>(null);
 
+  const onlyReviewerSubmissions = !courseContext.userHasPermission(
+    Permission.ViewAllSubmissions
+  );
+
   const data = useLazyLoadQuery<AssignmentSubmissionsQuery>(SubmissionsQuery, {
     assignmentId: selectedAssignmentId,
     courseId: courseContext.courseId,
+    onlyReviewerSubmissions: onlyReviewerSubmissions,
   });
 
   const allAssignments = data.viewer?.course?.assignments || [];

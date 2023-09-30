@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e5a5dd5035d72ba2053a289f5afbd31a>>
+ * @generated SignedSource<<0ca2698c8b760d9e753c064d0c93d936>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -80,6 +80,13 @@ v2 = {
 },
 v3 = [
   {
+    "kind": "Literal",
+    "name": "onlyReviewerSubmissions",
+    "value": false
+  }
+],
+v4 = [
+  {
     "alias": null,
     "args": null,
     "concreteType": "ViewerType",
@@ -151,7 +158,7 @@ v3 = [
               },
               {
                 "alias": null,
-                "args": null,
+                "args": (v3/*: any*/),
                 "concreteType": "SubmissionType",
                 "kind": "LinkedField",
                 "name": "submissions",
@@ -206,11 +213,11 @@ v3 = [
                     "storageKey": null
                   }
                 ],
-                "storageKey": null
+                "storageKey": "submissions(onlyReviewerSubmissions:false)"
               },
               {
                 "alias": null,
-                "args": null,
+                "args": (v3/*: any*/),
                 "concreteType": "NonExistentSubmissionType",
                 "kind": "LinkedField",
                 "name": "nonExistentSubmissions",
@@ -218,7 +225,7 @@ v3 = [
                 "selections": [
                   (v1/*: any*/)
                 ],
-                "storageKey": null
+                "storageKey": "nonExistentSubmissions(onlyReviewerSubmissions:false)"
               }
             ],
             "storageKey": null
@@ -267,7 +274,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "CourseInfoQuery",
-    "selections": (v3/*: any*/),
+    "selections": (v4/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -276,19 +283,19 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "CourseInfoQuery",
-    "selections": (v3/*: any*/)
+    "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "49dc71d7cdbe0d412bd79dbd100f4e9c",
+    "cacheID": "7cbada083f07cec34b4fca94fe24c9a1",
     "id": null,
     "metadata": {},
     "name": "CourseInfoQuery",
     "operationKind": "query",
-    "text": "query CourseInfoQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      organization\n      studentsCount\n      teachersCount\n      assignments {\n        id\n        title\n        isGroup\n        submissions {\n          id\n          submittedAt\n          pullRequestUrl\n          assignmentId\n          review {\n            id\n            revisionRequested\n            grade\n          }\n        }\n        nonExistentSubmissions {\n          id\n        }\n      }\n      subject {\n        id\n        name\n      }\n    }\n    availableOrganizations {\n      names\n    }\n  }\n}\n"
+    "text": "query CourseInfoQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      organization\n      studentsCount\n      teachersCount\n      assignments {\n        id\n        title\n        isGroup\n        submissions(onlyReviewerSubmissions: false) {\n          id\n          submittedAt\n          pullRequestUrl\n          assignmentId\n          review {\n            id\n            revisionRequested\n            grade\n          }\n        }\n        nonExistentSubmissions(onlyReviewerSubmissions: false) {\n          id\n        }\n      }\n      subject {\n        id\n        name\n      }\n    }\n    availableOrganizations {\n      names\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "e2e2e8393ff71f4314eac07c55a45a00";
+(node as any).hash = "97c1e03d3839383a49f400b4c3d8aef6";
 
 export default node;

@@ -1,7 +1,11 @@
 import { graphql } from 'babel-plugin-relay/macro';
 
 export default graphql`
-  query AssignmentSubmissionsQuery($courseId: ID!, $assignmentId: ID) {
+  query AssignmentSubmissionsQuery(
+    $courseId: ID!
+    $assignmentId: ID
+    $onlyReviewerSubmissions: Boolean!
+  ) {
     viewer {
       id
       name
@@ -15,7 +19,7 @@ export default graphql`
           id
           title
           isGroup
-          submissions {
+          submissions(onlyReviewerSubmissions: $onlyReviewerSubmissions) {
             id
             submittedAt
             submittedAgainAt
@@ -56,7 +60,7 @@ export default graphql`
               reviewedAgainAt
             }
           }
-          nonExistentSubmissions {
+          nonExistentSubmissions(onlyReviewerSubmissions: $onlyReviewerSubmissions) {
             id
             submitter {
               __typename

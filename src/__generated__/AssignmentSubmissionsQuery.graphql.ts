@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6e34211d972c3cf6fcda5fb80269ad3f>>
+ * @generated SignedSource<<5256e9dae2e12246741f319efa476e8e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,6 +12,7 @@ import { ConcreteRequest, Query } from 'relay-runtime';
 export type AssignmentSubmissionsQuery$variables = {
   assignmentId?: string | null;
   courseId: string;
+  onlyReviewerSubmissions: boolean;
 };
 export type AssignmentSubmissionsQuery$data = {
   readonly viewer: {
@@ -123,41 +124,53 @@ v1 = {
   "name": "courseId"
 },
 v2 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "onlyReviewerSubmissions"
+},
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v3 = {
+v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "name",
   "storageKey": null
 },
-v4 = {
+v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "title",
   "storageKey": null
 },
-v5 = {
+v6 = [
+  {
+    "kind": "Variable",
+    "name": "onlyReviewerSubmissions",
+    "variableName": "onlyReviewerSubmissions"
+  }
+],
+v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "lastName",
   "storageKey": null
 },
-v6 = {
+v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "file",
   "storageKey": null
 },
-v7 = {
+v9 = {
   "alias": null,
   "args": null,
   "concreteType": null,
@@ -175,7 +188,7 @@ v7 = {
     {
       "kind": "InlineFragment",
       "selections": [
-        (v2/*: any*/),
+        (v3/*: any*/),
         {
           "alias": "groupName",
           "args": null,
@@ -191,10 +204,10 @@ v7 = {
           "name": "usersForAssignment",
           "plural": true,
           "selections": [
-            (v2/*: any*/),
             (v3/*: any*/),
-            (v5/*: any*/),
-            (v6/*: any*/)
+            (v4/*: any*/),
+            (v7/*: any*/),
+            (v8/*: any*/)
           ],
           "storageKey": null
         }
@@ -205,10 +218,10 @@ v7 = {
     {
       "kind": "InlineFragment",
       "selections": [
-        (v2/*: any*/),
-        (v6/*: any*/),
         (v3/*: any*/),
-        (v5/*: any*/)
+        (v8/*: any*/),
+        (v4/*: any*/),
+        (v7/*: any*/)
       ],
       "type": "UserType",
       "abstractKey": null
@@ -216,7 +229,7 @@ v7 = {
   ],
   "storageKey": null
 },
-v8 = {
+v10 = {
   "alias": null,
   "args": null,
   "concreteType": "ReviewerType",
@@ -224,7 +237,7 @@ v8 = {
   "name": "reviewer",
   "plural": false,
   "selections": [
-    (v2/*: any*/),
+    (v3/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -233,16 +246,16 @@ v8 = {
       "name": "reviewer",
       "plural": false,
       "selections": [
-        (v2/*: any*/),
         (v3/*: any*/),
-        (v5/*: any*/)
+        (v4/*: any*/),
+        (v7/*: any*/)
       ],
       "storageKey": null
     }
   ],
   "storageKey": null
 },
-v9 = [
+v11 = [
   {
     "alias": null,
     "args": null,
@@ -251,8 +264,8 @@ v9 = [
     "name": "viewer",
     "plural": false,
     "selections": [
-      (v2/*: any*/),
       (v3/*: any*/),
+      (v4/*: any*/),
       {
         "alias": null,
         "args": [
@@ -267,7 +280,7 @@ v9 = [
         "name": "course",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
+          (v3/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -276,8 +289,8 @@ v9 = [
             "name": "assignments",
             "plural": true,
             "selections": [
-              (v2/*: any*/),
-              (v4/*: any*/)
+              (v3/*: any*/),
+              (v5/*: any*/)
             ],
             "storageKey": null
           },
@@ -295,8 +308,8 @@ v9 = [
             "name": "assignments",
             "plural": true,
             "selections": [
-              (v2/*: any*/),
-              (v4/*: any*/),
+              (v3/*: any*/),
+              (v5/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -306,13 +319,13 @@ v9 = [
               },
               {
                 "alias": null,
-                "args": null,
+                "args": (v6/*: any*/),
                 "concreteType": "SubmissionType",
                 "kind": "LinkedField",
                 "name": "submissions",
                 "plural": true,
                 "selections": [
-                  (v2/*: any*/),
+                  (v3/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -341,8 +354,8 @@ v9 = [
                     "name": "assignmentId",
                     "storageKey": null
                   },
-                  (v7/*: any*/),
-                  (v8/*: any*/),
+                  (v9/*: any*/),
+                  (v10/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -351,7 +364,7 @@ v9 = [
                     "name": "review",
                     "plural": false,
                     "selections": [
-                      (v2/*: any*/),
+                      (v3/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -388,15 +401,15 @@ v9 = [
               },
               {
                 "alias": null,
-                "args": null,
+                "args": (v6/*: any*/),
                 "concreteType": "NonExistentSubmissionType",
                 "kind": "LinkedField",
                 "name": "nonExistentSubmissions",
                 "plural": true,
                 "selections": [
-                  (v2/*: any*/),
-                  (v7/*: any*/),
-                  (v8/*: any*/)
+                  (v3/*: any*/),
+                  (v9/*: any*/),
+                  (v10/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -414,12 +427,13 @@ return {
   "fragment": {
     "argumentDefinitions": [
       (v0/*: any*/),
-      (v1/*: any*/)
+      (v1/*: any*/),
+      (v2/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
     "name": "AssignmentSubmissionsQuery",
-    "selections": (v9/*: any*/),
+    "selections": (v11/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -427,23 +441,24 @@ return {
   "operation": {
     "argumentDefinitions": [
       (v1/*: any*/),
-      (v0/*: any*/)
+      (v0/*: any*/),
+      (v2/*: any*/)
     ],
     "kind": "Operation",
     "name": "AssignmentSubmissionsQuery",
-    "selections": (v9/*: any*/)
+    "selections": (v11/*: any*/)
   },
   "params": {
-    "cacheID": "40601242384af175a9260343747c3dcf",
+    "cacheID": "ba2cd90a649fcfcb324905eb1dbd134f",
     "id": null,
     "metadata": {},
     "name": "AssignmentSubmissionsQuery",
     "operationKind": "query",
-    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n      assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {\n        id\n        title\n        isGroup\n        submissions {\n          id\n          submittedAt\n          submittedAgainAt\n          pullRequestUrl\n          assignmentId\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              usersForAssignment {\n                id\n                name\n                lastName\n                file\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            reviewedAt\n            reviewedAgainAt\n          }\n        }\n        nonExistentSubmissions {\n          id\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              usersForAssignment {\n                id\n                name\n                lastName\n                file\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID\n  $onlyReviewerSubmissions: Boolean!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n      assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {\n        id\n        title\n        isGroup\n        submissions(onlyReviewerSubmissions: $onlyReviewerSubmissions) {\n          id\n          submittedAt\n          submittedAgainAt\n          pullRequestUrl\n          assignmentId\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              usersForAssignment {\n                id\n                name\n                lastName\n                file\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            reviewedAt\n            reviewedAgainAt\n          }\n        }\n        nonExistentSubmissions(onlyReviewerSubmissions: $onlyReviewerSubmissions) {\n          id\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              usersForAssignment {\n                id\n                name\n                lastName\n                file\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "42206db7c1e06639753bb6ffc372d7e1";
+(node as any).hash = "ce00b34b0d1e56aee579063b13445ee4";
 
 export default node;
