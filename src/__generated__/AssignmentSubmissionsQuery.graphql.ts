@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3fd238f416de03e3ccffadfcb00ab649>>
+ * @generated SignedSource<<e372e939afca70a66fafe442d9447940>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -38,7 +38,7 @@ export type AssignmentSubmissionsQuery$data = {
             readonly __typename: "InternalGroupType";
             readonly groupName: string | null;
             readonly id: string;
-            readonly usersForAssignment: ReadonlyArray<{
+            readonly members: ReadonlyArray<{
               readonly file: string;
               readonly id: string;
               readonly lastName: string;
@@ -83,7 +83,7 @@ export type AssignmentSubmissionsQuery$data = {
             readonly __typename: "InternalGroupType";
             readonly groupName: string | null;
             readonly id: string;
-            readonly usersForAssignment: ReadonlyArray<{
+            readonly members: ReadonlyArray<{
               readonly file: string;
               readonly id: string;
               readonly lastName: string;
@@ -212,7 +212,7 @@ v10 = {
           "args": null,
           "concreteType": "UserType",
           "kind": "LinkedField",
-          "name": "usersForAssignment",
+          "name": "members",
           "plural": true,
           "selections": [
             (v3/*: any*/),
@@ -462,16 +462,16 @@ return {
     "selections": (v12/*: any*/)
   },
   "params": {
-    "cacheID": "e27ef7a1302cdd7b5261b037719f5ed5",
+    "cacheID": "8b0a84a6f148270a19fda6fd42c20837",
     "id": null,
     "metadata": {},
     "name": "AssignmentSubmissionsQuery",
     "operationKind": "query",
-    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID\n  $onlyReviewerSubmissions: Boolean!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n      assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {\n        id\n        title\n        isGroup\n        submissions(onlyReviewerSubmissions: $onlyReviewerSubmissions) {\n          id\n          submittedAt\n          submittedAgainAt\n          pullRequestUrl\n          assignmentId\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              usersForAssignment {\n                id\n                name\n                lastName\n                file\n                notificationEmail\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n              notificationEmail\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            reviewedAt\n            reviewedAgainAt\n          }\n        }\n        nonExistentSubmissions(onlyReviewerSubmissions: $onlyReviewerSubmissions) {\n          id\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              usersForAssignment {\n                id\n                name\n                lastName\n                file\n                notificationEmail\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n              notificationEmail\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID\n  $onlyReviewerSubmissions: Boolean!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n      assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {\n        id\n        title\n        isGroup\n        submissions(onlyReviewerSubmissions: $onlyReviewerSubmissions) {\n          id\n          submittedAt\n          submittedAgainAt\n          pullRequestUrl\n          assignmentId\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              members {\n                id\n                name\n                lastName\n                file\n                notificationEmail\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n              notificationEmail\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            reviewedAt\n            reviewedAgainAt\n          }\n        }\n        nonExistentSubmissions(onlyReviewerSubmissions: $onlyReviewerSubmissions) {\n          id\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              members {\n                id\n                name\n                lastName\n                file\n                notificationEmail\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n              notificationEmail\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "33ab17b7ed8e56430209146b81508cb0";
+(node as any).hash = "74cc51856c57af3e94f32554647a6139";
 
 export default node;

@@ -23,7 +23,7 @@ export default graphql`
           title
           isGroup
         }
-        viewerGroupParticipants: viewerGroups {
+        viewerGroupParticipants {
           id
           group {
             id

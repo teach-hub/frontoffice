@@ -11,7 +11,7 @@ export default graphql`
           title
           isGroup
         }
-        viewerGroups {
+        viewerGroupParticipants {
           id
           group {
             id
@@ -29,6 +29,7 @@ export default graphql`
         groups {
           id
           name
+          assignmentId
         }
       }
     }

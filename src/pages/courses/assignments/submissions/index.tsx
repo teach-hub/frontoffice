@@ -58,14 +58,18 @@ type SubmitterType = NonNullable<SubmissionType['submitter']>;
 type ReviewerType = NonNullable<SubmissionType['reviewer']>;
 type ReviewType = NonNullable<SubmissionType['review']>;
 
-const getSubmitterAsUser = (submitter: SubmitterType) => {
+const getSubmitterAsUser = (
+  submitter: SubmitterType
+): Extract<SubmitterType, { __typename: 'UserType' }> | null => {
   if (submitter.__typename === 'UserType') {
     return submitter;
   }
   return null;
 };
 
-const getSubmitterAsGroup = (submitter: SubmitterType) => {
+const getSubmitterAsGroup = (
+  submitter: SubmitterType
+): Extract<SubmitterType, { __typename: 'InternalGroupType' }> | null => {
   if (submitter.__typename === 'InternalGroupType') {
     return submitter;
   }
@@ -90,7 +94,7 @@ const getSubmitterRowData = (
       id: submitterAsGroup.id,
       name: submitterAsGroup.groupName,
       isGroup: true,
-      participants: submitterAsGroup.usersForAssignment.map(user => ({
+      participants: submitterAsGroup.members.map(user => ({
         id: user.id,
         name: `${user.lastName}, ${user.name}`,
         notificationEmail: user.notificationEmail,
@@ -186,7 +190,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
       } else {
         const submitterAsGroup = getSubmitterAsGroup(submitter);
         if (submitterAsGroup) {
-          validStudent = submitterAsGroup.usersForAssignment.some(
+          validStudent = submitterAsGroup.members.some(
             user => user.id === selectedStudentUserId
           );
         }

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<edb178f6e4ea5797c3629ac376a67cb2>>
+ * @generated SignedSource<<fe0e9a940623c8ef804c83e4228dd45e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -21,11 +21,12 @@ export type UserCourseGroupsQuery$data = {
         readonly title: string | null;
       }>;
       readonly groups: ReadonlyArray<{
+        readonly assignmentId: string;
         readonly id: string;
         readonly name: string | null;
       }>;
       readonly id: string;
-      readonly viewerGroups: ReadonlyArray<{
+      readonly viewerGroupParticipants: ReadonlyArray<{
         readonly group: {
           readonly assignmentId: string;
           readonly id: string;
@@ -72,6 +73,17 @@ v2 = {
   "storageKey": null
 },
 v3 = [
+  (v1/*: any*/),
+  (v2/*: any*/),
+  {
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "assignmentId",
+    "storageKey": null
+  }
+],
+v4 = [
   {
     "alias": null,
     "args": null,
@@ -127,7 +139,7 @@ v3 = [
             "args": null,
             "concreteType": "InternalGroupParticipantType",
             "kind": "LinkedField",
-            "name": "viewerGroups",
+            "name": "viewerGroupParticipants",
             "plural": true,
             "selections": [
               (v1/*: any*/),
@@ -138,17 +150,7 @@ v3 = [
                 "kind": "LinkedField",
                 "name": "group",
                 "plural": false,
-                "selections": [
-                  (v1/*: any*/),
-                  (v2/*: any*/),
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "assignmentId",
-                    "storageKey": null
-                  }
-                ],
+                "selections": (v3/*: any*/),
                 "storageKey": null
               },
               {
@@ -195,10 +197,7 @@ v3 = [
             "kind": "LinkedField",
             "name": "groups",
             "plural": true,
-            "selections": [
-              (v1/*: any*/),
-              (v2/*: any*/)
-            ],
+            "selections": (v3/*: any*/),
             "storageKey": null
           }
         ],
@@ -214,7 +213,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "UserCourseGroupsQuery",
-    "selections": (v3/*: any*/),
+    "selections": (v4/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -223,19 +222,19 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "UserCourseGroupsQuery",
-    "selections": (v3/*: any*/)
+    "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "83f0386800508dd4eeff65417b44b7a0",
+    "cacheID": "4061857fb722edfc8044e4bd4c3c69bf",
     "id": null,
     "metadata": {},
     "name": "UserCourseGroupsQuery",
     "operationKind": "query",
-    "text": "query UserCourseGroupsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n        isGroup\n      }\n      viewerGroups {\n        id\n        group {\n          id\n          name\n          assignmentId\n        }\n        groupUsers {\n          id\n          name\n          lastName\n          notificationEmail\n          file\n        }\n      }\n      groups {\n        id\n        name\n      }\n    }\n  }\n}\n"
+    "text": "query UserCourseGroupsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n        isGroup\n      }\n      viewerGroupParticipants {\n        id\n        group {\n          id\n          name\n          assignmentId\n        }\n        groupUsers {\n          id\n          name\n          lastName\n          notificationEmail\n          file\n        }\n      }\n      groups {\n        id\n        name\n        assignmentId\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "c9d83cf4d4f8f5f4d9601740b8c697cb";
+(node as any).hash = "d5f944113f4efaed73cc448e6872b1c6";
 
 export default node;

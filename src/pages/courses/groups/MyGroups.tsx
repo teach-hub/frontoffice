@@ -1,3 +1,4 @@
+import { sortBy } from 'lodash';
 import { useUserContext } from 'hooks/useUserCourseContext';
 import Navigation from 'components/Navigation';
 import { Suspense, useEffect, useState } from 'react';
@@ -62,12 +63,12 @@ type ViewerCourseData = NonNullable<
 
 const mapToAssignmentGroupData = (
   assignments: NonNullable<ViewerCourseData['assignments']>,
-  viewerGroups: NonNullable<ViewerCourseData['viewerGroups']>
+  viewerGroupParticipants: NonNullable<ViewerCourseData['viewerGroupParticipants']>
 ) => {
   return assignments
     .filter(assignment => assignment.isGroup) // Keep only group assignments
     .map(assignment => {
-      const assignmentViewerGroup = viewerGroups.find(
+      const assignmentViewerGroup = viewerGroupParticipants.find(
         viewerGroup => viewerGroup.group.assignmentId === assignment.id
       );
 
@@ -112,14 +113,13 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
     }
   );
 
-  const assignments = userCourseGroupsQuery.viewer?.course?.assignments ?? [];
-  const viewerGroupsParticipants =
-    userCourseGroupsQuery.viewer?.course?.viewerGroups ?? [];
+  const { course } = userCourseGroupsQuery?.viewer ?? {};
+
+  const assignments = course?.assignments ?? [];
+  const viewerGroupsParticipants = course?.viewerGroupParticipants ?? [];
 
   // Sort groups by ascending name
-  const availableGroups = [...(userCourseGroupsQuery.viewer?.course?.groups ?? [])].sort(
-    (a, b) => a?.name?.localeCompare(b?.name || '') || 0
-  );
+  const availableGroups = sortBy(course?.groups ?? [], 'name');
 
   const groupsData: AssignmentGroupData[] = mapToAssignmentGroupData(
     assignments,
@@ -355,11 +355,13 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
                   value={chosenGroupName || ''}
                   onChange={event => setChosenGroupName(event.target.value)}
                 >
-                  {availableGroups.map(group => (
-                    <option value={group.name || ''} key={group.id}>
-                      {group.name}
-                    </option>
-                  ))}
+                  {availableGroups
+                    .filter(g => g.assignmentId === chosenAssignmentGroup?.assignmentId)
+                    .map(group => (
+                      <option value={group.name || ''} key={group.id}>
+                        {group.name}
+                      </option>
+                    ))}
                 </Select>
               </Flex>
             )}
