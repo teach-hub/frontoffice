@@ -20,7 +20,7 @@ import logo from 'assets/logo_wo_text.png';
 import LoginMutationDef from 'graphql/LoginMutation';
 import RegisterMutationDef from 'graphql/RegisterUserMutation';
 
-import { storeRemoveValue, storeGetValue, storeSetValue } from 'hooks/useLocalStorage';
+import { storeGetValue, storeSetValue } from 'hooks/useLocalStorage';
 import useToast from 'hooks/useToast';
 import { isAuthenticated } from 'auth/utils';
 
@@ -192,6 +192,10 @@ const RegisterForm = ({ onClose }: Props): JSX.Element => {
     }
     if (!values?.file && hasFile) {
       errors.file = 'Obligatorio';
+    }
+
+    if (!values?.notificationEmail) {
+      errors.notificationEmail = 'Obligatorio';
     }
 
     return errors;

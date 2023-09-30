@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5256e9dae2e12246741f319efa476e8e>>
+ * @generated SignedSource<<3fd238f416de03e3ccffadfcb00ab649>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -43,6 +43,7 @@ export type AssignmentSubmissionsQuery$data = {
               readonly id: string;
               readonly lastName: string;
               readonly name: string;
+              readonly notificationEmail: string;
             }>;
           } | {
             readonly __typename: "UserType";
@@ -50,6 +51,7 @@ export type AssignmentSubmissionsQuery$data = {
             readonly id: string;
             readonly lastName: string;
             readonly name: string;
+            readonly notificationEmail: string;
           } | {
             // This will never be '%other', but we need some
             // value in case none of the concrete values match.
@@ -86,6 +88,7 @@ export type AssignmentSubmissionsQuery$data = {
               readonly id: string;
               readonly lastName: string;
               readonly name: string;
+              readonly notificationEmail: string;
             }>;
           } | {
             readonly __typename: "UserType";
@@ -93,6 +96,7 @@ export type AssignmentSubmissionsQuery$data = {
             readonly id: string;
             readonly lastName: string;
             readonly name: string;
+            readonly notificationEmail: string;
           } | {
             // This will never be '%other', but we need some
             // value in case none of the concrete values match.
@@ -173,6 +177,13 @@ v8 = {
 v9 = {
   "alias": null,
   "args": null,
+  "kind": "ScalarField",
+  "name": "notificationEmail",
+  "storageKey": null
+},
+v10 = {
+  "alias": null,
+  "args": null,
   "concreteType": null,
   "kind": "LinkedField",
   "name": "submitter",
@@ -207,7 +218,8 @@ v9 = {
             (v3/*: any*/),
             (v4/*: any*/),
             (v7/*: any*/),
-            (v8/*: any*/)
+            (v8/*: any*/),
+            (v9/*: any*/)
           ],
           "storageKey": null
         }
@@ -221,7 +233,8 @@ v9 = {
         (v3/*: any*/),
         (v8/*: any*/),
         (v4/*: any*/),
-        (v7/*: any*/)
+        (v7/*: any*/),
+        (v9/*: any*/)
       ],
       "type": "UserType",
       "abstractKey": null
@@ -229,7 +242,7 @@ v9 = {
   ],
   "storageKey": null
 },
-v10 = {
+v11 = {
   "alias": null,
   "args": null,
   "concreteType": "ReviewerType",
@@ -255,7 +268,7 @@ v10 = {
   ],
   "storageKey": null
 },
-v11 = [
+v12 = [
   {
     "alias": null,
     "args": null,
@@ -354,8 +367,8 @@ v11 = [
                     "name": "assignmentId",
                     "storageKey": null
                   },
-                  (v9/*: any*/),
                   (v10/*: any*/),
+                  (v11/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -408,8 +421,8 @@ v11 = [
                 "plural": true,
                 "selections": [
                   (v3/*: any*/),
-                  (v9/*: any*/),
-                  (v10/*: any*/)
+                  (v10/*: any*/),
+                  (v11/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -433,7 +446,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "AssignmentSubmissionsQuery",
-    "selections": (v11/*: any*/),
+    "selections": (v12/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -446,19 +459,19 @@ return {
     ],
     "kind": "Operation",
     "name": "AssignmentSubmissionsQuery",
-    "selections": (v11/*: any*/)
+    "selections": (v12/*: any*/)
   },
   "params": {
-    "cacheID": "ba2cd90a649fcfcb324905eb1dbd134f",
+    "cacheID": "e27ef7a1302cdd7b5261b037719f5ed5",
     "id": null,
     "metadata": {},
     "name": "AssignmentSubmissionsQuery",
     "operationKind": "query",
-    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID\n  $onlyReviewerSubmissions: Boolean!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n      assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {\n        id\n        title\n        isGroup\n        submissions(onlyReviewerSubmissions: $onlyReviewerSubmissions) {\n          id\n          submittedAt\n          submittedAgainAt\n          pullRequestUrl\n          assignmentId\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              usersForAssignment {\n                id\n                name\n                lastName\n                file\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            reviewedAt\n            reviewedAgainAt\n          }\n        }\n        nonExistentSubmissions(onlyReviewerSubmissions: $onlyReviewerSubmissions) {\n          id\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              usersForAssignment {\n                id\n                name\n                lastName\n                file\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query AssignmentSubmissionsQuery(\n  $courseId: ID!\n  $assignmentId: ID\n  $onlyReviewerSubmissions: Boolean!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n      }\n      assignmentsWithSubmissions: assignments(assignmentId: $assignmentId) {\n        id\n        title\n        isGroup\n        submissions(onlyReviewerSubmissions: $onlyReviewerSubmissions) {\n          id\n          submittedAt\n          submittedAgainAt\n          pullRequestUrl\n          assignmentId\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              usersForAssignment {\n                id\n                name\n                lastName\n                file\n                notificationEmail\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n              notificationEmail\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n          review {\n            id\n            revisionRequested\n            grade\n            reviewedAt\n            reviewedAgainAt\n          }\n        }\n        nonExistentSubmissions(onlyReviewerSubmissions: $onlyReviewerSubmissions) {\n          id\n          submitter {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n              usersForAssignment {\n                id\n                name\n                lastName\n                file\n                notificationEmail\n              }\n            }\n            ... on UserType {\n              id\n              file\n              name\n              lastName\n              notificationEmail\n            }\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "ce00b34b0d1e56aee579063b13445ee4";
+(node as any).hash = "33ab17b7ed8e56430209146b81508cb0";
 
 export default node;

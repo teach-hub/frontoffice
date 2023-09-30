@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
@@ -17,6 +17,7 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { theme } from 'theme';
 
@@ -42,6 +43,8 @@ import type {
   AssignmentSubmissionsQuery,
   AssignmentSubmissionsQuery$data,
 } from '__generated__/AssignmentSubmissionsQuery.graphql';
+import { Modal } from 'components/Modal';
+import NotifyModalContent from 'components/SubmissionNotificationModalContent';
 
 type SubmissionType = NonNullable<
   NonNullable<
@@ -78,6 +81,7 @@ const getSubmitterRowData = (
       id: submitterAsUser.id,
       name: `${submitterAsUser.lastName}, ${submitterAsUser.name}`,
       isGroup: false,
+      notificationEmail: submitterAsUser.notificationEmail,
     };
   }
   const submitterAsGroup = getSubmitterAsGroup(submitter);
@@ -89,7 +93,9 @@ const getSubmitterRowData = (
       participants: submitterAsGroup.usersForAssignment.map(user => ({
         id: user.id,
         name: `${user.lastName}, ${user.name}`,
+        notificationEmail: user.notificationEmail,
       })),
+      notificationEmail: undefined, // Group has no email
     };
   }
   throw new Error('Submitter is neither a user nor a group');
@@ -101,6 +107,7 @@ const getReviewerRowData = (reviewer: ReviewerType): Optional<ReviewerRowData> =
     return {
       id: reviewerUser.id,
       name: `${reviewerUser.lastName}, ${reviewerUser.name}`,
+      notificationEmail: undefined, // Reviewer does not need to be notified
     };
   }
   return undefined;
@@ -115,6 +122,26 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const assignmentId = searchParams.get(Query.SubmissionAssignment);
+
+  const showNotifyButton = courseContext.userHasPermission(Permission.SendNotifications);
+
+  const {
+    isOpen: isOpenNotificationModal,
+    onOpen: onOpenNotificationModal,
+    onClose: onCloseNotificationModal,
+  } = useDisclosure();
+
+  const [rowToNotify, setRowToNotify] = useState<RowData | undefined>(undefined);
+
+  const handleOpenNotificationModal = (rowData: RowData) => {
+    setRowToNotify(rowData);
+    onOpenNotificationModal();
+  };
+
+  const handleCloseNotificationModal = () => {
+    setRowToNotify(undefined);
+    onCloseNotificationModal();
+  };
 
   const { setSubmissionIds } = useSubmissionContext();
 
@@ -209,6 +236,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
 
       return {
         submitter: getSubmitterRowData(submission.submitter),
+        assignmentId: submission.assignmentId,
         assignmentTitle: submissionAssignmentTitle,
         reviewer: submission.reviewer
           ? getReviewerRowData(submission.reviewer)
@@ -242,6 +270,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
           newRowData.push({
             submitter: getSubmitterRowData(submitter),
             assignmentTitle: assignment.title,
+            assignmentId: assignment.id,
             reviewer: reviewer ? getReviewerRowData(reviewer) : undefined,
           });
         }
@@ -424,6 +453,8 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                 updateSelectedReviewerCallback={reviewerId =>
                   setSelectedReviewerId(reviewerId)
                 }
+                onNotifyClick={handleOpenNotificationModal}
+                showNotifyButton={showNotifyButton}
               />
             </Stack>
           </TabPanel>
@@ -441,11 +472,30 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                 groupParticipantsGetter={rowData =>
                   (rowData.submitter as GroupSubmitterRowData).participants
                 }
+                onNotifyClick={handleOpenNotificationModal}
+                showNotifyButton={showNotifyButton}
               />
             </Stack>
           </TabPanel>
         </TabPanels>
       </Tabs>
+      <Modal
+        isOpen={isOpenNotificationModal}
+        onClose={handleCloseNotificationModal}
+        isCentered
+        headerText={'Notificar alumno/s'}
+        contentProps={{ minWidth: 'fit-content' }}
+      >
+        {rowToNotify ? (
+          <NotifyModalContent
+            rowToNotify={rowToNotify}
+            onCompleted={handleCloseNotificationModal}
+            courseId={courseContext.courseId}
+          />
+        ) : (
+          <div></div>
+        )}
+      </Modal>
     </PageDataContainer>
   );
 };

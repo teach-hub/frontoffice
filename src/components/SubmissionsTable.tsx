@@ -19,6 +19,7 @@ import Table from 'components/Table';
 
 import type { Nullable, Optional } from 'types';
 import { isAllEmpty } from 'utils/object';
+import MailIcon from 'icons/MailIcon';
 
 enum ColumnWidth {
   Student = '20%',
@@ -38,6 +39,7 @@ type ColumnData = {
 export type SubjectRowData = {
   id: Optional<Nullable<string>>;
   name: Optional<Nullable<string>>;
+  notificationEmail: Optional<Nullable<string>>;
 };
 
 export type SubmitterRowData = SubjectRowData & {
@@ -64,6 +66,7 @@ export type SubmissionRowData = {
 export interface RowData {
   submitter: SubmitterRowData;
   reviewer?: ReviewerRowData;
+  assignmentId: string;
   assignmentTitle: Optional<Nullable<string>>;
   submission?: SubmissionRowData;
 }
@@ -74,12 +77,16 @@ export const SubmissionsTable = ({
   updateSelectedStudentCallback,
   updateSelectedReviewerCallback,
   groupParticipantsGetter,
+  onNotifyClick,
+  showNotifyButton,
 }: {
   rowDataList: RowData[];
   onRowClick: (rowData: RowData) => void;
   updateSelectedStudentCallback: (submitterId: Optional<Nullable<string>>) => void;
   updateSelectedReviewerCallback: (submitterId: Optional<Nullable<string>>) => void;
   groupParticipantsGetter?: (rowData: RowData) => SubjectRowData[];
+  onNotifyClick: (rowData: RowData) => void;
+  showNotifyButton: boolean;
 }) => {
   const isGroupTable = !!groupParticipantsGetter;
 
@@ -211,6 +218,21 @@ export const SubmissionsTable = ({
                 />
               </Link>
             </Tooltip>
+            {showNotifyButton && (
+              <Tooltip label={'Enviar mail'}>
+                <span>
+                  <IconButton
+                    variant={'ghost'}
+                    aria-label="notify"
+                    icon={<MailIcon />}
+                    onClick={event => {
+                      event.stopPropagation(); // Avoid row click behaviour
+                      onNotifyClick(rowData);
+                    }}
+                  />
+                </span>
+              </Tooltip>
+            )}
           </Stack>,
         ].filter(Boolean);
 
