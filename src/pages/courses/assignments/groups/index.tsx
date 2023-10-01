@@ -1,6 +1,6 @@
 import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
 import Navigation from 'components/Navigation';
-import React, { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import PageDataContainer from 'components/PageDataContainer';
 import Heading from 'components/Heading';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -31,15 +31,9 @@ import CheckboxGroup from 'components/CheckboxGroup';
 import Button from 'components/Button';
 import { FormControl } from 'components/FormControl';
 import InputField from 'components/InputField';
-import {
-  CreateGroupWithParticipantsMutation,
-  CreateGroupWithParticipantsMutation$data,
-} from '__generated__/CreateGroupWithParticipantsMutation.graphql';
+import { CreateGroupWithParticipantsMutation } from '__generated__/CreateGroupWithParticipantsMutation.graphql';
 import CreateGroupWithParticipantsMutationDef from 'graphql/CreateGroupWithParticipantsMutation';
-import {
-  AddParticipantsToGroupMutation,
-  AddParticipantsToGroupMutation$data,
-} from '__generated__/AddParticipantsToGroupMutation.graphql';
+import { AddParticipantsToGroupMutation } from '__generated__/AddParticipantsToGroupMutation.graphql';
 import AddParticipantsToGroupMutationDef from 'graphql/AddParticipantsToGroupMutation';
 import useToast from 'hooks/useToast';
 
@@ -77,42 +71,41 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const studentsWithoutGroupNames = mapToUserNames(
     assignmentGroupsData.studentsWithoutGroup
   );
-  const missingGroupTableContent =
-    studentsWithoutGroupNames.length !== 0
-      ? [
-          {
-            content: [
-              <Text
-                fontWeight={'bold'}
-                fontStyle={'italic'}
-                color={theme.colors.teachHub.red}
-              >
-                Sin grupo
-              </Text>,
-              <Stack>
-                {studentsWithoutGroupNames.map((userName: string) => (
-                  <Text key={userName}>{userName}</Text>
-                ))}
-              </Stack>,
-              <Stack direction={'row'} justifyContent={'center'} alignItems={'center'}>
-                <Tooltip label={'Crear nuevo grupo'}>
-                  {/* Wrap icon in span due to not using forwardRef */}
-                  <span>
-                    <IconButton
-                      variant={'ghost'}
-                      aria-label={'create-group'}
-                      icon={<CreateIcon size="medium" />}
-                      onClick={() => {
-                        onOpenCreateGroupModal();
-                      }}
-                    />
-                  </span>
-                </Tooltip>
-              </Stack>,
-            ],
-          },
-        ]
-      : [];
+  const missingGroupTableContent = studentsWithoutGroupNames.length
+    ? [
+        {
+          content: [
+            <Text
+              fontWeight={'bold'}
+              fontStyle={'italic'}
+              color={theme.colors.teachHub.red}
+            >
+              Sin grupo
+            </Text>,
+            <Stack>
+              {studentsWithoutGroupNames.map((userName: string) => (
+                <Text key={userName}>{userName}</Text>
+              ))}
+            </Stack>,
+            <Stack direction={'row'} justifyContent={'center'} alignItems={'center'}>
+              <Tooltip label={'Crear nuevo grupo'}>
+                {/* Wrap icon in span due to not using forwardRef */}
+                <span>
+                  <IconButton
+                    variant={'ghost'}
+                    aria-label={'create-group'}
+                    icon={<CreateIcon size="medium" />}
+                    onClick={() => {
+                      onOpenCreateGroupModal();
+                    }}
+                  />
+                </span>
+              </Tooltip>
+            </Stack>,
+          ],
+        },
+      ]
+    : [];
 
   const [selectedGroupId, setSelectedGroupId] = useState<Nullable<string>>(null);
   const [selectedUserRoleIds, setSelectedUserRoleIds] = useState<string[]>([]);
@@ -140,11 +133,11 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const handleAddUsersToGroup = () => {
     commitAddParticipantsToGroup({
       variables: {
-        groupId: selectedGroupId || '',
         assignmentId: assignmentId || '',
+        groupId: selectedGroupId || '',
         participantUserRoleIds: selectedUserRoleIds,
       },
-      onCompleted: (response: AddParticipantsToGroupMutation$data, errors) => {
+      onCompleted: (_, errors) => {
         if (!errors?.length) {
           toast({
             title: 'Alumnos agregados!',
@@ -167,12 +160,12 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const handleCreateGroup = (groupName: string) => {
     commitCreateGroupWithParticipants({
       variables: {
-        groupName: groupName,
-        courseId,
         assignmentId: assignmentId || '',
+        groupName,
+        courseId,
         participantUserRoleIds: selectedUserRoleIds,
       },
-      onCompleted: (response: CreateGroupWithParticipantsMutation$data, errors) => {
+      onCompleted: (_, errors) => {
         if (!errors?.length) {
           toast({
             title: 'Grupo creado!',
@@ -285,11 +278,9 @@ const AddUsersToGroupModal = ({
     onClose={onClose}
     submitEnabled={submitEnabled}
     headerText={
-      `${
-        assignmentGroupsData.groupUsersData.find(
-          groupData => groupData.groupId === selectedGroupId
-        )?.groupName
-      }` + ': Seleccionar usuarios a agregar'
+      assignmentGroupsData.groupUsersData.find(
+        groupData => groupData.groupId === selectedGroupId
+      )?.groupName + ': Seleccionar usuarios a agregar'
     }
     handleSubmitAction={handleSubmitAction}
   >

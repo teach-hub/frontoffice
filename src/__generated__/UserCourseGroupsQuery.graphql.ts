@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<190a1fa5599b5891b02886a1c6ff5bd9>>
+ * @generated SignedSource<<c85950cf8a02da0bcd3021402e1e0de0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -21,23 +21,24 @@ export type UserCourseGroupsQuery$data = {
         readonly title: string | null;
       }>;
       readonly groups: ReadonlyArray<{
+        readonly assignmentId: string;
         readonly id: string;
         readonly name: string | null;
       }>;
       readonly id: string;
-      readonly viewerGroups: ReadonlyArray<{
-        readonly assignmentId: string;
+      readonly viewerGroupParticipants: ReadonlyArray<{
         readonly group: {
+          readonly assignmentId: string;
           readonly id: string;
+          readonly members: ReadonlyArray<{
+            readonly file: string;
+            readonly id: string;
+            readonly lastName: string;
+            readonly name: string;
+            readonly notificationEmail: string;
+          }>;
           readonly name: string | null;
         };
-        readonly groupUsers: ReadonlyArray<{
-          readonly file: string;
-          readonly id: string;
-          readonly lastName: string;
-          readonly name: string;
-          readonly notificationEmail: string;
-        }>;
         readonly id: string;
       }>;
     } | null;
@@ -71,10 +72,13 @@ v2 = {
   "name": "name",
   "storageKey": null
 },
-v3 = [
-  (v1/*: any*/),
-  (v2/*: any*/)
-],
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "assignmentId",
+  "storageKey": null
+},
 v4 = [
   {
     "alias": null,
@@ -131,17 +135,10 @@ v4 = [
             "args": null,
             "concreteType": "InternalGroupParticipantType",
             "kind": "LinkedField",
-            "name": "viewerGroups",
+            "name": "viewerGroupParticipants",
             "plural": true,
             "selections": [
               (v1/*: any*/),
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "assignmentId",
-                "storageKey": null
-              },
               {
                 "alias": null,
                 "args": null,
@@ -149,38 +146,42 @@ v4 = [
                 "kind": "LinkedField",
                 "name": "group",
                 "plural": false,
-                "selections": (v3/*: any*/),
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "concreteType": "UserType",
-                "kind": "LinkedField",
-                "name": "groupUsers",
-                "plural": true,
                 "selections": [
                   (v1/*: any*/),
                   (v2/*: any*/),
+                  (v3/*: any*/),
                   {
                     "alias": null,
                     "args": null,
-                    "kind": "ScalarField",
-                    "name": "lastName",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "notificationEmail",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "file",
+                    "concreteType": "UserType",
+                    "kind": "LinkedField",
+                    "name": "members",
+                    "plural": true,
+                    "selections": [
+                      (v1/*: any*/),
+                      (v2/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "lastName",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "notificationEmail",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "file",
+                        "storageKey": null
+                      }
+                    ],
                     "storageKey": null
                   }
                 ],
@@ -196,7 +197,11 @@ v4 = [
             "kind": "LinkedField",
             "name": "groups",
             "plural": true,
-            "selections": (v3/*: any*/),
+            "selections": [
+              (v1/*: any*/),
+              (v2/*: any*/),
+              (v3/*: any*/)
+            ],
             "storageKey": null
           }
         ],
@@ -224,16 +229,16 @@ return {
     "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "5ddede8801f768f4107a82306b3c46d3",
+    "cacheID": "d4ea817c0081d84ac2bb7a337e500eda",
     "id": null,
     "metadata": {},
     "name": "UserCourseGroupsQuery",
     "operationKind": "query",
-    "text": "query UserCourseGroupsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n        isGroup\n      }\n      viewerGroups {\n        id\n        assignmentId\n        group {\n          id\n          name\n        }\n        groupUsers {\n          id\n          name\n          lastName\n          notificationEmail\n          file\n        }\n      }\n      groups {\n        id\n        name\n      }\n    }\n  }\n}\n"
+    "text": "query UserCourseGroupsQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignments {\n        id\n        title\n        isGroup\n      }\n      viewerGroupParticipants {\n        id\n        group {\n          id\n          name\n          assignmentId\n          members {\n            id\n            name\n            lastName\n            notificationEmail\n            file\n          }\n        }\n      }\n      groups {\n        id\n        name\n        assignmentId\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "0085e7f9240d881e1863432a4dcb84d6";
+(node as any).hash = "d7d0df6bd0700508fc1b51c3b840261b";
 
 export default node;

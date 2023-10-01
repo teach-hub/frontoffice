@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5ea79493f6741d522a681fdad0b9fa1b>>
+ * @generated SignedSource<<c6516e99fc6ef76bf06789d08bc02111>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,9 +16,8 @@ export type JoinGroupMutation$variables = {
 };
 export type JoinGroupMutation$data = {
   readonly joinGroup: {
-    readonly assignmentId: string;
     readonly group: {
-      readonly courseId: string;
+      readonly courseId: string | null;
       readonly id: string;
       readonly name: string | null;
     };
@@ -104,13 +103,6 @@ v4 = [
           }
         ],
         "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "assignmentId",
-        "storageKey": null
       }
     ],
     "storageKey": null
@@ -142,16 +134,16 @@ return {
     "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "1d84aa1069f17655ce09aaf0c602930e",
+    "cacheID": "b26e8bd45129dab680891adafa1fd1cd",
     "id": null,
     "metadata": {},
     "name": "JoinGroupMutation",
     "operationKind": "mutation",
-    "text": "mutation JoinGroupMutation(\n  $groupId: ID!\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  joinGroup(groupId: $groupId, courseId: $courseId, assignmentId: $assignmentId) {\n    id\n    group {\n      id\n      name\n      courseId\n    }\n    assignmentId\n  }\n}\n"
+    "text": "mutation JoinGroupMutation(\n  $groupId: ID!\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  joinGroup(groupId: $groupId, courseId: $courseId, assignmentId: $assignmentId) {\n    id\n    group {\n      id\n      name\n      courseId\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "07c5ee043d61b88b56e6756cf5fe267c";
+(node as any).hash = "4b46f4bf9446f6f3f4f67cfe68557bc2";
 
 export default node;

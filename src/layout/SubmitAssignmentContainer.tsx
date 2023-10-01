@@ -49,8 +49,9 @@ function Content({
 
   const [group, setGroup] = useState<Group | null>(
     targetAssignment
-      ? viewerGroupParticipants.find(gp => gp.assignmentId === targetAssignment.id) ??
-          null
+      ? viewerGroupParticipants.find(
+          gp => gp.group.assignmentId === targetAssignment.id
+        ) ?? null
       : null
   );
   const [reviewer, setReviewer] = useState<
@@ -110,7 +111,7 @@ function Content({
           }
 
           const viewerAssignmentGroup = viewerGroupParticipants.find(
-            gp => gp.assignmentId === values.assignmentId
+            gp => gp.group.assignmentId === values.assignmentId
           );
 
           const target = assignments.find(
@@ -143,7 +144,7 @@ function Content({
                   setFieldValue('assignmentId', changes.currentTarget.value);
 
                   const viewerAssignmentGroup = viewerGroupParticipants.find(
-                    gp => gp.assignmentId === changes.currentTarget.value
+                    gp => gp.group.assignmentId === changes.currentTarget.value
                   );
                   setGroup(viewerAssignmentGroup ?? null);
 

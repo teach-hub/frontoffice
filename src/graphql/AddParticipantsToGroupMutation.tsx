@@ -12,7 +12,6 @@ export default graphql`
       participantUserRoleIds: $participantUserRoleIds
     ) {
       id
-      assignmentId
     }
   }
 `;

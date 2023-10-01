@@ -38,6 +38,7 @@ export const getFirstAssignmentGroupsUsersData = ({
   const selectedAssignment = course?.assignments[0]; // Expect only one assignment
 
   const groupDataById = new Map<string, GroupUsersData>();
+
   selectedAssignment?.groupParticipants?.forEach(participant => {
     const groupId = participant.group?.id;
     const groupData = groupDataById.get(groupId);

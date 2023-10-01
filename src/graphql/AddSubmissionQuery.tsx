@@ -23,13 +23,13 @@ export default graphql`
           title
           isGroup
         }
-        viewerGroupParticipants: viewerGroups {
+        viewerGroupParticipants {
           id
           group {
             id
             name
+            assignmentId
           }
-          assignmentId
         }
       }
       repositories(courseId: $courseId) {

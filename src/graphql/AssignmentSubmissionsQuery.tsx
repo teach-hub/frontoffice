@@ -30,7 +30,7 @@ export default graphql`
               ... on InternalGroupType {
                 id
                 groupName: name
-                usersForAssignment {
+                members {
                   id
                   name
                   lastName
@@ -69,7 +69,7 @@ export default graphql`
               ... on InternalGroupType {
                 id
                 groupName: name
-                usersForAssignment {
+                members {
                   id
                   name
                   lastName

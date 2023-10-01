@@ -1,3 +1,4 @@
+import { sortBy } from 'lodash';
 import { useUserContext } from 'hooks/useUserCourseContext';
 import Navigation from 'components/Navigation';
 import { Suspense, useEffect, useState } from 'react';
@@ -60,36 +61,111 @@ type ViewerCourseData = NonNullable<
   NonNullable<UserCourseGroupsQuery$data['viewer']>['course']
 >;
 
+const GroupListEmptyState = () => (
+  <Box margin="90px" textAlign={'center'}>
+    <Box margin="30px">
+      <AlertIcon size={70} />
+    </Box>
+    <Heading size="md">No pudimos encontrar ningún trabajo práctico grupal</Heading>
+    <Text>
+      Es necesario que existan trabajos prácticos grupales para poder gestionar tus grupos
+    </Text>
+  </Box>
+);
+
+// Construe filas de la tabla en base a la informacion de los grupos.
 const mapToAssignmentGroupData = (
   assignments: NonNullable<ViewerCourseData['assignments']>,
-  viewerGroups: NonNullable<ViewerCourseData['viewerGroups']>
-) => {
+  viewerGroupParticipants: NonNullable<ViewerCourseData['viewerGroupParticipants']>
+): AssignmentGroupData[] => {
   return assignments
-    .filter(assignment => assignment.isGroup === true) // Keep only group assignments
+    .filter(assignment => assignment.title && assignment.isGroup) // Keep only group assignments
     .map(assignment => {
-      const assignmentViewerGroup = viewerGroups.find(
-        viewerGroup => viewerGroup.assignmentId === assignment.id
+      const assignmentViewerGroup = viewerGroupParticipants.find(
+        ({ group: { assignmentId } }) => assignmentId === assignment.id
       );
 
-      const participantsData = assignmentViewerGroup?.groupUsers?.map(
-        participant =>
-          `${participant.name} ${participant.lastName} (${participant.file})${
-            participant.notificationEmail ? ` - ${participant.notificationEmail}` : ''
-          }`
+      const participantsData = assignmentViewerGroup?.group.members?.map(
+        ({ name, lastName, file, notificationEmail }) => {
+          return `${name} ${lastName} (${file})${
+            notificationEmail ? ` - ${notificationEmail}` : ''
+          }`;
+        }
       );
 
-      return assignment.title
-        ? {
-            assignmentId: assignment.id,
-            assignmentTitle: assignment.title,
-            groupName: assignmentViewerGroup?.group?.name,
-            groupParticipants: participantsData,
-          }
-        : undefined;
-    })
-    .filter(
-      assignmentGroupData => assignmentGroupData !== undefined
-    ) as AssignmentGroupData[];
+      return {
+        assignmentId: assignment.id,
+        assignmentTitle: assignment.title as string, // No es null, ya lo chequeamos arriba.
+        groupName: assignmentViewerGroup?.group?.name,
+        groupParticipants: participantsData,
+      };
+    });
+};
+
+const GroupList = ({
+  groupsData,
+  setAssignmentGroupAction,
+  setChosenAssignmentGroup,
+  onOpen,
+}: {
+  groupsData: AssignmentGroupData[];
+  setAssignmentGroupAction: React.Dispatch<React.SetStateAction<AssignmentGroupAction>>;
+  setChosenAssignmentGroup: React.Dispatch<
+    React.SetStateAction<Nullable<AssignmentGroupData>>
+  >;
+  onOpen: () => void;
+}): JSX.Element => {
+  const handleAssignmentGroup = (
+    assignmentGroupData: AssignmentGroupData,
+    action: AssignmentGroupAction
+  ) => {
+    setAssignmentGroupAction(action);
+    setChosenAssignmentGroup(assignmentGroupData);
+    onOpen();
+  };
+
+  return (
+    <>
+      <Table
+        headers={['', 'Trabajo Práctico', 'Grupo', 'Integrantes', '']}
+        rowOptions={groupsData.map(data => {
+          return {
+            content: [
+              data.groupName ? (
+                <CheckCircleIcon size="medium" fill={theme.colors.teachHub.green} />
+              ) : (
+                <AlertIcon size="medium" fill={theme.colors.teachHub.red} />
+              ),
+              <Text fontWeight={'bold'}>{data.assignmentTitle}</Text>,
+              <Text>{data.groupName || '-'}</Text>,
+              <Stack>
+                {data.groupParticipants?.map(participant => <Text>{participant}</Text>) ??
+                  '-'}
+              </Stack>,
+              <Menu
+                content={{
+                  menuButton: <KebabHorizontalIcon />,
+                  items: [
+                    {
+                      content: 'Crear grupo',
+                      action: () =>
+                        handleAssignmentGroup(data, AssignmentGroupAction.Create),
+                    },
+                    {
+                      content: 'Unirme a grupo',
+                      action: () =>
+                        handleAssignmentGroup(data, AssignmentGroupAction.Join),
+                    },
+                  ],
+                }}
+              />,
+            ],
+          };
+        })}
+      />
+      {!groupsData.length && <GroupListEmptyState />}
+    </>
+  );
 };
 
 const MyGroupsPage = ({ courseId }: { courseId: string }) => {
@@ -113,16 +189,16 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
       courseId,
     }
   );
-  const assignments = userCourseGroupsQuery.viewer?.course?.assignments ?? [];
-  const viewerGroups = userCourseGroupsQuery.viewer?.course?.viewerGroups ?? [];
-  const availableGroups = [...(userCourseGroupsQuery.viewer?.course?.groups ?? [])].sort(
-    (a, b) => a?.name?.localeCompare(b?.name || '') || 0
-  ); // Sort groups by ascending name
 
-  const groupsData: AssignmentGroupData[] = mapToAssignmentGroupData(
-    assignments,
-    viewerGroups
-  );
+  const { course } = userCourseGroupsQuery?.viewer ?? {};
+
+  const assignments = course?.assignments ?? [];
+  const viewerGroupsParticipants = course?.viewerGroupParticipants ?? [];
+
+  // Sort groups by ascending name
+  const availableGroups = sortBy(course?.groups ?? [], 'name');
+
+  const groupsData = mapToAssignmentGroupData(assignments, viewerGroupsParticipants);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -134,78 +210,6 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
       setChosenGroupName(null);
     }
   }, [isOpen]);
-
-  const GroupList = ({
-    groupsData,
-  }: {
-    groupsData: AssignmentGroupData[];
-  }): JSX.Element => {
-    const emptyState = (
-      <Box margin="90px" textAlign={'center'}>
-        <Box margin="30px">
-          <AlertIcon size={70} />
-        </Box>
-        <Heading size="md">No pudimos encontrar ningún trabajo práctico grupal</Heading>
-        <Text>
-          Es necesario que existan trabajos prácticos grupales para poder gestionar tus
-          grupos
-        </Text>
-      </Box>
-    );
-
-    const handleAssignmentGroup = (
-      assignmentGroupData: AssignmentGroupData,
-      action: AssignmentGroupAction
-    ) => {
-      setAssignmentGroupAction(action);
-      setChosenAssignmentGroup(assignmentGroupData);
-      onOpen();
-    };
-
-    return (
-      <>
-        <Table
-          headers={['', 'Trabajo Práctico', 'Grupo', 'Integrantes', '']}
-          rowOptions={groupsData.map(data => {
-            return {
-              content: [
-                data.groupName ? (
-                  <CheckCircleIcon size="medium" fill={theme.colors.teachHub.green} />
-                ) : (
-                  <AlertIcon size="medium" fill={theme.colors.teachHub.red} />
-                ),
-                <Text fontWeight={'bold'}>{data.assignmentTitle}</Text>,
-                <Text>{data.groupName || '-'}</Text>,
-                <Stack>
-                  {data.groupParticipants?.map(participant => (
-                    <Text>{participant}</Text>
-                  )) ?? '-'}
-                </Stack>,
-                <Menu
-                  content={{
-                    menuButton: <KebabHorizontalIcon />,
-                    items: [
-                      {
-                        content: 'Crear grupo',
-                        action: () =>
-                          handleAssignmentGroup(data, AssignmentGroupAction.Create),
-                      },
-                      {
-                        content: 'Unirme a grupo',
-                        action: () =>
-                          handleAssignmentGroup(data, AssignmentGroupAction.Join),
-                      },
-                    ],
-                  }}
-                />,
-              ],
-            };
-          })}
-        />
-        {!groupsData.length && emptyState}
-      </>
-    );
-  };
 
   const [commitCreateGroupWithParticipant] =
     useMutation<CreateGroupWithParticipantMutation>(
@@ -269,7 +273,7 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
       } else {
         commitJoinGroup({
           variables: {
-            groupId: groupId,
+            groupId,
             courseId,
             assignmentId: chosenAssignmentGroup?.assignmentId ?? '',
           },
@@ -316,7 +320,12 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
       </Box>
 
       <Box padding="30px 0px">
-        <GroupList groupsData={groupsData} />
+        <GroupList
+          onOpen={onOpen}
+          setAssignmentGroupAction={setAssignmentGroupAction}
+          setChosenAssignmentGroup={setChosenAssignmentGroup}
+          groupsData={groupsData}
+        />
       </Box>
 
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -353,11 +362,13 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
                   value={chosenGroupName || ''}
                   onChange={event => setChosenGroupName(event.target.value)}
                 >
-                  {availableGroups.map(group => (
-                    <option value={group.name || ''} key={group.id}>
-                      {group.name}
-                    </option>
-                  ))}
+                  {availableGroups
+                    .filter(g => g.assignmentId === chosenAssignmentGroup?.assignmentId)
+                    .map(group => (
+                      <option value={group.name || ''} key={group.id}>
+                        {group.name}
+                      </option>
+                    ))}
                 </Select>
               </Flex>
             )}

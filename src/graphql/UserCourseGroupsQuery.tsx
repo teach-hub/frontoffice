@@ -11,24 +11,25 @@ export default graphql`
           title
           isGroup
         }
-        viewerGroups {
+        viewerGroupParticipants {
           id
-          assignmentId
           group {
             id
             name
-          }
-          groupUsers {
-            id
-            name
-            lastName
-            notificationEmail
-            file
+            assignmentId
+            members {
+              id
+              name
+              lastName
+              notificationEmail
+              file
+            }
           }
         }
         groups {
           id
           name
+          assignmentId
         }
       }
     }

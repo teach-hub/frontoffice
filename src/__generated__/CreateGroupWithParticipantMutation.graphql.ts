@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b0ddb37ceabf2664b9f7c4e4366f52a8>>
+ * @generated SignedSource<<58b0b1bb13f01c906f5c61fa1e1b7fa0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,9 +16,8 @@ export type CreateGroupWithParticipantMutation$variables = {
 };
 export type CreateGroupWithParticipantMutation$data = {
   readonly createGroupWithParticipant: {
-    readonly assignmentId: string;
     readonly group: {
-      readonly courseId: string;
+      readonly courseId: string | null;
       readonly id: string;
       readonly name: string | null;
     };
@@ -104,13 +103,6 @@ v4 = [
           }
         ],
         "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "assignmentId",
-        "storageKey": null
       }
     ],
     "storageKey": null
@@ -142,16 +134,16 @@ return {
     "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "22b5402e858664470ae0de75b8c51776",
+    "cacheID": "63a4f148761d44cbba0b4010f845cfa0",
     "id": null,
     "metadata": {},
     "name": "CreateGroupWithParticipantMutation",
     "operationKind": "mutation",
-    "text": "mutation CreateGroupWithParticipantMutation(\n  $groupName: String!\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  createGroupWithParticipant(groupName: $groupName, courseId: $courseId, assignmentId: $assignmentId) {\n    id\n    group {\n      id\n      name\n      courseId\n    }\n    assignmentId\n  }\n}\n"
+    "text": "mutation CreateGroupWithParticipantMutation(\n  $groupName: String!\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  createGroupWithParticipant(groupName: $groupName, courseId: $courseId, assignmentId: $assignmentId) {\n    id\n    group {\n      id\n      name\n      courseId\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b5092d9153f7320d218da921b5e8adf3";
+(node as any).hash = "6343038ef08d53dc10d9e061dea6c706";
 
 export default node;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1947ef40ea118a078b65f6571a072fad>>
+ * @generated SignedSource<<bdae8fe4037cca40f74893615d6af798>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -23,7 +23,7 @@ export type ReviewersAssignmentQuery$data = {
     readonly course: {
       readonly assignment: {
         readonly groupParticipants: ReadonlyArray<{
-          readonly groupId: string;
+          readonly groupId: string | null;
           readonly id: string;
           readonly user: {
             readonly lastName: string;
