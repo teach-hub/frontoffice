@@ -1,10 +1,20 @@
 import { Flex } from '@chakra-ui/react';
+import { useMutation } from 'react-relay';
+import { useNavigate } from 'react-router-dom';
 
 import { Modal } from 'components/Modal';
 import Button from 'components/Button';
 import Select from 'components/Select';
 
+import useToast from 'hooks/useToast';
+
+import JoinGroupMutationDef from 'graphql/JoinGroupMutation';
+
 import type { ModalProps } from '@chakra-ui/react';
+import type {
+  JoinGroupMutation,
+  JoinGroupMutation$data,
+} from '__generated__/JoinGroupMutation.graphql';
 
 export type Props = {
   isOpen: ModalProps['isOpen'];
@@ -15,12 +25,12 @@ export type Props = {
     assignmentTitle: string;
     assignmentId: string;
   } | null;
-  handleGroupChangeSubmit: () => void;
   availableGroups: {
     id: string;
     name: string | null;
     assignmentId: string;
   }[];
+  courseId: string;
 };
 
 const JoinGroupModal = (props: Props) => {
@@ -30,9 +40,58 @@ const JoinGroupModal = (props: Props) => {
     setChosenGroupName,
     chosenGroupName,
     chosenAssignmentGroup,
-    handleGroupChangeSubmit,
     availableGroups,
+    courseId,
   } = props;
+
+  const toast = useToast();
+  const navigate = useNavigate();
+
+  const [commitJoinGroup] = useMutation<JoinGroupMutation>(JoinGroupMutationDef);
+
+  const handleGroupChangeSubmit = () => {
+    if (!chosenGroupName) {
+      toast({
+        title: 'Error',
+        description: 'Se debe seleccionar un grupo',
+        status: 'error',
+      });
+      return;
+    }
+
+    /* Get the group id by its name */
+    const groupId = availableGroups.find(group => group?.name === chosenGroupName)?.id;
+
+    if (!groupId) {
+      toast({
+        title: 'Error',
+        description: `Error al intentar unirse al grupo, intente de nuevo`,
+        status: 'error',
+      });
+    } else {
+      commitJoinGroup({
+        variables: {
+          groupId,
+          courseId,
+          assignmentId: chosenAssignmentGroup?.assignmentId ?? '',
+        },
+        onCompleted: (response: JoinGroupMutation$data, errors) => {
+          const responseData = response.joinGroup;
+          const group = responseData?.group;
+          if (!errors?.length && group) {
+            onClose();
+            navigate(0); // Reload page data
+          } else {
+            toast({
+              title: 'Error',
+              description: `Error al intentar unirse al grupo: ${errors?.at(0)?.message}`,
+              status: 'error',
+            });
+          }
+        },
+      });
+    }
+  };
 
   return (
     <Modal
