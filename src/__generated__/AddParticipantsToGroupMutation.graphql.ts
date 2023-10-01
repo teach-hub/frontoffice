@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1f6ec197de3c2d98167315bcdcf70e82>>
+ * @generated SignedSource<<41a371373183b8800f75ccf3f738a176>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,6 +17,20 @@ export type AddParticipantsToGroupMutation$variables = {
 };
 export type AddParticipantsToGroupMutation$data = {
   readonly addParticipantsToGroup: {
+    readonly groupParticipants: ReadonlyArray<{
+      readonly group: {
+        readonly id: string;
+        readonly name: string | null;
+      };
+      readonly id: string;
+      readonly user: {
+        readonly file: string;
+        readonly id: string;
+        readonly lastName: string;
+        readonly name: string;
+      };
+      readonly userRoleId: string;
+    }>;
     readonly id: string;
   } | null;
 };
@@ -46,7 +60,21 @@ v3 = {
   "kind": "LocalArgument",
   "name": "participantUserRoleIds"
 },
-v4 = [
+v4 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v5 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "name",
+  "storageKey": null
+},
+v6 = [
   {
     "alias": null,
     "args": [
@@ -76,11 +104,64 @@ v4 = [
     "name": "addParticipantsToGroup",
     "plural": false,
     "selections": [
+      (v4/*: any*/),
       {
         "alias": null,
         "args": null,
-        "kind": "ScalarField",
-        "name": "id",
+        "concreteType": "InternalGroupParticipantType",
+        "kind": "LinkedField",
+        "name": "groupParticipants",
+        "plural": true,
+        "selections": [
+          (v4/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "InternalGroupType",
+            "kind": "LinkedField",
+            "name": "group",
+            "plural": false,
+            "selections": [
+              (v4/*: any*/),
+              (v5/*: any*/)
+            ],
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "userRoleId",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "UserType",
+            "kind": "LinkedField",
+            "name": "user",
+            "plural": false,
+            "selections": [
+              (v4/*: any*/),
+              (v5/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "lastName",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "file",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          }
+        ],
         "storageKey": null
       }
     ],
@@ -98,7 +179,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "AddParticipantsToGroupMutation",
-    "selections": (v4/*: any*/),
+    "selections": (v6/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
@@ -112,19 +193,19 @@ return {
     ],
     "kind": "Operation",
     "name": "AddParticipantsToGroupMutation",
-    "selections": (v4/*: any*/)
+    "selections": (v6/*: any*/)
   },
   "params": {
-    "cacheID": "a7b66aacfbccf27f66fb949107b1f768",
+    "cacheID": "1ed0b5ba3676c609a4cc9f2d773d28de",
     "id": null,
     "metadata": {},
     "name": "AddParticipantsToGroupMutation",
     "operationKind": "mutation",
-    "text": "mutation AddParticipantsToGroupMutation(\n  $courseId: ID!\n  $groupId: ID!\n  $assignmentId: ID!\n  $participantUserRoleIds: [ID!]!\n) {\n  addParticipantsToGroup(courseId: $courseId, groupId: $groupId, assignmentId: $assignmentId, participantUserRoleIds: $participantUserRoleIds) {\n    id\n  }\n}\n"
+    "text": "mutation AddParticipantsToGroupMutation(\n  $courseId: ID!\n  $groupId: ID!\n  $assignmentId: ID!\n  $participantUserRoleIds: [ID!]!\n) {\n  addParticipantsToGroup(courseId: $courseId, groupId: $groupId, assignmentId: $assignmentId, participantUserRoleIds: $participantUserRoleIds) {\n    id\n    groupParticipants {\n      id\n      group {\n        id\n        name\n      }\n      userRoleId\n      user {\n        id\n        name\n        lastName\n        file\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "22eed0c92956f6f462e9309f52498e22";
+(node as any).hash = "02931af6bfb9138f1f792c649a8cb8d2";
 
 export default node;

@@ -172,7 +172,6 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
             status: 'info',
           });
           onCloseCreateGroupModal();
-          navigate(0); // Reload page data
         } else {
           console.log({ errors });
           toast({

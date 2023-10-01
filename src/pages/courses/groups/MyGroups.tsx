@@ -200,7 +200,6 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
           En esta sección vas a poder gestionar tus grupos para los distintos trabajos
           prácticos.
         </Text>
-
         <Text>
           Para cada trabajo es necesario seleccionar el grupo del que vas a formar parte,
           pudiendo unirte a grupos o creando nuevos.

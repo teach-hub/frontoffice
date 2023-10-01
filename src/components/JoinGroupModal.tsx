@@ -75,12 +75,13 @@ const JoinGroupModal = (props: Props) => {
           courseId,
           assignmentId: chosenAssignmentGroup?.assignmentId ?? '',
         },
-        onCompleted: (response: JoinGroupMutation$data, errors) => {
-          const responseData = response.joinGroup;
-          const group = responseData?.group;
+        onCompleted: ({ joinGroup: { group } }: JoinGroupMutation$data, errors) => {
           if (!errors?.length && group) {
             onClose();
-            navigate(0); // Reload page data
+
+            // TODO. FIXME > Hay formas mas faciles
+            // de hacer esto, una de ellas es manipular la store directamente.
+            navigate(0);
           } else {
             toast({
               title: 'Error',
