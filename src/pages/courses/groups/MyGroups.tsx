@@ -1,11 +1,3 @@
-import { sortBy } from 'lodash';
-import { useUserContext } from 'hooks/useUserCourseContext';
-import Navigation from 'components/Navigation';
-import { Suspense, useEffect, useState } from 'react';
-import PageDataContainer from 'components/PageDataContainer';
-import Heading from 'components/Heading';
-import { useLazyLoadQuery, useMutation } from 'react-relay';
-import { AlertIcon, CheckCircleIcon, KebabHorizontalIcon } from '@primer/octicons-react';
 import {
   Flex,
   Modal,
@@ -18,28 +10,42 @@ import {
   Stack,
   useDisclosure,
 } from '@chakra-ui/react';
+import { sortBy } from 'lodash';
+import { Suspense, useEffect, useState } from 'react';
+import { useLazyLoadQuery, useMutation } from 'react-relay';
+import { AlertIcon, CheckCircleIcon, KebabHorizontalIcon } from '@primer/octicons-react';
+import { useNavigate } from 'react-router-dom';
+import { theme } from 'theme';
+
+import { useUserContext } from 'hooks/useUserCourseContext';
+import useToast from 'hooks/useToast';
+
+import Navigation from 'components/Navigation';
+import PageDataContainer from 'components/PageDataContainer';
+import Heading from 'components/Heading';
 import Text from 'components/Text';
 import Box from 'components/Box';
 import Table from 'components/Table';
+import InputField from 'components/InputField';
+import Button from 'components/Button';
+import Menu from 'components/Menu';
+import CreateGroupModal from 'components/CreateGroupModal';
+import JoinGroupModal from 'components/JoinGroupModal';
+
 import UserCourseGroupsQueryDef from 'graphql/UserCourseGroupsQuery';
 import CreateGroupWithParticipantMutationDef from 'graphql/CreateGroupWithParticipantMutation';
 import JoinGroupMutationDef from 'graphql/JoinGroupMutation';
-import {
+
+import type {
   UserCourseGroupsQuery,
   UserCourseGroupsQuery$data,
 } from '__generated__/UserCourseGroupsQuery.graphql';
-import Menu from 'components/Menu';
-import { Nullable } from 'types';
-import InputField from 'components/InputField';
-import Button from 'components/Button';
-import {
+import type { Nullable } from 'types';
+import type {
   CreateGroupWithParticipantMutation,
   CreateGroupWithParticipantMutation$data,
 } from '__generated__/CreateGroupWithParticipantMutation.graphql';
-import useToast from 'hooks/useToast';
-import { useNavigate } from 'react-router-dom';
-import { theme } from 'theme';
-import {
+import type {
   JoinGroupMutation,
   JoinGroupMutation$data,
 } from '__generated__/JoinGroupMutation.graphql';
@@ -327,59 +333,26 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
         />
       </Box>
 
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            {assignmentGroupAction === AssignmentGroupAction.Create ? (
-              <Text>
-                Crear grupo - Trabajo Práctico: {chosenAssignmentGroup?.assignmentTitle}
-              </Text>
-            ) : (
-              <Text>
-                Unirse a grupo - Trabajo Práctico:{' '}
-                {chosenAssignmentGroup?.assignmentTitle}
-              </Text>
-            )}
-          </ModalHeader>
-          <ModalBody>
-            {assignmentGroupAction === AssignmentGroupAction.Create ? (
-              <Flex direction={'column'} gap={'10px'}>
-                <Text>Ingresá el nombre del grupo: </Text>
-                <InputField
-                  id={'name'}
-                  value={chosenGroupName || ''}
-                  onChange={event => setChosenGroupName(event.target.value)}
-                  placeholder={'Nombre'}
-                  type={'text'}
-                />
-              </Flex>
-            ) : (
-              <Flex direction={'column'} gap={'10px'}>
-                <Select
-                  placeholder="Seleccioná un grupo"
-                  value={chosenGroupName || ''}
-                  onChange={event => setChosenGroupName(event.target.value)}
-                >
-                  {availableGroups
-                    .filter(g => g.assignmentId === chosenAssignmentGroup?.assignmentId)
-                    .map(group => (
-                      <option value={group.name || ''} key={group.id}>
-                        {group.name}
-                      </option>
-                    ))}
-                </Select>
-              </Flex>
-            )}
-          </ModalBody>
-          <ModalFooter gap={'30px'}>
-            <Button onClick={onClose} variant={'ghost'}>
-              {'Cancelar'}
-            </Button>
-            <Button onClick={handleGroupChangeSubmit}>{'Guardar'}</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      {assignmentGroupAction === AssignmentGroupAction.Create ? (
+        <CreateGroupModal
+          chosenAssignmentGroup={chosenAssignmentGroup}
+          chosenGroupName={chosenGroupName || ''}
+          setChosenGroupName={setChosenGroupName}
+          handleGroupChangeSubmit={handleGroupChangeSubmit}
+          onClose={onClose}
+          isOpen={isOpen}
+        />
+      ) : (
+        <JoinGroupModal
+          availableGroups={availableGroups}
+          chosenAssignmentGroup={chosenAssignmentGroup}
+          chosenGroupName={chosenGroupName || ''}
+          setChosenGroupName={setChosenGroupName}
+          handleGroupChangeSubmit={handleGroupChangeSubmit}
+          onClose={onClose}
+          isOpen={isOpen}
+        />
+      )}
     </PageDataContainer>
   );
 };
