@@ -314,18 +314,19 @@ const CourseViewContainer = () => {
           <Heading>
             {course.name} - {course.subject.name}
           </Heading>
-          <ButtonWithIcon
-            variant={'ghostBorder'}
-            text={description ? 'Editar descripción' : 'Agregar descripción'}
-            icon={EditIcon}
-            onClick={onOpenDescriptionModal}
-          />
+          {courseContext.userHasPermission(Permission.SetDescription) && (
+            <ButtonWithIcon
+              variant={'ghostBorder'}
+              text={description ? 'Editar descripción' : 'Agregar descripción'}
+              icon={EditIcon}
+              onClick={onOpenDescriptionModal}
+            />
+          )}
         </Stack>
         <Heading size={'lg'}>
           Cuatrimestre {course.period} - {course.year}
         </Heading>
       </Stack>
-      {/* todo: solo mostrar el boton si tiene permiso - sumar aca, back y backoffice*/}
       {/* todo: spinner on flight*/}
 
       <Stack gap={'30px'}>
