@@ -8,6 +8,7 @@ export default graphql`
       course(id: $courseId) {
         id
         name
+        description
         organization
         studentsCount
         teachersCount

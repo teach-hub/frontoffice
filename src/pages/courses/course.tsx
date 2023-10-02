@@ -1,11 +1,11 @@
-import { ChangeEvent, Suspense, useState } from 'react';
+import React, { ChangeEvent, Suspense, useState } from 'react';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 
 import {
   Flex,
   HStack,
-  Modal,
+  Modal as ChakraModal,
   ModalBody,
   ModalContent,
   ModalFooter,
@@ -25,8 +25,6 @@ import {
   PersonIcon,
   TerminalIcon,
 } from '@primer/octicons-react';
-
-import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
 import StatCard from 'components/StatCard';
 import Button from 'components/Button';
@@ -35,6 +33,8 @@ import PageDataContainer from 'components/PageDataContainer';
 
 import CourseSetOrganizationMutationDef from 'graphql/CourseSetOrganizationMutation';
 import CourseInfoQueryDef from 'graphql/CourseInfoQuery';
+
+import CourseSetDescriptionMutationDef from 'graphql/CourseSetDescriptionMutation';
 
 import useToast from 'hooks/useToast';
 import { CourseContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
@@ -48,11 +48,25 @@ import type {
   CourseSetOrganizationMutation,
   CourseSetOrganizationMutation$data,
 } from '__generated__/CourseSetOrganizationMutation.graphql';
+
+import type {
+  CourseSetDescriptionMutation,
+  CourseSetDescriptionMutation$data,
+} from '__generated__/CourseSetDescriptionMutation.graphql';
 import { StackedBarChart } from 'components/charts/StackedBarChart';
 import {
   AssignmentSubmissionStatisticsData,
   getAssignmentSubmissionStatusDataset,
 } from 'statistics/submissions';
+import MarkdownText from 'components/MarkdownText';
+import { FormControl } from 'components/FormControl';
+import InputField from 'components/InputField';
+import { Nullable, Optional } from 'types';
+import EditIcon from 'icons/EditIcon';
+import { ButtonWithIcon } from 'components/ButtonWithIcon';
+import { Modal } from 'components/Modal';
+import Navigation from 'components/Navigation';
+import { theme } from 'theme';
 
 type CourseType = NonNullable<NonNullable<CourseInfoQuery$data['viewer']>['course']>;
 
@@ -168,7 +182,7 @@ const CourseStatistics = ({ course, courseContext, availableOrganizations }: Pro
         />
       )}
 
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <ChakraModal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Configurar organización de GitHub</ModalHeader>
@@ -208,7 +222,7 @@ const CourseStatistics = ({ course, courseContext, availableOrganizations }: Pro
             <Button onClick={handleOrganizationChangeSubmit}>{'Guardar'}</Button>
           </ModalFooter>
         </ModalContent>
-      </Modal>
+      </ChakraModal>
     </HStack>
   );
 };
@@ -279,19 +293,51 @@ const CourseViewContainer = () => {
     courseId: courseId || '',
   });
 
+  const {
+    isOpen: isOpenDescriptionModal,
+    onOpen: onOpenDescriptionModal,
+    onClose: onCloseDescriptionModal,
+  } = useDisclosure();
+
   if (!courseId || !data.viewer || !data.viewer.course) {
     return null;
   }
 
   const course = data.viewer.course;
   const availableOrganizations = data.viewer.availableOrganizations;
+  const description = course.description;
 
   return (
     <PageDataContainer>
-      <Heading>
-        {course.name} - {course.subject.name}
-      </Heading>
+      <Stack direction="row" gap={'10px'} alignItems={'center'} marginBottom={'20px'}>
+        <Heading>
+          {course.name} - {course.subject.name}
+        </Heading>
+        <ButtonWithIcon
+          variant={'ghostBorder'}
+          text={description ? 'Editar descripción' : 'Agregar descripción'}
+          icon={EditIcon}
+          onClick={onOpenDescriptionModal}
+        />
+      </Stack>
+      {/* todo: solo mostrar el boton si tiene permiso - sumar aca, back y backoffice*/}
+      {/* todo: spinner on flight*/}
+
       <Stack gap={'30px'}>
+        {description && (
+          <Box
+            maxHeight={'30vh'}
+            overflow={'auto'}
+            maxWidth={'100%'}
+            borderColor={theme.colors.teachHub.gray}
+            borderWidth={1} // Put borders only on top and bottom
+            borderLeftWidth={0}
+            borderRightWidth={0}
+            padding={5}
+          >
+            <MarkdownText markdown={description} />
+          </Box>
+        )}
         <CourseStatistics
           courseContext={courseContext}
           course={course}
@@ -299,7 +345,98 @@ const CourseViewContainer = () => {
         />
         {courseContext.userIsTeacher && <CourseCharts course={course} />}
       </Stack>
+      <Modal
+        isOpen={isOpenDescriptionModal}
+        onClose={onCloseDescriptionModal}
+        isCentered
+        headerText={'Editar descripción del curso'}
+        contentProps={{
+          height: '50vh',
+          minWidth: '40vw',
+          maxWidth: '40vw',
+        }}
+      >
+        <DescriptionModalContainer
+          description={description}
+          course={course}
+          onClose={onCloseDescriptionModal}
+        />
+      </Modal>
     </PageDataContainer>
+  );
+};
+
+const DescriptionModalContainer = ({
+  description,
+  course,
+  onClose,
+}: {
+  description: Optional<Nullable<string>>;
+  course: CourseType;
+  onClose: () => void;
+}) => {
+  const toast = useToast();
+  const [newDescription, setNewDescription] = useState<string>(description || '');
+
+  const [commitCourseSetDescription] = useMutation<CourseSetDescriptionMutation>(
+    CourseSetDescriptionMutationDef
+  );
+
+  const handleOrganizationChangeSubmit = () => {
+    commitCourseSetDescription({
+      variables: {
+        courseId: course.id,
+        description: newDescription,
+      },
+      onCompleted: (response: CourseSetDescriptionMutation$data, errors) => {
+        const data = response.setDescription;
+        if (!errors?.length && data) {
+          toast({
+            title: 'Descripción actualizada!',
+            status: 'success',
+          });
+
+          /* Update current course avoiding to reload */
+          course = {
+            ...course,
+            description: newDescription,
+          };
+        } else {
+          const errorMessage = errors ? errors[0].message : null;
+          toast({
+            title: 'Error',
+            description:
+              `No se pudo actualizar la descripción` + errorMessage
+                ? `: ${errorMessage}`
+                : '',
+            status: 'error',
+          });
+        }
+        onClose();
+      },
+    });
+  };
+
+  return (
+    <Flex direction={'column'} height={'100%'} justifyContent={'space-between'}>
+      <FormControl helperText={'Acepta formato markdown'} label={''} height={'70%'}>
+        <InputField
+          id={'courseDescription'}
+          value={newDescription}
+          onChange={event => setNewDescription(event.target.value)}
+          placeholder={'Descripción del curso'}
+          type={'text'}
+          multiline={true}
+          height={'100%'}
+        />
+      </FormControl>
+      <Flex direction={'row'} gap={'30px'} justifyContent={'flex-end'}>
+        <Button onClick={onClose} variant={'ghostBorder'}>
+          Cancelar
+        </Button>
+        <Button onClick={handleOrganizationChangeSubmit}>Guardar</Button>
+      </Flex>
+    </Flex>
   );
 };
 
