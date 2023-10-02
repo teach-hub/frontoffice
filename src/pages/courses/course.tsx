@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Suspense, useState } from 'react';
+import React, { ChangeEvent, Suspense, useEffect, useState } from 'react';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 
@@ -67,6 +67,7 @@ import { ButtonWithIcon } from 'components/ButtonWithIcon';
 import { Modal } from 'components/Modal';
 import Navigation from 'components/Navigation';
 import { theme } from 'theme';
+import Spinner from 'components/Spinner';
 
 type CourseType = NonNullable<NonNullable<CourseInfoQuery$data['viewer']>['course']>;
 
@@ -327,8 +328,6 @@ const CourseViewContainer = () => {
           Cuatrimestre {course.period} - {course.year}
         </Heading>
       </Stack>
-      {/* todo: spinner on flight*/}
-
       <Stack gap={'30px'}>
         {description && (
           <Box
@@ -383,12 +382,20 @@ const DescriptionModalContainer = ({
 }) => {
   const toast = useToast();
   const [newDescription, setNewDescription] = useState<string>(description || '');
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
-  const [commitCourseSetDescription] = useMutation<CourseSetDescriptionMutation>(
-    CourseSetDescriptionMutationDef
-  );
+  const [commitCourseSetDescription, commitCourseSetDescriptionInFlight] =
+    useMutation<CourseSetDescriptionMutation>(CourseSetDescriptionMutationDef);
 
-  const handleOrganizationChangeSubmit = () => {
+  useEffect(() => {
+    if (commitCourseSetDescriptionInFlight) {
+      setShowSpinner(true);
+    } else {
+      setShowSpinner(false);
+    }
+  }, [commitCourseSetDescriptionInFlight]);
+
+  const handleDescriptionChangeSubmit = () => {
     commitCourseSetDescription({
       variables: {
         courseId: course.id,
@@ -425,6 +432,12 @@ const DescriptionModalContainer = ({
 
   return (
     <Flex direction={'column'} height={'100%'} justifyContent={'space-between'}>
+      <Spinner
+        isOpen={showSpinner}
+        onClose={() => {
+          setShowSpinner(false);
+        }}
+      />
       <FormControl helperText={'Acepta formato markdown'} label={''} height={'70%'}>
         <InputField
           id={'courseDescription'}
@@ -440,7 +453,7 @@ const DescriptionModalContainer = ({
         <Button onClick={onClose} variant={'ghostBorder'}>
           Cancelar
         </Button>
-        <Button onClick={handleOrganizationChangeSubmit}>Guardar</Button>
+        <Button onClick={handleDescriptionChangeSubmit}>Guardar</Button>
       </Flex>
     </Flex>
   );
