@@ -67,9 +67,9 @@ import type {
   SubmissionQuery,
   SubmissionQuery$data,
 } from '__generated__/SubmissionQuery.graphql';
-import ReactMarkdown from 'react-markdown';
 import Divider from 'components/Divider';
 import CommentIcon from 'icons/CommentIcon';
+import MarkdownText from 'components/MarkdownText';
 
 type CommentType = NonNullable<
   NonNullable<
@@ -571,7 +571,7 @@ const CommentsModal = ({
                         : ''}
                     </Text>
                     <Divider orientation={'horizontal'} borderColor={'teachHub.black'} />
-                    <ReactMarkdown>{comment.body}</ReactMarkdown>
+                    <MarkdownText markdown={comment.body} />
                   </Stack>
                 </Flex>
               </Flex>

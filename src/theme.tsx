@@ -61,7 +61,7 @@ export const theme = extendTheme({
           color: 'teachHub.black',
           _hover: { bg: 'teachHub.white' },
           borderColor: 'teachHub.black',
-          borderWidth: 2,
+          borderWidth: 1,
         },
       },
     },

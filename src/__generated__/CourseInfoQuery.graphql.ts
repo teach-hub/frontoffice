@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0ca2698c8b760d9e753c064d0c93d936>>
+ * @generated SignedSource<<7a1f28fb0f45e11ebdcc179e31a015d2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -37,6 +37,7 @@ export type CourseInfoQuery$data = {
         }>;
         readonly title: string | null;
       }>;
+      readonly description: string | null;
       readonly id: string;
       readonly name: string;
       readonly organization: string | null;
@@ -112,6 +113,13 @@ v4 = [
         "selections": [
           (v1/*: any*/),
           (v2/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "description",
+            "storageKey": null
+          },
           {
             "alias": null,
             "args": null,
@@ -286,16 +294,16 @@ return {
     "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "7cbada083f07cec34b4fca94fe24c9a1",
+    "cacheID": "8e70e55bef3571633f9b0ea7b3494703",
     "id": null,
     "metadata": {},
     "name": "CourseInfoQuery",
     "operationKind": "query",
-    "text": "query CourseInfoQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      organization\n      studentsCount\n      teachersCount\n      assignments {\n        id\n        title\n        isGroup\n        submissions(onlyReviewerSubmissions: false) {\n          id\n          submittedAt\n          pullRequestUrl\n          assignmentId\n          review {\n            id\n            revisionRequested\n            grade\n          }\n        }\n        nonExistentSubmissions(onlyReviewerSubmissions: false) {\n          id\n        }\n      }\n      subject {\n        id\n        name\n      }\n    }\n    availableOrganizations {\n      names\n    }\n  }\n}\n"
+    "text": "query CourseInfoQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      description\n      organization\n      studentsCount\n      teachersCount\n      assignments {\n        id\n        title\n        isGroup\n        submissions(onlyReviewerSubmissions: false) {\n          id\n          submittedAt\n          pullRequestUrl\n          assignmentId\n          review {\n            id\n            revisionRequested\n            grade\n          }\n        }\n        nonExistentSubmissions(onlyReviewerSubmissions: false) {\n          id\n        }\n      }\n      subject {\n        id\n        name\n      }\n    }\n    availableOrganizations {\n      names\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "97c1e03d3839383a49f400b4c3d8aef6";
+(node as any).hash = "81d839cea0d5ac00f36a9b3f971aa1f4";
 
 export default node;
