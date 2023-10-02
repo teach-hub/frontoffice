@@ -41,12 +41,14 @@ export type CourseInfoQuery$data = {
       readonly id: string;
       readonly name: string;
       readonly organization: string | null;
+      readonly period: number;
       readonly studentsCount: number;
       readonly subject: {
         readonly id: string;
         readonly name: string;
       };
       readonly teachersCount: number;
+      readonly year: number;
     } | null;
     readonly id: string;
     readonly name: string;
@@ -139,6 +141,20 @@ v4 = [
             "args": null,
             "kind": "ScalarField",
             "name": "teachersCount",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "year",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "period",
             "storageKey": null
           },
           {

@@ -309,16 +309,21 @@ const CourseViewContainer = () => {
 
   return (
     <PageDataContainer>
-      <Stack direction="row" gap={'10px'} alignItems={'center'} marginBottom={'20px'}>
-        <Heading>
-          {course.name} - {course.subject.name}
+      <Stack>
+        <Stack direction="row" gap={'10px'} alignItems={'center'} marginBottom={'20px'}>
+          <Heading>
+            {course.name} - {course.subject.name}
+          </Heading>
+          <ButtonWithIcon
+            variant={'ghostBorder'}
+            text={description ? 'Editar descripción' : 'Agregar descripción'}
+            icon={EditIcon}
+            onClick={onOpenDescriptionModal}
+          />
+        </Stack>
+        <Heading size={'lg'}>
+          Cuatrimestre {course.period} - {course.year}
         </Heading>
-        <ButtonWithIcon
-          variant={'ghostBorder'}
-          text={description ? 'Editar descripción' : 'Agregar descripción'}
-          icon={EditIcon}
-          onClick={onOpenDescriptionModal}
-        />
       </Stack>
       {/* todo: solo mostrar el boton si tiene permiso - sumar aca, back y backoffice*/}
       {/* todo: spinner on flight*/}
