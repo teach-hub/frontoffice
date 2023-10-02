@@ -37,6 +37,7 @@ const CourseCard = ({ userRole }: { userRole: UserRole }) => {
     name: courseName,
     year: courseYear,
     subject: { code: subjectCode, name: subjectName },
+    period: coursePeriod,
   } = course;
 
   const { name: roleName } = role;
@@ -49,11 +50,15 @@ const CourseCard = ({ userRole }: { userRole: UserRole }) => {
 
   return (
     <Card display="flex" flex="1" onClick={handleCardClick} fontSize={'lg'}>
-      <Text flex="1">{subjectTitle}</Text>
+      <Text flex="1" fontWeight={'bold'}>
+        {subjectTitle}
+      </Text>
       <Text flex="1" size="md">
         {courseName}
       </Text>
-      <Text flex="1">{courseYear}</Text>
+      <Text flex="1">
+        Cuatrimestre {coursePeriod} - {courseYear}
+      </Text>
 
       <Badge
         fontSize="md"
@@ -65,6 +70,7 @@ const CourseCard = ({ userRole }: { userRole: UserRole }) => {
         {roleName}
       </Badge>
 
+      {/* todo: delete this button */}
       <Flex flexDirection="row-reverse" alignItems="center" flex="1">
         <IconButton variant="ghost" aria-label="See menu" icon={<CloseIcon />} />
       </Flex>
