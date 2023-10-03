@@ -59,7 +59,7 @@ const CreateAssignmentPage = ({ courseId }: Props) => {
         if (!errors?.length && data) {
           toast({
             title: 'Trabajo práctico guardado!',
-            status: 'info',
+            status: 'success',
           });
           navigate(`../${data.id}`);
         } else {

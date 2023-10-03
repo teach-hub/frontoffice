@@ -1,14 +1,13 @@
-import { Suspense } from 'react';
+import React, { Suspense } from 'react';
 import { useLazyLoadQuery } from 'react-relay';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { Flex } from '@chakra-ui/react';
+import { Flex, Stack } from '@chakra-ui/react';
 import {
   AlertIcon,
   PencilIcon,
   PeopleIcon,
   PersonIcon,
-  StarIcon,
   TrashIcon,
 } from '@primer/octicons-react';
 
@@ -22,7 +21,6 @@ import PageDataContainer from 'components/PageDataContainer';
 import Heading from 'components/Heading';
 import List from 'components/list/List';
 import Text from 'components/Text';
-import Card from 'components/Card';
 import Skeleton from 'components/Skeleton';
 
 import AssignmentQueryDef from 'graphql/AssignmentQuery';
@@ -35,137 +33,138 @@ import { DateListItem } from 'components/list/DateListItem';
 import { TextListItem } from 'components/list/TextListItem';
 import { LinkListItem } from 'components/list/LinkListItem';
 import { buildAssignmentUrlFilter } from 'queries';
+import BoxWithTopAndBottomBorders from 'components/BoxWithTopAndBottomBorders';
+import { ButtonWithIcon } from 'components/ButtonWithIcon';
+import CreateRepositoryIcon from 'icons/CreateRepositoryIcon';
+import GroupIcon from 'icons/GroupIcon';
+import SubmissionIcon from 'icons/SubmissionIcon';
+import ReviewerIcon from 'icons/ReviewerIcon';
+import { Icon as OcticonsIcon } from '@primer/octicons-react/dist/icons';
+import RRLink from 'components/RRLink';
 
 type Course = NonNullable<NonNullable<AssignmentQuery$data['viewer']>['course']>;
 type Assignment = NonNullable<Course['assignment']>;
 
-const LIST_ITEM_ICON_COLOR = theme.colors.teachHub.white;
+const LIST_ITEM_ICON_COLOR = 'teachHub.primary';
 
 function AssignmentDetails({ assignment }: { assignment: Assignment }) {
   const courseContext = useUserContext();
 
-  const viewerCanSubmit = assignment.isOpenForSubmissions && !assignment.viewerSubmission;
-
   return (
-    <Card>
-      <List p="30px">
-        {courseContext.userHasPermission(Permission.SubmitAssignment) && (
-          <TextListItem
-            label="Entrega: "
-            listItemKey="entrega"
-            iconProps={{
-              color: LIST_ITEM_ICON_COLOR,
-              icon: StarIcon,
-            }}
-            text={assignment.viewerSubmission ? 'Entregado' : 'No entregado'}
-          />
-        )}
+    <List justifyItems={'left'} alignItems={'flex-start'}>
+      <TextListItem
+        iconProps={{
+          color: LIST_ITEM_ICON_COLOR,
+          icon: assignment.isGroup ? PeopleIcon : PersonIcon,
+        }}
+        text={assignment.isGroup ? 'Entrega grupal' : 'Entrega individual'}
+        listItemKey={'isGroup'}
+      />
+      <DateListItem
+        date={assignment.startDate}
+        label={'Inicio de entregas: '}
+        listItemKey={'startDate'}
+        iconColor={LIST_ITEM_ICON_COLOR}
+      />
+      <DateListItem
+        date={assignment.endDate}
+        label={'Fecha límite de entregas: '}
+        listItemKey={'endDate'}
+        iconColor={LIST_ITEM_ICON_COLOR}
+      />
+      {courseContext.userIsTeacher && (
         <TextListItem
+          listItemKey={'allowLateSubmissions'}
           iconProps={{
             color: LIST_ITEM_ICON_COLOR,
-            icon: assignment.isGroup ? PeopleIcon : PersonIcon,
+            icon: AlertIcon,
           }}
-          text={assignment.isGroup ? 'Entrega grupal' : 'Entrega individual'}
-          listItemKey={'isGroup'}
+          text={assignment.allowLateSubmissions ? 'Permitidas' : 'No Permitidas'}
+          label={'Entregas fuera de fecha: '}
         />
-        <DateListItem
-          date={assignment.startDate}
-          label={'Inicio de entregas: '}
-          listItemKey={'startDate'}
+      )}
+      {assignment.link ? (
+        <LinkListItem
+          listItemKey={'link'}
           iconColor={LIST_ITEM_ICON_COLOR}
+          link={assignment.link}
+          text={'Ir a enunciado'}
+          external={true}
         />
-        <DateListItem
-          date={assignment.endDate}
-          label={'Fecha límite de entregas: '}
-          listItemKey={'endDate'}
-          iconColor={LIST_ITEM_ICON_COLOR}
-        />
-        {courseContext.userIsTeacher && (
-          <TextListItem
-            listItemKey={'allowLateSubmissions'}
-            iconProps={{
-              color: LIST_ITEM_ICON_COLOR,
-              icon: AlertIcon,
-            }}
-            text={assignment.allowLateSubmissions ? 'Permitidas' : 'No Permitidas'}
-            label={'Entregas fuera de fecha: '}
-          />
-        )}
-        {assignment.link ? (
-          <LinkListItem
-            listItemKey={'link'}
-            iconColor={LIST_ITEM_ICON_COLOR}
-            link={assignment.link}
-            text={'Ver enunciado'}
-            external={true}
-          />
-        ) : (
-          <></>
-        )}
-        {courseContext.userIsTeacher && (
-          <LinkListItem
-            listItemKey={'submissions'}
-            iconColor={LIST_ITEM_ICON_COLOR}
-            external={false}
-            text={'Ver entregas'}
-            link={`../../submissions?${buildAssignmentUrlFilter(assignment.id)}`}
-          />
-        )}
-        {!courseContext.userIsTeacher && (
-          <LinkListItem
-            listItemKey={'submissions'}
-            iconColor={LIST_ITEM_ICON_COLOR}
-            external={false}
-            text={'Ver entrega'}
-            link={`../../submissions/${assignment.viewerSubmission?.id}`}
-            disabled={!assignment.viewerSubmission?.id}
-          />
-        )}
-        {courseContext.userHasPermission(Permission.AssignReviewer) && (
-          <LinkListItem
-            listItemKey={'assignReviewers'}
-            iconColor={LIST_ITEM_ICON_COLOR}
-            external={false}
-            text={'Assignar correctores'}
-            link={'assign-reviewers'}
-          />
-        )}
-        {courseContext.userHasPermission(Permission.SubmitAssignment) && (
-          <LinkListItem
-            listItemKey={'addSubmission'}
-            iconColor={LIST_ITEM_ICON_COLOR}
-            external={false}
-            text={
-              assignment.viewerSubmission ? 'Entrega realizada' : 'Realizar nueva entrega'
-            }
-            link={'add-submission'}
-            disabled={!viewerCanSubmit}
-          />
-        )}
-        {courseContext.userHasPermission(Permission.CreateRepository) && (
-          <LinkListItem
-            listItemKey={'createRepository'}
-            iconColor={LIST_ITEM_ICON_COLOR}
-            external={false}
-            text={'Crear repositorios'}
-            link={`new-repo/${assignment.isGroup ? 'groups' : 'students'}`}
-          />
-        )}
-        {courseContext.userHasPermission(Permission.ViewGroups) && assignment.isGroup && (
-          <LinkListItem
-            listItemKey={'viewGroups'}
-            iconColor={LIST_ITEM_ICON_COLOR}
-            external={false}
-            text={'Ver grupos'}
-            link={`groups`}
-          />
-        )}
-      </List>
-    </Card>
+      ) : (
+        <></>
+      )}
+    </List>
   );
 }
 
-function AssignmentActions() {
+const AssignmentNavigationActions = ({ assignment }: { assignment: Assignment }) => {
+  const courseContext = useUserContext();
+  const viewerCanSubmit = assignment.isOpenForSubmissions && !assignment.viewerSubmission;
+
+  type NavigationActionData = {
+    icon: OcticonsIcon;
+    text: string;
+    link: string;
+    disabled?: boolean;
+  };
+
+  const isTeacher = courseContext.userIsTeacher;
+
+  const actions: NavigationActionData[] = [
+    isTeacher && {
+      icon: SubmissionIcon,
+      text: 'Ver entregas',
+      link: `../../submissions?${buildAssignmentUrlFilter(assignment.id)}`,
+    },
+    !isTeacher && {
+      icon: SubmissionIcon,
+      text: 'Ver entrega',
+      link: `../../submissions/${assignment.viewerSubmission?.id}`,
+      disabled: !assignment.viewerSubmission?.id,
+    },
+    courseContext.userHasPermission(Permission.AssignReviewer) && {
+      icon: ReviewerIcon,
+      text: 'Assignar correctores',
+      link: `assign-reviewers`,
+    },
+    courseContext.userHasPermission(Permission.SubmitAssignment) && {
+      icon: SubmissionIcon,
+      text: assignment.viewerSubmission ? 'Entrega realizada' : 'Realizar nueva entrega',
+      link: `add-submission`,
+      disabled: !viewerCanSubmit,
+    },
+    courseContext.userHasPermission(Permission.CreateRepository) && {
+      icon: CreateRepositoryIcon,
+      text: 'Crear repositorios',
+      link: `new-repo/${assignment.isGroup ? 'groups' : 'students'}`,
+    },
+    courseContext.userHasPermission(Permission.ViewGroups) &&
+      assignment.isGroup && {
+        icon: GroupIcon,
+        text: 'Ver grupos',
+        link: `groups`,
+      },
+  ].filter(Boolean) as NavigationActionData[];
+
+  return (
+    <Stack gap={'10px'} direction="row">
+      {actions.map(({ icon, text, link, disabled }, index) => (
+        <RRLink to={link} key={index} disabled={disabled}>
+          <ButtonWithIcon
+            key={index}
+            icon={icon}
+            variant={'ghostBorder'}
+            text={text}
+            disabled={disabled || false}
+          />
+        </RRLink>
+      ))}
+    </Stack>
+  );
+};
+
+function AssignmentPersistActions() {
   const courseContext = useUserContext();
   const navigate = useNavigate();
 
@@ -173,7 +172,7 @@ function AssignmentActions() {
 
   if (courseContext.userHasPermission(Permission.EditAssignment)) {
     actions.push(
-      <Button leftIcon={<PencilIcon />} onClick={() => navigate(`edit`)}>
+      <Button leftIcon={<PencilIcon />} onClick={() => navigate(`edit`)} key={'edit'}>
         Editar
       </Button>
     );
@@ -186,6 +185,7 @@ function AssignmentActions() {
         onClick={() => null}
         leftIcon={<TrashIcon />}
         color={theme.colors.teachHub.red}
+        key={'delete'}
       >
         Eliminar
       </Button>
@@ -219,15 +219,20 @@ const AssignmentDashboardPage = ({
 
   return (
     <>
-      <Flex gap="50px" justifyContent={'space-between'} alignItems={'center'}>
+      <Flex gap="20px" alignItems={'center'}>
         <Heading textOverflow={'ellipsis'} overflow={'hidden'} whiteSpace="nowrap">
           {assignment.title}
         </Heading>
-        <AssignmentActions />
+        <AssignmentPersistActions />
       </Flex>
-      <Flex direction="row" justifyContent="space-between">
-        <Text w={'50%'}>{assignment.description}</Text>
-        <AssignmentDetails assignment={assignment} />
+      <Flex width={'70%'}>
+        <Stack gap={'20px'}>
+          <AssignmentNavigationActions assignment={assignment} />
+          <BoxWithTopAndBottomBorders>
+            <Text>{assignment.description}</Text>
+          </BoxWithTopAndBottomBorders>
+          <AssignmentDetails assignment={assignment} />
+        </Stack>
       </Flex>
     </>
   );
