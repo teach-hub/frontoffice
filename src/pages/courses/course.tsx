@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Suspense, useEffect, useState } from 'react';
+import React, { ChangeEvent, Suspense, useState } from 'react';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 
@@ -384,18 +384,12 @@ const DescriptionModalContainer = ({
   const [newDescription, setNewDescription] = useState<string>(description || '');
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
-  const [commitCourseSetDescription, commitCourseSetDescriptionInFlight] =
-    useMutation<CourseSetDescriptionMutation>(CourseSetDescriptionMutationDef);
-
-  useEffect(() => {
-    if (commitCourseSetDescriptionInFlight) {
-      setShowSpinner(true);
-    } else {
-      setShowSpinner(false);
-    }
-  }, [commitCourseSetDescriptionInFlight]);
+  const [commitCourseSetDescription] = useMutation<CourseSetDescriptionMutation>(
+    CourseSetDescriptionMutationDef
+  );
 
   const handleDescriptionChangeSubmit = () => {
+    setShowSpinner(true);
     commitCourseSetDescription({
       variables: {
         courseId: course.id,
@@ -425,6 +419,7 @@ const DescriptionModalContainer = ({
             status: 'error',
           });
         }
+        setShowSpinner(false);
         onClose();
       },
     });
