@@ -89,17 +89,14 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
             </Stack>,
             <Stack direction={'row'} justifyContent={'center'} alignItems={'center'}>
               <Tooltip label={'Crear nuevo grupo'}>
-                {/* Wrap icon in span due to not using forwardRef */}
-                <span>
-                  <IconButton
-                    variant={'ghost'}
-                    aria-label={'create-group'}
-                    icon={<CreateIcon size="medium" />}
-                    onClick={() => {
-                      onOpenCreateGroupModal();
-                    }}
-                  />
-                </span>
+                <IconButton
+                  variant={'ghost'}
+                  aria-label={'create-group'}
+                  icon={<CreateIcon size="medium" />}
+                  onClick={() => {
+                    onOpenCreateGroupModal();
+                  }}
+                />
               </Tooltip>
             </Stack>,
           ],
@@ -214,18 +211,15 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
                       alignItems={'center'}
                     >
                       <Tooltip label={'Agregar alumnos'}>
-                        {/* Wrap icon in span due to not using forwardRef */}
-                        <span>
-                          <IconButton
-                            variant={'ghost'}
-                            aria-label={'add-users-to-group'}
-                            icon={<AddPersonIcon size="medium" />}
-                            onClick={() => {
-                              setSelectedGroupId(groupId);
-                              onOpenAddUsersModal();
-                            }}
-                          />
-                        </span>
+                        <IconButton
+                          variant={'ghost'}
+                          aria-label={'add-users-to-group'}
+                          icon={<AddPersonIcon size="medium" />}
+                          onClick={() => {
+                            setSelectedGroupId(groupId);
+                            onOpenAddUsersModal();
+                          }}
+                        />
                       </Tooltip>
                     </Stack>,
                   ],
