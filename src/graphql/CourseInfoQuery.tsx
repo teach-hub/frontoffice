@@ -12,6 +12,8 @@ export default graphql`
         organization
         studentsCount
         teachersCount
+        year
+        period
         assignments {
           id
           title

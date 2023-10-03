@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<497e49d5486b38251d1aca7ca691ec38>>
+ * @generated SignedSource<<b72451fd50a7da4a4b2f2839eb8e4adc>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,13 +12,12 @@ import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type CreateGroupWithParticipantsMutation$variables = {
   assignmentId: string;
   courseId: string;
-  groupName: string;
   participantUserRoleIds: ReadonlyArray<string>;
 };
 export type CreateGroupWithParticipantsMutation$data = {
-  readonly createGroupWithParticipants: ReadonlyArray<{
+  readonly createGroupWithParticipants: {
     readonly id: string;
-  } | null>;
+  } | null;
 };
 export type CreateGroupWithParticipantsMutation = {
   response: CreateGroupWithParticipantsMutation$data;
@@ -39,14 +38,9 @@ v1 = {
 v2 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "groupName"
-},
-v3 = {
-  "defaultValue": null,
-  "kind": "LocalArgument",
   "name": "participantUserRoleIds"
 },
-v4 = [
+v3 = [
   {
     "alias": null,
     "args": [
@@ -62,19 +56,14 @@ v4 = [
       },
       {
         "kind": "Variable",
-        "name": "groupName",
-        "variableName": "groupName"
-      },
-      {
-        "kind": "Variable",
         "name": "participantUserRoleIds",
         "variableName": "participantUserRoleIds"
       }
     ],
-    "concreteType": "InternalGroupParticipantType",
+    "concreteType": "AssignmentType",
     "kind": "LinkedField",
     "name": "createGroupWithParticipants",
-    "plural": true,
+    "plural": false,
     "selections": [
       {
         "alias": null,
@@ -92,39 +81,37 @@ return {
     "argumentDefinitions": [
       (v0/*: any*/),
       (v1/*: any*/),
-      (v2/*: any*/),
-      (v3/*: any*/)
+      (v2/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
     "name": "CreateGroupWithParticipantsMutation",
-    "selections": (v4/*: any*/),
+    "selections": (v3/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
     "argumentDefinitions": [
-      (v2/*: any*/),
       (v1/*: any*/),
       (v0/*: any*/),
-      (v3/*: any*/)
+      (v2/*: any*/)
     ],
     "kind": "Operation",
     "name": "CreateGroupWithParticipantsMutation",
-    "selections": (v4/*: any*/)
+    "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "8b1a7f17d02bb167302995723b073633",
+    "cacheID": "397027d27ae8f61301dfc5097c75de5e",
     "id": null,
     "metadata": {},
     "name": "CreateGroupWithParticipantsMutation",
     "operationKind": "mutation",
-    "text": "mutation CreateGroupWithParticipantsMutation(\n  $groupName: String!\n  $courseId: ID!\n  $assignmentId: ID!\n  $participantUserRoleIds: [ID!]!\n) {\n  createGroupWithParticipants(groupName: $groupName, courseId: $courseId, assignmentId: $assignmentId, participantUserRoleIds: $participantUserRoleIds) {\n    id\n  }\n}\n"
+    "text": "mutation CreateGroupWithParticipantsMutation(\n  $courseId: ID!\n  $assignmentId: ID!\n  $participantUserRoleIds: [ID!]!\n) {\n  createGroupWithParticipants(courseId: $courseId, assignmentId: $assignmentId, participantUserRoleIds: $participantUserRoleIds) {\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "d7e51d936454c817a11869fb5bffb235";
+(node as any).hash = "f7652791dc0d5c16d24fd537d785e7dc";
 
 export default node;

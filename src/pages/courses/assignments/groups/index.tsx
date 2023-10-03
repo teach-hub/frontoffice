@@ -133,6 +133,7 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const handleAddUsersToGroup = () => {
     commitAddParticipantsToGroup({
       variables: {
+        courseId,
         assignmentId: assignmentId || '',
         groupId: selectedGroupId || '',
         participantUserRoleIds: selectedUserRoleIds,
@@ -161,7 +162,6 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
     commitCreateGroupWithParticipants({
       variables: {
         assignmentId: assignmentId || '',
-        groupName,
         courseId,
         participantUserRoleIds: selectedUserRoleIds,
       },

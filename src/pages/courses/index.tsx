@@ -2,8 +2,7 @@ import { MouseEvent, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
-import { Badge, Flex, IconButton, Skeleton, Stack } from '@chakra-ui/react';
-import { CloseIcon } from '@chakra-ui/icons';
+import { Badge, Skeleton, Stack } from '@chakra-ui/react';
 
 import Text from 'components/Text';
 import Heading from 'components/Heading';
@@ -37,6 +36,7 @@ const CourseCard = ({ userRole }: { userRole: UserRole }) => {
     name: courseName,
     year: courseYear,
     subject: { code: subjectCode, name: subjectName },
+    period: coursePeriod,
   } = course;
 
   const { name: roleName } = role;
@@ -47,13 +47,25 @@ const CourseCard = ({ userRole }: { userRole: UserRole }) => {
     navigate(`/courses/${userRole.course?.id}`);
   };
 
+  const CARD_TEXT_FONT_SIZE = theme.styles.global.body.fontSize;
+
   return (
-    <Card display="flex" flex="1" onClick={handleCardClick} fontSize={'lg'}>
-      <Text flex="1">{subjectTitle}</Text>
-      <Text flex="1" size="md">
+    <Card
+      display="flex"
+      flex="1"
+      onClick={handleCardClick}
+      fontSize={'lg'}
+      padding={'5px'}
+    >
+      <Text flex="1" fontWeight={'bold'} fontSize={CARD_TEXT_FONT_SIZE}>
+        {subjectTitle}
+      </Text>
+      <Text flex="1" fontSize={CARD_TEXT_FONT_SIZE}>
         {courseName}
       </Text>
-      <Text flex="1">{courseYear}</Text>
+      <Text flex="1" fontSize={CARD_TEXT_FONT_SIZE}>
+        Cuatrimestre {coursePeriod} - {courseYear}
+      </Text>
 
       <Badge
         fontSize="md"
@@ -61,13 +73,10 @@ const CourseCard = ({ userRole }: { userRole: UserRole }) => {
         backgroundColor={theme.colors.teachHub.white}
         color={theme.colors.teachHub.black}
         borderRadius={'5px'}
+        padding={'10px'}
       >
         {roleName}
       </Badge>
-
-      <Flex flexDirection="row-reverse" alignItems="center" flex="1">
-        <IconButton variant="ghost" aria-label="See menu" icon={<CloseIcon />} />
-      </Flex>
     </Card>
   );
 };
