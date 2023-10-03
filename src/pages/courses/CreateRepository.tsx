@@ -284,6 +284,12 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
     onClose: onCloseRepoNamesConfigurationModal,
   } = useDisclosure();
 
+  const {
+    isOpen: isOpenRepoGeneralConfigurationModal,
+    onOpen: onOpenRepoGeneralConfigurationModal,
+    onClose: onCloseRepoGeneralConfigurationModal,
+  } = useDisclosure();
+
   const [searchFilter, setSearchFilter] = useState<Nullable<string>>(null);
 
   const courseGroupsAndUsersData = useLazyLoadQuery<AssignmentGroupsAndUsersQuery>(
@@ -351,6 +357,12 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
   };
   const [repositoryNameConfiguration, setRepositoryNameConfiguration] =
     useState<RepositoriesNameConfiguration>(initialRepositoryNameConfiguration);
+  const [generalRepositoryConfiguration, setGeneralRepositoryConfiguration] =
+    useState<GeneralRepositoryConfiguration>({
+      baseRepositoryName: undefined,
+      privateRepos: true,
+      includeAllBranches: false,
+    });
 
   const exampleRepositoryName = (): string => {
     return tableData.length > 0
@@ -417,6 +429,13 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
           repositoriesData,
           admins: adminUserIds,
           maintainers: maintainUserIds,
+          arePrivate: generalRepositoryConfiguration.privateRepos,
+          baseRepositoryData: generalRepositoryConfiguration.baseRepositoryName
+            ? {
+                name: generalRepositoryConfiguration.baseRepositoryName,
+                includeAllBranches: generalRepositoryConfiguration.includeAllBranches,
+              }
+            : undefined,
         },
         onCompleted: (response: CreateRepositoryMutation$data, errors) => {
           if (!errors?.length) {
@@ -481,7 +500,11 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
             text={'Configurar nombre repositorios'}
             icon={IdBadgeIcon}
           />
-
+          <ButtonWithIcon
+            onClick={onOpenRepoGeneralConfigurationModal}
+            text={'Configuración general de repositorios'}
+            icon={IdBadgeIcon}
+          />
           <FormControl
             label={'Ejemplo nombre repositorio'}
             isInvalid={errorInRepositoryName}
@@ -652,6 +675,20 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
           </FormControl>
         </Stack>
       </Modal>
+      <Modal
+        isOpen={isOpenRepoGeneralConfigurationModal}
+        onClose={onCloseRepoGeneralConfigurationModal}
+        isCentered
+        headerText={'Configuración general de repositorios'}
+        contentProps={{
+          minWidth: '30vw',
+        }}
+      >
+        <GeneralRepositoryConfigurationModalContent
+          generalRepositoryConfiguration={generalRepositoryConfiguration}
+          updateGeneralRepositoryConfiguration={setGeneralRepositoryConfiguration}
+        />
+      </Modal>
     </PageDataContainer>
   );
 };
@@ -728,5 +765,73 @@ const SelectionTable = ({
           ],
         }))}
     />
+  );
+};
+
+type GeneralRepositoryConfiguration = {
+  baseRepositoryName?: string;
+  privateRepos: boolean;
+  includeAllBranches: boolean;
+};
+
+const GeneralRepositoryConfigurationModalContent = ({
+  generalRepositoryConfiguration,
+  updateGeneralRepositoryConfiguration,
+}: {
+  generalRepositoryConfiguration: GeneralRepositoryConfiguration;
+  updateGeneralRepositoryConfiguration: (
+    newConfig: GeneralRepositoryConfiguration
+  ) => void;
+}) => {
+  return (
+    <Stack gap={'20px'}>
+      <Checkbox
+        id={'privateRepos'}
+        isChecked={generalRepositoryConfiguration.privateRepos}
+        onChange={() =>
+          updateGeneralRepositoryConfiguration({
+            ...generalRepositoryConfiguration,
+            privateRepos: !generalRepositoryConfiguration.privateRepos,
+          })
+        }
+      >
+        Privados
+      </Checkbox>
+      <Stack gap={0}>
+        <FormControl
+          helperText={
+            'Crea cada repositorio con el contenido del repositorio seleccionado. IMPORTANTE: sólo indicar su nombre. Debe pertenecer a la organización del curso y estar habilitado como template.'
+          }
+          label={'Nombre del repositorio base (opcional)'}
+        >
+          <InputField
+            id={'baseRepo'}
+            value={generalRepositoryConfiguration.baseRepositoryName}
+            onChange={event =>
+              updateGeneralRepositoryConfiguration({
+                ...generalRepositoryConfiguration,
+                baseRepositoryName: event.target.value.replace(/\s/g, ''),
+              })
+            }
+            placeholder={'nombre-repositorio-base'}
+            type={'text'}
+          />
+        </FormControl>
+        {generalRepositoryConfiguration.baseRepositoryName && (
+          <Checkbox
+            id={'includeAllBranches'}
+            isChecked={generalRepositoryConfiguration.includeAllBranches}
+            onChange={() =>
+              updateGeneralRepositoryConfiguration({
+                ...generalRepositoryConfiguration,
+                includeAllBranches: !generalRepositoryConfiguration.includeAllBranches,
+              })
+            }
+          >
+            Incluir todas las ramas y no sólo la default
+          </Checkbox>
+        )}
+      </Stack>
+    </Stack>
   );
 };

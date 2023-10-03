@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<12adeda90a76fc6f8de76ce8432e09e8>>
+ * @generated SignedSource<<fa57f04213c41151208a79019bb4fe6c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,8 +14,14 @@ export type RepositoryStudentData = {
   name: string;
   students?: ReadonlyArray<string> | null;
 };
+export type BaseRepositoryData = {
+  includeAllBranches: boolean;
+  name: string;
+};
 export type CreateRepositoryMutation$variables = {
   admins?: ReadonlyArray<string> | null;
+  arePrivate: boolean;
+  baseRepositoryData?: BaseRepositoryData | null;
   courseId: string;
   maintainers?: ReadonlyArray<string> | null;
   organization: string;
@@ -40,24 +46,34 @@ var v0 = {
 v1 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "courseId"
+  "name": "arePrivate"
 },
 v2 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "maintainers"
+  "name": "baseRepositoryData"
 },
 v3 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "organization"
+  "name": "courseId"
 },
 v4 = {
   "defaultValue": null,
   "kind": "LocalArgument",
+  "name": "maintainers"
+},
+v5 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "organization"
+},
+v6 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
   "name": "repositoriesData"
 },
-v5 = [
+v7 = [
   {
     "alias": null,
     "args": [
@@ -65,6 +81,16 @@ v5 = [
         "kind": "Variable",
         "name": "admins",
         "variableName": "admins"
+      },
+      {
+        "kind": "Variable",
+        "name": "arePrivate",
+        "variableName": "arePrivate"
+      },
+      {
+        "kind": "Variable",
+        "name": "baseRepositoryData",
+        "variableName": "baseRepositoryData"
       },
       {
         "kind": "Variable",
@@ -110,39 +136,43 @@ return {
       (v1/*: any*/),
       (v2/*: any*/),
       (v3/*: any*/),
-      (v4/*: any*/)
+      (v4/*: any*/),
+      (v5/*: any*/),
+      (v6/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
     "name": "CreateRepositoryMutation",
-    "selections": (v5/*: any*/),
+    "selections": (v7/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
     "argumentDefinitions": [
+      (v5/*: any*/),
       (v3/*: any*/),
-      (v1/*: any*/),
       (v0/*: any*/),
-      (v2/*: any*/),
-      (v4/*: any*/)
+      (v4/*: any*/),
+      (v6/*: any*/),
+      (v1/*: any*/),
+      (v2/*: any*/)
     ],
     "kind": "Operation",
     "name": "CreateRepositoryMutation",
-    "selections": (v5/*: any*/)
+    "selections": (v7/*: any*/)
   },
   "params": {
-    "cacheID": "e922ba9e87b0c09cdd1fec1d459d86ee",
+    "cacheID": "7dd541d0f6d6fb1f3ec41d4edf9e75eb",
     "id": null,
     "metadata": {},
     "name": "CreateRepositoryMutation",
     "operationKind": "mutation",
-    "text": "mutation CreateRepositoryMutation(\n  $organization: String!\n  $courseId: ID!\n  $admins: [String!]\n  $maintainers: [String!]\n  $repositoriesData: [RepositoryStudentData!]\n) {\n  createRepositories(organization: $organization, courseId: $courseId, admins: $admins, maintainers: $maintainers, repositoriesData: $repositoriesData) {\n    failedRepositoriesNames\n  }\n}\n"
+    "text": "mutation CreateRepositoryMutation(\n  $organization: String!\n  $courseId: ID!\n  $admins: [String!]\n  $maintainers: [String!]\n  $repositoriesData: [RepositoryStudentData!]\n  $arePrivate: Boolean!\n  $baseRepositoryData: BaseRepositoryData\n) {\n  createRepositories(organization: $organization, courseId: $courseId, admins: $admins, maintainers: $maintainers, repositoriesData: $repositoriesData, arePrivate: $arePrivate, baseRepositoryData: $baseRepositoryData) {\n    failedRepositoriesNames\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "155700d7b602245fadc301587f005ef4";
+(node as any).hash = "c25cb64f7371a28d7961756534053aa4";
 
 export default node;
