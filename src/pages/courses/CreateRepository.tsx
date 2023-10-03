@@ -30,7 +30,7 @@ import {
 import { IdBadgeIcon, MortarBoardIcon } from '@primer/octicons-react';
 import Button from 'components/Button';
 import Text from 'components/Text';
-import { removeAccentsAndSpecialCharacters } from 'utils/strings';
+import { removeAccentsAndSpecialCharacters, removeWhitespace } from 'utils/strings';
 import { Modal } from 'components/Modal';
 import { FormControl } from 'components/FormControl';
 import CheckboxGroup from 'components/CheckboxGroup';
@@ -47,6 +47,7 @@ import {
 } from 'app/groups';
 import { SearchIcon } from '@chakra-ui/icons';
 import { Nullable } from 'types';
+import Spinner from 'components/Spinner';
 
 type RepositoriesNameConfiguration = {
   prefix: string;
@@ -272,6 +273,8 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
 
   const navigate = useNavigate();
   const toast = useToast();
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
+
   const {
     isOpen: isOpenTeachersModal,
     onOpen: onOpenTeachersModal,
@@ -414,6 +417,7 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
       });
 
     if (courseId) {
+      setShowSpinner(true);
       const userIds = Object.keys(selectedRoles);
       const adminUserIds = userIds.filter(
         userId => selectedRoles[userId] === TeacherRepositoryRole.Admin
@@ -438,6 +442,7 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
             : undefined,
         },
         onCompleted: (response: CreateRepositoryMutation$data, errors) => {
+          setShowSpinner(false);
           if (!errors?.length) {
             const failedRepositoriesNames =
               response.createRepositories?.failedRepositoriesNames;
@@ -445,7 +450,7 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
               // TODO: TH-136 Define what to do on success (redirect to course page?)
               toast({
                 title: 'Repositorios creados!',
-                status: 'info',
+                status: 'success',
               });
             } else {
               toast({
@@ -689,6 +694,12 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
           updateGeneralRepositoryConfiguration={setGeneralRepositoryConfiguration}
         />
       </Modal>
+      <Spinner
+        isOpen={showSpinner}
+        onClose={() => {
+          setShowSpinner(false);
+        }}
+      />
     </PageDataContainer>
   );
 };
@@ -810,7 +821,7 @@ const GeneralRepositoryConfigurationModalContent = ({
             onChange={event =>
               updateGeneralRepositoryConfiguration({
                 ...generalRepositoryConfiguration,
-                baseRepositoryName: event.target.value.replace(/\s/g, ''),
+                baseRepositoryName: removeWhitespace(event.target.value),
               })
             }
             placeholder={'nombre-repositorio-base'}
