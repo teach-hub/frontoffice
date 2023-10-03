@@ -229,7 +229,6 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
       } else {
         commitCreateGroupWithParticipant({
           variables: {
-            groupName: chosenGroupName,
             courseId,
             assignmentId: chosenAssignmentGroup?.assignmentId ?? '',
           },

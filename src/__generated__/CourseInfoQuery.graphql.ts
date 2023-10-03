@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7a1f28fb0f45e11ebdcc179e31a015d2>>
+ * @generated SignedSource<<a6bd285cc25c34b82f946494531a1b29>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -310,16 +310,16 @@ return {
     "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "8e70e55bef3571633f9b0ea7b3494703",
+    "cacheID": "b7ccade2d95718d299f407cb3d29a346",
     "id": null,
     "metadata": {},
     "name": "CourseInfoQuery",
     "operationKind": "query",
-    "text": "query CourseInfoQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      description\n      organization\n      studentsCount\n      teachersCount\n      assignments {\n        id\n        title\n        isGroup\n        submissions(onlyReviewerSubmissions: false) {\n          id\n          submittedAt\n          pullRequestUrl\n          assignmentId\n          review {\n            id\n            revisionRequested\n            grade\n          }\n        }\n        nonExistentSubmissions(onlyReviewerSubmissions: false) {\n          id\n        }\n      }\n      subject {\n        id\n        name\n      }\n    }\n    availableOrganizations {\n      names\n    }\n  }\n}\n"
+    "text": "query CourseInfoQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      description\n      organization\n      studentsCount\n      teachersCount\n      year\n      period\n      assignments {\n        id\n        title\n        isGroup\n        submissions(onlyReviewerSubmissions: false) {\n          id\n          submittedAt\n          pullRequestUrl\n          assignmentId\n          review {\n            id\n            revisionRequested\n            grade\n          }\n        }\n        nonExistentSubmissions(onlyReviewerSubmissions: false) {\n          id\n        }\n      }\n      subject {\n        id\n        name\n      }\n    }\n    availableOrganizations {\n      names\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "81d839cea0d5ac00f36a9b3f971aa1f4";
+(node as any).hash = "c7945e9bb079218ac01214ce826c4afd";
 
 export default node;

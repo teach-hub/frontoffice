@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7a6fb75ffff812b10e41c5e2deb05d2b>>
+ * @generated SignedSource<<1f6ec197de3c2d98167315bcdcf70e82>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,13 +11,14 @@
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type AddParticipantsToGroupMutation$variables = {
   assignmentId: string;
+  courseId: string;
   groupId: string;
   participantUserRoleIds: ReadonlyArray<string>;
 };
 export type AddParticipantsToGroupMutation$data = {
-  readonly addParticipantsToGroup: ReadonlyArray<{
+  readonly addParticipantsToGroup: {
     readonly id: string;
-  } | null>;
+  } | null;
 };
 export type AddParticipantsToGroupMutation = {
   response: AddParticipantsToGroupMutation$data;
@@ -33,14 +34,19 @@ var v0 = {
 v1 = {
   "defaultValue": null,
   "kind": "LocalArgument",
-  "name": "groupId"
+  "name": "courseId"
 },
 v2 = {
   "defaultValue": null,
   "kind": "LocalArgument",
+  "name": "groupId"
+},
+v3 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
   "name": "participantUserRoleIds"
 },
-v3 = [
+v4 = [
   {
     "alias": null,
     "args": [
@@ -48,6 +54,11 @@ v3 = [
         "kind": "Variable",
         "name": "assignmentId",
         "variableName": "assignmentId"
+      },
+      {
+        "kind": "Variable",
+        "name": "courseId",
+        "variableName": "courseId"
       },
       {
         "kind": "Variable",
@@ -60,10 +71,10 @@ v3 = [
         "variableName": "participantUserRoleIds"
       }
     ],
-    "concreteType": "InternalGroupParticipantType",
+    "concreteType": "AssignmentType",
     "kind": "LinkedField",
     "name": "addParticipantsToGroup",
-    "plural": true,
+    "plural": false,
     "selections": [
       {
         "alias": null,
@@ -81,12 +92,13 @@ return {
     "argumentDefinitions": [
       (v0/*: any*/),
       (v1/*: any*/),
-      (v2/*: any*/)
+      (v2/*: any*/),
+      (v3/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
     "name": "AddParticipantsToGroupMutation",
-    "selections": (v3/*: any*/),
+    "selections": (v4/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
@@ -94,24 +106,25 @@ return {
   "operation": {
     "argumentDefinitions": [
       (v1/*: any*/),
+      (v2/*: any*/),
       (v0/*: any*/),
-      (v2/*: any*/)
+      (v3/*: any*/)
     ],
     "kind": "Operation",
     "name": "AddParticipantsToGroupMutation",
-    "selections": (v3/*: any*/)
+    "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "14b673eae5ffb272b045f22ffb3478dc",
+    "cacheID": "a7b66aacfbccf27f66fb949107b1f768",
     "id": null,
     "metadata": {},
     "name": "AddParticipantsToGroupMutation",
     "operationKind": "mutation",
-    "text": "mutation AddParticipantsToGroupMutation(\n  $groupId: ID!\n  $assignmentId: ID!\n  $participantUserRoleIds: [ID!]!\n) {\n  addParticipantsToGroup(groupId: $groupId, assignmentId: $assignmentId, participantUserRoleIds: $participantUserRoleIds) {\n    id\n  }\n}\n"
+    "text": "mutation AddParticipantsToGroupMutation(\n  $courseId: ID!\n  $groupId: ID!\n  $assignmentId: ID!\n  $participantUserRoleIds: [ID!]!\n) {\n  addParticipantsToGroup(courseId: $courseId, groupId: $groupId, assignmentId: $assignmentId, participantUserRoleIds: $participantUserRoleIds) {\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "c468b095e354295c66c44b049e31ec49";
+(node as any).hash = "22eed0c92956f6f462e9309f52498e22";
 
 export default node;

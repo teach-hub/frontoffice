@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<58b0b1bb13f01c906f5c61fa1e1b7fa0>>
+ * @generated SignedSource<<c9740986e1f2cdd4c82eeeee8434228b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,7 +12,6 @@ import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type CreateGroupWithParticipantMutation$variables = {
   assignmentId: string;
   courseId: string;
-  groupName: string;
 };
 export type CreateGroupWithParticipantMutation$data = {
   readonly createGroupWithParticipant: {
@@ -41,18 +40,13 @@ v1 = {
   "name": "courseId"
 },
 v2 = {
-  "defaultValue": null,
-  "kind": "LocalArgument",
-  "name": "groupName"
-},
-v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v4 = [
+v3 = [
   {
     "alias": null,
     "args": [
@@ -65,11 +59,6 @@ v4 = [
         "kind": "Variable",
         "name": "courseId",
         "variableName": "courseId"
-      },
-      {
-        "kind": "Variable",
-        "name": "groupName",
-        "variableName": "groupName"
       }
     ],
     "concreteType": "InternalGroupParticipantType",
@@ -77,7 +66,7 @@ v4 = [
     "name": "createGroupWithParticipant",
     "plural": false,
     "selections": [
-      (v3/*: any*/),
+      (v2/*: any*/),
       {
         "alias": null,
         "args": null,
@@ -86,7 +75,7 @@ v4 = [
         "name": "group",
         "plural": false,
         "selections": [
-          (v3/*: any*/),
+          (v2/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -112,38 +101,36 @@ return {
   "fragment": {
     "argumentDefinitions": [
       (v0/*: any*/),
-      (v1/*: any*/),
-      (v2/*: any*/)
+      (v1/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
     "name": "CreateGroupWithParticipantMutation",
-    "selections": (v4/*: any*/),
+    "selections": (v3/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
     "argumentDefinitions": [
-      (v2/*: any*/),
       (v1/*: any*/),
       (v0/*: any*/)
     ],
     "kind": "Operation",
     "name": "CreateGroupWithParticipantMutation",
-    "selections": (v4/*: any*/)
+    "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "63a4f148761d44cbba0b4010f845cfa0",
+    "cacheID": "91ad519b8c1c7f49a470a136c183d94f",
     "id": null,
     "metadata": {},
     "name": "CreateGroupWithParticipantMutation",
     "operationKind": "mutation",
-    "text": "mutation CreateGroupWithParticipantMutation(\n  $groupName: String!\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  createGroupWithParticipant(groupName: $groupName, courseId: $courseId, assignmentId: $assignmentId) {\n    id\n    group {\n      id\n      name\n      courseId\n    }\n  }\n}\n"
+    "text": "mutation CreateGroupWithParticipantMutation(\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  createGroupWithParticipant(courseId: $courseId, assignmentId: $assignmentId) {\n    id\n    group {\n      id\n      name\n      courseId\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "6343038ef08d53dc10d9e061dea6c706";
+(node as any).hash = "29e8c6bbfa1be1f0279f0952a7a294f3";
 
 export default node;
