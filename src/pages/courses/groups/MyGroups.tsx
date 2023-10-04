@@ -1,48 +1,29 @@
+import { Stack, useDisclosure } from '@chakra-ui/react';
 import { sortBy } from 'lodash';
-import { useUserContext } from 'hooks/useUserCourseContext';
-import Navigation from 'components/Navigation';
 import { Suspense, useEffect, useState } from 'react';
+import { useLazyLoadQuery } from 'react-relay';
+import { AlertIcon, CheckCircleIcon, KebabHorizontalIcon } from '@primer/octicons-react';
+import { theme } from 'theme';
+
+import { useUserContext } from 'hooks/useUserCourseContext';
+
+import Navigation from 'components/Navigation';
 import PageDataContainer from 'components/PageDataContainer';
 import Heading from 'components/Heading';
-import { useLazyLoadQuery, useMutation } from 'react-relay';
-import { AlertIcon, CheckCircleIcon, KebabHorizontalIcon } from '@primer/octicons-react';
-import {
-  Flex,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Select,
-  Stack,
-  useDisclosure,
-} from '@chakra-ui/react';
 import Text from 'components/Text';
 import Box from 'components/Box';
 import Table from 'components/Table';
+import Menu from 'components/Menu';
+import CreateGroupModal from 'components/CreateGroupModal';
+import JoinGroupModal from 'components/JoinGroupModal';
+
 import UserCourseGroupsQueryDef from 'graphql/UserCourseGroupsQuery';
-import CreateGroupWithParticipantMutationDef from 'graphql/CreateGroupWithParticipantMutation';
-import JoinGroupMutationDef from 'graphql/JoinGroupMutation';
-import {
+
+import type {
   UserCourseGroupsQuery,
   UserCourseGroupsQuery$data,
 } from '__generated__/UserCourseGroupsQuery.graphql';
-import Menu from 'components/Menu';
-import { Nullable } from 'types';
-import InputField from 'components/InputField';
-import Button from 'components/Button';
-import {
-  CreateGroupWithParticipantMutation,
-  CreateGroupWithParticipantMutation$data,
-} from '__generated__/CreateGroupWithParticipantMutation.graphql';
-import useToast from 'hooks/useToast';
-import { useNavigate } from 'react-router-dom';
-import { theme } from 'theme';
-import {
-  JoinGroupMutation,
-  JoinGroupMutation$data,
-} from '__generated__/JoinGroupMutation.graphql';
+import type { Nullable } from 'types';
 
 interface AssignmentGroupData {
   assignmentId: string;
@@ -169,8 +150,6 @@ const GroupList = ({
 };
 
 const MyGroupsPage = ({ courseId }: { courseId: string }) => {
-  const navigate = useNavigate();
-  const toast = useToast();
   const [assignmentGroupAction, setAssignmentGroupAction] = useState(
     AssignmentGroupAction.None
   );
@@ -211,92 +190,6 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
     }
   }, [isOpen]);
 
-  const [commitCreateGroupWithParticipant] =
-    useMutation<CreateGroupWithParticipantMutation>(
-      CreateGroupWithParticipantMutationDef
-    );
-
-  const [commitJoinGroup] = useMutation<JoinGroupMutation>(JoinGroupMutationDef);
-
-  const handleGroupChangeSubmit = () => {
-    if (assignmentGroupAction === AssignmentGroupAction.Create) {
-      if (!chosenGroupName) {
-        toast({
-          title: 'Error',
-          description: 'El nombre del grupo no puede estar vacío',
-          status: 'error',
-        });
-      } else {
-        commitCreateGroupWithParticipant({
-          variables: {
-            courseId,
-            assignmentId: chosenAssignmentGroup?.assignmentId ?? '',
-          },
-          onCompleted: (response: CreateGroupWithParticipantMutation$data, errors) => {
-            const responseData = response.createGroupWithParticipant;
-            const group = responseData?.group;
-            if (!errors?.length && group) {
-              onClose();
-              navigate(0); // Reload page data
-            } else {
-              toast({
-                title: 'Error',
-                description: `Error al intentar crear el grupo: ${
-                  errors?.at(0)?.message
-                }`,
-                status: 'error',
-              });
-            }
-          },
-        });
-      }
-    } else {
-      if (!chosenGroupName) {
-        toast({
-          title: 'Error',
-          description: 'Se debe seleccionar un grupo',
-          status: 'error',
-        });
-        return;
-      }
-
-      /* Get the group id by its name */
-      const groupId = availableGroups.find(group => group?.name === chosenGroupName)?.id;
-
-      if (!groupId) {
-        toast({
-          title: 'Error',
-          description: `Error al intentar unirse al grupo, intente de nuevo`,
-          status: 'error',
-        });
-      } else {
-        commitJoinGroup({
-          variables: {
-            groupId,
-            courseId,
-            assignmentId: chosenAssignmentGroup?.assignmentId ?? '',
-          },
-          onCompleted: (response: JoinGroupMutation$data, errors) => {
-            const responseData = response.joinGroup;
-            const group = responseData?.group;
-            if (!errors?.length && group) {
-              onClose();
-              navigate(0); // Reload page data
-            } else {
-              toast({
-                title: 'Error',
-                description: `Error al intentar unirse al grupo: ${
-                  errors?.at(0)?.message
-                }`,
-                status: 'error',
-              });
-            }
-          },
-        });
-      }
-    }
-  };
-
   return (
     <PageDataContainer>
       <Heading size="lg" marginBottom={'30px'}>
@@ -307,7 +200,6 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
           En esta sección vas a poder gestionar tus grupos para los distintos trabajos
           prácticos.
         </Text>
-
         <Text>
           Para cada trabajo es necesario seleccionar el grupo del que vas a formar parte,
           pudiendo unirte a grupos o creando nuevos.
@@ -327,59 +219,24 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
         />
       </Box>
 
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            {assignmentGroupAction === AssignmentGroupAction.Create ? (
-              <Text>
-                Crear grupo - Trabajo Práctico: {chosenAssignmentGroup?.assignmentTitle}
-              </Text>
-            ) : (
-              <Text>
-                Unirse a grupo - Trabajo Práctico:{' '}
-                {chosenAssignmentGroup?.assignmentTitle}
-              </Text>
-            )}
-          </ModalHeader>
-          <ModalBody>
-            {assignmentGroupAction === AssignmentGroupAction.Create ? (
-              <Flex direction={'column'} gap={'10px'}>
-                <Text>Ingresá el nombre del grupo: </Text>
-                <InputField
-                  id={'name'}
-                  value={chosenGroupName || ''}
-                  onChange={event => setChosenGroupName(event.target.value)}
-                  placeholder={'Nombre'}
-                  type={'text'}
-                />
-              </Flex>
-            ) : (
-              <Flex direction={'column'} gap={'10px'}>
-                <Select
-                  placeholder="Seleccioná un grupo"
-                  value={chosenGroupName || ''}
-                  onChange={event => setChosenGroupName(event.target.value)}
-                >
-                  {availableGroups
-                    .filter(g => g.assignmentId === chosenAssignmentGroup?.assignmentId)
-                    .map(group => (
-                      <option value={group.name || ''} key={group.id}>
-                        {group.name}
-                      </option>
-                    ))}
-                </Select>
-              </Flex>
-            )}
-          </ModalBody>
-          <ModalFooter gap={'30px'}>
-            <Button onClick={onClose} variant={'ghost'}>
-              {'Cancelar'}
-            </Button>
-            <Button onClick={handleGroupChangeSubmit}>{'Guardar'}</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      {assignmentGroupAction === AssignmentGroupAction.Create ? (
+        <CreateGroupModal
+          chosenAssignmentGroup={chosenAssignmentGroup}
+          onClose={onClose}
+          isOpen={isOpen}
+          courseId={courseId}
+        />
+      ) : (
+        <JoinGroupModal
+          availableGroups={availableGroups}
+          chosenAssignmentGroup={chosenAssignmentGroup}
+          chosenGroupName={chosenGroupName || ''}
+          setChosenGroupName={setChosenGroupName}
+          onClose={onClose}
+          isOpen={isOpen}
+          courseId={courseId}
+        />
+      )}
     </PageDataContainer>
   );
 };

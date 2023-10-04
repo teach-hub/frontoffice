@@ -12,6 +12,20 @@ export default graphql`
       participantUserRoleIds: $participantUserRoleIds
     ) {
       id
+      groupParticipants {
+        id
+        group {
+          id
+          name
+        }
+        userRoleId
+        user {
+          id
+          name
+          lastName
+          file
+        }
+      }
     }
   }
 `;

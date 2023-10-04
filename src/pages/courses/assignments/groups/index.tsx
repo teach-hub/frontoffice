@@ -158,7 +158,7 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
     });
   };
 
-  const handleCreateGroup = (groupName: string) => {
+  const handleCreateGroup = () => {
     commitCreateGroupWithParticipants({
       variables: {
         assignmentId: assignmentId || '',
@@ -172,7 +172,6 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
             status: 'info',
           });
           onCloseCreateGroupModal();
-          navigate(0); // Reload page data
         } else {
           console.log({ errors });
           toast({
@@ -248,7 +247,7 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
         assignmentGroupsData={assignmentGroupsData}
         onClose={onCloseCreateGroupModal}
         isOpen={isOpenCreateGroupModal}
-        handleSubmitAction={({ groupName }) => handleCreateGroup(groupName)}
+        handleSubmitAction={handleCreateGroup}
         handleAddUsersCheckboxGroupChange={handleCheckedUsersChange}
         submitEnabled={selectedUserRoleIds.length > 0}
       />
@@ -303,40 +302,18 @@ const CreateGroupModal = ({
   onClose: () => void;
   isOpen: boolean;
   submitEnabled: boolean;
-  handleSubmitAction: ({ groupName }: { groupName: string }) => void;
+  handleSubmitAction: () => void;
   handleAddUsersCheckboxGroupChange: (values: string[]) => void;
 }) => {
-  const [groupName, setGroupName] = useState<string>('');
-
-  useEffect(() => {
-    if (!isOpen) {
-      setGroupName('');
-    }
-  }, [isOpen]);
-
   return (
     <ManageGroupModal
       isOpen={isOpen}
       onClose={onClose}
-      submitEnabled={submitEnabled && !!groupName}
-      headerText={'Indicar nombre del grupo y seleccionar integrantes'}
-      handleSubmitAction={() => {
-        handleSubmitAction({ groupName });
-      }}
+      submitEnabled={submitEnabled}
+      headerText={'Selecciona los integrantes del nuevo grupo'}
+      handleSubmitAction={handleSubmitAction}
     >
       <Stack direction={'column'}>
-        <FormControl
-          label={''}
-          isInvalid={!groupName}
-          errorMessage={'Nombre obligatorio'}
-        >
-          <InputField
-            id={'groupName'}
-            value={groupName}
-            onChange={event => setGroupName(event.target.value)}
-            type={'text'}
-          />
-        </FormControl>
         <ModalStudentsCheckboxGroup
           assignmentGroupsData={assignmentGroupsData}
           handleAddUsersCheckboxGroupChange={handleAddUsersCheckboxGroupChange}
