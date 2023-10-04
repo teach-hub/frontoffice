@@ -147,7 +147,12 @@ const NavigationBar = () => {
         <Menu
           content={{
             menuButton: (
-              <Button as="div" variant="ghost" rightIcon={<ChevronDownIcon />}>
+              <Button
+                as="div"
+                variant="ghost"
+                rightIcon={<ChevronDownIcon />}
+                hidden={!teacherActions.length && !studentActions.length}
+              >
                 <AddIcon />
               </Button>
             ),
