@@ -63,7 +63,7 @@ const CreateGroupModal = (props: Props) => {
 
   return (
     <Modal
-      headerText={`Crear grupo - Trabajo Práctico: ${chosenAssignmentGroup?.assignmentTitle}`}
+      headerText={`Trabajo Práctico: ${chosenAssignmentGroup?.assignmentTitle}`}
       isOpen={isOpen}
       onClose={onClose}
       isCentered
@@ -72,11 +72,14 @@ const CreateGroupModal = (props: Props) => {
           <Button onClick={onClose} variant={'ghost'}>
             {'Cancelar'}
           </Button>
-          <Button onClick={handleGroupChangeSubmit}>{'Guardar'}</Button>
+          <Button onClick={handleGroupChangeSubmit}>{'Crear'}</Button>
         </>
       }
     >
-      <Text>ahre</Text>
+      <Text fontSize={'md'}>
+        Vas a generar un nuevo grupo con un nombre autogenerado y comenzarás a formar
+        parte de él
+      </Text>
     </Modal>
   );
 };
