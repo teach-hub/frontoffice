@@ -5,3 +5,7 @@ export const removeAccentsAndSpecialCharacters = (input: string): string => {
   // Remove special characters and spaces using a regular expression
   return normalizedString.replace(/[^\w]/gi, '');
 };
+
+export const removeWhitespace = (input: string): string => {
+  return input.replace(/\s/g, '');
+};

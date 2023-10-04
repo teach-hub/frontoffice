@@ -7,6 +7,8 @@ export default graphql`
     $admins: [String!]
     $maintainers: [String!]
     $repositoriesData: [RepositoryStudentData!]
+    $arePrivate: Boolean!
+    $baseRepositoryData: BaseRepositoryData
   ) {
     createRepositories(
       organization: $organization
@@ -14,6 +16,8 @@ export default graphql`
       admins: $admins
       maintainers: $maintainers
       repositoriesData: $repositoriesData
+      arePrivate: $arePrivate
+      baseRepositoryData: $baseRepositoryData
     ) {
       failedRepositoriesNames
     }
