@@ -67,6 +67,7 @@ import { ButtonWithIcon } from 'components/ButtonWithIcon';
 import { Modal } from 'components/Modal';
 import Navigation from 'components/Navigation';
 import { theme } from 'theme';
+import Spinner from 'components/Spinner';
 
 type CourseType = NonNullable<NonNullable<CourseInfoQuery$data['viewer']>['course']>;
 
@@ -314,20 +315,19 @@ const CourseViewContainer = () => {
           <Heading>
             {course.name} - {course.subject.name}
           </Heading>
-          <ButtonWithIcon
-            variant={'ghostBorder'}
-            text={description ? 'Editar descripción' : 'Agregar descripción'}
-            icon={EditIcon}
-            onClick={onOpenDescriptionModal}
-          />
+          {courseContext.userHasPermission(Permission.SetDescription) && (
+            <ButtonWithIcon
+              variant={'ghostBorder'}
+              text={description ? 'Editar descripción' : 'Agregar descripción'}
+              icon={EditIcon}
+              onClick={onOpenDescriptionModal}
+            />
+          )}
         </Stack>
         <Heading size={'lg'}>
           Cuatrimestre {course.period} - {course.year}
         </Heading>
       </Stack>
-      {/* todo: solo mostrar el boton si tiene permiso - sumar aca, back y backoffice*/}
-      {/* todo: spinner on flight*/}
-
       <Stack gap={'30px'}>
         {description && (
           <Box
@@ -382,12 +382,14 @@ const DescriptionModalContainer = ({
 }) => {
   const toast = useToast();
   const [newDescription, setNewDescription] = useState<string>(description || '');
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   const [commitCourseSetDescription] = useMutation<CourseSetDescriptionMutation>(
     CourseSetDescriptionMutationDef
   );
 
-  const handleOrganizationChangeSubmit = () => {
+  const handleDescriptionChangeSubmit = () => {
+    setShowSpinner(true);
     commitCourseSetDescription({
       variables: {
         courseId: course.id,
@@ -417,6 +419,7 @@ const DescriptionModalContainer = ({
             status: 'error',
           });
         }
+        setShowSpinner(false);
         onClose();
       },
     });
@@ -424,6 +427,12 @@ const DescriptionModalContainer = ({
 
   return (
     <Flex direction={'column'} height={'100%'} justifyContent={'space-between'}>
+      <Spinner
+        isOpen={showSpinner}
+        onClose={() => {
+          setShowSpinner(false);
+        }}
+      />
       <FormControl helperText={'Acepta formato markdown'} label={''} height={'70%'}>
         <InputField
           id={'courseDescription'}
@@ -439,7 +448,7 @@ const DescriptionModalContainer = ({
         <Button onClick={onClose} variant={'ghostBorder'}>
           Cancelar
         </Button>
-        <Button onClick={handleOrganizationChangeSubmit}>Guardar</Button>
+        <Button onClick={handleDescriptionChangeSubmit}>Guardar</Button>
       </Flex>
     </Flex>
   );
