@@ -222,8 +222,6 @@ const MyGroupsPage = ({ courseId }: { courseId: string }) => {
       {assignmentGroupAction === AssignmentGroupAction.Create ? (
         <CreateGroupModal
           chosenAssignmentGroup={chosenAssignmentGroup}
-          chosenGroupName={chosenGroupName || ''}
-          setChosenGroupName={setChosenGroupName}
           onClose={onClose}
           isOpen={isOpen}
           courseId={courseId}
