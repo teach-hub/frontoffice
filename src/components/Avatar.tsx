@@ -6,9 +6,7 @@ const Avatar = (props: Props) => {
   return (
     <ChakraAvatar
       _hover={{
-        transition: '.3s',
-        filter: 'blur(1px)',
-        cursor: 'pointer',
+        cursor: 'default',
       }}
       borderWidth="1px"
       borderColor="black.900"
