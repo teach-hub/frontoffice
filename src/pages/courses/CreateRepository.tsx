@@ -27,7 +27,7 @@ import {
   CreateRepositoryMutation,
   CreateRepositoryMutation$data,
 } from '__generated__/CreateRepositoryMutation.graphql';
-import { IdBadgeIcon, MortarBoardIcon } from '@primer/octicons-react';
+import { DotFillIcon, IdBadgeIcon, MortarBoardIcon } from '@primer/octicons-react';
 import Button from 'components/Button';
 import Text from 'components/Text';
 import { removeAccentsAndSpecialCharacters, removeWhitespace } from 'utils/strings';
@@ -48,6 +48,8 @@ import {
 import { SearchIcon } from '@chakra-ui/icons';
 import { Nullable } from 'types';
 import Spinner from 'components/Spinner';
+import List from 'components/list/List';
+import { TextListItem } from 'components/list/TextListItem';
 
 type RepositoriesNameConfiguration = {
   prefix: string;
@@ -293,6 +295,16 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
     onClose: onCloseRepoGeneralConfigurationModal,
   } = useDisclosure();
 
+  const {
+    isOpen: isOpenCreationResultModal,
+    onOpen: onOpenCreationResultModal,
+    onClose: onCloseCreationResultModal,
+  } = useDisclosure();
+
+  /* Result after mutation is applied */
+  const [creationResult, setCreationResult] =
+    useState<Nullable<CreateRepositoryMutation$data>>(null);
+
   const [searchFilter, setSearchFilter] = useState<Nullable<string>>(null);
 
   const courseGroupsAndUsersData = useLazyLoadQuery<AssignmentGroupsAndUsersQuery>(
@@ -443,24 +455,10 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
         },
         onCompleted: (response: CreateRepositoryMutation$data, errors) => {
           setShowSpinner(false);
+          setCreationResult(response);
           if (!errors?.length) {
-            const failedRepositoriesNames =
-              response.createRepositories?.failedRepositoriesNames;
-            if (!failedRepositoriesNames?.length) {
-              // TODO: TH-136 Define what to do on success (redirect to course page?)
-              toast({
-                title: 'Repositorios creados!',
-                status: 'success',
-              });
-            } else {
-              toast({
-                title: 'Error',
-                description: `Se encontraron errores creando los repositorios: ${failedRepositoriesNames.join(
-                  ', '
-                )}`,
-                status: 'error',
-              });
-            }
+            /* There may be errors in the response, display them appart */
+            onOpenCreationResultModal();
           } else {
             toast({
               title: 'Error',
@@ -694,6 +692,21 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
           updateGeneralRepositoryConfiguration={setGeneralRepositoryConfiguration}
         />
       </Modal>
+      {creationResult && (
+        <Modal
+          isOpen={isOpenCreationResultModal}
+          onClose={onCloseCreationResultModal}
+          isCentered
+          headerText={'Resultado de la creación de repositorios'}
+          contentProps={{
+            maxHeight: '80vh',
+            overflowY: 'auto', // Make modal scrollable
+            minWidth: '30vw',
+          }}
+        >
+          <RepositoriesResultModalContent creationResult={creationResult} />
+        </Modal>
+      )}
       <Spinner
         isOpen={showSpinner}
         onClose={() => {
@@ -843,6 +856,63 @@ const GeneralRepositoryConfigurationModalContent = ({
           </Checkbox>
         )}
       </Stack>
+    </Stack>
+  );
+};
+
+const RepositoriesResultModalContent = ({
+  creationResult,
+}: {
+  creationResult: CreateRepositoryMutation$data;
+}) => {
+  const createdRepositoriesNames =
+    creationResult?.createRepositories?.createdRepositoriesNames || [];
+  const failedRepositoriesNames =
+    creationResult?.createRepositories?.failedRepositoriesNames || [];
+  const failedAddingCollaboratorRepositoriesNames =
+    creationResult?.createRepositories?.failedAddingCollaboratorRepositoriesNames || [];
+
+  /* Display different configuration for each type of result */
+  const results = [
+    {
+      title: 'Repositorios fallidos:',
+      items: failedRepositoriesNames,
+      iconColor: theme.colors.teachHub.red,
+    },
+    {
+      title: 'Repositorios creados, pero con error al agregar usuarios:',
+      items: failedAddingCollaboratorRepositoriesNames,
+      iconColor: theme.colors.teachHub.yellow,
+    },
+    {
+      title: 'Repositorios creados:',
+      items: createdRepositoriesNames,
+      iconColor: theme.colors.teachHub.green,
+    },
+  ];
+
+  return (
+    <Stack>
+      {results.map(
+        (result, resultIndex) =>
+          result.items.length && (
+            <FormControl label={result.title} key={resultIndex}>
+              <List>
+                {result.items.map((repoName, index) => (
+                  <TextListItem
+                    iconProps={{
+                      color: result.iconColor,
+                      icon: DotFillIcon,
+                    }}
+                    text={repoName}
+                    listItemKey={`${resultIndex}-${index}`}
+                    key={`${resultIndex}-${index}`}
+                  />
+                ))}
+              </List>
+            </FormControl>
+          )
+      )}
     </Stack>
   );
 };

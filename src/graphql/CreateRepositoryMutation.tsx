@@ -19,7 +19,9 @@ export default graphql`
       arePrivate: $arePrivate
       baseRepositoryData: $baseRepositoryData
     ) {
+      createdRepositoriesNames
       failedRepositoriesNames
+      failedAddingCollaboratorRepositoriesNames
     }
   }
 `;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fa57f04213c41151208a79019bb4fe6c>>
+ * @generated SignedSource<<e5a0cdc7044c23da1376e183098c3dc2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -29,6 +29,8 @@ export type CreateRepositoryMutation$variables = {
 };
 export type CreateRepositoryMutation$data = {
   readonly createRepositories: {
+    readonly createdRepositoriesNames: ReadonlyArray<string> | null;
+    readonly failedAddingCollaboratorRepositoriesNames: ReadonlyArray<string> | null;
     readonly failedRepositoriesNames: ReadonlyArray<string> | null;
   } | null;
 };
@@ -122,7 +124,21 @@ v7 = [
         "alias": null,
         "args": null,
         "kind": "ScalarField",
+        "name": "createdRepositoriesNames",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
         "name": "failedRepositoriesNames",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "failedAddingCollaboratorRepositoriesNames",
         "storageKey": null
       }
     ],
@@ -163,16 +179,16 @@ return {
     "selections": (v7/*: any*/)
   },
   "params": {
-    "cacheID": "7dd541d0f6d6fb1f3ec41d4edf9e75eb",
+    "cacheID": "4948633a5782eb6cda6e71a02665cf01",
     "id": null,
     "metadata": {},
     "name": "CreateRepositoryMutation",
     "operationKind": "mutation",
-    "text": "mutation CreateRepositoryMutation(\n  $organization: String!\n  $courseId: ID!\n  $admins: [String!]\n  $maintainers: [String!]\n  $repositoriesData: [RepositoryStudentData!]\n  $arePrivate: Boolean!\n  $baseRepositoryData: BaseRepositoryData\n) {\n  createRepositories(organization: $organization, courseId: $courseId, admins: $admins, maintainers: $maintainers, repositoriesData: $repositoriesData, arePrivate: $arePrivate, baseRepositoryData: $baseRepositoryData) {\n    failedRepositoriesNames\n  }\n}\n"
+    "text": "mutation CreateRepositoryMutation(\n  $organization: String!\n  $courseId: ID!\n  $admins: [String!]\n  $maintainers: [String!]\n  $repositoriesData: [RepositoryStudentData!]\n  $arePrivate: Boolean!\n  $baseRepositoryData: BaseRepositoryData\n) {\n  createRepositories(organization: $organization, courseId: $courseId, admins: $admins, maintainers: $maintainers, repositoriesData: $repositoriesData, arePrivate: $arePrivate, baseRepositoryData: $baseRepositoryData) {\n    createdRepositoriesNames\n    failedRepositoriesNames\n    failedAddingCollaboratorRepositoriesNames\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "c25cb64f7371a28d7961756534053aa4";
+(node as any).hash = "1b1e4a4b14a82be4c59afb4b73ee62a2";
 
 export default node;
