@@ -1,3 +1,4 @@
+import type { ModalProps } from '@chakra-ui/react';
 import { Flex } from '@chakra-ui/react';
 import { useMutation } from 'react-relay';
 import { useNavigate } from 'react-router-dom';
@@ -9,12 +10,12 @@ import Select from 'components/Select';
 import useToast from 'hooks/useToast';
 
 import JoinGroupMutationDef from 'graphql/JoinGroupMutation';
-
-import type { ModalProps } from '@chakra-ui/react';
 import type {
   JoinGroupMutation,
   JoinGroupMutation$data,
 } from '__generated__/JoinGroupMutation.graphql';
+import React, { useState } from 'react';
+import Spinner from 'components/Spinner';
 
 export type Props = {
   isOpen: ModalProps['isOpen'];
@@ -47,6 +48,7 @@ const JoinGroupModal = (props: Props) => {
   const toast = useToast();
   const navigate = useNavigate();
 
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [commitJoinGroup] = useMutation<JoinGroupMutation>(JoinGroupMutationDef);
 
   const handleGroupChangeSubmit = () => {
@@ -69,6 +71,7 @@ const JoinGroupModal = (props: Props) => {
         status: 'error',
       });
     } else {
+      setShowSpinner(true);
       commitJoinGroup({
         variables: {
           groupId,
@@ -76,6 +79,7 @@ const JoinGroupModal = (props: Props) => {
           assignmentId: chosenAssignmentGroup?.assignmentId ?? '',
         },
         onCompleted: ({ joinGroup: { group } }: JoinGroupMutation$data, errors) => {
+          setShowSpinner(false);
           if (!errors?.length && group) {
             onClose();
 
@@ -95,36 +99,44 @@ const JoinGroupModal = (props: Props) => {
   };
 
   return (
-    <Modal
-      headerText={`Unirse a grupo - Trabajo Práctico: ${chosenAssignmentGroup?.assignmentTitle}`}
-      isOpen={isOpen}
-      onClose={onClose}
-      isCentered
-      footerChildren={
-        <>
-          <Button onClick={onClose} variant={'ghost'}>
-            {'Cancelar'}
-          </Button>
-          <Button onClick={handleGroupChangeSubmit}>{'Guardar'}</Button>
-        </>
-      }
-    >
-      <Flex direction={'column'} gap={'10px'}>
-        <Select
-          placeholder="Seleccioná un grupo"
-          value={chosenGroupName || ''}
-          onChange={event => setChosenGroupName(event.target.value)}
-        >
-          {availableGroups
-            .filter(g => g.assignmentId === chosenAssignmentGroup?.assignmentId)
-            .map(group => (
-              <option value={group.name || ''} key={group.id}>
-                {group.name}
-              </option>
-            ))}
-        </Select>
-      </Flex>
-    </Modal>
+    <>
+      <Spinner
+        isOpen={showSpinner}
+        onClose={() => {
+          setShowSpinner(false);
+        }}
+      />
+      <Modal
+        headerText={`Unirse a grupo - Trabajo Práctico: ${chosenAssignmentGroup?.assignmentTitle}`}
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+        footerChildren={
+          <>
+            <Button onClick={onClose} variant={'ghost'}>
+              {'Cancelar'}
+            </Button>
+            <Button onClick={handleGroupChangeSubmit}>{'Guardar'}</Button>
+          </>
+        }
+      >
+        <Flex direction={'column'} gap={'10px'}>
+          <Select
+            placeholder="Seleccioná un grupo"
+            value={chosenGroupName || ''}
+            onChange={event => setChosenGroupName(event.target.value)}
+          >
+            {availableGroups
+              .filter(g => g.assignmentId === chosenAssignmentGroup?.assignmentId)
+              .map(group => (
+                <option value={group.name || ''} key={group.id}>
+                  {group.name}
+                </option>
+              ))}
+          </Select>
+        </Flex>
+      </Modal>
+    </>
   );
 };
 
