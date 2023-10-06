@@ -1,6 +1,6 @@
 import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
 import Navigation from 'components/Navigation';
-import { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import PageDataContainer from 'components/PageDataContainer';
 import Heading from 'components/Heading';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -29,19 +29,19 @@ import { Checkbox } from 'components/Checkbox';
 import { Nullable } from 'types';
 import CheckboxGroup from 'components/CheckboxGroup';
 import Button from 'components/Button';
-import { FormControl } from 'components/FormControl';
-import InputField from 'components/InputField';
 import { CreateGroupWithParticipantsMutation } from '__generated__/CreateGroupWithParticipantsMutation.graphql';
 import CreateGroupWithParticipantsMutationDef from 'graphql/CreateGroupWithParticipantsMutation';
 import { AddParticipantsToGroupMutation } from '__generated__/AddParticipantsToGroupMutation.graphql';
 import AddParticipantsToGroupMutationDef from 'graphql/AddParticipantsToGroupMutation';
 import useToast from 'hooks/useToast';
+import Spinner from 'components/Spinner';
 
 const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const courseId = courseContext.courseId;
   const { assignmentId } = useParams();
   const toast = useToast();
   const navigate = useNavigate();
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   const {
     isOpen: isOpenAddUsersModal,
@@ -128,6 +128,7 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   );
 
   const handleAddUsersToGroup = () => {
+    setShowSpinner(true);
     commitAddParticipantsToGroup({
       variables: {
         courseId,
@@ -136,6 +137,7 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
         participantUserRoleIds: selectedUserRoleIds,
       },
       onCompleted: (_, errors) => {
+        setShowSpinner(false);
         if (!errors?.length) {
           toast({
             title: 'Alumnos agregados!',
@@ -156,6 +158,7 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   };
 
   const handleCreateGroup = () => {
+    setShowSpinner(true);
     commitCreateGroupWithParticipants({
       variables: {
         assignmentId: assignmentId || '',
@@ -163,6 +166,7 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
         participantUserRoleIds: selectedUserRoleIds,
       },
       onCompleted: (_, errors) => {
+        setShowSpinner(false);
         if (!errors?.length) {
           toast({
             title: 'Grupo creado!',
@@ -183,6 +187,12 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
 
   return (
     <PageDataContainer>
+      <Spinner
+        isOpen={showSpinner}
+        onClose={() => {
+          setShowSpinner(false);
+        }}
+      />
       <Heading>{`Grupos | ${selectedAssignment?.title}`}</Heading>{' '}
       <Stack paddingY={'10px'}>
         <Table
