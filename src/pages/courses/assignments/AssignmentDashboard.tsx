@@ -125,7 +125,7 @@ const AssignmentNavigationActions = ({ assignment }: { assignment: Assignment })
     },
     courseContext.userHasPermission(Permission.AssignReviewer) && {
       icon: ReviewerIcon,
-      text: 'Assignar correctores',
+      text: 'Asignar correctores',
       link: `assign-reviewers`,
     },
     courseContext.userHasPermission(Permission.SubmitAssignment) && {
