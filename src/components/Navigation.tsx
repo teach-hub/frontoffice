@@ -30,11 +30,13 @@ import {
   LogoutMutation$data,
 } from '__generated__/LogoutMutation.graphql';
 import { NavigationQuery } from '__generated__/NavigationQuery.graphql';
+import Spinner from 'components/Spinner';
 
 const NAVIGATION_HEIGHT_PX = 95;
 
 const NavigationBar = () => {
   const toast = useToast();
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [commitLogoutMutation] = useMutation<LogoutMutation>(LogoutMutationDef);
 
   const courseContext = useUserContext();
@@ -62,12 +64,14 @@ const NavigationBar = () => {
 
   const handleLogout = () => {
     const currentToken = storeGetValue('token');
-    currentToken &&
+    if (currentToken) {
+      setShowSpinner(true);
       commitLogoutMutation({
         variables: {
           token: currentToken,
         },
         onCompleted: (_: LogoutMutation$data, errors) => {
+          setShowSpinner(false);
           if (!errors?.length) {
             storeRemoveValue('token');
             navigate('/login');
@@ -80,6 +84,7 @@ const NavigationBar = () => {
           }
         },
       });
+    }
   };
 
   const handleGoToProfile = () => {
@@ -122,6 +127,12 @@ const NavigationBar = () => {
       zIndex="1px"
       height={`${NAVIGATION_HEIGHT_PX}px`}
     >
+      <Spinner
+        isOpen={showSpinner}
+        onClose={() => {
+          setShowSpinner(false);
+        }}
+      />
       <HomeButton w="60px" h="70px" onClick={() => navigate('/')} />
 
       <Divider h="75%" />
