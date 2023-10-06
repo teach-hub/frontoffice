@@ -11,7 +11,7 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useMutation } from 'react-relay';
 
@@ -38,6 +38,7 @@ import type {
   RegisterUserMutation,
   RegisterUserMutation$data,
 } from '__generated__/RegisterUserMutation.graphql';
+import Spinner from 'components/Spinner';
 
 type RegisterData = {
   name?: string;
@@ -133,7 +134,14 @@ const LoginPage = (props: LoginPageProps) => {
   };
 
   if (isLoggingIn || isLoginMutationInFlight) {
-    return <div>Logging in...</div>;
+    return (
+      <Spinner
+        isOpen={true}
+        onClose={() => {
+          // Do nothing
+        }}
+      />
+    );
   }
 
   return (
@@ -177,6 +185,7 @@ const RegisterForm = ({ onClose }: Props): JSX.Element => {
   const navigate = useNavigate();
 
   const [hasFile, setHasFile] = useState(true);
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [commitRegisterMutation] = useMutation<RegisterUserMutation>(RegisterMutationDef);
 
   type FormValues = Mutable<NonNullable<RegisterData>>;
@@ -202,12 +211,14 @@ const RegisterForm = ({ onClose }: Props): JSX.Element => {
   };
 
   const onSubmit = (variables: FormValues) => {
+    setShowSpinner(true);
     commitRegisterMutation({
       variables: {
         ...variables,
         file: variables.file ? String(variables.file) : variables.file,
       },
       onCompleted: (response: RegisterUserMutation$data, errors) => {
+        setShowSpinner(false);
         const name = response.registerUser?.name;
         if (!errors?.length) {
           const redirectTo = storeGetValue('redirectTo');
@@ -231,6 +242,12 @@ const RegisterForm = ({ onClose }: Props): JSX.Element => {
 
   return (
     <Flex direction="column" gap={'30px'}>
+      <Spinner
+        isOpen={showSpinner}
+        onClose={() => {
+          setShowSpinner(false);
+        }}
+      />
       <Flex width={'full'} justifyContent={'flex-start'} gap={'20px'}>
         <Text fontWeight="bold">¿Tenes padrón?</Text>
         <Switch id="has-file" isChecked={hasFile} onChange={() => setHasFile(!hasFile)} />
