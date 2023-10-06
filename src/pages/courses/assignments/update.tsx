@@ -13,9 +13,8 @@ import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
 import PageDataContainer from 'components/PageDataContainer';
 
-import AssignmentForm from 'layout/AssignmentForm';
-
 import type { InitialValues } from 'layout/AssignmentForm';
+import AssignmentForm from 'layout/AssignmentForm';
 import type { FormErrors } from 'types';
 
 import type {
@@ -87,7 +86,7 @@ const UpdateAssignmentPage = ({ assignmentId, courseId }: UpdatePageProps) => {
         if (!errors?.length && data) {
           toast({
             title: 'Trabajo práctico guardado!',
-            status: 'info',
+            status: 'success',
           });
           navigate(`..`);
         } else {

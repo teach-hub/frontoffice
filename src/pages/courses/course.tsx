@@ -68,6 +68,7 @@ import { Modal } from 'components/Modal';
 import Navigation from 'components/Navigation';
 import { theme } from 'theme';
 import Spinner from 'components/Spinner';
+import BoxWithTopAndBottomBorders from 'components/BoxWithTopAndBottomBorders';
 
 type CourseType = NonNullable<NonNullable<CourseInfoQuery$data['viewer']>['course']>;
 
@@ -330,18 +331,13 @@ const CourseViewContainer = () => {
       </Stack>
       <Stack gap={'30px'}>
         {description && (
-          <Box
+          <BoxWithTopAndBottomBorders
             maxHeight={'30vh'}
             overflow={'auto'}
             maxWidth={'100%'}
-            borderColor={theme.colors.teachHub.gray}
-            borderWidth={1} // Put borders only on top and bottom
-            borderLeftWidth={0}
-            borderRightWidth={0}
-            padding={5}
           >
             <MarkdownText markdown={description} />
-          </Box>
+          </BoxWithTopAndBottomBorders>
         )}
         <CourseStatistics
           courseContext={courseContext}

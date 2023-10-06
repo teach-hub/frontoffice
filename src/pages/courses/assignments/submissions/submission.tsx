@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useState } from 'react';
-import { Link as RRLink, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { PayloadError } from 'relay-runtime';
 
@@ -70,6 +70,7 @@ import type {
 import Divider from 'components/Divider';
 import CommentIcon from 'icons/CommentIcon';
 import MarkdownText from 'components/MarkdownText';
+import RRLink from 'components/RRLink';
 
 type CommentType = NonNullable<
   NonNullable<
@@ -90,24 +91,24 @@ const CarrouselNavigationControls = ({ submissionId }: { submissionId: string })
     <Stack direction={'row'} gap={'5px'}>
       {previousSubmissionUrl && (
         <Tooltip label={'Ver entrega anterior'}>
-          <Link as={RRLink} to={previousSubmissionUrl}>
+          <RRLink to={previousSubmissionUrl}>
             <IconButton
               variant={'ghost'}
               aria-label="previous-submission"
               icon={<BackArrowIcon />}
             />
-          </Link>
+          </RRLink>
         </Tooltip>
       )}
       {nextSubmissionUrl && (
         <Tooltip label={'Ver siguiente entrega'}>
-          <Link as={RRLink} to={nextSubmissionUrl}>
+          <RRLink to={nextSubmissionUrl}>
             <IconButton
               variant={'ghost'}
               aria-label="next-submission"
               icon={<NextArrowIcon />}
             />
-          </Link>
+          </RRLink>
         </Tooltip>
       )}
     </Stack>
@@ -304,9 +305,9 @@ const SubmissionPage = ({
         <Flex direction="row" gap={'20px'} align={'center'}>
           <Heading>
             Entrega | {headingText} |{' '}
-            <Link as={RRLink} to={VIEW_ASSIGNMENT_LINK} color={'teachHub.primaryLight'}>
+            <RRLink to={VIEW_ASSIGNMENT_LINK} color={'teachHub.primaryLight'}>
               {assignment.title}
-            </Link>
+            </RRLink>
           </Heading>
           <Stack direction={'row'}>
             <Tooltip label={'Ir a repositorio'}>

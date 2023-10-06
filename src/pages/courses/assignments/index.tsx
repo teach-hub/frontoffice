@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Link as RRLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
 import CourseAssignmentsQueryDef from 'graphql/CourseAssignmentsQuery';
@@ -16,7 +16,6 @@ import type { CourseAssignmentsQuery } from '__generated__/CourseAssignmentsQuer
 import { Flex, Stack } from '@chakra-ui/react';
 import Table, { ClickableRowPropsConfiguration } from 'components/Table';
 import Tooltip from 'components/Tooltip';
-import Link from 'components/Link';
 import IconButton from 'components/IconButton';
 import SubmissionIcon from 'icons/SubmissionIcon';
 import CreateIcon from 'icons/CreateIcon';
@@ -25,6 +24,7 @@ import { buildAssignmentUrlFilter } from 'queries';
 import CreateRepositoryIcon from 'icons/CreateRepositoryIcon';
 import GroupIcon from 'icons/GroupIcon';
 import useToast from 'hooks/useToast';
+import RRLink from 'components/RRLink';
 
 const AssignmentsPage = () => {
   const toast = useToast();
@@ -109,8 +109,7 @@ const AssignmentsPage = () => {
                   {courseContext.userHasPermission(Permission.ViewGroups) &&
                     data.isGroup && (
                       <Tooltip label={'Ver grupos'}>
-                        <Link
-                          as={RRLink}
+                        <RRLink
                           to={buildAssignmentGroupsLink(data.id)}
                           onClick={event => event.stopPropagation()} // Avoid row click behaviour
                         >
@@ -119,17 +118,17 @@ const AssignmentsPage = () => {
                             aria-label="view-groups"
                             icon={<GroupIcon />}
                           />
-                        </Link>
+                        </RRLink>
                       </Tooltip>
                     )}
                   <Tooltip label={isTeacher ? 'Ver entregas' : 'Ver entrega'}>
-                    <Link
-                      as={RRLink}
+                    <RRLink
                       to={buildSubmissionLink({
                         assignmentId: data.id,
                         viewerSubmissionId: data.viewerSubmission?.id,
                       })}
                       onClick={event => event.stopPropagation()} // Avoid row click behaviour
+                      disabled={isStudentAndMissingSubmissions}
                     >
                       <IconButton
                         variant={'ghost'}
@@ -146,12 +145,11 @@ const AssignmentsPage = () => {
                             });
                         }}
                       />
-                    </Link>
+                    </RRLink>
                   </Tooltip>
                   {courseContext.userHasPermission(Permission.CreateRepository) && (
                     <Tooltip label={'Crear repositorios'}>
-                      <Link
-                        as={RRLink}
+                      <RRLink
                         to={buildCreateRepositoryLink(data.id, !!data.isGroup)}
                         onClick={event => event.stopPropagation()} // Avoid row click behaviour
                       >
@@ -160,7 +158,7 @@ const AssignmentsPage = () => {
                           aria-label="create-repo-link"
                           icon={<CreateRepositoryIcon />}
                         />
-                      </Link>
+                      </RRLink>
                     </Tooltip>
                   )}
                 </Stack>,
