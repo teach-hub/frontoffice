@@ -6,7 +6,6 @@ import { buildAssignmentsRoute, buildSubmissionsRoute, buildUsersRoute } from 'r
 
 const Routes = () => {
   const { courseId } = useUserContext();
-
   return (
     <HStack pl="10px" spacing="30px">
       <Link to="/courses">Cursos</Link>

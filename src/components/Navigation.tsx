@@ -60,10 +60,6 @@ const NavigationBar = () => {
     return null;
   }
 
-  if (!courseContext.courseId) {
-    return null;
-  }
-
   const handleLogout = () => {
     const currentToken = storeGetValue('token');
     currentToken &&
@@ -101,14 +97,20 @@ const NavigationBar = () => {
 
   const studentActions = [];
 
-  if (courseContext.userHasPermission(Permission.SubmitAssignment)) {
+  if (
+    courseContext.courseId &&
+    courseContext.userHasPermission(Permission.SubmitAssignment)
+  ) {
     studentActions.push({
       content: 'Realizar nueva entrega',
       action: () => navigate(buildAddSubmissionRoute(courseContext.courseId)),
     });
   }
 
-  if (courseContext.userHasPermission(Permission.ManageOwnGroups)) {
+  if (
+    courseContext.courseId &&
+    courseContext.userHasPermission(Permission.ManageOwnGroups)
+  ) {
     studentActions.push({
       content: 'Gestionar mis grupos',
       action: () => navigate(buildMyGroupsRoute(courseContext.courseId)),
@@ -170,12 +172,14 @@ const NavigationBar = () => {
         }}
       />
 
-      <InviteUserModal
-        isOpen={inviteUserOpen}
-        rootQueryRef={viewerData}
-        onClose={() => setInviteUserOpen(false)}
-        courseId={courseContext.courseId}
-      />
+      {courseContext.courseId && (
+        <InviteUserModal
+          isOpen={inviteUserOpen}
+          rootQueryRef={viewerData}
+          onClose={() => setInviteUserOpen(false)}
+          courseId={courseContext.courseId}
+        />
+      )}
     </HStack>
   );
 };
