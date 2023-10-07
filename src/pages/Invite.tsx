@@ -14,6 +14,7 @@ import { InviteCourseInfoQuery } from '__generated__/InviteCourseInfoQuery.graph
 import InviteCourseInfoQueryDef from 'graphql/InviteCourseInfoQuery';
 import Text from 'components/Text';
 import useToast from 'hooks/useToast';
+import { buildCourseRoute } from 'routes';
 
 const InvitePage = () => {
   const [commitUseInviteMutation] = useMutation<UseInviteMutation>(UseInviteMutationDef);
@@ -43,7 +44,7 @@ const InvitePage = () => {
         } else if (response.useInvite?.courseId) {
           console.log(`Redirecting to /courses/${response.useInvite.courseId}`);
 
-          navigate(`/courses/${response.useInvite.courseId}`);
+          navigate(buildCourseRoute(response.useInvite.courseId));
         }
       },
     });

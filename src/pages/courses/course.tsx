@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Suspense, useState } from 'react';
+import { ChangeEvent, Suspense, useState } from 'react';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 
@@ -38,6 +38,7 @@ import CourseSetDescriptionMutationDef from 'graphql/CourseSetDescriptionMutatio
 
 import useToast from 'hooks/useToast';
 import { CourseContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
+import { buildUsersRoute, buildAssignmentsRoute } from 'routes';
 
 import type {
   CourseInfoQuery,
@@ -163,7 +164,7 @@ const CourseStatistics = ({ course, courseContext, availableOrganizations }: Pro
         icon={<PersonIcon size="large" />}
       />
       <StatCard
-        onClick={() => navigate('assignments')}
+        onClick={() => navigate(buildAssignmentsRoute(course.id))}
         title="Trabajos Prácticos"
         stat={String(course.assignments.length)}
         icon={<TerminalIcon size="large" />}

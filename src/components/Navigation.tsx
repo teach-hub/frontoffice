@@ -1,9 +1,9 @@
 import { ReactNode, Suspense, useState } from 'react';
-import { Link as ReachLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { graphql } from 'babel-plugin-relay/macro';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
-import { HStack, Link, Skeleton, SkeletonCircle } from '@chakra-ui/react';
+import { HStack, Skeleton, SkeletonCircle } from '@chakra-ui/react';
 import { AddIcon, ChevronDownIcon } from '@chakra-ui/icons';
 
 import Box from 'components/Box';
@@ -12,8 +12,10 @@ import Avatar from 'components/Avatar';
 import Menu, { Props as MenuProps } from 'components/Menu';
 import Divider from 'components/Divider';
 import HomeButton from 'components/HomeButton';
+import Routes from 'components/Routes';
 
 import { theme } from 'theme';
+import { buildMyGroupsRoute, buildAddSubmissionRoute } from 'routes';
 
 import { storeGetValue, storeRemoveValue } from 'hooks/useLocalStorage';
 import { Permission, useUserContext } from 'hooks/useUserCourseContext';
@@ -28,16 +30,6 @@ import {
   LogoutMutation$data,
 } from '__generated__/LogoutMutation.graphql';
 import { NavigationQuery } from '__generated__/NavigationQuery.graphql';
-
-const MainRoutes = () => {
-  return (
-    <HStack spacing="30px">
-      <Link as={ReachLink} to="/courses">
-        Cursos
-      </Link>
-    </HStack>
-  );
-};
 
 const NAVIGATION_HEIGHT_PX = 95;
 
@@ -65,6 +57,10 @@ const NavigationBar = () => {
   );
 
   if (!viewerData?.viewer?.id) {
+    return null;
+  }
+
+  if (!courseContext.courseId) {
     return null;
   }
 
@@ -108,18 +104,14 @@ const NavigationBar = () => {
   if (courseContext.userHasPermission(Permission.SubmitAssignment)) {
     studentActions.push({
       content: 'Realizar nueva entrega',
-      action: () => {
-        navigate(`/courses/${courseContext.courseId}/add-submission`);
-      },
+      action: () => navigate(buildAddSubmissionRoute(courseContext.courseId)),
     });
   }
 
   if (courseContext.userHasPermission(Permission.ManageOwnGroups)) {
     studentActions.push({
       content: 'Gestionar mis grupos',
-      action: () => {
-        navigate(`/courses/${courseContext.courseId}/my-groups`);
-      },
+      action: () => navigate(buildMyGroupsRoute(courseContext.courseId)),
     });
   }
 
@@ -143,7 +135,7 @@ const NavigationBar = () => {
       <Divider h="75%" />
 
       <HStack flex="1" spacing="auto">
-        <MainRoutes />
+        <Routes />
         <Menu
           content={{
             menuButton: (
@@ -178,14 +170,12 @@ const NavigationBar = () => {
         }}
       />
 
-      {courseContext.courseId && (
-        <InviteUserModal
-          isOpen={inviteUserOpen}
-          rootQueryRef={viewerData}
-          onClose={() => setInviteUserOpen(false)}
-          courseId={courseContext.courseId}
-        />
-      )}
+      <InviteUserModal
+        isOpen={inviteUserOpen}
+        rootQueryRef={viewerData}
+        onClose={() => setInviteUserOpen(false)}
+        courseId={courseContext.courseId}
+      />
     </HStack>
   );
 };

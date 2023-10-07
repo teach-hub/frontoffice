@@ -7,6 +7,7 @@ import CreateAssignmentMutationDef from 'graphql/CreateAssignmentMutation';
 import useToast from 'hooks/useToast';
 import { useUserContext } from 'hooks/useUserCourseContext';
 import { formatDateAsLocaleIsoString } from 'utils/dates';
+import { buildAssignmentsRoute, buildAssignmentRoute } from 'routes';
 
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
@@ -42,7 +43,7 @@ const CreateAssignmentPage = ({ courseId }: Props) => {
     return errors;
   };
 
-  const onCancel = () => navigate(`..`);
+  const onCancel = () => navigate(buildAssignmentsRoute(courseId));
 
   const onSubmit = (values: InitialValues) => {
     commitCreateAssignment({
@@ -61,7 +62,7 @@ const CreateAssignmentPage = ({ courseId }: Props) => {
             title: 'Trabajo práctico guardado!',
             status: 'success',
           });
-          navigate(`../${data.id}`);
+          navigate(buildAssignmentRoute(courseId, data.id));
         } else {
           const errorMessage = errors ? errors[0].message : null;
           toast({
