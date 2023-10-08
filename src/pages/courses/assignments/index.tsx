@@ -25,6 +25,7 @@ import CreateRepositoryIcon from 'icons/CreateRepositoryIcon';
 import GroupIcon from 'icons/GroupIcon';
 import useToast from 'hooks/useToast';
 import RRLink from 'components/RRLink';
+import { buildAssignmentRoute, buildAddAssignmentRoute } from 'routes';
 
 const AssignmentsPage = () => {
   const toast = useToast();
@@ -76,7 +77,10 @@ const AssignmentsPage = () => {
           {courseContext.userHasPermission(Permission.CreateAssignment) && (
             <ButtonWithIcon
               variant={'ghostBorder'}
-              onClick={() => navigate(`create`)}
+              onClick={() =>
+                courseContext.courseId &&
+                navigate(buildAddAssignmentRoute(courseContext.courseId))
+              }
               text={'Crear'}
               icon={CreateIcon}
             />
@@ -100,7 +104,9 @@ const AssignmentsPage = () => {
             return {
               rowProps: {
                 ...ClickableRowPropsConfiguration,
-                onClick: () => navigate(data.id), // Navigate to assignment
+                onClick: () =>
+                  courseContext.courseId &&
+                  navigate(buildAssignmentRoute(courseContext.courseId, data.id)), // Navigate to assignment
               },
               content: [
                 `${data.title}`,

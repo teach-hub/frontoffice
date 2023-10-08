@@ -11,6 +11,8 @@ import Navigation from 'components/Navigation';
 import Card from 'components/Card';
 import PageDataContainer from 'components/PageDataContainer';
 
+import { buildCourseRoute } from 'routes';
+
 import UserCoursesQueryDef from 'graphql/UserCoursesQuery';
 import {
   UserCoursesQuery,
@@ -43,9 +45,8 @@ const CourseCard = ({ userRole }: { userRole: UserRole }) => {
 
   const subjectTitle = [subjectCode, subjectName].join(' - ');
 
-  const handleCardClick = (_: MouseEvent<HTMLDivElement>) => {
-    navigate(`/courses/${userRole.course?.id}`);
-  };
+  const handleCardClick = (_: MouseEvent<HTMLDivElement>) =>
+    navigate(buildCourseRoute(userRole.course?.id));
 
   const CARD_TEXT_FONT_SIZE = theme.styles.global.body.fontSize;
 

@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
@@ -45,6 +45,7 @@ import type {
 } from '__generated__/AssignmentSubmissionsQuery.graphql';
 import { Modal } from 'components/Modal';
 import NotifyModalContent from 'components/SubmissionNotificationModalContent';
+import { buildSubmissionRoute } from 'routes';
 
 type SubmissionType = NonNullable<
   NonNullable<
@@ -225,7 +226,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
           submitter: submission.submitter,
           reviewerId: submission.reviewer?.reviewer?.id,
           review: submission.review,
-          submission: submission,
+          submission,
         });
       })
     );
@@ -337,7 +338,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
 
   const onRowClick = (rowData: RowData) => {
     rowData.submission?.id
-      ? navigate(rowData.submission?.id)
+      ? navigate(buildSubmissionRoute(courseContext.courseId, rowData.submission?.id))
       : toast({
           title: 'No existe entrega asociada',
           description: 'Para acceder al detalle primero se debe realizar la entrega',

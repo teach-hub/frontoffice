@@ -50,6 +50,7 @@ import { Nullable } from 'types';
 import Spinner from 'components/Spinner';
 import List from 'components/list/List';
 import { TextListItem } from 'components/list/TextListItem';
+import { buildCourseRoute } from 'routes';
 
 type RepositoriesNameConfiguration = {
   prefix: string;
@@ -407,7 +408,7 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
   };
 
   const onCancel = () => {
-    navigate(`/courses/${courseId}`);
+    courseId && navigate(buildCourseRoute(courseId));
   };
 
   const onSubmit = () => {

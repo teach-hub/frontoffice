@@ -8,6 +8,15 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { ChakraProvider } from '@chakra-ui/react';
+import {
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
+  Title,
+  Tooltip,
+} from 'chart.js';
 
 import environment from 'relayEnvironment';
 
@@ -29,23 +38,17 @@ import SubmissionPage from 'pages/courses/assignments/submissions/submission';
 import GroupsPage from 'pages/courses/assignments/groups/index';
 import AddSubmissionPage from 'pages/courses/assignments/submissions/add';
 import AssignReviewersPage from 'pages/courses/assignments/reviewers';
+import MyGroups from 'pages/courses/groups/MyGroups';
 
 import { ContextProvider } from 'hooks/useUserCourseContext';
 import { storeGetValue } from 'hooks/useLocalStorage';
+import { SubmissionProvider } from 'hooks/useSubmissionsContext';
+
+import { buildLoginRoute } from 'routes';
+
 import { isAuthenticated } from 'auth/utils';
 
 import { theme } from 'theme';
-import MyGroups from 'pages/courses/groups/MyGroups';
-import { SubmissionProvider } from 'hooks/useSubmissionsContext';
-import {
-  BarElement,
-  CategoryScale,
-  Chart as ChartJS,
-  Legend,
-  LinearScale,
-  Title,
-  Tooltip,
-} from 'chart.js';
 
 /*
  * Way to solve protected routes, as routes can not
@@ -61,7 +64,7 @@ const ProtectedLayout = ({ children }: { children: JSX.Element }): JSX.Element =
 
   console.log(`User not authenticated, redirecting to /login`);
 
-  return <Navigate to="/login" state={{ redirectTo: location.pathname }} />;
+  return <Navigate to={buildLoginRoute()} state={{ redirectTo: location.pathname }} />;
 };
 
 const App = () => {

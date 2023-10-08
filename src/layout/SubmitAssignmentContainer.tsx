@@ -216,7 +216,6 @@ function Content({
         ]}
         buttonsEnabled
         onSubmitForm={{ text: 'Enviar', onClick: handleSubmit }}
-        // eslint-disable-next-line
         onCancelForm={{ text: 'Cancelar', onClick: () => navigate('../..') }}
       />
     </>
