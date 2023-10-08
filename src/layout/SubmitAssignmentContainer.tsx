@@ -15,6 +15,7 @@ import type {
   AddSubmissionQuery$data,
 } from '__generated__/AddSubmissionQuery.graphql';
 import type { CreateSubmissionMutation as CreateSubmissionMutationType } from '__generated__/CreateSubmissionMutation.graphql';
+import Spinner from 'components/Spinner';
 
 type FormValues = Omit<CreateSubmissionMutationType['variables'], 'courseId'> & {
   repository: string;
@@ -43,6 +44,7 @@ function Content({
 
   const navigate = useNavigate();
 
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [commitMutation] = useMutation<CreateSubmissionMutationType>(
     CreateSubmissionMutation
   );
@@ -63,11 +65,15 @@ function Content({
       return;
     }
 
+    setShowSpinner(true);
     commitMutation({
       variables: {
         courseId: course.id,
         assignmentId: values.assignmentId,
         pullRequestUrl: values.pullRequestUrl,
+      },
+      onCompleted: () => {
+        setShowSpinner(false);
       },
     });
   };
@@ -93,6 +99,12 @@ function Content({
 
   return (
     <>
+      <Spinner
+        isOpen={showSpinner}
+        onClose={() => {
+          setShowSpinner(false);
+        }}
+      />
       <Heading> Nueva entrega </Heading>
       <Text>
         {groupText} {reviewerText}
