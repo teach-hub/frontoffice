@@ -15,8 +15,11 @@ import InviteCourseInfoQueryDef from 'graphql/InviteCourseInfoQuery';
 import Text from 'components/Text';
 import useToast from 'hooks/useToast';
 import { buildCourseRoute } from 'routes';
+import Spinner from 'components/Spinner';
+import { useState } from 'react';
 
 const InvitePage = () => {
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [commitUseInviteMutation] = useMutation<UseInviteMutation>(UseInviteMutationDef);
 
   const toast = useToast();
@@ -32,9 +35,11 @@ const InvitePage = () => {
   }
 
   const handleAcceptInvite = async () => {
+    setShowSpinner(true);
     commitUseInviteMutation({
       variables: { inviteId },
       onCompleted: (response: UseInviteMutation$data, errors) => {
+        setShowSpinner(false);
         if (errors?.length) {
           toast({
             title: 'Error al unirse al curso',
@@ -64,6 +69,12 @@ const InvitePage = () => {
       justify={'center'}
       gap={'30px'}
     >
+      <Spinner
+        isOpen={showSpinner}
+        onClose={() => {
+          setShowSpinner(false);
+        }}
+      />
       <Image src={logo} width={'10vw'} />
       <Heading as="h1">Bienvenido a Teachhub!</Heading>
 
