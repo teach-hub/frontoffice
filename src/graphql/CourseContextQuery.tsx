@@ -6,6 +6,10 @@ export default graphql`
       id
       course(id: $courseId) {
         id
+        subject {
+          id
+          name
+        }
         viewerRole {
           id
           name

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<86a4adfa6dae12861c374853380e24b5>>
+ * @generated SignedSource<<b90e7e212cd1810009c30e269a01af6c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -23,7 +23,6 @@ export type CourseUsersQuery$data = {
           readonly id: string;
           readonly isTeacher: boolean;
           readonly name: string;
-          readonly permissions: ReadonlyArray<string | null> | null;
         };
         readonly user: {
           readonly file: string;
@@ -151,13 +150,6 @@ v3 = [
                     "kind": "ScalarField",
                     "name": "isTeacher",
                     "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "permissions",
-                    "storageKey": null
                   }
                 ],
                 "storageKey": null
@@ -190,16 +182,16 @@ return {
     "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "49ecd5d983b989167256cfe6c5e921b3",
+    "cacheID": "ca07a114684cb6002eca87da08d40920",
     "id": null,
     "metadata": {},
     "name": "CourseUsersQuery",
     "operationKind": "query",
-    "text": "query CourseUsersQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          isTeacher\n          permissions\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query CourseUsersQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      userRoles {\n        id\n        user {\n          id\n          name\n          lastName\n          file\n          notificationEmail\n        }\n        role {\n          id\n          name\n          isTeacher\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "8f84a46156ae3b271b20564271b0c77c";
+(node as any).hash = "bd298bf484fc19f7b096de367e7a05db";
 
 export default node;

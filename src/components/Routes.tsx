@@ -1,22 +1,24 @@
-import { Link } from 'react-router-dom';
 import { HStack } from '@chakra-ui/react';
 import { Permission, useUserContext } from 'hooks/useUserCourseContext';
 
 import {
-  buildMyGroupsRoute,
   buildAssignmentsRoute,
+  buildCourseRoute,
+  buildMyGroupsRoute,
   buildSubmissionsRoute,
   buildUsersRoute,
 } from 'routes';
+import Link from 'components/RRLink';
 
 const Routes = () => {
-  const { courseId, userIsTeacher, userHasPermission } = useUserContext();
+  const { courseId, subjectName, userIsTeacher, userHasPermission } = useUserContext();
 
   return (
     <HStack pl="10px" spacing="30px">
-      <Link to="/courses">Cursos</Link>
+      <Link to="/courses">Mis cursos</Link>
       {courseId && (
         <>
+          <Link to={buildCourseRoute(courseId)}>{subjectName}</Link>
           <Link to={buildAssignmentsRoute(courseId)}>Trabajos prácticos</Link>
           <Link to={buildUsersRoute(courseId)}>Usuarios</Link>
           {userIsTeacher ? (

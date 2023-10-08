@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ac30834744b7a88ec81f4b7a99cdaebd>>
+ * @generated SignedSource<<d5691d79e04d2d10a8986d12bd79106e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,6 +16,10 @@ export type CourseContextQuery$data = {
   readonly viewer: {
     readonly course: {
       readonly id: string;
+      readonly subject: {
+        readonly id: string;
+        readonly name: string;
+      };
       readonly viewerRole: {
         readonly id: string;
         readonly isTeacher: boolean;
@@ -46,7 +50,14 @@ v1 = {
   "name": "id",
   "storageKey": null
 },
-v2 = [
+v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "name",
+  "storageKey": null
+},
+v3 = [
   {
     "alias": null,
     "args": null,
@@ -74,19 +85,26 @@ v2 = [
           {
             "alias": null,
             "args": null,
+            "concreteType": "SubjectType",
+            "kind": "LinkedField",
+            "name": "subject",
+            "plural": false,
+            "selections": [
+              (v1/*: any*/),
+              (v2/*: any*/)
+            ],
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
             "concreteType": "RoleType",
             "kind": "LinkedField",
             "name": "viewerRole",
             "plural": false,
             "selections": [
               (v1/*: any*/),
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "name",
-                "storageKey": null
-              },
+              (v2/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -117,7 +135,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "CourseContextQuery",
-    "selections": (v2/*: any*/),
+    "selections": (v3/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -126,19 +144,19 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "CourseContextQuery",
-    "selections": (v2/*: any*/)
+    "selections": (v3/*: any*/)
   },
   "params": {
-    "cacheID": "1d7920c1d15d276ed07c8f9c30643eaf",
+    "cacheID": "557ae47ebab5b9067163a6c5c8873732",
     "id": null,
     "metadata": {},
     "name": "CourseContextQuery",
     "operationKind": "query",
-    "text": "query CourseContextQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      viewerRole {\n        id\n        name\n        permissions\n        isTeacher\n      }\n    }\n  }\n}\n"
+    "text": "query CourseContextQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      subject {\n        id\n        name\n      }\n      viewerRole {\n        id\n        name\n        permissions\n        isTeacher\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "ca1c0562b55b5d643b0ab9fd537fe25b";
+(node as any).hash = "8b6894adcecbb67252c8e8b3cf0a3b70";
 
 export default node;
