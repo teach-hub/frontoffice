@@ -107,16 +107,6 @@ const NavigationBar = () => {
     });
   }
 
-  if (
-    courseContext.courseId &&
-    courseContext.userHasPermission(Permission.ManageOwnGroups)
-  ) {
-    studentActions.push({
-      content: 'Gestionar mis grupos',
-      action: () => navigate(buildMyGroupsRoute(courseContext.courseId)),
-    });
-  }
-
   return (
     <HStack
       spacing="25px"

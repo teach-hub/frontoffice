@@ -21,7 +21,6 @@ export default graphql`
             id
             name
             isTeacher
-            permissions
           }
         }
       }

@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
 
