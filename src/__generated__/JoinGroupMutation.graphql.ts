@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c6516e99fc6ef76bf06789d08bc02111>>
+ * @generated SignedSource<<49d3aecfe48a4b8336f7716e18cb5ed0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,13 +16,23 @@ export type JoinGroupMutation$variables = {
 };
 export type JoinGroupMutation$data = {
   readonly joinGroup: {
-    readonly group: {
-      readonly courseId: string | null;
-      readonly id: string;
-      readonly name: string | null;
-    };
     readonly id: string;
-  };
+    readonly viewerGroupParticipants: ReadonlyArray<{
+      readonly group: {
+        readonly assignmentId: string;
+        readonly id: string;
+        readonly members: ReadonlyArray<{
+          readonly file: string;
+          readonly id: string;
+          readonly lastName: string;
+          readonly name: string;
+          readonly notificationEmail: string;
+        }>;
+        readonly name: string | null;
+      };
+      readonly id: string;
+    }>;
+  } | null;
 };
 export type JoinGroupMutation = {
   response: JoinGroupMutation$data;
@@ -52,7 +62,14 @@ v3 = {
   "name": "id",
   "storageKey": null
 },
-v4 = [
+v4 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "name",
+  "storageKey": null
+},
+v5 = [
   {
     "alias": null,
     "args": [
@@ -72,7 +89,7 @@ v4 = [
         "variableName": "groupId"
       }
     ],
-    "concreteType": "InternalGroupParticipantType",
+    "concreteType": "CourseType",
     "kind": "LinkedField",
     "name": "joinGroup",
     "plural": false,
@@ -81,24 +98,64 @@ v4 = [
       {
         "alias": null,
         "args": null,
-        "concreteType": "InternalGroupType",
+        "concreteType": "InternalGroupParticipantType",
         "kind": "LinkedField",
-        "name": "group",
-        "plural": false,
+        "name": "viewerGroupParticipants",
+        "plural": true,
         "selections": [
           (v3/*: any*/),
           {
             "alias": null,
             "args": null,
-            "kind": "ScalarField",
-            "name": "name",
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "courseId",
+            "concreteType": "InternalGroupType",
+            "kind": "LinkedField",
+            "name": "group",
+            "plural": false,
+            "selections": [
+              (v3/*: any*/),
+              (v4/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "assignmentId",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "UserType",
+                "kind": "LinkedField",
+                "name": "members",
+                "plural": true,
+                "selections": [
+                  (v3/*: any*/),
+                  (v4/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "lastName",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "notificationEmail",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "file",
+                    "storageKey": null
+                  }
+                ],
+                "storageKey": null
+              }
+            ],
             "storageKey": null
           }
         ],
@@ -118,7 +175,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "JoinGroupMutation",
-    "selections": (v4/*: any*/),
+    "selections": (v5/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
@@ -131,19 +188,19 @@ return {
     ],
     "kind": "Operation",
     "name": "JoinGroupMutation",
-    "selections": (v4/*: any*/)
+    "selections": (v5/*: any*/)
   },
   "params": {
-    "cacheID": "b26e8bd45129dab680891adafa1fd1cd",
+    "cacheID": "193c1e78df967df07195b7a39844bc7b",
     "id": null,
     "metadata": {},
     "name": "JoinGroupMutation",
     "operationKind": "mutation",
-    "text": "mutation JoinGroupMutation(\n  $groupId: ID!\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  joinGroup(groupId: $groupId, courseId: $courseId, assignmentId: $assignmentId) {\n    id\n    group {\n      id\n      name\n      courseId\n    }\n  }\n}\n"
+    "text": "mutation JoinGroupMutation(\n  $groupId: ID!\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  joinGroup(groupId: $groupId, courseId: $courseId, assignmentId: $assignmentId) {\n    id\n    viewerGroupParticipants {\n      id\n      group {\n        id\n        name\n        assignmentId\n        members {\n          id\n          name\n          lastName\n          notificationEmail\n          file\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "4b46f4bf9446f6f3f4f67cfe68557bc2";
+(node as any).hash = "af79334c29910fc807e32823121cbf70";
 
 export default node;

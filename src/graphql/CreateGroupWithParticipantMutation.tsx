@@ -4,10 +4,21 @@ export default graphql`
   mutation CreateGroupWithParticipantMutation($courseId: ID!, $assignmentId: ID!) {
     createGroupWithParticipant(courseId: $courseId, assignmentId: $assignmentId) {
       id
-      group {
+      viewerGroupParticipants {
         id
-        name
-        courseId
+        group {
+          id
+          name
+          courseId
+          assignmentId
+          members {
+            id
+            name
+            lastName
+            notificationEmail
+            file
+          }
+        }
       }
     }
   }

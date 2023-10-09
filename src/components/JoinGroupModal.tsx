@@ -46,7 +46,6 @@ const JoinGroupModal = (props: Props) => {
   } = props;
 
   const toast = useToast();
-  const navigate = useNavigate();
 
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [commitJoinGroup] = useMutation<JoinGroupMutation>(JoinGroupMutationDef);
@@ -78,14 +77,10 @@ const JoinGroupModal = (props: Props) => {
           courseId,
           assignmentId: chosenAssignmentGroup?.assignmentId ?? '',
         },
-        onCompleted: ({ joinGroup: { group } }: JoinGroupMutation$data, errors) => {
+        onCompleted: ({ joinGroup }: JoinGroupMutation$data, errors) => {
           setShowSpinner(false);
-          if (!errors?.length && group) {
+          if (!errors?.length && joinGroup?.viewerGroupParticipants.length) {
             onClose();
-
-            // TODO. FIXME > Hay formas mas faciles
-            // de hacer esto, una de ellas es manipular la store directamente.
-            navigate(0);
           } else {
             toast({
               title: 'Error',

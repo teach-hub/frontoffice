@@ -21,6 +21,7 @@ export default graphql`
         assignment(id: $assignmentId) {
           id
           isGroup
+          title
           groupParticipants {
             id
             user {

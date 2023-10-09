@@ -28,7 +28,11 @@ const InnerCard = ({
   onRemove?: () => void;
 }) => {
   return (
-    <Card bodyProps={{ justifyContent: 'space-between' }} w="100%" opacity={'80%'}>
+    <Card
+      bodyProps={{ justifyContent: 'space-between', maxH: '70px' }}
+      w="100%"
+      opacity={'80%'}
+    >
       <Box gap="10px" alignItems="center" display="flex">
         {children}
       </Box>
@@ -44,14 +48,16 @@ const InnerCard = ({
 const UserRevieweeCard = ({
   revieweeInfo: { name, lastName, file },
   onRemove,
-}: UserRevieweeCardProps) => (
-  <InnerCard onRemove={onRemove}>
-    <Avatar name={`${name} ${lastName}`} />
-    <Text>
-      {name} {lastName} - {file}
-    </Text>
-  </InnerCard>
-);
+}: UserRevieweeCardProps) => {
+  const text = `${name} ${lastName} - ${file}`;
+
+  return (
+    <InnerCard onRemove={onRemove}>
+      <Avatar name={`${name} ${lastName}`} />
+      <Text>{text.length > 30 ? `${text.substring(0, 30)}...` : text}</Text>
+    </InnerCard>
+  );
+};
 
 const GroupRevieweeCard = ({ revieweeInfo, onRemove }: GroupRevieweeCardProps) => {
   const text = `${revieweeInfo.groupName}`;

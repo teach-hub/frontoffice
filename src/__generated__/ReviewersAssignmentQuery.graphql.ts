@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bdae8fe4037cca40f74893615d6af798>>
+ * @generated SignedSource<<0303f9ca7b1e630b364274d722a401bc>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -23,7 +23,7 @@ export type ReviewersAssignmentQuery$data = {
     readonly course: {
       readonly assignment: {
         readonly groupParticipants: ReadonlyArray<{
-          readonly groupId: string | null;
+          readonly groupId: string;
           readonly id: string;
           readonly user: {
             readonly lastName: string;
@@ -78,6 +78,7 @@ export type ReviewersAssignmentQuery$data = {
             readonly name: string;
           };
         }>;
+        readonly title: string | null;
       } | null;
       readonly id: string;
       readonly teachersUserRoles: ReadonlyArray<{
@@ -186,10 +187,17 @@ v11 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "groupId",
+  "name": "title",
   "storageKey": null
 },
 v12 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "groupId",
+  "storageKey": null
+},
+v13 = {
   "alias": null,
   "args": null,
   "concreteType": "UserType",
@@ -199,7 +207,7 @@ v12 = {
   "selections": (v7/*: any*/),
   "storageKey": null
 },
-v13 = {
+v14 = {
   "alias": null,
   "args": null,
   "concreteType": null,
@@ -249,7 +257,7 @@ v13 = {
   ],
   "storageKey": null
 },
-v14 = {
+v15 = {
   "alias": null,
   "args": null,
   "concreteType": "ReviewerType",
@@ -258,12 +266,12 @@ v14 = {
   "plural": true,
   "selections": [
     (v3/*: any*/),
-    (v12/*: any*/),
-    (v13/*: any*/)
+    (v13/*: any*/),
+    (v14/*: any*/)
   ],
   "storageKey": null
 },
-v15 = {
+v16 = {
   "alias": null,
   "args": [
     {
@@ -278,8 +286,8 @@ v15 = {
   "plural": true,
   "selections": [
     (v3/*: any*/),
-    (v13/*: any*/),
-    (v12/*: any*/)
+    (v14/*: any*/),
+    (v13/*: any*/)
   ],
   "storageKey": null
 };
@@ -323,6 +331,7 @@ return {
                 "selections": [
                   (v3/*: any*/),
                   (v10/*: any*/),
+                  (v11/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -345,12 +354,12 @@ return {
                         ],
                         "storageKey": null
                       },
-                      (v11/*: any*/)
+                      (v12/*: any*/)
                     ],
                     "storageKey": null
                   },
-                  (v14/*: any*/),
-                  (v15/*: any*/)
+                  (v15/*: any*/),
+                  (v16/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -403,6 +412,7 @@ return {
                 "selections": [
                   (v3/*: any*/),
                   (v10/*: any*/),
+                  (v11/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -426,12 +436,12 @@ return {
                         ],
                         "storageKey": null
                       },
-                      (v11/*: any*/)
+                      (v12/*: any*/)
                     ],
                     "storageKey": null
                   },
-                  (v14/*: any*/),
-                  (v15/*: any*/)
+                  (v15/*: any*/),
+                  (v16/*: any*/)
                 ],
                 "storageKey": null
               }
@@ -444,16 +454,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "2a169afb2ce434bf40fd476e9c0eed51",
+    "cacheID": "fee1e03119e57dcf86854d4e09469c73",
     "id": null,
     "metadata": {},
     "name": "ReviewersAssignmentQuery",
     "operationKind": "query",
-    "text": "query ReviewersAssignmentQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $filters: PreviewReviewersFilterInputType!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      teachersUserRoles {\n        id\n        user {\n          id\n          name\n          lastName\n        }\n      }\n      assignment(id: $assignmentId) {\n        id\n        isGroup\n        groupParticipants {\n          id\n          user {\n            name\n            lastName\n            id\n          }\n          groupId\n        }\n        reviewers {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n          reviewee {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n            }\n            ... on UserType {\n              id\n              name\n              lastName\n              file\n            }\n          }\n        }\n        previewReviewers(input: $filters) {\n          id\n          reviewee {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n            }\n            ... on UserType {\n              id\n              name\n              lastName\n              file\n            }\n          }\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query ReviewersAssignmentQuery(\n  $courseId: ID!\n  $assignmentId: ID!\n  $filters: PreviewReviewersFilterInputType!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      teachersUserRoles {\n        id\n        user {\n          id\n          name\n          lastName\n        }\n      }\n      assignment(id: $assignmentId) {\n        id\n        isGroup\n        title\n        groupParticipants {\n          id\n          user {\n            name\n            lastName\n            id\n          }\n          groupId\n        }\n        reviewers {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n          reviewee {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n            }\n            ... on UserType {\n              id\n              name\n              lastName\n              file\n            }\n          }\n        }\n        previewReviewers(input: $filters) {\n          id\n          reviewee {\n            __typename\n            ... on InternalGroupType {\n              id\n              groupName: name\n            }\n            ... on UserType {\n              id\n              name\n              lastName\n              file\n            }\n          }\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "6511f10d358572547053072b3265ab05";
+(node as any).hash = "b52551592b4fe20fba2091419cce5f31";
 
 export default node;

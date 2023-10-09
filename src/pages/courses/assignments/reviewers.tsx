@@ -1,4 +1,4 @@
-import React, { Dispatch, Suspense, useEffect, useState } from 'react';
+import { Dispatch, Suspense, useEffect, useState } from 'react';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { useParams } from 'react-router-dom';
 import { cloneDeep, uniq } from 'lodash';
@@ -182,9 +182,9 @@ function AssignmentsContainer({
       );
 
     if (reviewee.__typename === 'InternalGroupType') {
-      // Reviewee puede ser un grupo entero asi que agarramos sus integrates.
+      // Reviewee puede ser un grupo entero asi que agarramos sus integrantes.
       const groupParticipants = groupsParticipants
-        .filter(x => x.groupId === reviewee.id)
+        .filter(gp => gp.groupId === reviewee.id)
         .map(x => x.user);
 
       return (
@@ -193,7 +193,7 @@ function AssignmentsContainer({
             handleRemoveReviewer && (() => handleRemoveReviewer(reviewerId, reviewee.id))
           }
           revieweeInfo={{
-            groupName: reviewee.groupName!,
+            groupName: reviewee.groupName || 'Sin nombre',
             participants: groupParticipants,
           }}
         />
@@ -407,48 +407,54 @@ function ReviewersPageContainer({
   };
 
   return (
-    <ContainerLayout>
-      <Spinner
-        isOpen={showSpinner}
-        onClose={() => {
-          setShowSpinner(false);
-        }}
-      />
-      <AssignmentSettings
-        teachers={viewer?.course?.teachersUserRoles.map(x => x.user) || []}
-        filters={filters}
-        setFilters={setFilters}
-        editable={!!previewReviewers.length}
-      />
-      <AssignmentsContainer
-        setPreviewReviewers={setPreviewReviewers}
-        teachers={viewer?.course?.teachersUserRoles.map(x => x.user) || []}
-        title="Pendientes"
-        reviewers={previewReviewers}
-        fallbackText="No hay alumnos pendientes a los cuales asignar correctores"
-        groupsParticipants={groupsParticipants}
-      />
-      <AssignButton
-        onClick={() => {
-          onCommit(previewReviewers);
-        }}
-        isDisabled={!previewReviewers.length}
-      />
-      <AssignmentsContainer
-        teachers={[]}
-        title="Asignados"
-        reviewers={reviewers}
-        groupsParticipants={groupsParticipants}
-        fallbackText="Asigna los correctores seleccionando los profesores y clickeando en el boton"
-        handleRemoveReviewer={handleRemoveReviewer}
-      />
-    </ContainerLayout>
+    <>
+      <Heading size={'lg'}>
+        Asignar correctores - {viewer?.course?.assignment?.title}
+      </Heading>
+      <ContainerLayout>
+        <Spinner
+          isOpen={showSpinner}
+          onClose={() => {
+            setShowSpinner(false);
+          }}
+        />
+        <AssignmentSettings
+          teachers={viewer?.course?.teachersUserRoles.map(x => x.user) || []}
+          filters={filters}
+          setFilters={setFilters}
+          editable={!!previewReviewers.length}
+        />
+        <AssignmentsContainer
+          setPreviewReviewers={setPreviewReviewers}
+          teachers={viewer?.course?.teachersUserRoles.map(x => x.user) || []}
+          title="Pendientes"
+          reviewers={previewReviewers}
+          fallbackText="No hay alumnos pendientes a los cuales asignar correctores"
+          groupsParticipants={groupsParticipants}
+        />
+        <AssignButton
+          onClick={() => {
+            onCommit(previewReviewers);
+          }}
+          isDisabled={!previewReviewers.length}
+        />
+        <AssignmentsContainer
+          teachers={[]}
+          title="Asignados"
+          reviewers={reviewers}
+          groupsParticipants={groupsParticipants}
+          fallbackText="Asigna los correctores seleccionando los profesores y clickeando en el boton"
+          handleRemoveReviewer={handleRemoveReviewer}
+        />
+      </ContainerLayout>
+    </>
   );
 }
 
 function LoadingPageContainer() {
   return (
     <ContainerLayout>
+      <Skeleton rounded={'lg'} h="70px" />
       <AssignmentSettings isLoading />
       <Stack spacing="10px " w="100%">
         <Skeleton rounded={'lg'} h="70px" />
@@ -482,7 +488,6 @@ const PageContent = () => {
 
   return (
     <PageDataContainer gap="30px">
-      <Heading>Asignar correctores</Heading>
       <Suspense fallback={<LoadingPageContainer />}>
         <ReviewersPageContainer assignmentId={assignmentId} courseId={courseId} />
       </Suspense>

@@ -1,14 +1,5 @@
 import { StackProps, HStack, Text, Avatar } from '@chakra-ui/react';
-import {
-  Box,
-  Button,
-  MenuButton,
-  Menu,
-  MenuList,
-  MenuIcon,
-  MenuItem,
-} from '@chakra-ui/react';
-import { useState } from 'react';
+import { MenuButton, Menu, MenuList, MenuItem } from '@chakra-ui/react';
 
 type Props = StackProps & {
   reviewerInfo: { name: string; lastName: string };
@@ -41,24 +32,16 @@ const ReviewerCard = ({
       </MenuButton>
       {(availableReviewers.length && (
         <MenuList>
-          {availableReviewers.map((reviewer, i) => {
-            return (
-              <MenuItem
-                key={i}
-                onClick={() => {
-                  console.log('Setting', reviewer);
-                  return onChangeReviewer(reviewer.id);
-                }}
-              >
-                <HStack>
-                  <Avatar name={`${reviewer.name} ${reviewer.lastName}`} size="sm" />
-                  <Text>
-                    {reviewer.name} {reviewer.lastName}
-                  </Text>
-                </HStack>
-              </MenuItem>
-            );
-          })}
+          {availableReviewers.map((reviewer, i) => (
+            <MenuItem key={i} onClick={() => onChangeReviewer(reviewer.id)}>
+              <HStack>
+                <Avatar name={`${reviewer.name} ${reviewer.lastName}`} size="sm" />
+                <Text>
+                  {reviewer.name} {reviewer.lastName}
+                </Text>
+              </HStack>
+            </MenuItem>
+          ))}
         </MenuList>
       )) ||
         null}

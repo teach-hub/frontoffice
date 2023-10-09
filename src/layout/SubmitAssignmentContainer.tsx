@@ -34,10 +34,12 @@ function Content({
   course,
   openPullRequests,
   targetAssignment,
+  shouldLockAssignment,
 }: {
   availableRepositories: readonly Repository[];
   course: Course;
   openPullRequests: readonly PullRequests[];
+  shouldLockAssignment: boolean;
   targetAssignment?: Assignment;
 }) {
   const { assignments, viewerGroupParticipants = [] } = course;
@@ -152,6 +154,7 @@ function Content({
           {
             inputComponent: (values, _, setFieldValue) => (
               <Select
+                isDisabled={shouldLockAssignment}
                 onChange={changes => {
                   setFieldValue('assignmentId', changes.currentTarget.value);
 
@@ -265,6 +268,7 @@ export default function Container({
       availableRepositories={data.viewer.repositories}
       course={data.viewer.course}
       targetAssignment={targetAssignment}
+      shouldLockAssignment={!!assignmentId}
     />
   );
 }

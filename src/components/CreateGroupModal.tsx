@@ -1,20 +1,20 @@
-import type { ModalProps } from '@chakra-ui/react';
+import { useState } from 'react';
 import { useMutation } from 'react-relay';
-import { useNavigate } from 'react-router-dom';
 
 import Text from 'components/Text';
+import Spinner from 'components/Spinner';
 import { Modal } from 'components/Modal';
 import Button from 'components/Button';
 
 import useToast from 'hooks/useToast';
 
 import CreateGroupWithParticipantMutationDef from 'graphql/CreateGroupWithParticipantMutation';
+
+import type { ModalProps } from '@chakra-ui/react';
 import type {
   CreateGroupWithParticipantMutation,
   CreateGroupWithParticipantMutation$data,
 } from '__generated__/CreateGroupWithParticipantMutation.graphql';
-import React, { useState } from 'react';
-import Spinner from 'components/Spinner';
 
 export type Props = {
   isOpen: ModalProps['isOpen'];
@@ -30,7 +30,6 @@ const CreateGroupModal = (props: Props) => {
   const { chosenAssignmentGroup, isOpen, onClose, courseId } = props;
 
   const toast = useToast();
-  const navigate = useNavigate();
 
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [commitCreateGroupWithParticipant] =
@@ -48,10 +47,9 @@ const CreateGroupModal = (props: Props) => {
       onCompleted: (response: CreateGroupWithParticipantMutation$data, errors) => {
         setShowSpinner(false);
         const responseData = response.createGroupWithParticipant;
-        const group = responseData?.group;
+        const group = responseData?.viewerGroupParticipants;
         if (!errors?.length && group) {
           onClose();
-          navigate(0); // Reload page data
         } else {
           toast({
             title: 'Error',

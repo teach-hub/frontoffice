@@ -1,46 +1,54 @@
-import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
-import Navigation from 'components/Navigation';
-import React, { Suspense, useEffect, useState } from 'react';
-import PageDataContainer from 'components/PageDataContainer';
-import Heading from 'components/Heading';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useLazyLoadQuery, useMutation } from 'react-relay';
-import {
-  AssignmentGroupsAndUsersQuery,
-  AssignmentGroupsAndUsersQuery$data,
-} from '__generated__/AssignmentGroupsAndUsersQuery.graphql';
-import AssignmentGroupsAndUsersQueryDef from 'graphql/AssignmentGroupsAndUsersQuery';
-import Table from 'components/Table';
 import { Flex, SimpleGrid, Stack, useDisclosure } from '@chakra-ui/react';
-import Text from 'components/Text';
+import { useLazyLoadQuery, useMutation } from 'react-relay';
+import { Suspense, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+
 import { theme } from 'theme';
+
 import {
   AssignmentGroupsData,
   getFirstAssignmentGroupsUsersData,
   mapToUserName,
   mapToUserNames,
 } from 'app/groups';
-import IconButton from 'components/IconButton';
+
+import Table from 'components/Table';
+import PageDataContainer from 'components/PageDataContainer';
+import Heading from 'components/Heading';
+import Navigation from 'components/Navigation';
+import Text from 'components/Text';
 import CreateIcon from 'icons/CreateIcon';
-import Tooltip from 'components/Tooltip';
 import AddPersonIcon from 'icons/AddPersonIcon';
+import Tooltip from 'components/Tooltip';
+import IconButton from 'components/IconButton';
 import { Modal } from 'components/Modal';
 import { Checkbox } from 'components/Checkbox';
-import { Nullable } from 'types';
+import Spinner from 'components/Spinner';
 import CheckboxGroup from 'components/CheckboxGroup';
 import Button from 'components/Button';
-import { CreateGroupWithParticipantsMutation } from '__generated__/CreateGroupWithParticipantsMutation.graphql';
-import CreateGroupWithParticipantsMutationDef from 'graphql/CreateGroupWithParticipantsMutation';
-import { AddParticipantsToGroupMutation } from '__generated__/AddParticipantsToGroupMutation.graphql';
-import AddParticipantsToGroupMutationDef from 'graphql/AddParticipantsToGroupMutation';
+
+import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
 import useToast from 'hooks/useToast';
-import Spinner from 'components/Spinner';
+
+import CreateGroupWithParticipantsMutationDef from 'graphql/CreateGroupWithParticipantsMutation';
+import AddParticipantsToGroupMutationDef from 'graphql/AddParticipantsToGroupMutation';
+import AssignmentGroupsAndUsersQueryDef from 'graphql/AssignmentGroupsAndUsersQuery';
+
+import type { CreateGroupWithParticipantsMutation } from '__generated__/CreateGroupWithParticipantsMutation.graphql';
+import type { AddParticipantsToGroupMutation } from '__generated__/AddParticipantsToGroupMutation.graphql';
+import type {
+  AssignmentGroupsAndUsersQuery,
+  AssignmentGroupsAndUsersQuery$data,
+} from '__generated__/AssignmentGroupsAndUsersQuery.graphql';
+
+import type { Nullable } from 'types';
 
 const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
-  const courseId = courseContext.courseId;
+  const { courseId } = courseContext;
   const { assignmentId } = useParams();
+
   const toast = useToast();
-  const navigate = useNavigate();
+
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   const {
@@ -144,7 +152,6 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
             status: 'info',
           });
           onCloseAddUsersModal();
-          navigate(0); // Reload page data
         } else {
           console.log({ errors });
           toast({
