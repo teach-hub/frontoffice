@@ -67,7 +67,6 @@ import EditIcon from 'icons/EditIcon';
 import { ButtonWithIcon } from 'components/ButtonWithIcon';
 import { Modal } from 'components/Modal';
 import Navigation from 'components/Navigation';
-import { theme } from 'theme';
 import Spinner from 'components/Spinner';
 import BoxWithTopAndBottomBorders from 'components/BoxWithTopAndBottomBorders';
 
@@ -85,6 +84,7 @@ const CourseStatistics = ({ course, courseContext, availableOrganizations }: Pro
   const toast = useToast();
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const defaultOrganizationName = () => course.organization || '';
   const [organizationName, setOrganizationName] = useState(defaultOrganizationName());
   const [commitCourseSetOrganization] = useMutation<CourseSetOrganizationMutation>(
@@ -115,12 +115,14 @@ const CourseStatistics = ({ course, courseContext, availableOrganizations }: Pro
   };
 
   const handleOrganizationChangeSubmit = () => {
+    setShowSpinner(true);
     commitCourseSetOrganization({
       variables: {
         courseId: course.id,
         organizationName,
       },
       onCompleted: (response: CourseSetOrganizationMutation$data, errors) => {
+        setShowSpinner(false);
         const data = response.setOrganization;
         if (!errors?.length && data) {
           toast({
@@ -151,6 +153,12 @@ const CourseStatistics = ({ course, courseContext, availableOrganizations }: Pro
 
   return (
     <HStack margin="20px 0px" spacing="30px">
+      <Spinner
+        isOpen={showSpinner}
+        onClose={() => {
+          setShowSpinner(false);
+        }}
+      />
       <StatCard
         onClick={handleGoToTeachers}
         title="Profesores"

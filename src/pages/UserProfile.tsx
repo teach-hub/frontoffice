@@ -1,7 +1,7 @@
-import { Suspense, useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 
-import { SimpleGrid, Spinner, Stack } from '@chakra-ui/react';
+import { SimpleGrid, Stack } from '@chakra-ui/react';
 
 import { PayloadError } from 'relay-runtime';
 import Box from 'components/Box';
@@ -28,6 +28,7 @@ import {
 import type { FormErrors, Mutable } from 'types';
 import IconButton from 'components/IconButton';
 import EditIcon from 'icons/EditIcon';
+import Spinner from 'components/Spinner';
 
 type Props = {
   user: UserProfileQuery$data;
@@ -35,11 +36,11 @@ type Props = {
 
 const UserProfilePage = ({ user }: Props): JSX.Element => {
   const toast = useToast();
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [commitMutation] = useMutation<UpdateProfileMutation>(UpdateProfileMutationDef);
 
   const [queryResult, setResult] = useState<UserProfileQuery$data['viewer']>(user.viewer);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   const onMutationComplete = (
     response: UpdateProfileMutation$data,
@@ -106,7 +107,15 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
     return errors;
   };
 
-  if (showSpinner || !queryResult) return <Spinner />;
+  if (showSpinner || !queryResult)
+    return (
+      <Spinner
+        isOpen={showSpinner || !queryResult}
+        onClose={() => {
+          setShowSpinner(false);
+        }}
+      />
+    );
 
   return (
     <PageDataContainer>

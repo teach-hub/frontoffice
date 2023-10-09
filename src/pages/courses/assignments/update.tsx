@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -23,6 +23,7 @@ import type {
   UpdateAssignmentMutation$data,
 } from '__generated__/UpdateAssignmentMutation.graphql';
 import type { AssignmentQuery } from '__generated__/AssignmentQuery.graphql';
+import Spinner from 'components/Spinner';
 
 type UpdatePageProps = {
   assignmentId: string;
@@ -32,6 +33,7 @@ type UpdatePageProps = {
 const UpdateAssignmentPage = ({ assignmentId, courseId }: UpdatePageProps) => {
   const navigate = useNavigate();
   const toast = useToast();
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   const [commitUpdateAssignment] = useMutation<UpdateAssignmentMutation>(
     UpdateAssignmentMutationDef
@@ -71,6 +73,7 @@ const UpdateAssignmentPage = ({ assignmentId, courseId }: UpdatePageProps) => {
   const onCancel = () => navigate(buildAssignmentRoute(courseId, assignmentId));
 
   const onSubmit = (values: InitialValues) => {
+    setShowSpinner(true);
     commitUpdateAssignment({
       variables: {
         ...values,
@@ -83,6 +86,7 @@ const UpdateAssignmentPage = ({ assignmentId, courseId }: UpdatePageProps) => {
         active: true,
       },
       onCompleted: (response: UpdateAssignmentMutation$data, errors) => {
+        setShowSpinner(false);
         const data = response.updateAssignment;
         if (!errors?.length && data) {
           toast({
@@ -106,6 +110,12 @@ const UpdateAssignmentPage = ({ assignmentId, courseId }: UpdatePageProps) => {
 
   return (
     <PageDataContainer>
+      <Spinner
+        isOpen={showSpinner}
+        onClose={() => {
+          setShowSpinner(false);
+        }}
+      />
       <Heading>Editar Trabajo Práctico</Heading>
       <AssignmentForm
         initialValues={initialValues}

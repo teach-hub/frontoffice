@@ -1,9 +1,9 @@
-import { Suspense, Dispatch, useEffect, useState } from 'react';
-import { useMutation, useLazyLoadQuery } from 'react-relay';
+import React, { Dispatch, Suspense, useEffect, useState } from 'react';
+import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { useParams } from 'react-router-dom';
-import { uniq, cloneDeep } from 'lodash';
+import { cloneDeep, uniq } from 'lodash';
 
-import { Skeleton, Switch, Stack, Flex, HStack, Checkbox } from '@chakra-ui/react';
+import { Checkbox, Flex, HStack, Skeleton, Stack, Switch } from '@chakra-ui/react';
 
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 import { ChevronRightIcon } from '@primer/octicons-react';
@@ -20,7 +20,7 @@ import Text from 'components/Text';
 import Box from 'components/Box';
 
 import ReviewerCard from 'components/ReviewerCard';
-import { UserRevieweeCard, GroupRevieweeCard } from 'components/RevieweeCard';
+import { GroupRevieweeCard, UserRevieweeCard } from 'components/RevieweeCard';
 
 import ReviewersAssignmentQueryDef from 'graphql/ReviewersAssignmentQuery';
 import CommitReviewersMutationDef from 'graphql/CommitReviewersMutation';
@@ -33,6 +33,7 @@ import type {
   ReviewersAssignmentQuery$data,
 } from '__generated__/ReviewersAssignmentQuery.graphql';
 import type { CommitReviewersMutation } from '__generated__/CommitReviewersMutation.graphql';
+import Spinner from 'components/Spinner';
 
 type Assignment = Mutable<
   NonNullable<
@@ -277,6 +278,7 @@ function ReviewersPageContainer({
   assignmentId: string;
 }) {
   const toast = useToast();
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   const [commitMutation] = useMutation<CommitReviewersMutation>(
     CommitReviewersMutationDef
@@ -290,7 +292,6 @@ function ReviewersPageContainer({
     consecutives: false,
     teacherIds: [],
   });
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { viewer } = useLazyLoadQuery<Mutable<ReviewersAssignmentQuery>>(
     ReviewersAssignmentQueryDef,
@@ -325,6 +326,7 @@ function ReviewersPageContainer({
   const onCommit = (
     toCommitData: readonly { reviewer: { id: string }; reviewee: { id: string } }[]
   ) => {
+    setShowSpinner(true);
     commitMutation({
       variables: {
         courseId,
@@ -343,6 +345,7 @@ function ReviewersPageContainer({
         },
       },
       onCompleted(response, errors) {
+        setShowSpinner(false);
         if (errors?.length) {
           console.log('Error while commiting reviewers', errors);
           toast({ title: 'No pudimos asignar los correctores', status: 'error' });
@@ -354,7 +357,6 @@ function ReviewersPageContainer({
           setReviewers(response?.assignReviewers?.reviewers as SanitizedReviewer[]);
           toast({ title: 'Correctores asignados', status: 'success' });
         }
-        setIsLoading(false);
       },
     });
   };
@@ -365,6 +367,7 @@ function ReviewersPageContainer({
     );
 
     if (t) {
+      setShowSpinner(true);
       commitRemoveReviewersMutation({
         variables: {
           reviewerIds: [t?.id],
@@ -378,6 +381,7 @@ function ReviewersPageContainer({
           },
         },
         onCompleted(response, errors) {
+          setShowSpinner(false);
           if (errors?.length) {
             if (errors.map(error => error.message.includes('ALREADY_REVIEWED'))) {
               toast({
@@ -397,18 +401,19 @@ function ReviewersPageContainer({
             setReviewers(response?.removeReviewers?.reviewers as SanitizedReviewer[]);
             toast({ title: 'Correctores asignados', status: 'success' });
           }
-          setIsLoading(false);
         },
       });
     }
   };
 
-  if (isLoading) {
-    return <LoadingPageContainer />;
-  }
-
   return (
     <ContainerLayout>
+      <Spinner
+        isOpen={showSpinner}
+        onClose={() => {
+          setShowSpinner(false);
+        }}
+      />
       <AssignmentSettings
         teachers={viewer?.course?.teachersUserRoles.map(x => x.user) || []}
         filters={filters}
@@ -426,7 +431,6 @@ function ReviewersPageContainer({
       <AssignButton
         onClick={() => {
           onCommit(previewReviewers);
-          setIsLoading(true);
         }}
         isDisabled={!previewReviewers.length}
       />

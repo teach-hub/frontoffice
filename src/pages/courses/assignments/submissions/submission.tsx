@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { PayloadError } from 'relay-runtime';
@@ -71,6 +71,7 @@ import Divider from 'components/Divider';
 import CommentIcon from 'icons/CommentIcon';
 import MarkdownText from 'components/MarkdownText';
 import RRLink from 'components/RRLink';
+import Spinner from 'components/Spinner';
 
 type CommentType = NonNullable<
   NonNullable<
@@ -123,6 +124,7 @@ const SubmissionPage = ({
   submissionId: string;
 }) => {
   const toast = useToast();
+  const [showSpinner, setShowSpinner] = useState<boolean>(false);
 
   const data = useLazyLoadQuery<SubmissionQuery>(SubmissionQueryDef, {
     courseId: context.courseId,
@@ -203,12 +205,14 @@ const SubmissionPage = ({
   };
 
   const handleSubmitButtonClick = () => {
+    setShowSpinner(true);
     commitSubmitMutation({
       variables: {
         courseId: course.id,
         submissionId: submission.id,
       },
       onCompleted: (_: unknown, errors: Nullable<PayloadError[]>) => {
+        setShowSpinner(false);
         if (errors?.length) {
           toast({
             title: 'Error al re-entregar, intentelo de nuevo',
@@ -239,6 +243,7 @@ const SubmissionPage = ({
     };
 
     const onCompleted = (_: unknown, errors: Nullable<PayloadError[]>) => {
+      setShowSpinner(false);
       if (!errors?.length) {
         toast({
           title: 'Corrección actualizada',
@@ -253,6 +258,7 @@ const SubmissionPage = ({
     };
 
     /* If review did not exist, create it, otherwise update it*/
+    setShowSpinner(true);
     if (!reviewId) {
       commitCreateMutation({
         variables: {
@@ -301,6 +307,12 @@ const SubmissionPage = ({
 
   return (
     <PageDataContainer>
+      <Spinner
+        isOpen={showSpinner}
+        onClose={() => {
+          setShowSpinner(false);
+        }}
+      />
       <Flex direction={'row'} width={'100%'} justifyContent={'space-between'}>
         <Flex direction="row" gap={'20px'} align={'center'}>
           <Heading>
