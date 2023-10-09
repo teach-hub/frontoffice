@@ -85,7 +85,7 @@ const JoinGroupModal = (props: Props) => {
 
             // TODO. FIXME > Hay formas mas faciles
             // de hacer esto, una de ellas es manipular la store directamente.
-            navigate(0);
+            // navigate(0);
           } else {
             toast({
               title: 'Error',

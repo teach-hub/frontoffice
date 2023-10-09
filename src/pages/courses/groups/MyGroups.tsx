@@ -120,8 +120,9 @@ const GroupList = ({
               <Text fontWeight={'bold'}>{data.assignmentTitle}</Text>,
               <Text>{data.groupName || '-'}</Text>,
               <Stack>
-                {data.groupParticipants?.map(participant => <Text>{participant}</Text>) ??
-                  '-'}
+                {data.groupParticipants?.map(participant => (
+                  <Text key={participant}>{participant}</Text>
+                )) ?? '-'}
               </Stack>,
               <Menu
                 content={{

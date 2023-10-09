@@ -8,6 +8,14 @@ export default graphql`
         id
         name
         courseId
+        assignmentId
+        members {
+          id
+          name
+          lastName
+          notificationEmail
+          file
+        }
       }
     }
   }
