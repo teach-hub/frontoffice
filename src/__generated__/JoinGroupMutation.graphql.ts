@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<78dfb69f58995d9099f0e517e268fdf5>>
+ * @generated SignedSource<<49d3aecfe48a4b8336f7716e18cb5ed0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,21 +16,23 @@ export type JoinGroupMutation$variables = {
 };
 export type JoinGroupMutation$data = {
   readonly joinGroup: {
-    readonly group: {
-      readonly assignmentId: string;
-      readonly courseId: string | null;
-      readonly id: string;
-      readonly members: ReadonlyArray<{
-        readonly file: string;
-        readonly id: string;
-        readonly lastName: string;
-        readonly name: string;
-        readonly notificationEmail: string;
-      }>;
-      readonly name: string | null;
-    };
     readonly id: string;
-  };
+    readonly viewerGroupParticipants: ReadonlyArray<{
+      readonly group: {
+        readonly assignmentId: string;
+        readonly id: string;
+        readonly members: ReadonlyArray<{
+          readonly file: string;
+          readonly id: string;
+          readonly lastName: string;
+          readonly name: string;
+          readonly notificationEmail: string;
+        }>;
+        readonly name: string | null;
+      };
+      readonly id: string;
+    }>;
+  } | null;
 };
 export type JoinGroupMutation = {
   response: JoinGroupMutation$data;
@@ -87,7 +89,7 @@ v5 = [
         "variableName": "groupId"
       }
     ],
-    "concreteType": "InternalGroupParticipantType",
+    "concreteType": "CourseType",
     "kind": "LinkedField",
     "name": "joinGroup",
     "plural": false,
@@ -96,34 +98,19 @@ v5 = [
       {
         "alias": null,
         "args": null,
-        "concreteType": "InternalGroupType",
+        "concreteType": "InternalGroupParticipantType",
         "kind": "LinkedField",
-        "name": "group",
-        "plural": false,
+        "name": "viewerGroupParticipants",
+        "plural": true,
         "selections": [
           (v3/*: any*/),
-          (v4/*: any*/),
           {
             "alias": null,
             "args": null,
-            "kind": "ScalarField",
-            "name": "courseId",
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "assignmentId",
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "UserType",
+            "concreteType": "InternalGroupType",
             "kind": "LinkedField",
-            "name": "members",
-            "plural": true,
+            "name": "group",
+            "plural": false,
             "selections": [
               (v3/*: any*/),
               (v4/*: any*/),
@@ -131,21 +118,41 @@ v5 = [
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "lastName",
+                "name": "assignmentId",
                 "storageKey": null
               },
               {
                 "alias": null,
                 "args": null,
-                "kind": "ScalarField",
-                "name": "notificationEmail",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "file",
+                "concreteType": "UserType",
+                "kind": "LinkedField",
+                "name": "members",
+                "plural": true,
+                "selections": [
+                  (v3/*: any*/),
+                  (v4/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "lastName",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "notificationEmail",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "file",
+                    "storageKey": null
+                  }
+                ],
                 "storageKey": null
               }
             ],
@@ -184,16 +191,16 @@ return {
     "selections": (v5/*: any*/)
   },
   "params": {
-    "cacheID": "c5872ba06689139a48a539f6b9f0fc2a",
+    "cacheID": "193c1e78df967df07195b7a39844bc7b",
     "id": null,
     "metadata": {},
     "name": "JoinGroupMutation",
     "operationKind": "mutation",
-    "text": "mutation JoinGroupMutation(\n  $groupId: ID!\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  joinGroup(groupId: $groupId, courseId: $courseId, assignmentId: $assignmentId) {\n    id\n    group {\n      id\n      name\n      courseId\n      assignmentId\n      members {\n        id\n        name\n        lastName\n        notificationEmail\n        file\n      }\n    }\n  }\n}\n"
+    "text": "mutation JoinGroupMutation(\n  $groupId: ID!\n  $courseId: ID!\n  $assignmentId: ID!\n) {\n  joinGroup(groupId: $groupId, courseId: $courseId, assignmentId: $assignmentId) {\n    id\n    viewerGroupParticipants {\n      id\n      group {\n        id\n        name\n        assignmentId\n        members {\n          id\n          name\n          lastName\n          notificationEmail\n          file\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "856c76ff42c9c0674a247c65040e777f";
+(node as any).hash = "af79334c29910fc807e32823121cbf70";
 
 export default node;

@@ -4,17 +4,19 @@ export default graphql`
   mutation JoinGroupMutation($groupId: ID!, $courseId: ID!, $assignmentId: ID!) {
     joinGroup(groupId: $groupId, courseId: $courseId, assignmentId: $assignmentId) {
       id
-      group {
+      viewerGroupParticipants {
         id
-        name
-        courseId
-        assignmentId
-        members {
+        group {
           id
           name
-          lastName
-          notificationEmail
-          file
+          assignmentId
+          members {
+            id
+            name
+            lastName
+            notificationEmail
+            file
+          }
         }
       }
     }
