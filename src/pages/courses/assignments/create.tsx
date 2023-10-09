@@ -52,7 +52,7 @@ const CreateAssignmentPage = ({ courseId }: Props) => {
     commitCreateAssignment({
       variables: {
         ...values,
-        courseId: courseId,
+        courseId,
         startDate: values.startDate
           ? formatDateAsLocaleIsoString(values.startDate)
           : undefined,
@@ -63,7 +63,7 @@ const CreateAssignmentPage = ({ courseId }: Props) => {
         const data = response.createAssignment;
         if (!errors?.length && data) {
           toast({
-            title: 'Trabajo práctico guardado!',
+            title: 'Trabajo práctico creado!',
             status: 'success',
           });
           navigate(buildAssignmentRoute(courseId, data.id));
@@ -77,6 +77,18 @@ const CreateAssignmentPage = ({ courseId }: Props) => {
             status: 'error',
           });
         }
+      },
+      updater: store => {
+        const newAssignment = store.getRootField('createAssignment');
+        const courseKey = 'course(id:"' + courseId + '")';
+
+        const courseRef = store
+          .getRoot()
+          .getLinkedRecord('viewer')
+          ?.getLinkedRecord(courseKey);
+
+        const assignments = courseRef?.getLinkedRecords('assignments') || [];
+        courseRef?.setLinkedRecords(assignments.concat(newAssignment), 'assignments');
       },
     });
   };
