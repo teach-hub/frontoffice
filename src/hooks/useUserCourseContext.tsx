@@ -29,6 +29,7 @@ export enum Permission {
 
 export type EmptyContext = {
   courseId: null;
+  subjectName: null;
   userPermissions: never[];
   userIsTeacher: null;
   userHasPermission: (p: Permission) => boolean;
@@ -36,6 +37,7 @@ export type EmptyContext = {
 
 export type FetchedContext = {
   courseId: string;
+  subjectName: string;
   userPermissions: string[];
   userIsTeacher: boolean;
   userHasPermission: (p: Permission) => boolean;
@@ -49,6 +51,7 @@ const _noop = () => false;
 // https://legacy.reactjs.org/docs/context.html#reactcreatecontext
 const defaultUserContext: CourseContext = {
   courseId: null,
+  subjectName: null,
   userIsTeacher: null,
   userPermissions: [],
   userHasPermission: _noop,
@@ -74,6 +77,7 @@ const Provider = ({
 
   const [courseContext] = useState<CourseContext>({
     courseId,
+    subjectName: courseContextData.viewer?.course?.subject?.name ?? '',
     userIsTeacher: viewerCourseRole?.isTeacher ?? false,
     userPermissions: viewerCoursePermissions ?? [],
     userHasPermission: (p: Permission) => {

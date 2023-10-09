@@ -15,7 +15,7 @@ import HomeButton from 'components/HomeButton';
 import Routes from 'components/Routes';
 
 import { theme } from 'theme';
-import { buildMyGroupsRoute, buildAddSubmissionRoute } from 'routes';
+import { buildAddSubmissionRoute } from 'routes';
 
 import { storeGetValue, storeRemoveValue } from 'hooks/useLocalStorage';
 import { Permission, useUserContext } from 'hooks/useUserCourseContext';
@@ -90,7 +90,7 @@ const NavigationBar = () => {
 
   if (courseContext.userHasPermission(Permission.InviteUser)) {
     teacherActions.push({
-      content: 'Invitar usuario',
+      content: 'Invitar usuarios',
       action: () => setInviteUserOpen(v => !v),
     });
   }
