@@ -107,7 +107,7 @@ const CourseStatistics = ({ course, courseContext, availableOrganizations }: Pro
 
   const errored = () => course.organization === '' || course.organization === null;
 
-  const organizationNames = availableOrganizations?.names || [];
+  const organizations = availableOrganizations || [];
 
   const handleOrganizationChangeCancel = () => {
     setOrganizationName(defaultOrganizationName());
@@ -199,7 +199,7 @@ const CourseStatistics = ({ course, courseContext, availableOrganizations }: Pro
           <ModalHeader>Configurar organización de GitHub</ModalHeader>
           <ModalBody>
             <Flex direction="column" gap="60px">
-              {organizationNames.length === 0 ? (
+              {organizations.length === 0 ? (
                 <Flex
                   direction={'column'}
                   alignItems={'center'}
@@ -217,9 +217,9 @@ const CourseStatistics = ({ course, courseContext, availableOrganizations }: Pro
                   value={organizationName}
                   onChange={handleOrganizationChange}
                 >
-                  {organizationNames.map(org => (
-                    <option value={org} key={org}>
-                      {org}
+                  {organizations.map(org => (
+                    <option value={org.name} key={org.name}>
+                      {org.name}
                     </option>
                   ))}
                 </Select>

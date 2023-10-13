@@ -6,6 +6,10 @@ export default graphql`
       id
       course(id: $courseId) {
         id
+        viewerRepositories {
+          id
+          name
+        }
         assignments {
           id
           viewerSubmission {
@@ -31,10 +35,6 @@ export default graphql`
             assignmentId
           }
         }
-      }
-      repositories(courseId: $courseId) {
-        id
-        name
       }
       openPullRequests(courseId: $courseId) {
         id

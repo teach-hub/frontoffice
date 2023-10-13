@@ -39,7 +39,7 @@ export default graphql`
         }
       }
       availableOrganizations {
-        names
+        name
       }
     }
   }
