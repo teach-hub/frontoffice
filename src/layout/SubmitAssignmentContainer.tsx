@@ -24,7 +24,7 @@ type FormValues = Omit<CreateSubmissionMutationType['variables'], 'courseId'> & 
 type Course = NonNullable<NonNullable<AddSubmissionQuery$data['viewer']>['course']>;
 type Group = Course['viewerGroupParticipants'][number];
 type Assignment = NonNullable<NonNullable<Course['assignments']>[number]>;
-type Repository = NonNullable<AddSubmissionQuery$data['viewer']>['repositories'][number];
+type Repository = Course['viewerRepositories'][number];
 type PullRequests = NonNullable<
   AddSubmissionQuery$data['viewer']
 >['openPullRequests'][number];
@@ -265,7 +265,7 @@ export default function Container({
   return (
     <Content
       openPullRequests={data.viewer.openPullRequests}
-      availableRepositories={data.viewer.repositories}
+      availableRepositories={data.viewer.course.viewerRepositories}
       course={data.viewer.course}
       targetAssignment={targetAssignment}
       shouldLockAssignment={!!assignmentId}

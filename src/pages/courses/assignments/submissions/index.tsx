@@ -167,7 +167,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const data = useLazyLoadQuery<AssignmentSubmissionsQuery>(SubmissionsQuery, {
     assignmentId: selectedAssignmentId,
     courseId: courseContext.courseId,
-    onlyReviewerSubmissions: onlyReviewerSubmissions,
+    onlyReviewerSubmissions,
   });
 
   const allAssignments = data.viewer?.course?.assignments || [];
@@ -443,8 +443,8 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
         }}
       >
         <TabList>
-          <Tab isDisabled={nonGroupRowDataList.length === 0}>Individuales</Tab>
-          <Tab isDisabled={groupRowDataList.length === 0}>Grupales</Tab>
+          <Tab isDisabled={!nonGroupRowDataList.length}>Individuales</Tab>
+          <Tab isDisabled={!groupRowDataList.length}>Grupales</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>

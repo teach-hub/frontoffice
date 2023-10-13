@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a6bd285cc25c34b82f946494531a1b29>>
+ * @generated SignedSource<<b15920dee84dfc30b3f82ca7376766dc>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,9 +14,9 @@ export type CourseInfoQuery$variables = {
 };
 export type CourseInfoQuery$data = {
   readonly viewer: {
-    readonly availableOrganizations: {
-      readonly names: ReadonlyArray<string>;
-    };
+    readonly availableOrganizations: ReadonlyArray<{
+      readonly name: string;
+    }>;
     readonly course: {
       readonly assignments: ReadonlyArray<{
         readonly id: string;
@@ -273,18 +273,12 @@ v4 = [
       {
         "alias": null,
         "args": null,
-        "concreteType": "ViewerOrganizations",
+        "concreteType": "GithubOrganizationType",
         "kind": "LinkedField",
         "name": "availableOrganizations",
-        "plural": false,
+        "plural": true,
         "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "names",
-            "storageKey": null
-          }
+          (v2/*: any*/)
         ],
         "storageKey": null
       }
@@ -310,16 +304,16 @@ return {
     "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "b7ccade2d95718d299f407cb3d29a346",
+    "cacheID": "cb8aa700032ee85a87a702fd0fa775de",
     "id": null,
     "metadata": {},
     "name": "CourseInfoQuery",
     "operationKind": "query",
-    "text": "query CourseInfoQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      description\n      organization\n      studentsCount\n      teachersCount\n      year\n      period\n      assignments {\n        id\n        title\n        isGroup\n        submissions(onlyReviewerSubmissions: false) {\n          id\n          submittedAt\n          pullRequestUrl\n          assignmentId\n          review {\n            id\n            revisionRequested\n            grade\n          }\n        }\n        nonExistentSubmissions(onlyReviewerSubmissions: false) {\n          id\n        }\n      }\n      subject {\n        id\n        name\n      }\n    }\n    availableOrganizations {\n      names\n    }\n  }\n}\n"
+    "text": "query CourseInfoQuery(\n  $courseId: ID!\n) {\n  viewer {\n    id\n    name\n    course(id: $courseId) {\n      id\n      name\n      description\n      organization\n      studentsCount\n      teachersCount\n      year\n      period\n      assignments {\n        id\n        title\n        isGroup\n        submissions(onlyReviewerSubmissions: false) {\n          id\n          submittedAt\n          pullRequestUrl\n          assignmentId\n          review {\n            id\n            revisionRequested\n            grade\n          }\n        }\n        nonExistentSubmissions(onlyReviewerSubmissions: false) {\n          id\n        }\n      }\n      subject {\n        id\n        name\n      }\n    }\n    availableOrganizations {\n      name\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "c7945e9bb079218ac01214ce826c4afd";
+(node as any).hash = "c91ba2cabfe881c3b129293e5b3ce654";
 
 export default node;
