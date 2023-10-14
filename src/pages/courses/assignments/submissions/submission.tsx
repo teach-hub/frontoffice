@@ -458,7 +458,7 @@ const SubmissionPage = ({
       <Flex mt="20px" direction={'row'} gap="30px">
         <SubmissionDetails />
         <Divider w="1px" bgColor="black" h="300px" />
-        <SubmissionMetrics />
+        <SubmissionMetrics queryRef={submission} />
       </Flex>
       <ReviewModal
         onSave={handleReviewChange}
