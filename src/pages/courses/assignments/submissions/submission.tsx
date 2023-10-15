@@ -314,9 +314,9 @@ const SubmissionPage = ({
   // TODO. Mover a un componente aparte
   // te lo pido por favor.
   const SubmissionDetails = () => (
-    <Stack>
+    <Stack gap="20px">
       <Heading size="md">Detalles</Heading>
-      <List justifyItems={'left'}>
+      <List spacing="20px">
         {submitterItem}
         <TextListItem
           listItemKey={'submittedOnTime'}
