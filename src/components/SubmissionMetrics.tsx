@@ -1,7 +1,9 @@
 import { Flex, Stack } from '@chakra-ui/react';
 import { useFragment } from 'react-relay';
 import { graphql } from 'babel-plugin-relay/macro';
+
 import { formatAsSimpleDate } from 'utils/dates';
+import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
 
 import Heading from 'components/Heading';
 import Avatar from 'components/Avatar';
@@ -31,7 +33,10 @@ const CommitCount = ({ contribution }: { contribution: Contribution }) => {
   );
 };
 
-type Props = { queryRef: SubmissionMetrics_query$key };
+type Props = {
+  queryRef: SubmissionMetrics_query$key;
+  pullRequestUrl: string;
+};
 
 function SubmissionMetrics(props: Props) {
   const { metrics } = useFragment(
@@ -72,7 +77,12 @@ function SubmissionMetrics(props: Props) {
           <CommitCount contribution={contribution} />
         ))}
       </Flex>
-      <Link isExternal>
+      <Link
+        isExternal
+        href={`${getGithubRepoUrlFromPullRequestUrl(
+          props.pullRequestUrl
+        )}/graphs/contributors`}
+      >
         Podés ver otras métricas acá <ExternalLinkIcon />{' '}
       </Link>
     </Stack>

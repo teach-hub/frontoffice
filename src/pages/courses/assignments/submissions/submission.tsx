@@ -20,13 +20,13 @@ import { Grid, GridItem, Flex, Stack, useDisclosure } from '@chakra-ui/react';
 import { formatAsSimpleDateTime } from 'utils/dates';
 import { getValueOfNextIndex, getValueOfPreviousIndex } from 'utils/list';
 import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
+
 import { buildAssignmentRoute, buildSubmissionRoute } from 'routes';
 
 import useToast from 'hooks/useToast';
 import { FetchedContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
 
-import Box from 'components/Box';
 import List from 'components/list/List';
 import ListItem from 'components/list/ListItem';
 import { TextListItem } from 'components/list/TextListItem';
@@ -469,7 +469,10 @@ const SubmissionPage = ({
           <Divider bgColor="grey" h="95%" />
         </GridItem>
         <GridItem rowSpan={1} colSpan={1}>
-          <SubmissionMetrics queryRef={submission} />
+          <SubmissionMetrics
+            pullRequestUrl={submission.pullRequestUrl}
+            queryRef={submission}
+          />
         </GridItem>
         <ReviewModal
           onSave={handleReviewChange}
