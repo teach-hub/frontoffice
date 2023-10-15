@@ -6,6 +6,9 @@ import { formatAsSimpleDate } from 'utils/dates';
 import Heading from 'components/Heading';
 import Avatar from 'components/Avatar';
 import Text from 'components/Text';
+import Link from 'components/Link';
+
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 
 import type {
   SubmissionMetrics_query$key,
@@ -54,8 +57,8 @@ function SubmissionMetrics(props: Props) {
   );
 
   return (
-    <Stack maxW="50%" flex="1" gap={'20px'}>
-      <Heading size={'md'}>Métricas</Heading>
+    <Stack maxW="50%" gap={'20px'}>
+      <Heading size={'md'}>Métricas de trabajo</Heading>
       <Text>
         Primer commit hecho el:{' '}
         {metrics?.firstCommitDate ? formatAsSimpleDate(metrics.firstCommitDate) : '-'}
@@ -69,7 +72,9 @@ function SubmissionMetrics(props: Props) {
           <CommitCount contribution={contribution} />
         ))}
       </Flex>
-      <Text>Mas informacion en </Text>
+      <Link isExternal>
+        Podés ver otras métricas acá <ExternalLinkIcon />{' '}
+      </Link>
     </Stack>
   );
 }

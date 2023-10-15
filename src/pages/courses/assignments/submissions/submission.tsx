@@ -15,7 +15,7 @@ import {
   XCircleFillIcon,
 } from '@primer/octicons-react';
 
-import { Flex, Stack, useDisclosure } from '@chakra-ui/react';
+import { Grid, GridItem, Flex, Stack, useDisclosure } from '@chakra-ui/react';
 
 import { formatAsSimpleDateTime } from 'utils/dates';
 import { getValueOfNextIndex, getValueOfPreviousIndex } from 'utils/list';
@@ -26,6 +26,7 @@ import useToast from 'hooks/useToast';
 import { FetchedContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
 
+import Box from 'components/Box';
 import List from 'components/list/List';
 import ListItem from 'components/list/ListItem';
 import { TextListItem } from 'components/list/TextListItem';
@@ -313,29 +314,9 @@ const SubmissionPage = ({
   // TODO. Mover a un componente aparte
   // te lo pido por favor.
   const SubmissionDetails = () => (
-    <Stack gap={'30px'} flex="1">
-      <Flex direction={'row'} gap={'5px'}>
-        {context.userHasPermission(Permission.SetReview) && (
-          /* Use div for toast to appear*/
-          <div onClick={showWarningToastIfDisabled}>
-            <ButtonWithIcon
-              onClick={onOpenReviewModal}
-              text={'Calificar'}
-              icon={PencilIcon}
-              isDisabled={!reviewEnabled}
-            />
-          </div>
-        )}
-        {context.userHasPermission(Permission.SubmitAssignment) && (
-          <ButtonWithIcon
-            text={'Re-entregar'}
-            icon={IterationsIcon}
-            isDisabled={!viewerCanSubmitAgain}
-            onClick={handleSubmitButtonClick}
-          />
-        )}
-      </Flex>
-      <List justifyItems={'left'} alignItems={'flex-start'}>
+    <Stack>
+      <Heading size="md">Detalles</Heading>
+      <List justifyItems={'left'}>
         {submitterItem}
         <TextListItem
           listItemKey={'submittedOnTime'}
@@ -417,29 +398,27 @@ const SubmissionPage = ({
           {assignment.title}
         </RRLink>
       </Heading>
-      <Stack direction={'row'}>
-        <Tooltip label={'Ir a repositorio'}>
-          <Link
-            href={getGithubRepoUrlFromPullRequestUrl(submission.pullRequestUrl)}
-            isExternal
-          >
-            <IconButton
-              variant={'ghost'}
-              aria-label="repository-link"
-              icon={<RepositoryIcon />}
-            />
-          </Link>
-        </Tooltip>
-        <Tooltip label={'Ir a pull request'}>
-          <Link href={submission.pullRequestUrl} isExternal>
-            <IconButton
-              variant={'ghost'}
-              aria-label="pull-request-link"
-              icon={<PullRequestIcon />}
-            />
-          </Link>
-        </Tooltip>
-      </Stack>
+      <Tooltip label={'Ir a repositorio'}>
+        <Link
+          href={getGithubRepoUrlFromPullRequestUrl(submission.pullRequestUrl)}
+          isExternal
+        >
+          <IconButton
+            variant={'ghost'}
+            aria-label="repository-link"
+            icon={<RepositoryIcon />}
+          />
+        </Link>
+      </Tooltip>
+      <Tooltip label={'Ir a pull request'}>
+        <Link href={submission.pullRequestUrl} isExternal>
+          <IconButton
+            variant={'ghost'}
+            aria-label="pull-request-link"
+            icon={<PullRequestIcon />}
+          />
+        </Link>
+      </Tooltip>
     </Flex>
   );
 
@@ -451,27 +430,60 @@ const SubmissionPage = ({
           setShowSpinner(false);
         }}
       />
-      <Flex direction={'row'} width={'100%'} justifyContent={'space-between'}>
-        <Title />
-        <CarrouselNavigationControls courseId={course.id} submissionId={submissionId} />
-      </Flex>
-      <Flex mt="20px" direction={'row'} gap="30px">
-        <SubmissionDetails />
-        <Divider w="1px" bgColor="black" h="300px" />
-        <SubmissionMetrics queryRef={submission} />
-      </Flex>
-      <ReviewModal
-        onSave={handleReviewChange}
-        onClose={onCloseReviewModal}
-        isOpen={isOpenReviewModal}
-        isSecondTimeReview={!!review}
-      />
-      <CommentsModal
-        onClose={onCloseCommentsModal}
-        isOpen={isOpenCommentsModal}
-        comments={comments as CommentType[]}
-        viewerGithubUserId={data.viewer?.githubId}
-      />
+      <Grid gap="30px" templateRows="auto auto 90%" templateColumns="49% auto 49%">
+        <GridItem
+          display="grid"
+          justifyContent={'space-between'}
+          gridAutoFlow={'column'}
+          rowSpan={1}
+          colSpan={3}
+        >
+          <Title />
+          <CarrouselNavigationControls courseId={course.id} submissionId={submissionId} />
+        </GridItem>
+        <GridItem rowSpan={1} colSpan={3}>
+          {context.userHasPermission(Permission.SetReview) && (
+            /* Use div for toast to appear*/
+            <div onClick={showWarningToastIfDisabled}>
+              <ButtonWithIcon
+                onClick={onOpenReviewModal}
+                text={'Calificar'}
+                icon={PencilIcon}
+                isDisabled={!reviewEnabled}
+              />
+            </div>
+          )}
+          {context.userHasPermission(Permission.SubmitAssignment) && (
+            <ButtonWithIcon
+              text={'Re-entregar'}
+              icon={IterationsIcon}
+              isDisabled={!viewerCanSubmitAgain}
+              onClick={handleSubmitButtonClick}
+            />
+          )}
+        </GridItem>
+        <GridItem rowSpan={1} colSpan={1}>
+          <SubmissionDetails />
+        </GridItem>
+        <GridItem rowSpan={1} colSpan={1}>
+          <Divider bgColor="grey" h="95%" />
+        </GridItem>
+        <GridItem rowSpan={1} colSpan={1}>
+          <SubmissionMetrics queryRef={submission} />
+        </GridItem>
+        <ReviewModal
+          onSave={handleReviewChange}
+          onClose={onCloseReviewModal}
+          isOpen={isOpenReviewModal}
+          isSecondTimeReview={!!review}
+        />
+        <CommentsModal
+          onClose={onCloseCommentsModal}
+          isOpen={isOpenCommentsModal}
+          comments={comments as CommentType[]}
+          viewerGithubUserId={data.viewer?.githubId}
+        />
+      </Grid>
     </>
   );
 };
