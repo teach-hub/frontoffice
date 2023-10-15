@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b6cf734bf66db865058a59cf41ad9ff4>>
+ * @generated SignedSource<<c66a87912e456aaf559966fb38809085>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,6 +9,7 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
+import { FragmentRefs } from "relay-runtime";
 export type SubmissionQuery$variables = {
   courseId: string;
   submissionId: string;
@@ -69,6 +70,7 @@ export type SubmissionQuery$data = {
           readonly name?: string;
         };
         readonly viewerIsReviewer: boolean;
+        readonly " $fragmentSpreads": FragmentRefs<"SubmissionMetrics_query">;
       } | null;
     } | null;
     readonly githubId: string;
@@ -161,27 +163,28 @@ v10 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "lastName",
+  "name": "file",
   "storageKey": null
 },
 v11 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "lastName",
+  "storageKey": null
+},
+v12 = {
   "kind": "InlineFragment",
   "selections": [
     (v1/*: any*/),
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "file",
-      "storageKey": null
-    },
+    (v10/*: any*/),
     (v2/*: any*/),
-    (v10/*: any*/)
+    (v11/*: any*/)
   ],
   "type": "UserType",
   "abstractKey": null
 },
-v12 = {
+v13 = {
   "kind": "InlineFragment",
   "selections": [
     (v1/*: any*/)
@@ -189,12 +192,12 @@ v12 = {
   "type": "InternalGroupType",
   "abstractKey": null
 },
-v13 = [
+v14 = [
   (v1/*: any*/),
   (v2/*: any*/),
-  (v10/*: any*/)
+  (v11/*: any*/)
 ],
-v14 = {
+v15 = {
   "alias": null,
   "args": null,
   "concreteType": "ReviewerType",
@@ -210,13 +213,13 @@ v14 = {
       "kind": "LinkedField",
       "name": "reviewer",
       "plural": false,
-      "selections": (v13/*: any*/),
+      "selections": (v14/*: any*/),
       "storageKey": null
     }
   ],
   "storageKey": null
 },
-v15 = {
+v16 = {
   "alias": null,
   "args": null,
   "concreteType": "InternalReviewType",
@@ -256,28 +259,28 @@ v15 = {
   ],
   "storageKey": null
 },
-v16 = {
+v17 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "title",
   "storageKey": null
 },
-v17 = {
+v18 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "endDate",
   "storageKey": null
 },
-v18 = {
+v19 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "isGroup",
   "storageKey": null
 },
-v19 = {
+v20 = {
   "alias": null,
   "args": null,
   "concreteType": "InternalGroupType",
@@ -290,17 +293,17 @@ v19 = {
   ],
   "storageKey": null
 },
-v20 = {
+v21 = {
   "alias": null,
   "args": null,
   "concreteType": "UserType",
   "kind": "LinkedField",
   "name": "user",
   "plural": false,
-  "selections": (v13/*: any*/),
+  "selections": (v14/*: any*/),
   "storageKey": null
 },
-v21 = {
+v22 = {
   "alias": null,
   "args": null,
   "concreteType": "Comment",
@@ -395,13 +398,13 @@ return {
                     "name": "submitter",
                     "plural": false,
                     "selections": [
-                      (v11/*: any*/),
-                      (v12/*: any*/)
+                      (v12/*: any*/),
+                      (v13/*: any*/)
                     ],
                     "storageKey": null
                   },
-                  (v14/*: any*/),
                   (v15/*: any*/),
+                  (v16/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -411,9 +414,9 @@ return {
                     "plural": false,
                     "selections": [
                       (v1/*: any*/),
-                      (v16/*: any*/),
                       (v17/*: any*/),
                       (v18/*: any*/),
+                      (v19/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -422,15 +425,20 @@ return {
                         "name": "groupParticipants",
                         "plural": true,
                         "selections": [
-                          (v19/*: any*/),
-                          (v20/*: any*/)
+                          (v20/*: any*/),
+                          (v21/*: any*/)
                         ],
                         "storageKey": null
                       }
                     ],
                     "storageKey": null
                   },
-                  (v21/*: any*/)
+                  (v22/*: any*/),
+                  {
+                    "args": null,
+                    "kind": "FragmentSpread",
+                    "name": "SubmissionMetrics_query"
+                  }
                 ],
                 "storageKey": null
               }
@@ -498,13 +506,13 @@ return {
                         "name": "__typename",
                         "storageKey": null
                       },
-                      (v11/*: any*/),
-                      (v12/*: any*/)
+                      (v12/*: any*/),
+                      (v13/*: any*/)
                     ],
                     "storageKey": null
                   },
-                  (v14/*: any*/),
                   (v15/*: any*/),
+                  (v16/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -514,9 +522,9 @@ return {
                     "plural": false,
                     "selections": [
                       (v1/*: any*/),
-                      (v16/*: any*/),
                       (v17/*: any*/),
                       (v18/*: any*/),
+                      (v19/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -525,8 +533,8 @@ return {
                         "name": "groupParticipants",
                         "plural": true,
                         "selections": [
-                          (v19/*: any*/),
                           (v20/*: any*/),
+                          (v21/*: any*/),
                           (v1/*: any*/)
                         ],
                         "storageKey": null
@@ -534,7 +542,66 @@ return {
                     ],
                     "storageKey": null
                   },
-                  (v21/*: any*/)
+                  (v22/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "SubmissionMetricsType",
+                    "kind": "LinkedField",
+                    "name": "metrics",
+                    "plural": false,
+                    "selections": [
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "firstCommitDate",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "lastCommitDate",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "ContributionType",
+                        "kind": "LinkedField",
+                        "name": "contributions",
+                        "plural": true,
+                        "selections": [
+                          (v1/*: any*/),
+                          {
+                            "alias": null,
+                            "args": null,
+                            "concreteType": "UserType",
+                            "kind": "LinkedField",
+                            "name": "user",
+                            "plural": false,
+                            "selections": [
+                              (v1/*: any*/),
+                              (v2/*: any*/),
+                              (v11/*: any*/),
+                              (v10/*: any*/)
+                            ],
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "commitsMade",
+                            "storageKey": null
+                          }
+                        ],
+                        "storageKey": null
+                      }
+                    ],
+                    "storageKey": null
+                  }
                 ],
                 "storageKey": null
               }
@@ -547,16 +614,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "6bfe2c1be042e985338c40709651176d",
+    "cacheID": "64a66cecfdb340bddb0ed98f7a2ce7f6",
     "id": null,
     "metadata": {},
     "name": "SubmissionQuery",
     "operationKind": "query",
-    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    githubId\n    course(id: $courseId) {\n      id\n      submission(id: $submissionId) {\n        id\n        submittedAt\n        submittedAgainAt\n        pullRequestUrl\n        viewerIsReviewer: viewerCanReview\n        submitter {\n          __typename\n          ... on UserType {\n            id\n            file\n            name\n            lastName\n          }\n          ... on InternalGroupType {\n            id\n          }\n        }\n        reviewer {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n        review {\n          id\n          revisionRequested\n          grade\n          reviewedAt\n          reviewedAgainAt\n        }\n        assignment {\n          id\n          title\n          endDate\n          isGroup\n          groupParticipants {\n            group {\n              id\n              name\n            }\n            user {\n              id\n              name\n              lastName\n            }\n            id\n          }\n        }\n        comments {\n          id\n          body\n          createdAt\n          updatedAt\n          githubUserId\n          githubUsername\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query SubmissionQuery(\n  $courseId: ID!\n  $submissionId: ID!\n) {\n  viewer {\n    id\n    name\n    githubId\n    course(id: $courseId) {\n      id\n      submission(id: $submissionId) {\n        id\n        submittedAt\n        submittedAgainAt\n        pullRequestUrl\n        viewerIsReviewer: viewerCanReview\n        submitter {\n          __typename\n          ... on UserType {\n            id\n            file\n            name\n            lastName\n          }\n          ... on InternalGroupType {\n            id\n          }\n        }\n        reviewer {\n          id\n          reviewer {\n            id\n            name\n            lastName\n          }\n        }\n        review {\n          id\n          revisionRequested\n          grade\n          reviewedAt\n          reviewedAgainAt\n        }\n        assignment {\n          id\n          title\n          endDate\n          isGroup\n          groupParticipants {\n            group {\n              id\n              name\n            }\n            user {\n              id\n              name\n              lastName\n            }\n            id\n          }\n        }\n        comments {\n          id\n          body\n          createdAt\n          updatedAt\n          githubUserId\n          githubUsername\n        }\n        ...SubmissionMetrics_query\n      }\n    }\n  }\n}\n\nfragment SubmissionMetrics_query on SubmissionType {\n  metrics {\n    firstCommitDate\n    lastCommitDate\n    contributions {\n      id\n      user {\n        id\n        name\n        lastName\n        file\n      }\n      commitsMade\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "4de4f9fac2f26edbd959fe0592576147";
+(node as any).hash = "8703ec7616b37a0102149f8e9c2c741f";
 
 export default node;

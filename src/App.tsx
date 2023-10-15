@@ -16,6 +16,7 @@ import {
   LinearScale,
   Title,
   Tooltip,
+  ArcElement,
 } from 'chart.js';
 
 import environment from 'relayEnvironment';
@@ -68,7 +69,15 @@ const ProtectedLayout = ({ children }: { children: JSX.Element }): JSX.Element =
 };
 
 const App = () => {
-  ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement
+  );
 
   return (
     <Routes>

@@ -65,6 +65,7 @@ export default graphql`
             githubUserId
             githubUsername
           }
+          ...SubmissionMetrics_query
         }
       }
     }

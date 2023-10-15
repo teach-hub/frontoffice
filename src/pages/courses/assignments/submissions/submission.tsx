@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { PayloadError } from 'relay-runtime';
@@ -15,11 +15,13 @@ import {
   XCircleFillIcon,
 } from '@primer/octicons-react';
 
-import { Flex, Select, Stack, useDisclosure } from '@chakra-ui/react';
+import { Grid, GridItem, Flex, Stack, useDisclosure } from '@chakra-ui/react';
 
 import { formatAsSimpleDateTime } from 'utils/dates';
 import { getValueOfNextIndex, getValueOfPreviousIndex } from 'utils/list';
 import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
+
+import { buildAssignmentRoute, buildSubmissionRoute } from 'routes';
 
 import useToast from 'hooks/useToast';
 import { FetchedContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
@@ -32,17 +34,20 @@ import Link from 'components/Link';
 import IconButton from 'components/IconButton';
 import Tooltip from 'components/Tooltip';
 import Text from 'components/Text';
-import Button from 'components/Button';
 import PageDataContainer from 'components/PageDataContainer';
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
 import { Modal } from 'components/Modal';
-import { FormControl } from 'components/FormControl';
-import { Checkbox } from 'components/Checkbox';
 import { ReviewStatusBadge } from 'components/review/ReviewStatusBadge';
 import { ReviewGradeBadge } from 'components/review/ReviewGradeBadge';
 import { ButtonWithIcon } from 'components/ButtonWithIcon';
 import SubmissionStates from 'components/SubmissionStates';
+import ReviewModal from 'components/SetReviewModal';
+import MarkdownText from 'components/MarkdownText';
+import RRLink from 'components/RRLink';
+import Spinner from 'components/Spinner';
+import Divider from 'components/Divider';
+import SubmissionMetrics from 'components/SubmissionMetrics';
 
 import SubmissionQueryDef from 'graphql/SubmissionQuery';
 import SubmitSubmissionMutation from 'graphql/SubmitSubmissionAgainMutation';
@@ -52,26 +57,23 @@ import UpdateReviewMutation from 'graphql/UpdateReviewMutation';
 import {
   getGradeConfiguration,
   getSubmissionReviewStatusConfiguration,
-  GRADES,
 } from 'app/submissions';
+
 import RepositoryIcon from 'icons/RepositoryIcon';
 import PullRequestIcon from 'icons/PullRequestIcon';
 import BackArrowIcon from 'icons/BackArrowIcon';
 import NextArrowIcon from 'icons/NextArrowIcon';
-import { CreateReviewMutation as CreateReviewMutationType } from '__generated__/CreateReviewMutation.graphql';
-import { UpdateReviewMutation as UpdateReviewMutationType } from '__generated__/UpdateReviewMutation.graphql';
-import { SubmitSubmissionAgainMutation as SubmitSubmissionMutationType } from '__generated__/SubmitSubmissionAgainMutation.graphql';
+import CommentIcon from 'icons/CommentIcon';
 
-import type { Nullable } from 'types';
+import type { CreateReviewMutation as CreateReviewMutationType } from '__generated__/CreateReviewMutation.graphql';
+import type { UpdateReviewMutation as UpdateReviewMutationType } from '__generated__/UpdateReviewMutation.graphql';
+import type { SubmitSubmissionAgainMutation as SubmitSubmissionMutationType } from '__generated__/SubmitSubmissionAgainMutation.graphql';
 import type {
   SubmissionQuery,
   SubmissionQuery$data,
 } from '__generated__/SubmissionQuery.graphql';
-import Divider from 'components/Divider';
-import CommentIcon from 'icons/CommentIcon';
-import MarkdownText from 'components/MarkdownText';
-import RRLink from 'components/RRLink';
-import Spinner from 'components/Spinner';
+
+import type { Nullable } from 'types';
 
 type CommentType = NonNullable<
   NonNullable<
@@ -79,14 +81,22 @@ type CommentType = NonNullable<
   >['comments'][number]
 >;
 
-const CarrouselNavigationControls = ({ submissionId }: { submissionId: string }) => {
+const CarrouselNavigationControls = ({
+  courseId,
+  submissionId,
+}: {
+  courseId: string;
+  submissionId: string;
+}) => {
   const { submissionIds } = useSubmissionContext();
 
   const previousSubmissionId = getValueOfPreviousIndex(submissionIds, submissionId);
   const nextSubmissionId = getValueOfNextIndex(submissionIds, submissionId);
 
-  const previousSubmissionUrl = previousSubmissionId && `../${previousSubmissionId}`;
-  const nextSubmissionUrl = nextSubmissionId && `../${nextSubmissionId}`;
+  const previousSubmissionUrl =
+    previousSubmissionId && buildSubmissionRoute(courseId, previousSubmissionId);
+  const nextSubmissionUrl =
+    nextSubmissionId && buildSubmissionRoute(courseId, nextSubmissionId);
 
   return (
     <Stack direction={'row'} gap={'5px'}>
@@ -176,13 +186,9 @@ const SubmissionPage = ({
 
   const LIST_ITEM_ICON_COLOR = 'teachHub.primary';
 
-  /* Link to assignment is going up in the path back to the assignment */
-  const VIEW_ASSIGNMENT_LINK = `../../assignments/${assignment.id}`;
-
-  const submittedOnTime =
-    !submission.submittedAt || !assignment.endDate
-      ? true
-      : new Date(submission.submittedAt) <= new Date(assignment.endDate);
+  const submittedOnTime = assignment.endDate
+    ? new Date(submission.submittedAt) <= new Date(assignment.endDate)
+    : true;
 
   const reviewStatusConfiguration = getSubmissionReviewStatusConfiguration({
     review,
@@ -305,50 +311,137 @@ const SubmissionPage = ({
     ? groupParticipants.find(p => p.group.id === submission.submitter.id)?.group.name
     : submitter.lastName;
 
+  // TODO. Mover a un componente aparte
+  // te lo pido por favor.
+  const SubmissionDetails = () => (
+    <Stack gap="20px">
+      <Heading size="md">Detalles</Heading>
+      <List spacing="20px">
+        {submitterItem}
+        <TextListItem
+          listItemKey={'submittedOnTime'}
+          iconProps={{
+            color: submittedOnTime ? 'teachHub.green' : 'teachHub.red',
+            icon: submittedOnTime ? CheckCircleFillIcon : XCircleFillIcon,
+          }}
+          label={
+            submittedOnTime
+              ? 'Entrega realizada en fecha'
+              : 'Entrega realizada fuera de fecha'
+          }
+          text={` (${formatAsSimpleDateTime(submission.submittedAt)})`}
+        />
+        <TextListItem
+          iconProps={{
+            color: LIST_ITEM_ICON_COLOR,
+            icon: MortarBoardIcon,
+          }}
+          text={
+            reviewer
+              ? `${reviewer.reviewer.name} ${reviewer.reviewer.lastName}`
+              : 'Sin asignar'
+          }
+          label={'Corrector: '}
+          listItemKey={'reviewer'}
+        />
+        <ListItem
+          iconProps={{
+            color: LIST_ITEM_ICON_COLOR,
+            icon: InfoIcon,
+          }}
+          label={'Estado actual corrección: '}
+          listItemKey={'status'}
+        >
+          <ReviewStatusBadge reviewStatusConfiguration={reviewStatusConfiguration} />
+        </ListItem>
+        <ListItem
+          iconProps={{
+            color: LIST_ITEM_ICON_COLOR,
+            icon: NumberIcon,
+          }}
+          label={'Calificación: '}
+          listItemKey={'grade'}
+        >
+          <ReviewGradeBadge
+            grade={review?.grade}
+            gradeConfiguration={gradeConfiguration}
+          />
+        </ListItem>
+        {/* Show comments button if not empty */}
+        {!!comments.length && (
+          <ListItem>
+            <ButtonWithIcon
+              onClick={onOpenCommentsModal}
+              text={'Ver comentarios en el pull request'}
+              icon={CommentIcon}
+              variant={'ghost'}
+              borderWidth={'1px'}
+              borderColor={'teachHub.black'}
+            />
+          </ListItem>
+        )}
+        <ListItem>
+          <SubmissionStates submission={submission} review={review} />
+        </ListItem>
+      </List>
+    </Stack>
+  );
+
+  const Title = () => (
+    <Flex direction="row" gap={'20px'} align={'center'}>
+      <Heading>
+        Entrega | {headingText} |{' '}
+        <RRLink
+          to={buildAssignmentRoute(course.id, assignment.id)}
+          color={'teachHub.primaryLight'}
+        >
+          {assignment.title}
+        </RRLink>
+      </Heading>
+      <Tooltip label={'Ir a repositorio'}>
+        <Link
+          href={getGithubRepoUrlFromPullRequestUrl(submission.pullRequestUrl)}
+          isExternal
+        >
+          <IconButton
+            variant={'ghost'}
+            aria-label="repository-link"
+            icon={<RepositoryIcon />}
+          />
+        </Link>
+      </Tooltip>
+      <Tooltip label={'Ir a pull request'}>
+        <Link href={submission.pullRequestUrl} isExternal>
+          <IconButton
+            variant={'ghost'}
+            aria-label="pull-request-link"
+            icon={<PullRequestIcon />}
+          />
+        </Link>
+      </Tooltip>
+    </Flex>
+  );
+
   return (
-    <PageDataContainer>
+    <>
       <Spinner
         isOpen={showSpinner}
         onClose={() => {
           setShowSpinner(false);
         }}
       />
-      <Flex direction={'row'} width={'100%'} justifyContent={'space-between'}>
-        <Flex direction="row" gap={'20px'} align={'center'}>
-          <Heading>
-            Entrega | {headingText} |{' '}
-            <RRLink to={VIEW_ASSIGNMENT_LINK} color={'teachHub.primaryLight'}>
-              {assignment.title}
-            </RRLink>
-          </Heading>
-          <Stack direction={'row'}>
-            <Tooltip label={'Ir a repositorio'}>
-              <Link
-                href={getGithubRepoUrlFromPullRequestUrl(submission.pullRequestUrl)}
-                isExternal
-              >
-                <IconButton
-                  variant={'ghost'}
-                  aria-label="repository-link"
-                  icon={<RepositoryIcon />}
-                />
-              </Link>
-            </Tooltip>
-            <Tooltip label={'Ir a pull request'}>
-              <Link href={submission.pullRequestUrl} isExternal>
-                <IconButton
-                  variant={'ghost'}
-                  aria-label="pull-request-link"
-                  icon={<PullRequestIcon />}
-                />
-              </Link>
-            </Tooltip>
-          </Stack>
-        </Flex>
-        <CarrouselNavigationControls submissionId={submissionId} />
-      </Flex>
-      <Stack gap={'30px'} marginTop={'10px'}>
-        <Flex direction={'row'} gap={'5px'}>
+      <Grid gap="30px" templateRows="auto auto 90%" templateColumns="49% auto 49%">
+        <GridItem
+          display="grid"
+          justifyContent={'space-between'}
+          gridAutoFlow={'column'}
+          rowSpan={1}
+          colSpan={3}
+        >
+          <Title />
+          <CarrouselNavigationControls courseId={course.id} submissionId={submissionId} />
+        </GridItem>
+        <GridItem rowSpan={1} colSpan={3}>
           {context.userHasPermission(Permission.SetReview) && (
             /* Use div for toast to appear*/
             <div onClick={showWarningToastIfDisabled}>
@@ -368,157 +461,33 @@ const SubmissionPage = ({
               onClick={handleSubmitButtonClick}
             />
           )}
-        </Flex>
-        <List justifyItems={'left'} alignItems={'flex-start'}>
-          {submitterItem}
-          <TextListItem
-            listItemKey={'submittedOnTime'}
-            iconProps={{
-              color: submittedOnTime ? 'teachHub.green' : 'teachHub.red',
-              icon: submittedOnTime ? CheckCircleFillIcon : XCircleFillIcon,
-            }}
-            label={
-              submittedOnTime
-                ? 'Entrega realizada en fecha'
-                : 'Entrega realizada fuera de fecha'
-            }
-            text={` (${formatAsSimpleDateTime(submission.submittedAt)})`}
+        </GridItem>
+        <GridItem rowSpan={1} colSpan={1}>
+          <SubmissionDetails />
+        </GridItem>
+        <GridItem rowSpan={1} colSpan={1}>
+          <Divider bgColor="grey" h="95%" />
+        </GridItem>
+        <GridItem rowSpan={1} colSpan={1}>
+          <SubmissionMetrics
+            pullRequestUrl={submission.pullRequestUrl}
+            queryRef={submission}
           />
-          <TextListItem
-            iconProps={{
-              color: LIST_ITEM_ICON_COLOR,
-              icon: MortarBoardIcon,
-            }}
-            text={
-              reviewer
-                ? `${reviewer.reviewer.name} ${reviewer.reviewer.lastName}`
-                : 'Sin asignar'
-            }
-            label={'Corrector: '}
-            listItemKey={'reviewer'}
-          />
-          <ListItem
-            iconProps={{
-              color: LIST_ITEM_ICON_COLOR,
-              icon: InfoIcon,
-            }}
-            label={'Estado actual corrección: '}
-            listItemKey={'status'}
-          >
-            <ReviewStatusBadge reviewStatusConfiguration={reviewStatusConfiguration} />
-          </ListItem>
-          <ListItem
-            iconProps={{
-              color: LIST_ITEM_ICON_COLOR,
-              icon: NumberIcon,
-            }}
-            label={'Calificación: '}
-            listItemKey={'grade'}
-          >
-            <ReviewGradeBadge
-              grade={review?.grade}
-              gradeConfiguration={gradeConfiguration}
-            />
-          </ListItem>
-          <ListItem>
-            <SubmissionStates submission={submission} review={review} />
-          </ListItem>
-        </List>
-        {/* Show comments button if not empty */}
-        {comments.length !== 0 && (
-          <ButtonWithIcon
-            onClick={onOpenCommentsModal}
-            text={'Ver comentarios del PR'}
-            icon={CommentIcon}
-            variant={'ghost'}
-            borderWidth={'1px'}
-            borderColor={'teachHub.black'}
-          />
-        )}
-      </Stack>
-      <ReviewModal
-        onSave={handleReviewChange}
-        onClose={onCloseReviewModal}
-        isOpen={isOpenReviewModal}
-        isSecondTimeReview={!!review}
-      />
-      <CommentsModal
-        onClose={onCloseCommentsModal}
-        isOpen={isOpenCommentsModal}
-        comments={comments as CommentType[]}
-        viewerGithubUserId={data.viewer?.githubId}
-      />
-    </PageDataContainer>
-  );
-};
-
-const ReviewModal = ({
-  onClose,
-  isOpen,
-  onSave,
-  isSecondTimeReview,
-}: {
-  onClose: () => void;
-  isOpen: boolean;
-  onSave: (_: { grade: Nullable<number>; revisionRequested: boolean }) => void;
-  isSecondTimeReview: boolean;
-}) => {
-  const [grade, setGrade] = useState<Nullable<number>>(null);
-  const [revisionRequested, setRevisionRequested] = useState<boolean>(false);
-
-  useEffect(() => {
-    setGrade(null);
-    setRevisionRequested(false);
-  }, [isOpen]);
-
-  const handleSave = () => {
-    onSave({ grade, revisionRequested });
-    onClose();
-  };
-
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      isCentered
-      headerText={'Calificar'}
-      closeOnOverlayClick={false}
-      footerChildren={
-        <Flex direction={'row'} gap={'30px'}>
-          <Button onClick={onClose} variant={'ghost'}>
-            Cancelar
-          </Button>
-          <Button onClick={handleSave}>Guardar</Button>
-        </Flex>
-      }
-    >
-      <Stack>
-        <FormControl label={'Seleccionar nota'}>
-          <Select
-            placeholder="Selecciona una opción"
-            value={grade ?? undefined}
-            onChange={changes => setGrade(Number(changes.currentTarget.value))}
-            isDisabled={revisionRequested}
-          >
-            {GRADES.map(grade => (
-              <option value={grade} key={grade}>
-                {grade}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
-        <Checkbox
-          id={'revisionRequested'}
-          isChecked={revisionRequested}
-          isDisabled={isSecondTimeReview}
-          onChange={() => {
-            setRevisionRequested(!revisionRequested);
-          }}
-        >
-          Requiere reentrega
-        </Checkbox>
-      </Stack>
-    </Modal>
+        </GridItem>
+        <ReviewModal
+          onSave={handleReviewChange}
+          onClose={onCloseReviewModal}
+          isOpen={isOpenReviewModal}
+          isSecondTimeReview={!!review}
+        />
+        <CommentsModal
+          onClose={onCloseCommentsModal}
+          isOpen={isOpenCommentsModal}
+          comments={comments as CommentType[]}
+          viewerGithubUserId={data.viewer?.githubId}
+        />
+      </Grid>
+    </>
   );
 };
 
@@ -604,7 +573,11 @@ const SubmissionPageContainer = () => {
     return null;
   }
 
-  return <SubmissionPage context={courseContext} submissionId={submissionId} />;
+  return (
+    <PageDataContainer>
+      <SubmissionPage context={courseContext} submissionId={submissionId} />
+    </PageDataContainer>
+  );
 };
 
 // Pantalla de entregas de un TP en particular.
