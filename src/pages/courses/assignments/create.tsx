@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useMutation } from 'react-relay';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,6 +12,7 @@ import { buildAssignmentsRoute, buildAssignmentRoute } from 'routes';
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
 import PageDataContainer from 'components/PageDataContainer';
+import TeacherPage from 'components/TeacherOnlyPage';
 
 import AssignmentForm, { InitialValues } from 'layout/AssignmentForm';
 
@@ -120,7 +121,9 @@ const PageContainer = () => {
 
   return (
     <Suspense>
-      <CreateAssignmentPage courseId={courseContext.courseId} />
+      <TeacherPage>
+        <CreateAssignmentPage courseId={courseContext.courseId} />
+      </TeacherPage>
     </Suspense>
   );
 };
