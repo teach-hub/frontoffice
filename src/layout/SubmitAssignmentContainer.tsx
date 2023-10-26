@@ -155,8 +155,6 @@ function Content({
             errors['assignmentId'] = 'No pudimos encontrar el TP seleccionado.';
           }
 
-          console.log(target);
-
           if (target?.isGroup && !viewerAssignmentGroup) {
             errors['assignmentId'] = 'No sos parte de ningún grupo en este TP.';
           }

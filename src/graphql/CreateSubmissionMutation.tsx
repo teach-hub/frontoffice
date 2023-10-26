@@ -12,8 +12,11 @@ export default graphql`
       pullRequestUrl: $pullRequestUrl
     ) {
       id
-      submittedAt
-      submittedAgainAt
+      viewerSubmission {
+        id
+        submittedAt
+        submittedAgainAt
+      }
     }
   }
 `;
