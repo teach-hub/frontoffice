@@ -18,6 +18,7 @@ import PageDataContainer from 'components/PageDataContainer';
 import Card from 'components/Card';
 import Text from 'components/Text';
 import Box from 'components/Box';
+import TeacherPage from 'components/TeacherOnlyPage';
 
 import ReviewerCard from 'components/ReviewerCard';
 import { GroupRevieweeCard, UserRevieweeCard } from 'components/RevieweeCard';
@@ -498,7 +499,9 @@ const PageContent = () => {
 const AssignReviewersPage = () => {
   return (
     <Navigation>
-      <PageContent />
+      <TeacherPage>
+        <PageContent />
+      </TeacherPage>
     </Navigation>
   );
 };

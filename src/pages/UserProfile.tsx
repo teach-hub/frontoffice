@@ -50,8 +50,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
     setIsEditing(false);
 
     if (!errors?.length) {
-      if (response.updateViewerUser) {
-        // @ts-expect-error: FIXME
+      if (queryResult && response.updateViewerUser) {
         setResult({ ...response.updateViewerUser, id: queryResult.id });
       }
       toast({

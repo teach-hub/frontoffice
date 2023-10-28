@@ -13,6 +13,7 @@ import { buildAssignmentRoute } from 'routes';
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
 import PageDataContainer from 'components/PageDataContainer';
+import TeacherPage from 'components/TeacherOnlyPage';
 
 import type { InitialValues } from 'layout/AssignmentForm';
 import AssignmentForm from 'layout/AssignmentForm';
@@ -136,12 +137,14 @@ const PageContainer = () => {
   }
 
   return (
-    <Suspense>
-      <UpdateAssignmentPage
-        courseId={courseContext.courseId}
-        assignmentId={assignmentId}
-      />
-    </Suspense>
+    <TeacherPage>
+      <Suspense>
+        <UpdateAssignmentPage
+          courseId={courseContext.courseId}
+          assignmentId={assignmentId}
+        />
+      </Suspense>
+    </TeacherPage>
   );
 };
 export default () => {

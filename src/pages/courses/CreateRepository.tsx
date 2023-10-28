@@ -51,6 +51,7 @@ import Spinner from 'components/Spinner';
 import List from 'components/list/List';
 import { TextListItem } from 'components/list/TextListItem';
 import { buildCourseRoute } from 'routes';
+import TeacherPage from 'components/TeacherOnlyPage';
 
 type RepositoriesNameConfiguration = {
   prefix: string;
@@ -718,16 +719,6 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
   );
 };
 
-export default ({ type }: { type: RepositoryType }) => {
-  return (
-    <Navigation>
-      <Suspense fallback={<div> Cargando... </div>}>
-        <CreateRepositoryPage type={type} />
-      </Suspense>
-    </Navigation>
-  );
-};
-
 const SelectionTable = ({
   tableHeaders,
   tableHeadersWidth,
@@ -915,5 +906,17 @@ const RepositoriesResultModalContent = ({
           )
       )}
     </Stack>
+  );
+};
+
+export default ({ type }: { type: RepositoryType }) => {
+  return (
+    <Navigation>
+      <Suspense>
+        <TeacherPage>
+          <CreateRepositoryPage type={type} />
+        </TeacherPage>
+      </Suspense>
+    </Navigation>
   );
 };

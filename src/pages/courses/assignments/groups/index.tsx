@@ -26,6 +26,7 @@ import { Checkbox } from 'components/Checkbox';
 import Spinner from 'components/Spinner';
 import CheckboxGroup from 'components/CheckboxGroup';
 import Button from 'components/Button';
+import TeacherPage from 'components/TeacherOnlyPage';
 
 import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
 import useToast from 'hooks/useToast';
@@ -412,7 +413,9 @@ export default () => {
   return (
     <Navigation>
       <Suspense>
-        <GroupsPageContainer />
+        <TeacherPage>
+          <GroupsPageContainer />
+        </TeacherPage>
       </Suspense>
     </Navigation>
   );
