@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d0ed5ee5b9e9f4b73404e37859f4ce4f>>
+ * @generated SignedSource<<ca544f0cab8ade7de6e5b8e78d6734ea>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,9 +17,12 @@ export type CreateSubmissionMutation$variables = {
 export type CreateSubmissionMutation$data = {
   readonly createSubmission: {
     readonly id: string;
-    readonly submittedAgainAt: string | null;
-    readonly submittedAt: string;
-  };
+    readonly viewerSubmission: {
+      readonly id: string;
+      readonly submittedAgainAt: string | null;
+      readonly submittedAt: string;
+    } | null;
+  } | null;
 };
 export type CreateSubmissionMutation = {
   response: CreateSubmissionMutation$data;
@@ -42,7 +45,14 @@ v2 = {
   "kind": "LocalArgument",
   "name": "pullRequestUrl"
 },
-v3 = [
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v4 = [
   {
     "alias": null,
     "args": [
@@ -62,30 +72,36 @@ v3 = [
         "variableName": "pullRequestUrl"
       }
     ],
-    "concreteType": "SubmissionType",
+    "concreteType": "AssignmentType",
     "kind": "LinkedField",
     "name": "createSubmission",
     "plural": false,
     "selections": [
+      (v3/*: any*/),
       {
         "alias": null,
         "args": null,
-        "kind": "ScalarField",
-        "name": "id",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "submittedAt",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "submittedAgainAt",
+        "concreteType": "SubmissionType",
+        "kind": "LinkedField",
+        "name": "viewerSubmission",
+        "plural": false,
+        "selections": [
+          (v3/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "submittedAt",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "submittedAgainAt",
+            "storageKey": null
+          }
+        ],
         "storageKey": null
       }
     ],
@@ -102,7 +118,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "CreateSubmissionMutation",
-    "selections": (v3/*: any*/),
+    "selections": (v4/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
   },
@@ -115,19 +131,19 @@ return {
     ],
     "kind": "Operation",
     "name": "CreateSubmissionMutation",
-    "selections": (v3/*: any*/)
+    "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "8bdbafd440af9c86338386d110193a20",
+    "cacheID": "f729c7684439bd79d4b66dddc3b65b56",
     "id": null,
     "metadata": {},
     "name": "CreateSubmissionMutation",
     "operationKind": "mutation",
-    "text": "mutation CreateSubmissionMutation(\n  $courseId: ID!\n  $assignmentId: ID!\n  $pullRequestUrl: String!\n) {\n  createSubmission(courseId: $courseId, assignmentId: $assignmentId, pullRequestUrl: $pullRequestUrl) {\n    id\n    submittedAt\n    submittedAgainAt\n  }\n}\n"
+    "text": "mutation CreateSubmissionMutation(\n  $courseId: ID!\n  $assignmentId: ID!\n  $pullRequestUrl: String!\n) {\n  createSubmission(courseId: $courseId, assignmentId: $assignmentId, pullRequestUrl: $pullRequestUrl) {\n    id\n    viewerSubmission {\n      id\n      submittedAt\n      submittedAgainAt\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f01b8cae47e89abfc99a43cf5a5602bf";
+(node as any).hash = "fba638f3a590237758313f8691ad915a";
 
 export default node;

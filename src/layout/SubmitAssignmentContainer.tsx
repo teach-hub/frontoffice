@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { useNavigate } from 'react-router-dom';
 
+import useToast from 'hooks/useToast';
+
+import { buildAssignmentRoute } from 'routes';
+
 import AddSubmissionQueryDef from 'graphql/AddSubmissionQuery';
 import CreateSubmissionMutation from 'graphql/CreateSubmissionMutation';
 
@@ -45,6 +49,7 @@ function Content({
   const { assignments, viewerGroupParticipants = [] } = course;
 
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [commitMutation] = useMutation<CreateSubmissionMutationType>(
@@ -74,8 +79,22 @@ function Content({
         assignmentId: values.assignmentId,
         pullRequestUrl: values.pullRequestUrl,
       },
-      onCompleted: () => {
+      onCompleted: (_, errors) => {
         setShowSpinner(false);
+        if (errors && errors.length) {
+          toast({
+            title: 'Entrega fallida',
+            description: 'No pudimos procesar tu entrega',
+            status: 'error',
+          });
+        } else {
+          toast({
+            title: 'Entrega creada',
+            description: 'Entrega realizada con exito',
+            status: 'success',
+          });
+        }
+        navigate(buildAssignmentRoute(course.id, values.assignmentId));
       },
     });
   };
