@@ -358,6 +358,14 @@ function ReviewersPageContainer({
           toast({ title: 'Correctores asignados', status: 'success' });
         }
       },
+      updater: store => {
+        const courseRef = store
+          .get('client:root')
+          ?.getLinkedRecord('viewer')
+          ?.getLinkedRecord('course(id:"' + courseId + '")')
+          ?.getLinkedRecord('assignment(id:"' + assignmentId + '")')
+          ?.invalidateRecord();
+      },
     });
   };
 
@@ -401,6 +409,14 @@ function ReviewersPageContainer({
             setReviewers(response?.removeReviewers?.reviewers as SanitizedReviewer[]);
             toast({ title: 'Correctores asignados', status: 'success' });
           }
+        },
+        updater: store => {
+          const courseRef = store
+            .get('client:root')
+            ?.getLinkedRecord('viewer')
+            ?.getLinkedRecord('course(id:"' + courseId + '")')
+            ?.getLinkedRecord('assignment(id:"' + assignmentId + '")')
+            ?.invalidateRecord();
         },
       });
     }
