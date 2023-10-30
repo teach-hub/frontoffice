@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<47a22a54a42084baa5a7ccb23fd06966>>
+ * @generated SignedSource<<041b134b971d4f1db68bedd8045e9e4a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -20,7 +20,7 @@ export type CourseAssignmentsQuery$data = {
         readonly endDate: string | null;
         readonly id: string;
         readonly isGroup: boolean | null;
-        readonly title: string | null;
+        readonly title: string;
         readonly viewerSubmission?: {
           readonly id: string;
         } | null;

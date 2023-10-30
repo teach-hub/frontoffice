@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c85950cf8a02da0bcd3021402e1e0de0>>
+ * @generated SignedSource<<151e564b7f087128bdb79e717eff4d5b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,7 +18,7 @@ export type UserCourseGroupsQuery$data = {
       readonly assignments: ReadonlyArray<{
         readonly id: string;
         readonly isGroup: boolean | null;
-        readonly title: string | null;
+        readonly title: string;
       }>;
       readonly groups: ReadonlyArray<{
         readonly assignmentId: string;

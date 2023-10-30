@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d002cbe6a2ca7ee5eb3b7dd971cc3f48>>
+ * @generated SignedSource<<917c784097e31f74aeea94c188af3cdd>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,7 +17,7 @@ export type CreateAssignmentMutation$variables = {
   isGroup?: boolean | null;
   link?: string | null;
   startDate?: string | null;
-  title?: string | null;
+  title: string;
 };
 export type CreateAssignmentMutation$data = {
   readonly createAssignment: {
@@ -29,7 +29,7 @@ export type CreateAssignmentMutation$data = {
     readonly isGroup: boolean | null;
     readonly link: string | null;
     readonly startDate: string | null;
-    readonly title: string | null;
+    readonly title: string;
   } | null;
 };
 export type CreateAssignmentMutation = {
@@ -231,16 +231,16 @@ return {
     "selections": (v8/*: any*/)
   },
   "params": {
-    "cacheID": "69322ca803551cff0cf32d04c800b0cc",
+    "cacheID": "0bd627de74a93cceb5f24e4aa1d245f8",
     "id": null,
     "metadata": {},
     "name": "CreateAssignmentMutation",
     "operationKind": "mutation",
-    "text": "mutation CreateAssignmentMutation(\n  $title: String\n  $description: String\n  $startDate: String\n  $endDate: String\n  $link: String\n  $allowLateSubmissions: Boolean\n  $isGroup: Boolean\n  $courseId: ID!\n) {\n  createAssignment(title: $title, description: $description, startDate: $startDate, endDate: $endDate, link: $link, allowLateSubmissions: $allowLateSubmissions, courseId: $courseId, isGroup: $isGroup) {\n    id\n    title\n    description\n    startDate\n    endDate\n    link\n    allowLateSubmissions\n    courseId\n    isGroup\n  }\n}\n"
+    "text": "mutation CreateAssignmentMutation(\n  $title: String!\n  $description: String\n  $startDate: String\n  $endDate: String\n  $link: String\n  $allowLateSubmissions: Boolean\n  $isGroup: Boolean\n  $courseId: ID!\n) {\n  createAssignment(title: $title, description: $description, startDate: $startDate, endDate: $endDate, link: $link, allowLateSubmissions: $allowLateSubmissions, courseId: $courseId, isGroup: $isGroup) {\n    id\n    title\n    description\n    startDate\n    endDate\n    link\n    allowLateSubmissions\n    courseId\n    isGroup\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "10e2025cfeab1fc0c08fa0e34c01e77a";
+(node as any).hash = "c4fb7ddaee1152211e3691461346f332";
 
 export default node;

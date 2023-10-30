@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7d8a1dcec0a802a30b0023014192ceff>>
+ * @generated SignedSource<<886f6e490a90406be92e31696e108e1b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,6 +12,7 @@ import { ConcreteRequest, Query } from 'relay-runtime';
 export type AssignmentQuery$variables = {
   courseId: string;
   id: string;
+  includeSubmissions: boolean;
 };
 export type AssignmentQuery$data = {
   readonly viewer: {
@@ -24,8 +25,35 @@ export type AssignmentQuery$data = {
         readonly isGroup: boolean | null;
         readonly isOpenForSubmissions: boolean;
         readonly link: string | null;
+        readonly nonExistentSubmissions?: ReadonlyArray<{
+          readonly id: string;
+          readonly reviewer: {
+            readonly id: string;
+            readonly reviewer: {
+              readonly id: string;
+              readonly lastName: string;
+              readonly name: string;
+            };
+          } | null;
+        }>;
         readonly startDate: string | null;
-        readonly title: string | null;
+        readonly submissions?: ReadonlyArray<{
+          readonly id: string;
+          readonly review: {
+            readonly grade: number | null;
+            readonly id: string;
+            readonly revisionRequested: boolean | null;
+          } | null;
+          readonly reviewer: {
+            readonly id: string;
+            readonly reviewer: {
+              readonly id: string;
+              readonly lastName: string;
+              readonly name: string;
+            };
+          } | null;
+        }>;
+        readonly title: string;
         readonly viewerSubmission: {
           readonly id: string;
         } | null;
@@ -52,13 +80,63 @@ v1 = {
   "name": "id"
 },
 v2 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "includeSubmissions"
+},
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v3 = [
+v4 = [
+  {
+    "kind": "Literal",
+    "name": "onlyReviewerSubmissions",
+    "value": false
+  }
+],
+v5 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "ReviewerType",
+  "kind": "LinkedField",
+  "name": "reviewer",
+  "plural": false,
+  "selections": [
+    (v3/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "concreteType": "UserType",
+      "kind": "LinkedField",
+      "name": "reviewer",
+      "plural": false,
+      "selections": [
+        (v3/*: any*/),
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "name",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "lastName",
+          "storageKey": null
+        }
+      ],
+      "storageKey": null
+    }
+  ],
+  "storageKey": null
+},
+v6 = [
   {
     "alias": null,
     "args": null,
@@ -67,7 +145,7 @@ v3 = [
     "name": "viewer",
     "plural": false,
     "selections": [
-      (v2/*: any*/),
+      (v3/*: any*/),
       {
         "alias": null,
         "args": [
@@ -82,7 +160,7 @@ v3 = [
         "name": "course",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
+          (v3/*: any*/),
           {
             "alias": null,
             "args": [
@@ -97,7 +175,7 @@ v3 = [
             "name": "assignment",
             "plural": false,
             "selections": [
-              (v2/*: any*/),
+              (v3/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -106,7 +184,7 @@ v3 = [
                 "name": "viewerSubmission",
                 "plural": false,
                 "selections": [
-                  (v2/*: any*/)
+                  (v3/*: any*/)
                 ],
                 "storageKey": null
               },
@@ -165,6 +243,65 @@ v3 = [
                 "kind": "ScalarField",
                 "name": "isGroup",
                 "storageKey": null
+              },
+              {
+                "condition": "includeSubmissions",
+                "kind": "Condition",
+                "passingValue": true,
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": (v4/*: any*/),
+                    "concreteType": "SubmissionType",
+                    "kind": "LinkedField",
+                    "name": "submissions",
+                    "plural": true,
+                    "selections": [
+                      (v3/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "InternalReviewType",
+                        "kind": "LinkedField",
+                        "name": "review",
+                        "plural": false,
+                        "selections": [
+                          (v3/*: any*/),
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "revisionRequested",
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "grade",
+                            "storageKey": null
+                          }
+                        ],
+                        "storageKey": null
+                      },
+                      (v5/*: any*/)
+                    ],
+                    "storageKey": "submissions(onlyReviewerSubmissions:false)"
+                  },
+                  {
+                    "alias": null,
+                    "args": (v4/*: any*/),
+                    "concreteType": "NonExistentSubmissionType",
+                    "kind": "LinkedField",
+                    "name": "nonExistentSubmissions",
+                    "plural": true,
+                    "selections": [
+                      (v3/*: any*/),
+                      (v5/*: any*/)
+                    ],
+                    "storageKey": "nonExistentSubmissions(onlyReviewerSubmissions:false)"
+                  }
+                ]
               }
             ],
             "storageKey": null
@@ -180,12 +317,13 @@ return {
   "fragment": {
     "argumentDefinitions": [
       (v0/*: any*/),
-      (v1/*: any*/)
+      (v1/*: any*/),
+      (v2/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
     "name": "AssignmentQuery",
-    "selections": (v3/*: any*/),
+    "selections": (v6/*: any*/),
     "type": "RootQueryType",
     "abstractKey": null
   },
@@ -193,23 +331,24 @@ return {
   "operation": {
     "argumentDefinitions": [
       (v1/*: any*/),
-      (v0/*: any*/)
+      (v0/*: any*/),
+      (v2/*: any*/)
     ],
     "kind": "Operation",
     "name": "AssignmentQuery",
-    "selections": (v3/*: any*/)
+    "selections": (v6/*: any*/)
   },
   "params": {
-    "cacheID": "891c12bb8295402b94549831d60cda59",
+    "cacheID": "8c2e7a46e61c96f92d30b162e049fd77",
     "id": null,
     "metadata": {},
     "name": "AssignmentQuery",
     "operationKind": "query",
-    "text": "query AssignmentQuery(\n  $id: ID!\n  $courseId: ID!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignment(id: $id) {\n        id\n        viewerSubmission {\n          id\n        }\n        allowLateSubmissions\n        isOpenForSubmissions\n        title\n        description\n        link\n        startDate\n        endDate\n        isGroup\n      }\n    }\n  }\n}\n"
+    "text": "query AssignmentQuery(\n  $id: ID!\n  $courseId: ID!\n  $includeSubmissions: Boolean!\n) {\n  viewer {\n    id\n    course(id: $courseId) {\n      id\n      assignment(id: $id) {\n        id\n        viewerSubmission {\n          id\n        }\n        allowLateSubmissions\n        isOpenForSubmissions\n        title\n        description\n        link\n        startDate\n        endDate\n        isGroup\n        submissions(onlyReviewerSubmissions: false) @include(if: $includeSubmissions) {\n          id\n          review {\n            id\n            revisionRequested\n            grade\n          }\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n        }\n        nonExistentSubmissions(onlyReviewerSubmissions: false) @include(if: $includeSubmissions) {\n          id\n          reviewer {\n            id\n            reviewer {\n              id\n              name\n              lastName\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "fbdf7c521c0b54f01562df58b93f6b5a";
+(node as any).hash = "742e9e46f08d162fa5842a8c39fc6ee2";
 
 export default node;

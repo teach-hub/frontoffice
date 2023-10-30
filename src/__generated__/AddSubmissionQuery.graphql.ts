@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4f80c8f510405d6bfaebc4538779235b>>
+ * @generated SignedSource<<185d537dfa5c579b86083ed054563b47>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,7 +19,7 @@ export type AddSubmissionQuery$data = {
         readonly id: string;
         readonly isGroup: boolean | null;
         readonly isOpenForSubmissions: boolean;
-        readonly title: string | null;
+        readonly title: string;
         readonly viewerReviewer: {
           readonly id: string;
           readonly reviewer: {
