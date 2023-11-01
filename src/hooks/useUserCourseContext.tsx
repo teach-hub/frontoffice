@@ -25,6 +25,7 @@ export enum Permission {
   SetReview = 'setReview',
   ViewGroups = 'viewGroups',
   SendNotifications = 'sendNotifications',
+  ViewCourseCharts = 'viewCourseCharts',
 }
 
 export type EmptyContext = {
