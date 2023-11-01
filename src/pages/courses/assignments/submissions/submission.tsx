@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { PayloadError } from 'relay-runtime';
@@ -15,7 +15,7 @@ import {
   XCircleFillIcon,
 } from '@primer/octicons-react';
 
-import { Grid, GridItem, Flex, Stack, useDisclosure } from '@chakra-ui/react';
+import { Flex, Grid, GridItem, Stack, useDisclosure } from '@chakra-ui/react';
 
 import { formatAsSimpleDateTime } from 'utils/dates';
 import { getValueOfNextIndex, getValueOfPreviousIndex } from 'utils/list';
@@ -197,11 +197,13 @@ const SubmissionPage = ({
   const gradeConfiguration = getGradeConfiguration(review?.grade);
 
   const reviewEnabled =
-    submission?.viewerIsReviewer && (!review || review.revisionRequested);
-  const viewerCanSubmitAgain = review?.revisionRequested && !review?.reviewedAgainAt;
+    submission?.viewerIsReviewer &&
+    (!review || (review.revisionRequested && submission.submittedAgainAt));
+  const viewerCanSubmitAgain =
+    review?.revisionRequested && !review?.reviewedAgainAt && !submission.submittedAgainAt;
 
-  const showWarningToastIfDisabled = () => {
-    if (!reviewEnabled) {
+  const showWarningToastIfNotReviewer = () => {
+    if (!submission?.viewerIsReviewer) {
       toast({
         title: 'No es posible calificar',
         description: 'Para calificar debes ser el corrector de la entrega',
@@ -443,15 +445,13 @@ const SubmissionPage = ({
         </GridItem>
         <GridItem rowSpan={1} colSpan={3}>
           {context.userHasPermission(Permission.SetReview) && (
-            /* Use div for toast to appear*/
-            <div onClick={showWarningToastIfDisabled}>
-              <ButtonWithIcon
-                onClick={onOpenReviewModal}
-                text={'Calificar'}
-                icon={PencilIcon}
-                isDisabled={!reviewEnabled}
-              />
-            </div>
+            <ButtonWithIcon
+              onClick={onOpenReviewModal}
+              text={'Calificar'}
+              icon={PencilIcon}
+              isDisabled={!reviewEnabled}
+              onPointerDown={e => showWarningToastIfNotReviewer()}
+            />
           )}
           {context.userHasPermission(Permission.SubmitAssignment) && (
             <ButtonWithIcon
