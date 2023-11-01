@@ -43,6 +43,7 @@ const UpdateAssignmentPage = ({ assignmentId, courseId }: UpdatePageProps) => {
   const data = useLazyLoadQuery<AssignmentQuery>(AssignmentQueryDef, {
     id: assignmentId,
     courseId: courseId || '',
+    includeSubmissions: false,
   });
 
   const assignment = data.viewer?.course?.assignment;

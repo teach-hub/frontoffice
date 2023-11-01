@@ -21,7 +21,7 @@ export const StackedBarChart = <T,>({
   horizontal?: boolean;
 }) => {
   const formatTick = (tick: string) => {
-    const LABEL_MAX_LENGTH = 20;
+    const LABEL_MAX_LENGTH = 30;
     if (tick.length > LABEL_MAX_LENGTH) {
       return tick.substring(0, LABEL_MAX_LENGTH) + '...'; // Truncate and add ellipsis
     }

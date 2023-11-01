@@ -38,7 +38,7 @@ import CourseSetDescriptionMutationDef from 'graphql/CourseSetDescriptionMutatio
 
 import useToast from 'hooks/useToast';
 import { CourseContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
-import { buildUsersRoute, buildAssignmentsRoute } from 'routes';
+import { buildAssignmentsRoute } from 'routes';
 
 import type {
   CourseInfoQuery,
@@ -56,7 +56,7 @@ import type {
 } from '__generated__/CourseSetDescriptionMutation.graphql';
 import { StackedBarChart } from 'components/charts/StackedBarChart';
 import {
-  AssignmentSubmissionStatisticsData,
+  AssignmentStatisticsData,
   getAssignmentSubmissionStatusDataset,
 } from 'statistics/submissions';
 import MarkdownText from 'components/MarkdownText';
@@ -243,19 +243,21 @@ const CourseCharts = ({ course }: { course: CourseType }) => {
 
   const nonGroupChartLabels: string[] = [];
   const groupChartLabels: string[] = [];
-  const nonGroupData: AssignmentSubmissionStatisticsData[] = [];
-  const groupChartData: AssignmentSubmissionStatisticsData[] = [];
+  const nonGroupData: AssignmentStatisticsData[] = [];
+  const groupChartData: AssignmentStatisticsData[] = [];
   assignments.forEach(assignment => {
-    const title = assignment.title || '';
+    const title = assignment.title;
+
     const assignmentSubmissionStatisticsData = {
-      assignmentTitle: assignment.title || '',
-      submissions: assignment.submissions.map(submission => {
-        return {
-          grade: submission.review?.grade,
-          revisionRequested: submission.review?.revisionRequested,
-        };
-      }),
-      nonExistentSubmissionsAmount: assignment.nonExistentSubmissions?.length || 0,
+      title,
+      submissions: assignment.submissions.map(submission => ({
+        grade: submission.review?.grade,
+        revisionRequested: submission.review?.revisionRequested,
+        reviewer: undefined, // Not required for this plots
+      })),
+      nonExistentSubmissions: assignment.nonExistentSubmissions?.map(submission => ({
+        reviewer: undefined, // Not required for this plots
+      })),
     };
     if (!assignment.isGroup) {
       nonGroupChartLabels.push(title);

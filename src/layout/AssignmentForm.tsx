@@ -10,7 +10,7 @@ import { Checkbox } from 'components/Checkbox';
 import type { FormErrors, Nullable } from 'types';
 
 export type InitialValues = {
-  title: Nullable<string>;
+  title: string;
   description: Nullable<string>;
   startDate: Nullable<string>;
   endDate: Nullable<string>;

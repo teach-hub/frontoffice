@@ -7,7 +7,7 @@ import CreateAssignmentMutationDef from 'graphql/CreateAssignmentMutation';
 import useToast from 'hooks/useToast';
 import { useUserContext } from 'hooks/useUserCourseContext';
 import { formatDateAsLocaleIsoString } from 'utils/dates';
-import { buildAssignmentsRoute, buildAssignmentRoute } from 'routes';
+import { buildAssignmentRoute, buildAssignmentsRoute } from 'routes';
 
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
