@@ -20,7 +20,12 @@ import logo from 'assets/logo_wo_text.png';
 import LoginMutationDef from 'graphql/LoginMutation';
 import RegisterMutationDef from 'graphql/RegisterUserMutation';
 
-import { storeGetValue, storeSetValue } from 'hooks/useLocalStorage';
+import {
+  LocalStorageKeys,
+  storeGetAndClearValue,
+  storeGetValue,
+  storeSetValue,
+} from 'hooks/useLocalStorage';
 import useToast from 'hooks/useToast';
 import { isAuthenticated } from 'auth/utils';
 
@@ -94,7 +99,7 @@ const LoginPage = (props: LoginPageProps) => {
   const handleGithubLogin = () => {
     if (props.redirectTo) {
       // Guardamos el valor del estado para tenerlo cuando volvamos de Github.
-      storeSetValue('redirectTo', props.redirectTo);
+      storeSetValue(LocalStorageKeys.RedirectTo, props.redirectTo);
     }
 
     setIsLoggingIn(true);
@@ -117,7 +122,7 @@ const LoginPage = (props: LoginPageProps) => {
           if (!shouldPerformRegistration) {
             setIsLoggingIn(false);
 
-            const savedRedirectTo = storeGetValue('redirectTo');
+            const savedRedirectTo = storeGetAndClearValue(LocalStorageKeys.RedirectTo);
             navigate(savedRedirectTo ? savedRedirectTo : '/');
           } else {
             onOpen(); // Open register form
@@ -221,7 +226,7 @@ const RegisterForm = ({ onClose }: Props): JSX.Element => {
         setShowSpinner(false);
         const name = response.registerUser?.name;
         if (!errors?.length) {
-          const redirectTo = storeGetValue('redirectTo');
+          const redirectTo = storeGetAndClearValue(LocalStorageKeys.RedirectTo);
           navigate(redirectTo ? redirectTo : '/');
           toast({
             title: `Bienvenido ${name}!`,
