@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import { useLazyLoadQuery } from 'react-relay';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { Flex, Stack } from '@chakra-ui/react';
+import { Flex, Grid, GridItem, Stack } from '@chakra-ui/react';
 import {
   AlertIcon,
   PencilIcon,
@@ -41,9 +41,20 @@ import SubmissionIcon from 'icons/SubmissionIcon';
 import ReviewerIcon from 'icons/ReviewerIcon';
 import { Icon as OcticonsIcon } from '@primer/octicons-react/dist/icons';
 import RRLink from 'components/RRLink';
+import Divider from 'components/Divider';
+import {
+  getAssignmentSubmissionReviewersDataset,
+  getAssignmentSubmissionStatusDataset,
+} from 'statistics/submissions';
+import { StackedBarChart } from 'components/charts/StackedBarChart';
+import Box from 'components/Box';
+import { Pie } from 'components/charts/Pie';
 
 type Course = NonNullable<NonNullable<AssignmentQuery$data['viewer']>['course']>;
 type Assignment = NonNullable<Course['assignment']>;
+type ReviewerUserType = NonNullable<
+  NonNullable<NonNullable<Assignment['submissions']>[number]['reviewer']>['reviewer']
+>;
 
 const LIST_ITEM_ICON_COLOR = 'teachHub.primary';
 
@@ -199,6 +210,54 @@ function AssignmentPersistActions() {
   );
 }
 
+const AssignmentCharts = ({ assignment }: { assignment: Assignment }) => {
+  const assignmentSubmissionStatisticsData = {
+    title: assignment.title,
+    submissions: assignment.submissions?.map(submission => ({
+      grade: submission.review?.grade,
+      revisionRequested: submission.review?.revisionRequested,
+      reviewer: submission.reviewer?.reviewer,
+    })),
+    nonExistentSubmissions: assignment.nonExistentSubmissions?.map(s => ({
+      reviewer: s.reviewer?.reviewer,
+    })),
+  };
+
+  const submissionsStatusDataset = getAssignmentSubmissionStatusDataset([
+    assignmentSubmissionStatisticsData,
+  ]);
+  const reviewerStatusDataset = getAssignmentSubmissionReviewersDataset(
+    assignmentSubmissionStatisticsData
+  );
+
+  return (
+    <Stack gap={'20px'}>
+      <Stack alignItems={'center'} flexDirection={'column'}>
+        <Box width={'50%'}>
+          <Pie
+            labels={submissionsStatusDataset.map(item => item.label)}
+            data={{
+              label: 'Cantidad',
+              data: submissionsStatusDataset.map(item => item.data[0]),
+              backgroundColors: submissionsStatusDataset.map(
+                item => item.backgroundColor
+              ),
+            }}
+            title={'Estado de Entregas'}
+            legendPosition={'right'}
+          />
+        </Box>
+        <StackedBarChart
+          labels={reviewerStatusDataset.labels}
+          data={reviewerStatusDataset.datasets}
+          title={'Estado de Entregas según Corrector'}
+          horizontal={true}
+        />
+      </Stack>
+    </Stack>
+  );
+};
+
 const AssignmentDashboardPage = ({
   assignmentId,
   courseId,
@@ -206,9 +265,11 @@ const AssignmentDashboardPage = ({
   assignmentId: string;
   courseId: string;
 }) => {
+  const courseContext = useUserContext();
   const data = useLazyLoadQuery<AssignmentQuery>(AssignmentQueryDef, {
     id: assignmentId,
     courseId,
+    includeSubmissions: courseContext.userIsTeacher || false, // Include for charts
   });
 
   const assignment = data.viewer?.course?.assignment;
@@ -219,21 +280,35 @@ const AssignmentDashboardPage = ({
 
   return (
     <>
-      <Flex gap="20px" alignItems={'center'}>
-        <Heading textOverflow={'ellipsis'} overflow={'hidden'} whiteSpace="nowrap">
-          {assignment.title}
-        </Heading>
-        <AssignmentPersistActions />
-      </Flex>
-      <Flex width={'70%'}>
-        <Stack gap={'20px'}>
+      <Grid gap="30px" templateRows="auto auto 90%" templateColumns="3fr auto 2fr">
+        <GridItem rowSpan={1} colSpan={3}>
+          <Flex gap="20px" alignItems={'center'}>
+            <Heading textOverflow={'ellipsis'} overflow={'hidden'} whiteSpace="nowrap">
+              {assignment.title}
+            </Heading>
+            <AssignmentPersistActions />
+          </Flex>
+        </GridItem>
+        <GridItem rowSpan={1} colSpan={3}>
           <AssignmentNavigationActions assignment={assignment} />
-          <BoxWithTopAndBottomBorders>
-            <Text>{assignment.description}</Text>
-          </BoxWithTopAndBottomBorders>
-          <AssignmentDetails assignment={assignment} />
-        </Stack>
-      </Flex>
+        </GridItem>
+        <GridItem rowSpan={1} colSpan={1}>
+          <Stack gap={'20px'} width={'100%'}>
+            {assignment.description && (
+              <BoxWithTopAndBottomBorders>
+                <Text>{assignment.description}</Text>
+              </BoxWithTopAndBottomBorders>
+            )}
+            <AssignmentDetails assignment={assignment} />
+          </Stack>
+        </GridItem>
+        <GridItem rowSpan={1} colSpan={1}>
+          <Divider h="95%" />
+        </GridItem>
+        <GridItem rowSpan={1} colSpan={1}>
+          <AssignmentCharts assignment={assignment} />
+        </GridItem>
+      </Grid>
     </>
   );
 };
@@ -259,7 +334,7 @@ const AssignmentPageContainer = () => {
   }
 
   return (
-    <PageDataContainer w="70em" gap="25px">
+    <PageDataContainer gap="25px">
       <Suspense fallback={<EmptyState />}>
         <AssignmentDashboardPage assignmentId={assignmentId} courseId={courseId} />
       </Suspense>

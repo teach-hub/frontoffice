@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e372e939afca70a66fafe442d9447940>>
+ * @generated SignedSource<<9e6b168d89717d0dfcd2a6c1f9ea397c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,7 +19,7 @@ export type AssignmentSubmissionsQuery$data = {
     readonly course: {
       readonly assignments: ReadonlyArray<{
         readonly id: string;
-        readonly title: string | null;
+        readonly title: string;
       }>;
       readonly assignmentsWithSubmissions: ReadonlyArray<{
         readonly id: string;
@@ -103,7 +103,7 @@ export type AssignmentSubmissionsQuery$data = {
             readonly __typename: "%other";
           };
         }>;
-        readonly title: string | null;
+        readonly title: string;
       }>;
       readonly id: string;
     } | null;

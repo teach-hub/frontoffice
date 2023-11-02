@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b15920dee84dfc30b3f82ca7376766dc>>
+ * @generated SignedSource<<a467ad607ff3972f730b271b2eeebe89>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -35,7 +35,7 @@ export type CourseInfoQuery$data = {
           } | null;
           readonly submittedAt: string;
         }>;
-        readonly title: string | null;
+        readonly title: string;
       }>;
       readonly description: string | null;
       readonly id: string;

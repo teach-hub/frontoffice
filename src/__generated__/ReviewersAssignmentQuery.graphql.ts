@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0303f9ca7b1e630b364274d722a401bc>>
+ * @generated SignedSource<<181b48f22d88cfdd7db3a26b76cc84b5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -78,7 +78,7 @@ export type ReviewersAssignmentQuery$data = {
             readonly name: string;
           };
         }>;
-        readonly title: string | null;
+        readonly title: string;
       } | null;
       readonly id: string;
       readonly teachersUserRoles: ReadonlyArray<{

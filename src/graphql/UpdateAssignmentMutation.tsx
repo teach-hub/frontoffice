@@ -3,7 +3,7 @@ import { graphql } from 'babel-plugin-relay/macro';
 export default graphql`
   mutation UpdateAssignmentMutation(
     $id: ID!
-    $title: String
+    $title: String!
     $description: String
     $startDate: String
     $endDate: String

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<96969f80d8cd742588e0b5712526fae8>>
+ * @generated SignedSource<<dc84740644017ee1a2cd10b1a9763c4a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -33,7 +33,7 @@ export type AssignmentGroupsAndUsersQuery$data = {
         }>;
         readonly id: string;
         readonly isGroup: boolean | null;
-        readonly title: string | null;
+        readonly title: string;
       }>;
       readonly id: string;
       readonly organization: string | null;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c66a87912e456aaf559966fb38809085>>
+ * @generated SignedSource<<18dafc260e32999d1a8299aba82369aa>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -34,7 +34,7 @@ export type SubmissionQuery$data = {
           }>;
           readonly id: string;
           readonly isGroup: boolean | null;
-          readonly title: string | null;
+          readonly title: string;
         } | null;
         readonly comments: ReadonlyArray<{
           readonly body: string | null;
