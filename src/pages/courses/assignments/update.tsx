@@ -3,7 +3,7 @@ import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import UpdateAssignmentMutationDef from 'graphql/UpdateAssignmentMutation';
-import AssignmentQueryDef from 'graphql/AssignmentQuery';
+import AssignmentUpdateQueryDef from 'graphql/AssignmentUpdateQuery';
 
 import useToast from 'hooks/useToast';
 import { useUserContext } from 'hooks/useUserCourseContext';
@@ -23,7 +23,7 @@ import type {
   UpdateAssignmentMutation,
   UpdateAssignmentMutation$data,
 } from '__generated__/UpdateAssignmentMutation.graphql';
-import type { AssignmentQuery } from '__generated__/AssignmentQuery.graphql';
+import type { AssignmentUpdateQuery } from '__generated__/AssignmentUpdateQuery.graphql';
 import Spinner from 'components/Spinner';
 
 type UpdatePageProps = {
@@ -40,10 +40,9 @@ const UpdateAssignmentPage = ({ assignmentId, courseId }: UpdatePageProps) => {
     UpdateAssignmentMutationDef
   );
 
-  const data = useLazyLoadQuery<AssignmentQuery>(AssignmentQueryDef, {
+  const data = useLazyLoadQuery<AssignmentUpdateQuery>(AssignmentUpdateQueryDef, {
     id: assignmentId,
     courseId: courseId || '',
-    includeSubmissions: false,
   });
 
   const assignment = data.viewer?.course?.assignment;
