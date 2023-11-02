@@ -9,8 +9,7 @@ import useToast from 'hooks/useToast';
 import SubmissionsQuery from 'graphql/AssignmentSubmissionsQuery';
 
 import {
-  Flex,
-  Select,
+  HStack,
   Stack,
   Tab,
   TabList,
@@ -19,7 +18,6 @@ import {
   Tabs,
   useDisclosure,
 } from '@chakra-ui/react';
-import { theme } from 'theme';
 
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
@@ -46,6 +44,7 @@ import type {
 import { Modal } from 'components/Modal';
 import NotifyModalContent from 'components/SubmissionNotificationModalContent';
 import { buildSubmissionRoute } from 'routes';
+import Select from 'components/Select';
 
 type SubmissionType = NonNullable<
   NonNullable<
@@ -348,8 +347,8 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
 
   return (
     <PageDataContainer>
-      <Flex direction={'row'} width={'100%'} justifyContent={'space-between'}>
-        <Stack direction={'row'} alignItems={'center'} gap={'20px'}>
+      <HStack justifyContent={'space-between'} alignItems={'flex-start'}>
+        <HStack alignItems={'center'} gap={'20px'}>
           <Heading>Entregas</Heading>
           {selectedStudentUserId && (
             <FilterBadge
@@ -380,12 +379,12 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
               onClick={() => setSelectedReviewerId(null)}
             />
           )}
-        </Stack>
-        <Stack gap={'10px'} direction={'row'}>
-          <FormControl label={'Estado'}>
+        </HStack>
+        <HStack gap={'10px'}>
+          <FormControl label={''}>
             <Select
-              borderColor={theme.colors.teachHub.black}
-              placeholder={'- Sin filtrar -'} // Placeholder works as disabling the filter when chosen
+              width={'max-content'}
+              placeholder={'Todos (Estados)'} // Placeholder works as disabling the filter when chosen
               value={selectedSubmissionStatus || ''} // Set value to show selected option, or placeholder otherwise
               onChange={changes => {
                 const newValue = changes.currentTarget.value;
@@ -403,11 +402,10 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
               )}
             </Select>
           </FormControl>
-          <FormControl label={'Trabajo Práctico'}>
+          <FormControl label={''}>
             <Select
-              width={'fit-content'}
-              borderColor={theme.colors.teachHub.black}
-              placeholder={'- Sin filtrar -'} // Placeholder works as disabling the filter when chosen
+              width={'max-content'}
+              placeholder={'Todos (Trabajos Prácticos)'} // Placeholder works as disabling the filter when chosen
               value={selectedAssignmentId || ''} // Set value to show selected option, or placeholder otherwise
               onChange={changes => {
                 const newId = changes.currentTarget.value;
@@ -426,8 +424,8 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
               ))}
             </Select>
           </FormControl>
-        </Stack>
-      </Flex>
+        </HStack>
+      </HStack>
       <Tabs
         index={selectedTabIndex}
         onChange={index => {
