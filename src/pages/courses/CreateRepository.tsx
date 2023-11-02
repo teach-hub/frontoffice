@@ -146,6 +146,25 @@ interface RepositoriesTypePageConfiguration {
   tableRowData: SelectionTableRowProps[];
 }
 
+/**
+ * Concatenates all non--null strings received
+ * and cleans the resulting string so that is a valid
+ * repository name.
+ *
+ * It will remove access and special characters, as well
+ * as limiting the lenght of the string
+ * */
+const joinStringsAndBuildRepoName = (data: Nullable<string>[]) => {
+  const repoName = data
+    .filter(item => item !== null)
+    .join('_')
+    .toLowerCase();
+
+  const START_INDEX = 0;
+  const END_INDEX = 100;
+  return removeAccentsAndSpecialCharacters(repoName).substring(START_INDEX, END_INDEX);
+};
+
 const buildStudentRepositoryPageConfiguration = ({
   students,
 }: {
@@ -180,16 +199,11 @@ const buildStudentRepositoryPageConfiguration = ({
           getRepoName: (repositoryData: RepositoriesNameConfiguration) => {
             const { prefix, useLastName, useFile } = repositoryData;
 
-            const repoName = [
+            return joinStringsAndBuildRepoName([
               prefix || null,
               useLastName ? student.user.lastName : null,
               useFile ? student.user.file : null,
-            ]
-              .filter(item => item !== null)
-              .join('_')
-              .toLowerCase();
-
-            return removeAccentsAndSpecialCharacters(repoName);
+            ]);
           },
         };
       })
@@ -246,17 +260,12 @@ const buildGroupRepositoryPageConfiguration = ({
             ? users.map(({ user }) => user.lastName).join('_')
             : null;
           const files = useFile ? users.map(({ user }) => user.file).join('_') : null;
-          const repoName = [
+          return joinStringsAndBuildRepoName([
             prefix || null,
             useGroupName ? groupName : null,
             lastNames,
             files,
-          ]
-            .filter(item => item !== null)
-            .join('_')
-            .toLowerCase();
-
-          return removeAccentsAndSpecialCharacters(repoName);
+          ]);
         },
       };
     })
@@ -515,6 +524,9 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
             isInvalid={errorInRepositoryName}
             errorMessage={
               'No es posible crear repositorios sin nombre, revisar configuración'
+            }
+            helperText={
+              'Nota: la longitud máxima para el nombre de un repositorio es de 100 caracteres. En caso de que en algún repositorio se supere esa longitud, se recortará el mismo'
             }
           >
             <InputField
