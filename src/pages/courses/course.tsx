@@ -355,7 +355,9 @@ const CourseViewContainer = () => {
           course={course}
           availableOrganizations={availableOrganizations}
         />
-        {courseContext.userIsTeacher && <CourseCharts course={course} />}
+        {courseContext.userHasPermission(Permission.ViewCourseCharts) && (
+          <CourseCharts course={course} />
+        )}
       </Stack>
       <Modal
         isOpen={isOpenDescriptionModal}

@@ -302,12 +302,16 @@ const AssignmentDashboardPage = ({
             <AssignmentDetails assignment={assignment} />
           </Stack>
         </GridItem>
-        <GridItem rowSpan={1} colSpan={1}>
-          <Divider h="95%" />
-        </GridItem>
-        <GridItem rowSpan={1} colSpan={1}>
-          <AssignmentCharts assignment={assignment} />
-        </GridItem>
+        {courseContext.userHasPermission(Permission.ViewCourseCharts) && (
+          <>
+            <GridItem rowSpan={1} colSpan={1}>
+              <Divider h="95%" />
+            </GridItem>
+            <GridItem rowSpan={1} colSpan={1}>
+              <AssignmentCharts assignment={assignment} />
+            </GridItem>
+          </>
+        )}
       </Grid>
     </>
   );
