@@ -1,5 +1,7 @@
 import { Bar, ChartProps } from 'react-chartjs-2';
 import { theme } from 'theme';
+import { Chart } from 'chart.js';
+import { ChartPluginName, configureNoDataPlugin } from 'components/charts/chartPlugins';
 
 type ChartData<T> = {
   label: string;
@@ -20,6 +22,12 @@ export const StackedBarChart = <T,>({
   props?: ChartProps;
   horizontal?: boolean;
 }) => {
+  const emptyChart = () => {
+    const emptyLabels = labels.length === 0;
+    const emptyData = data.length === 0 || data.every(d => d.data.length === 0);
+    return emptyLabels || emptyData;
+  };
+
   const formatTick = (tick: string) => {
     const LABEL_MAX_LENGTH = 30;
     if (tick.length > LABEL_MAX_LENGTH) {
@@ -90,6 +98,14 @@ export const StackedBarChart = <T,>({
           },
         },
       }}
+      plugins={[
+        {
+          id: ChartPluginName.NoDataStackedBarChart,
+          afterDraw: (chart: Chart) => {
+            if (emptyChart()) configureNoDataPlugin(chart);
+          },
+        },
+      ]}
     />
   );
 };

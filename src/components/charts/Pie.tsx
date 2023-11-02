@@ -1,15 +1,16 @@
 import { ChartProps, Pie as ChartJsPie } from 'react-chartjs-2';
 import { theme } from 'theme';
 import React from 'react';
-import { LayoutPosition } from 'chart.js';
+import { Chart, LayoutPosition } from 'chart.js';
+import { ChartPluginName, configureNoDataPlugin } from 'components/charts/chartPlugins';
 
-type ChartData<T> = {
+type ChartData = {
   label: string;
-  data: T[];
+  data: number[];
   backgroundColors: string[];
 };
 
-export const Pie = <T,>({
+export const Pie = ({
   labels,
   data,
   props,
@@ -18,11 +19,17 @@ export const Pie = <T,>({
 }: {
   title: string;
   labels: string[];
-  data: ChartData<T>;
+  data: ChartData;
   props?: ChartProps;
   horizontal?: boolean;
   legendPosition?: LayoutPosition;
 }) => {
+  const emptyChart = () => {
+    const emptyLabels = labels.length === 0;
+    const emptyData = data.data.every(d => d === 0);
+    return emptyLabels || emptyData;
+  };
+
   const chartData = {
     labels,
     datasets: [
@@ -50,7 +57,7 @@ export const Pie = <T,>({
             },
           },
           legend: {
-            display: true,
+            display: !emptyChart(), // Only show legends if chart is not empty
             labels: {
               font: {
                 size: FONT_SIZE,
@@ -60,6 +67,14 @@ export const Pie = <T,>({
           },
         },
       }}
+      plugins={[
+        {
+          id: ChartPluginName.NoDataPieChart,
+          beforeDraw: (chart: Chart) => {
+            if (emptyChart()) configureNoDataPlugin(chart);
+          },
+        },
+      ]}
     />
   );
 };
