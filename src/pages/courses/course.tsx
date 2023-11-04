@@ -84,9 +84,11 @@ const CourseStatistics = ({ course, courseContext, availableOrganizations }: Pro
   const toast = useToast();
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const defaultOrganizationName = () => course.organization || '';
   const [organizationName, setOrganizationName] = useState(defaultOrganizationName());
+
   const [commitCourseSetOrganization] = useMutation<CourseSetOrganizationMutation>(
     CourseSetOrganizationMutationDef
   );
@@ -240,11 +242,11 @@ const CourseStatistics = ({ course, courseContext, availableOrganizations }: Pro
 
 const CourseCharts = ({ course }: { course: CourseType }) => {
   const assignments = course.assignments || [];
-
   const nonGroupChartLabels: string[] = [];
   const groupChartLabels: string[] = [];
   const nonGroupData: AssignmentStatisticsData[] = [];
   const groupChartData: AssignmentStatisticsData[] = [];
+
   assignments.forEach(assignment => {
     const title = assignment.title;
 
@@ -259,6 +261,7 @@ const CourseCharts = ({ course }: { course: CourseType }) => {
         reviewer: undefined, // Not required for this plots
       })),
     };
+
     if (!assignment.isGroup) {
       nonGroupChartLabels.push(title);
       nonGroupData.push(assignmentSubmissionStatisticsData);

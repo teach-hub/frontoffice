@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
+import { partition } from 'lodash';
 
 import { FetchedContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
@@ -220,8 +221,13 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   useEffect(() => {
     const assignmentSubmissionsData =
       data.viewer?.course?.assignmentsWithSubmissions || [];
+
     const newSubmissions = assignmentSubmissionsData.flatMap(assignment =>
-      (assignment?.submissions || []).filter(submission => {
+      (
+        (courseContext.userIsTeacher
+          ? assignment?.submissions
+          : assignment?.viewerSubmission && [assignment?.viewerSubmission]) || []
+      ).filter(submission => {
         return rowEnabledByFilters({
           submitter: submission.submitter,
           reviewerId: submission.reviewer?.reviewer?.id,
@@ -262,7 +268,13 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     });
 
     assignmentSubmissionsData.forEach(assignment =>
-      (assignment?.nonExistentSubmissions || []).forEach(({ reviewer, submitter }) => {
+      (
+        (courseContext.userIsTeacher
+          ? assignment?.nonExistentSubmissions
+          : assignment?.nonExistentViewerSubmission && [
+              assignment?.nonExistentViewerSubmission,
+            ]) || []
+      ).forEach(({ reviewer, submitter }) => {
         const reviewerUser = reviewer?.reviewer;
         if (
           rowEnabledByFilters({
@@ -285,6 +297,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     /* Separate group from non group rows */
     const groupRowDataList: RowData[] = [];
     const nonGroupRowDataList: RowData[] = [];
+
     newRowData
       .sort((a, b) => {
         return a.submitter.name?.localeCompare(b.submitter.name || '') || 0;
