@@ -150,7 +150,7 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
         if (!errors?.length) {
           showSuccessToast({
             toast,
-            title: 'Alumnos agregados!',
+            title: 'Alumnos agregados',
           });
           onCloseAddUsersModal();
         } else {
@@ -178,7 +178,7 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
         if (!errors?.length) {
           showSuccessToast({
             toast,
-            title: 'Grupo creado!',
+            title: 'Grupo creado',
           });
           onCloseCreateGroupModal();
         } else {

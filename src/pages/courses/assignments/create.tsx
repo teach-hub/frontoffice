@@ -65,7 +65,7 @@ const CreateAssignmentPage = ({ courseId }: Props) => {
         if (!errors?.length && data) {
           showSuccessToast({
             toast,
-            title: 'Trabajo práctico creado!',
+            title: 'Trabajo práctico creado',
           });
           navigate(buildAssignmentRoute(courseId, data.id));
         } else {

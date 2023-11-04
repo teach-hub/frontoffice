@@ -92,7 +92,7 @@ const UpdateAssignmentPage = ({ assignmentId, courseId }: UpdatePageProps) => {
         if (!errors?.length && data) {
           showSuccessToast({
             toast,
-            title: 'Trabajo práctico guardado!',
+            title: 'Trabajo práctico actualizado!',
           });
           navigate(buildAssignmentRoute(courseId, assignmentId));
         } else {

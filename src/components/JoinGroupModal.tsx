@@ -6,7 +6,7 @@ import { Modal } from 'components/Modal';
 import Button from 'components/Button';
 import Select from 'components/Select';
 
-import useToast, { showErrorToast } from 'hooks/useToast';
+import useToast, { showErrorToast, showSuccessToast } from 'hooks/useToast';
 
 import JoinGroupMutationDef from 'graphql/JoinGroupMutation';
 import type {
@@ -79,6 +79,10 @@ const JoinGroupModal = (props: Props) => {
         onCompleted: ({ joinGroup }: JoinGroupMutation$data, errors) => {
           setShowSpinner(false);
           if (!errors?.length && joinGroup?.viewerGroupParticipants.length) {
+            showSuccessToast({
+              toast,
+              title: 'Grupo actualizado',
+            });
             onClose();
           } else {
             showErrorToast({

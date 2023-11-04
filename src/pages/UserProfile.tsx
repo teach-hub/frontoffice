@@ -55,7 +55,7 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
       }
       showSuccessToast({
         toast,
-        title: 'Usuario actualizado!',
+        title: 'Usuario actualizado',
       });
     } else {
       showErrorToast({

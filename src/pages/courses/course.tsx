@@ -127,7 +127,7 @@ const CourseStatistics = ({ course, courseContext, availableOrganizations }: Pro
         if (!errors?.length && data) {
           showSuccessToast({
             toast,
-            title: 'Organización actualizada!',
+            title: 'Organización actualizada',
           });
 
           /* Update current course organization avoiding to reload */
