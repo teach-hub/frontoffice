@@ -7,6 +7,7 @@ const Select = (props: Props) => {
   return (
     <ChakraSelect
       {...props}
+      borderColor={theme.colors.teachHub.black}
       bg={theme.colors.teachHub.white}
       fontSize={theme.styles.global.body.fontSize}
     />

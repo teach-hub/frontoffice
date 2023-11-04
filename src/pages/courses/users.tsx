@@ -19,6 +19,7 @@ import { filterUsers, UserRoleFilter } from 'app/users';
 import CourseUsersQueryDef from 'graphql/CourseUsersQuery';
 
 import type { CourseUsersQuery } from '__generated__/CourseUsersQuery.graphql';
+import PageDataContainer from 'components/PageDataContainer';
 
 type Course = NonNullable<NonNullable<CourseUsersQuery['response']['viewer']>['course']>;
 type CourseUserRole = NonNullable<Course['userRoles']>[number];
@@ -153,10 +154,10 @@ const UsersContainer = () => {
   };
 
   return (
-    <Box padding="5px 35px">
+    <PageDataContainer>
       <HStack justifyContent="space-between">
-        <HStack spacing="10px">
-          <Heading size="md">Usuarios</Heading>
+        <HStack spacing="10px" alignItems={'center'}>
+          <Heading>Usuarios</Heading>
           <Text>{getDisplayableFilter()}</Text>
         </HStack>
         <HStack>
@@ -183,14 +184,14 @@ const UsersContainer = () => {
           </Select>
         </HStack>
       </HStack>
-      <Box padding="30px 0px">
+      <Box marginTop={'10px'}>
         <UsersList
           nameFilter={searchTerm}
           userRoles={course?.userRoles}
           roleFilter={roleFilter as UserRoleFilter}
         />
       </Box>
-    </Box>
+    </PageDataContainer>
   );
 };
 
