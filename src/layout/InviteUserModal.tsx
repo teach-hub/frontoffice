@@ -1,6 +1,6 @@
 import { useFragment, useMutation } from 'react-relay';
 
-import useToast from 'hooks/useToast';
+import useToast, { showErrorToast } from 'hooks/useToast';
 
 import InviteUserModal, { Props as ModalProps } from 'components/InviteUserModal';
 import GenerateInviteMutationDef from 'graphql/GenerateInviteMutation';
@@ -35,10 +35,10 @@ const InviteModal = ({ courseId, rootQueryRef, isOpen, onClose }: Props) => {
         variables: { courseId, roleId, expirationMinutes },
         onCompleted: (result, errors) => {
           if (errors?.length) {
-            toast({
+            showErrorToast({
+              toast,
               title: 'Error',
               description: 'No se pudo generar link de invitacion',
-              status: 'error',
             });
             return reject(null);
           }

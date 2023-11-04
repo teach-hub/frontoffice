@@ -8,7 +8,7 @@ import { Checkbox, Flex, HStack, Skeleton, Stack, Switch } from '@chakra-ui/reac
 import { ArrowForwardIcon } from '@chakra-ui/icons';
 import { ChevronRightIcon } from '@primer/octicons-react';
 
-import useToast from 'hooks/useToast';
+import useToast, { showErrorToast, showSuccessToast } from 'hooks/useToast';
 
 import IconButton from 'components/IconButton';
 import Divider from 'components/Divider';
@@ -349,14 +349,19 @@ function ReviewersPageContainer({
         setShowSpinner(false);
         if (errors?.length) {
           console.log('Error while commiting reviewers', errors);
-          toast({ title: 'No pudimos asignar los correctores', status: 'error' });
+          showErrorToast({
+            toast,
+            title: 'No pudimos asignar los correctores',
+          });
         } else {
-          console.log('Reviewers set!');
           setPreviewReviewers(
             response?.assignReviewers?.previewReviewers as SanitizedReviewer[]
           );
           setReviewers(response?.assignReviewers?.reviewers as SanitizedReviewer[]);
-          toast({ title: 'Correctores asignados', status: 'success' });
+          showSuccessToast({
+            toast,
+            title: 'Correctores asignados',
+          });
         }
       },
       updater: store => {
@@ -393,22 +398,23 @@ function ReviewersPageContainer({
           setShowSpinner(false);
           if (errors?.length) {
             if (errors.map(error => error.message.includes('ALREADY_REVIEWED'))) {
-              toast({
+              showErrorToast({
+                toast,
                 title: 'No es posible eliminar',
                 description: 'El reviewer ya realizo correcciones.',
-                status: 'error',
               });
             } else {
-              console.log('Error while commiting reviewers', errors);
               toast({ title: 'No pudimos asignar los correctores', status: 'error' });
             }
           } else {
-            console.log('Reviewers set!');
             setPreviewReviewers(
               response?.removeReviewers?.previewReviewers as SanitizedReviewer[]
             );
             setReviewers(response?.removeReviewers?.reviewers as SanitizedReviewer[]);
-            toast({ title: 'Correctores asignados', status: 'success' });
+            showSuccessToast({
+              toast,
+              title: 'Correctores asignados',
+            });
           }
         },
         updater: store => {

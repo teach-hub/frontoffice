@@ -1,13 +1,12 @@
 import type { ModalProps } from '@chakra-ui/react';
 import { Flex } from '@chakra-ui/react';
 import { useMutation } from 'react-relay';
-import { useNavigate } from 'react-router-dom';
 
 import { Modal } from 'components/Modal';
 import Button from 'components/Button';
 import Select from 'components/Select';
 
-import useToast from 'hooks/useToast';
+import useToast, { showErrorToast } from 'hooks/useToast';
 
 import JoinGroupMutationDef from 'graphql/JoinGroupMutation';
 import type {
@@ -52,10 +51,10 @@ const JoinGroupModal = (props: Props) => {
 
   const handleGroupChangeSubmit = () => {
     if (!chosenGroupName) {
-      toast({
+      showErrorToast({
+        toast,
         title: 'Error',
         description: 'Se debe seleccionar un grupo',
-        status: 'error',
       });
       return;
     }
@@ -64,10 +63,10 @@ const JoinGroupModal = (props: Props) => {
     const groupId = availableGroups.find(group => group?.name === chosenGroupName)?.id;
 
     if (!groupId) {
-      toast({
+      showErrorToast({
+        toast,
         title: 'Error',
         description: `Error al intentar unirse al grupo, intente de nuevo`,
-        status: 'error',
       });
     } else {
       setShowSpinner(true);
@@ -82,10 +81,10 @@ const JoinGroupModal = (props: Props) => {
           if (!errors?.length && joinGroup?.viewerGroupParticipants.length) {
             onClose();
           } else {
-            toast({
+            showErrorToast({
+              toast,
               title: 'Error',
               description: `Error al intentar unirse al grupo: ${errors?.at(0)?.message}`,
-              status: 'error',
             });
           }
         },

@@ -13,7 +13,7 @@ import logo from 'assets/logo_wo_text.png';
 import { InviteCourseInfoQuery } from '__generated__/InviteCourseInfoQuery.graphql';
 import InviteCourseInfoQueryDef from 'graphql/InviteCourseInfoQuery';
 import Text from 'components/Text';
-import useToast from 'hooks/useToast';
+import useToast, { showErrorToast } from 'hooks/useToast';
 import { buildCourseRoute } from 'routes';
 import Spinner from 'components/Spinner';
 import { useState } from 'react';
@@ -41,10 +41,10 @@ const InvitePage = () => {
       onCompleted: (response: UseInviteMutation$data, errors) => {
         setShowSpinner(false);
         if (errors?.length) {
-          toast({
+          showErrorToast({
+            toast,
             title: 'Error al unirse al curso',
             description: 'La invitación no es válida o expiró',
-            status: 'error',
           });
         } else if (response.useInvite?.courseId) {
           console.log(`Redirecting to /courses/${response.useInvite.courseId}`);

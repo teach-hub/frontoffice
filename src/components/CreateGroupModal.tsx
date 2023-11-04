@@ -6,7 +6,7 @@ import Spinner from 'components/Spinner';
 import { Modal } from 'components/Modal';
 import Button from 'components/Button';
 
-import useToast from 'hooks/useToast';
+import useToast, { showErrorToast } from 'hooks/useToast';
 
 import CreateGroupWithParticipantMutationDef from 'graphql/CreateGroupWithParticipantMutation';
 
@@ -51,10 +51,10 @@ const CreateGroupModal = (props: Props) => {
         if (!errors?.length && group) {
           onClose();
         } else {
-          toast({
+          showErrorToast({
+            toast,
             title: 'Error',
             description: `Error al intentar crear el grupo: ${errors?.at(0)?.message}`,
-            status: 'error',
           });
         }
       },

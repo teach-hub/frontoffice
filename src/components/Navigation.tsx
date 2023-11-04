@@ -19,7 +19,7 @@ import { buildAddSubmissionRoute } from 'routes';
 
 import { storeGetValue, storeRemoveValue } from 'hooks/useLocalStorage';
 import { Permission, useUserContext } from 'hooks/useUserCourseContext';
-import useToast from 'hooks/useToast';
+import useToast, { showErrorToast } from 'hooks/useToast';
 
 import InviteUserModal from 'layout/InviteUserModal';
 
@@ -76,10 +76,10 @@ const NavigationBar = () => {
             storeRemoveValue('token');
             navigate('/login');
           } else {
-            toast({
+            showErrorToast({
+              toast,
               title: 'Error',
               description: 'No ha sido posible cerrar sesión, intenta de nuevo',
-              status: 'error',
             });
           }
         },

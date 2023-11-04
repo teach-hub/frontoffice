@@ -4,7 +4,7 @@ import { useLazyLoadQuery } from 'react-relay';
 
 import { FetchedContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
-import useToast from 'hooks/useToast';
+import useToast, { showWarningToast } from 'hooks/useToast';
 
 import SubmissionsQuery from 'graphql/AssignmentSubmissionsQuery';
 
@@ -338,10 +338,10 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const onRowClick = (rowData: RowData) => {
     rowData.submission?.id
       ? navigate(buildSubmissionRoute(courseContext.courseId, rowData.submission?.id))
-      : toast({
+      : showWarningToast({
+          toast,
           title: 'No existe entrega asociada',
           description: 'Para acceder al detalle primero se debe realizar la entrega',
-          status: 'warning',
         });
   };
 

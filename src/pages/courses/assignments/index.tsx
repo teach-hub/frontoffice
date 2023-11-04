@@ -23,9 +23,9 @@ import { ButtonWithIcon } from 'components/ButtonWithIcon';
 import { buildAssignmentUrlFilter } from 'queries';
 import CreateRepositoryIcon from 'icons/CreateRepositoryIcon';
 import GroupIcon from 'icons/GroupIcon';
-import useToast from 'hooks/useToast';
+import useToast, { showWarningToast } from 'hooks/useToast';
 import RRLink from 'components/RRLink';
-import { buildAssignmentRoute, buildAddAssignmentRoute } from 'routes';
+import { buildAddAssignmentRoute, buildAssignmentRoute } from 'routes';
 
 const AssignmentsPage = () => {
   const toast = useToast();
@@ -143,11 +143,11 @@ const AssignmentsPage = () => {
                         isDisabled={isStudentAndMissingSubmissions}
                         onClick={() => {
                           if (isStudentAndMissingSubmissions)
-                            toast({
+                            showWarningToast({
+                              toast,
                               title: 'No existe entrega asociada',
                               description:
                                 'Para acceder al detalle primero se debe realizar la entrega',
-                              status: 'warning',
                             });
                         }}
                       />

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import CreateAssignmentMutationDef from 'graphql/CreateAssignmentMutation';
 
-import useToast from 'hooks/useToast';
+import useToast, { showErrorToast, showSuccessToast } from 'hooks/useToast';
 import { useUserContext } from 'hooks/useUserCourseContext';
 import { formatDateAsLocaleIsoString } from 'utils/dates';
 import { buildAssignmentRoute, buildAssignmentsRoute } from 'routes';
@@ -63,19 +63,19 @@ const CreateAssignmentPage = ({ courseId }: Props) => {
         setShowSpinner(false);
         const data = response.createAssignment;
         if (!errors?.length && data) {
-          toast({
+          showSuccessToast({
+            toast,
             title: 'Trabajo práctico creado!',
-            status: 'success',
           });
           navigate(buildAssignmentRoute(courseId, data.id));
         } else {
           const errorMessage = errors ? errors[0].message : null;
-          toast({
+          showErrorToast({
+            toast,
             title: 'Error',
             description:
               `No se pudo crear el trabajo práctico` +
               (errorMessage ? `: ${errorMessage}` : ''),
-            status: 'error',
           });
         }
       },
