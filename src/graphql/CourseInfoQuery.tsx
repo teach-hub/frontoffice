@@ -21,7 +21,6 @@ export default graphql`
           submissions(onlyReviewerSubmissions: false) {
             id
             submittedAt
-            pullRequestUrl
             assignmentId
             review {
               id

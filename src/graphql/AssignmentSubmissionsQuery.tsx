@@ -19,6 +19,81 @@ export default graphql`
           id
           title
           isGroup
+          viewerSubmission {
+            id
+            submittedAt
+            submittedAgainAt
+            pullRequestUrl
+            assignmentId
+            submitter {
+              __typename
+              ... on InternalGroupType {
+                id
+                groupName: name
+                members {
+                  id
+                  name
+                  lastName
+                  file
+                  notificationEmail
+                }
+              }
+              ... on UserType {
+                id
+                file
+                name
+                lastName
+                notificationEmail
+              }
+            }
+            reviewer {
+              id
+              reviewer {
+                id
+                name
+                lastName
+              }
+            }
+            review {
+              id
+              revisionRequested
+              grade
+              reviewedAt
+              reviewedAgainAt
+            }
+          }
+          nonExistentViewerSubmission {
+            id
+            submitter {
+              __typename
+              ... on InternalGroupType {
+                id
+                groupName: name
+                members {
+                  id
+                  name
+                  lastName
+                  file
+                  notificationEmail
+                }
+              }
+              ... on UserType {
+                id
+                file
+                name
+                lastName
+                notificationEmail
+              }
+            }
+            reviewer {
+              id
+              reviewer {
+                id
+                name
+                lastName
+              }
+            }
+          }
           submissions(onlyReviewerSubmissions: $onlyReviewerSubmissions) {
             id
             submittedAt
