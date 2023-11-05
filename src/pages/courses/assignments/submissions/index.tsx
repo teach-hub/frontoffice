@@ -126,10 +126,17 @@ enum TabIndex {
 
 const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
   const toast = useToast();
+  const navigate = useNavigate();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const assignmentId = searchParams.get(Query.SubmissionAssignment);
 
-  const showNotifyButton = courseContext.userHasPermission(Permission.SendNotifications);
+  const notifyButtonEnabled = courseContext.userHasPermission(
+    Permission.SendNotifications
+  );
+  const onlyReviewerSubmissions = !courseContext.userHasPermission(
+    Permission.ViewAllSubmissions
+  );
 
   const {
     isOpen: isOpenNotificationModal,
@@ -137,7 +144,16 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     onClose: onCloseNotificationModal,
   } = useDisclosure();
 
-  const [rowToNotify, setRowToNotify] = useState<RowData | undefined>(undefined);
+  const [rowToNotify, setRowToNotify] = useState<RowData | null>(null);
+
+  // Filtros de diferentes tipos.
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState(assignmentId);
+  const [selectedSubmissionStatus, setSelectedSubmissionStatus] =
+    useState<Nullable<SubmissionStatus>>(null);
+  const [selectedStudentUserId, setSelectedStudentUserId] =
+    useState<Optional<Nullable<string>>>(null);
+  const [selectedReviewerId, setSelectedReviewerId] =
+    useState<Optional<Nullable<string>>>(null);
 
   const handleOpenNotificationModal = (rowData: RowData) => {
     setRowToNotify(rowData);
@@ -145,25 +161,11 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   };
 
   const handleCloseNotificationModal = () => {
-    setRowToNotify(undefined);
+    setRowToNotify(null);
     onCloseNotificationModal();
   };
 
   const { setSubmissionIds } = useSubmissionContext();
-
-  const navigate = useNavigate();
-  const [selectedAssignmentId, setSelectedAssignmentId] = useState(assignmentId);
-  const [selectedSubmissionStatus, setSelectedSubmissionStatus] =
-    useState<Nullable<SubmissionStatus>>(null);
-
-  const [selectedStudentUserId, setSelectedStudentUserId] =
-    useState<Optional<Nullable<string>>>(null);
-  const [selectedReviewerId, setSelectedReviewerId] =
-    useState<Optional<Nullable<string>>>(null);
-
-  const onlyReviewerSubmissions = !courseContext.userHasPermission(
-    Permission.ViewAllSubmissions
-  );
 
   const data = useLazyLoadQuery<AssignmentSubmissionsQuery>(SubmissionsQuery, {
     assignmentId: selectedAssignmentId,
@@ -173,43 +175,11 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
 
   const allAssignments = data.viewer?.course?.assignments || [];
 
-  const rowEnabledByFilters = ({
-    submitter,
-    reviewerId,
-    submission,
-    review,
-  }: {
+  type TargetRow = {
     submitter: SubmitterType;
     reviewerId?: string;
     review: Nullable<ReviewType>;
     submission: Nullable<SubmissionType>;
-  }) => {
-    let validStudent = true;
-    if (selectedStudentUserId) {
-      const submitterAsUser = getSubmitterAsUser(submitter);
-      if (submitterAsUser) {
-        validStudent = submitterAsUser.id === selectedStudentUserId;
-      } else {
-        const submitterAsGroup = getSubmitterAsGroup(submitter);
-        if (submitterAsGroup) {
-          validStudent = submitterAsGroup.members.some(
-            user => user.id === selectedStudentUserId
-          );
-        }
-      }
-    }
-    const validReviewer = !selectedReviewerId ? true : reviewerId === selectedReviewerId;
-
-    let validStatus = true;
-    if (selectedSubmissionStatus) {
-      const status = getSubmissionsReviewStatusLabel({
-        submission,
-        review,
-      });
-      validStatus = status === selectedSubmissionStatus;
-    }
-
-    return validStudent && validReviewer && validStatus;
   };
 
   const [groupRowDataList, setGroupRowDataList] = useState<RowData[]>([]);
@@ -222,33 +192,35 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     const assignmentSubmissionsData =
       data.viewer?.course?.assignmentsWithSubmissions || [];
 
-    const newSubmissions = assignmentSubmissionsData.flatMap(assignment =>
-      (
-        (courseContext.userIsTeacher
-          ? assignment?.submissions
-          : assignment?.viewerSubmission && [assignment?.viewerSubmission]) || []
-      ).filter(submission => {
-        return rowEnabledByFilters({
+    // Vemos si somos profesor o no.
+    // Si lo somos usamos la data de los alumnos y si no miramos solo las del viewer.
+    const submissions = assignmentSubmissionsData.flatMap(assignment => {
+      const assignmentSubmissions = courseContext.userIsTeacher
+        ? assignment?.submissions
+        : assignment?.viewerSubmission && [assignment?.viewerSubmission];
+
+      return (assignmentSubmissions || []).filter(submission => {
+        return isRowEnabledByFilters({
           submitter: submission.submitter,
           reviewerId: submission.reviewer?.reviewer?.id,
           review: submission.review,
           submission,
         });
-      })
-    );
+      });
+    });
 
-    const newRowData = newSubmissions.map((submission): RowData => {
+    const submissionsData = submissions.map((submission): RowData => {
       const review = submission?.review;
       const grade = review?.grade;
       const revisionRequested = review?.revisionRequested;
-      const submissionAssignmentTitle = allAssignments.find(
+      const relatedAssignment = allAssignments.find(
         a => a.id === submission.assignmentId
-      )?.title;
+      );
 
       return {
         submitter: getSubmitterRowData(submission.submitter),
         assignmentId: submission.assignmentId,
-        assignmentTitle: submissionAssignmentTitle,
+        assignmentTitle: relatedAssignment?.title,
         reviewer: submission.reviewer
           ? getReviewerRowData(submission.reviewer)
           : undefined,
@@ -267,38 +239,41 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
       };
     });
 
-    assignmentSubmissionsData.forEach(assignment =>
-      (
-        (courseContext.userIsTeacher
-          ? assignment?.nonExistentSubmissions
-          : assignment?.nonExistentViewerSubmission && [
-              assignment?.nonExistentViewerSubmission,
-            ]) || []
-      ).forEach(({ reviewer, submitter }) => {
+    // Vemos si somos profesor o no.
+    // Si lo somos usamos la data de los alumnos y si no miramos solo las del viewer.
+    assignmentSubmissionsData.forEach(assignment => {
+      const assignmentSubmissions = courseContext.userIsTeacher
+        ? assignment?.nonExistentSubmissions
+        : assignment?.nonExistentViewerSubmission && [
+            assignment?.nonExistentViewerSubmission,
+          ];
+
+      (assignmentSubmissions || []).forEach(({ reviewer, submitter }) => {
         const reviewerUser = reviewer?.reviewer;
-        if (
-          rowEnabledByFilters({
-            submitter,
-            reviewerId: reviewerUser?.id,
-            review: null,
-            submission: null,
-          })
-        ) {
-          newRowData.push({
+
+        const isRowEnabled = isRowEnabledByFilters({
+          submitter,
+          reviewerId: reviewerUser?.id,
+          review: null,
+          submission: null,
+        });
+
+        if (isRowEnabled) {
+          submissionsData.push({
             submitter: getSubmitterRowData(submitter),
             assignmentTitle: assignment.title,
             assignmentId: assignment.id,
             reviewer: reviewer ? getReviewerRowData(reviewer) : undefined,
           });
         }
-      })
-    );
+      });
+    });
 
     /* Separate group from non group rows */
     const groupRowDataList: RowData[] = [];
     const nonGroupRowDataList: RowData[] = [];
 
-    newRowData
+    submissionsData
       .sort((a, b) => {
         return a.submitter.name?.localeCompare(b.submitter.name || '') || 0;
       }) // Sort rows by submitter name
@@ -326,6 +301,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
 
     const isGroupTab = newTabIndex === TabIndex.Group;
     setSelectedTabIndex(newTabIndex);
+
     setSubmissionIds(
       (isGroupTab ? groupRowDataList : nonGroupRowDataList)
         .map(rowData => rowData.submission?.id)
@@ -333,7 +309,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     );
 
     setRowsReviewers(
-      newRowData.map(row => row.reviewer).filter(Boolean) as ReviewerRowData[]
+      submissionsData.map(row => row.reviewer).filter(Boolean) as ReviewerRowData[]
     );
 
     setRowsStudents(
@@ -348,6 +324,44 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
         .filter(Boolean) as SubmitterRowData[]
     );
   }, [selectedStudentUserId, selectedReviewerId, selectedSubmissionStatus, data]);
+
+  const isRowEnabledByFilters = ({
+    submitter,
+    reviewerId,
+    submission,
+    review,
+  }: TargetRow) => {
+    let isValidStudent = true;
+    let hasValidStatus = true;
+
+    const hasValidReviewer = selectedReviewerId
+      ? reviewerId === selectedReviewerId
+      : true;
+
+    if (selectedStudentUserId) {
+      const submitterAsUser = getSubmitterAsUser(submitter);
+      if (submitterAsUser) {
+        isValidStudent = submitterAsUser.id === selectedStudentUserId;
+      } else {
+        const submitterAsGroup = getSubmitterAsGroup(submitter);
+        if (submitterAsGroup) {
+          isValidStudent = submitterAsGroup.members.some(
+            user => user.id === selectedStudentUserId
+          );
+        }
+      }
+    }
+
+    if (selectedSubmissionStatus) {
+      const status = getSubmissionsReviewStatusLabel({
+        submission,
+        review,
+      });
+      hasValidStatus = status === selectedSubmissionStatus;
+    }
+
+    return isValidStudent && hasValidReviewer && hasValidStatus;
+  };
 
   const onRowClick = (rowData: RowData) => {
     rowData.submission?.id
@@ -472,7 +486,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                   setSelectedReviewerId(reviewerId)
                 }
                 onNotifyClick={handleOpenNotificationModal}
-                showNotifyButton={showNotifyButton}
+                showNotifyButton={notifyButtonEnabled}
               />
             </Stack>
           </TabPanel>
@@ -491,7 +505,7 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
                   (rowData.submitter as GroupSubmitterRowData).participants
                 }
                 onNotifyClick={handleOpenNotificationModal}
-                showNotifyButton={showNotifyButton}
+                showNotifyButton={notifyButtonEnabled}
               />
             </Stack>
           </TabPanel>
