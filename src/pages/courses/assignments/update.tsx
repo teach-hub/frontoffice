@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import UpdateAssignmentMutationDef from 'graphql/UpdateAssignmentMutation';
 import AssignmentUpdateQueryDef from 'graphql/AssignmentUpdateQuery';
 
-import useToast from 'hooks/useToast';
+import useToast, { showErrorToast, showSuccessToast } from 'hooks/useToast';
 import { useUserContext } from 'hooks/useUserCourseContext';
 import { formatDateAsLocaleIsoString } from 'utils/dates';
 import { buildAssignmentRoute } from 'routes';
@@ -90,19 +90,19 @@ const UpdateAssignmentPage = ({ assignmentId, courseId }: UpdatePageProps) => {
         setShowSpinner(false);
         const data = response.updateAssignment;
         if (!errors?.length && data) {
-          toast({
-            title: 'Trabajo práctico guardado!',
-            status: 'success',
+          showSuccessToast({
+            toast,
+            title: 'Trabajo práctico actualizado!',
           });
           navigate(buildAssignmentRoute(courseId, assignmentId));
         } else {
           const errorMessage = errors ? errors[0].message : null;
-          toast({
+          showErrorToast({
+            toast,
             title: 'Error',
             description:
               `No se pudo editar el trabajo práctico` +
               (errorMessage ? `: ${errorMessage}` : ''),
-            status: 'error',
           });
         }
       },

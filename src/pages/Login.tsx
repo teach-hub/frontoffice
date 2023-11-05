@@ -26,7 +26,7 @@ import {
   storeGetValue,
   storeSetValue,
 } from 'hooks/useLocalStorage';
-import useToast from 'hooks/useToast';
+import useToast, { showErrorToast, showSuccessToast } from 'hooks/useToast';
 import { isAuthenticated } from 'auth/utils';
 
 import { FormErrors, Mutable } from 'types';
@@ -128,10 +128,10 @@ const LoginPage = (props: LoginPageProps) => {
             onOpen(); // Open register form
           }
         } else {
-          toast({
+          showErrorToast({
+            toast,
             title: 'Error',
             description: `No ha sido posible ingresar: ${errors[0].message}`,
-            status: 'error',
           });
         }
       },
@@ -228,17 +228,16 @@ const RegisterForm = ({ onClose }: Props): JSX.Element => {
         if (!errors?.length) {
           const redirectTo = storeGetAndClearValue(LocalStorageKeys.RedirectTo);
           navigate(redirectTo ? redirectTo : '/');
-          toast({
+          showSuccessToast({
+            toast,
             title: `Bienvenido ${name}!`,
-            status: 'success',
           });
         } else {
           onClose();
-
-          toast({
+          showErrorToast({
+            toast,
             title: 'Error',
             description: `No ha sido posible registrarse: ${errors[0].message}`,
-            status: 'error',
           });
         }
       },

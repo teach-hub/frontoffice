@@ -14,7 +14,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import Navigation from 'components/Navigation';
 import Heading from 'components/Heading';
 import InputField from 'components/InputField';
-import useToast from 'hooks/useToast';
+import useToast, { showErrorToast } from 'hooks/useToast';
 import PageDataContainer from 'components/PageDataContainer';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 import Table from 'components/Table';
@@ -471,10 +471,10 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
             /* There may be errors in the response, display them appart */
             onOpenCreationResultModal();
           } else {
-            toast({
+            showErrorToast({
+              toast,
               title: 'Error',
               description: `No ha sido posible crear los repositorios`,
-              status: 'error',
             });
           }
         },

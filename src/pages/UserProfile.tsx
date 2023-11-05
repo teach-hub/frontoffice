@@ -11,7 +11,7 @@ import Form from 'components/Form';
 import InputField from 'components/InputField';
 import PageDataContainer from 'components/PageDataContainer';
 
-import useToast from 'hooks/useToast';
+import useToast, { showErrorToast, showSuccessToast } from 'hooks/useToast';
 
 import UserProfileQueryDef from 'graphql/UserProfileQuery';
 import UpdateProfileMutationDef from 'graphql/UpdateProfileMutation';
@@ -53,16 +53,15 @@ const UserProfilePage = ({ user }: Props): JSX.Element => {
       if (queryResult && response.updateViewerUser) {
         setResult({ ...response.updateViewerUser, id: queryResult.id });
       }
-      toast({
-        title: '¡Usuario actualizado!',
-        description: 'El usuario fue actualizado',
-        status: 'success',
+      showSuccessToast({
+        toast,
+        title: 'Usuario actualizado',
       });
     } else {
-      toast({
+      showErrorToast({
+        toast,
         title: 'Error',
         description: 'El usuario no pudo ser actualizado',
-        status: 'error',
       });
     }
   };

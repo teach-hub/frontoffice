@@ -6,7 +6,7 @@ import Spinner from 'components/Spinner';
 import { Modal } from 'components/Modal';
 import Button from 'components/Button';
 
-import useToast from 'hooks/useToast';
+import useToast, { showErrorToast, showSuccessToast } from 'hooks/useToast';
 
 import CreateGroupWithParticipantMutationDef from 'graphql/CreateGroupWithParticipantMutation';
 
@@ -49,12 +49,16 @@ const CreateGroupModal = (props: Props) => {
         const responseData = response.createGroupWithParticipant;
         const group = responseData?.viewerGroupParticipants;
         if (!errors?.length && group) {
+          showSuccessToast({
+            toast,
+            title: 'Grupo creado',
+          });
           onClose();
         } else {
-          toast({
+          showErrorToast({
+            toast,
             title: 'Error',
             description: `Error al intentar crear el grupo: ${errors?.at(0)?.message}`,
-            status: 'error',
           });
         }
       },

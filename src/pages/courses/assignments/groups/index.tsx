@@ -29,7 +29,7 @@ import Button from 'components/Button';
 import TeacherPage from 'components/TeacherOnlyPage';
 
 import { FetchedContext, useUserContext } from 'hooks/useUserCourseContext';
-import useToast from 'hooks/useToast';
+import useToast, { showErrorToast, showSuccessToast } from 'hooks/useToast';
 
 import CreateGroupWithParticipantsMutationDef from 'graphql/CreateGroupWithParticipantsMutation';
 import AddParticipantsToGroupMutationDef from 'graphql/AddParticipantsToGroupMutation';
@@ -148,17 +148,17 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
       onCompleted: (_, errors) => {
         setShowSpinner(false);
         if (!errors?.length) {
-          toast({
-            title: 'Alumnos agregados!',
-            status: 'info',
+          showSuccessToast({
+            toast,
+            title: 'Alumnos agregados',
           });
           onCloseAddUsersModal();
         } else {
           console.log({ errors });
-          toast({
+          showErrorToast({
+            toast,
             title: 'Error',
             description: `Error al intentar unirse a grupo: ${errors?.at(0)?.message}`,
-            status: 'error',
           });
         }
       },
@@ -176,17 +176,17 @@ const GroupsPage = ({ courseContext }: { courseContext: FetchedContext }) => {
       onCompleted: (_, errors) => {
         setShowSpinner(false);
         if (!errors?.length) {
-          toast({
-            title: 'Grupo creado!',
-            status: 'info',
+          showSuccessToast({
+            toast,
+            title: 'Grupo creado',
           });
           onCloseCreateGroupModal();
         } else {
           console.log({ errors });
-          toast({
+          showErrorToast({
+            toast,
             title: 'Error',
             description: `Error al intentar crear grupo: ${errors?.at(0)?.message}`,
-            status: 'error',
           });
         }
       },

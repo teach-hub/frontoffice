@@ -23,7 +23,11 @@ import { getGithubRepoUrlFromPullRequestUrl } from 'utils/github';
 
 import { buildAssignmentRoute, buildSubmissionRoute } from 'routes';
 
-import useToast from 'hooks/useToast';
+import useToast, {
+  showErrorToast,
+  showSuccessToast,
+  showWarningToast,
+} from 'hooks/useToast';
 import { FetchedContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
 
@@ -204,10 +208,10 @@ const SubmissionPage = ({
 
   const showWarningToastIfNotReviewer = () => {
     if (!submission?.viewerIsReviewer) {
-      toast({
+      showWarningToast({
+        toast,
         title: 'No es posible calificar',
         description: 'Para calificar debes ser el corrector de la entrega',
-        status: 'warning',
       });
     }
   };
@@ -222,14 +226,14 @@ const SubmissionPage = ({
       onCompleted: (_: unknown, errors: Nullable<PayloadError[]>) => {
         setShowSpinner(false);
         if (errors?.length) {
-          toast({
+          showErrorToast({
+            toast,
             title: 'Error al re-entregar, intentelo de nuevo',
-            status: 'error',
           });
         } else {
-          toast({
+          showSuccessToast({
+            toast,
             title: 'Re-entrega enviada',
-            status: 'success',
           });
         }
       },
@@ -253,14 +257,14 @@ const SubmissionPage = ({
     const onCompleted = (_: unknown, errors: Nullable<PayloadError[]>) => {
       setShowSpinner(false);
       if (!errors?.length) {
-        toast({
+        showSuccessToast({
+          toast,
           title: 'Corrección actualizada',
-          status: 'success',
         });
       } else {
-        toast({
+        showErrorToast({
+          toast,
           title: 'Error al actualizar la corrección, intentelo de nuevo',
-          status: 'error',
         });
       }
     };

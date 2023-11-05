@@ -36,7 +36,7 @@ import CourseInfoQueryDef from 'graphql/CourseInfoQuery';
 
 import CourseSetDescriptionMutationDef from 'graphql/CourseSetDescriptionMutation';
 
-import useToast from 'hooks/useToast';
+import useToast, { showErrorToast, showSuccessToast } from 'hooks/useToast';
 import { CourseContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
 import { buildAssignmentsRoute } from 'routes';
 
@@ -125,9 +125,9 @@ const CourseStatistics = ({ course, courseContext, availableOrganizations }: Pro
         setShowSpinner(false);
         const data = response.setOrganization;
         if (!errors?.length && data) {
-          toast({
-            title: 'Organización actualizada!',
-            status: 'info',
+          showSuccessToast({
+            toast,
+            title: 'Organización actualizada',
           });
 
           /* Update current course organization avoiding to reload */
@@ -137,13 +137,13 @@ const CourseStatistics = ({ course, courseContext, availableOrganizations }: Pro
           };
         } else {
           const errorMessage = errors ? errors[0].message : null;
-          toast({
+          showErrorToast({
+            toast,
             title: 'Error',
             description:
               `No se pudo configurar la organización` + errorMessage
                 ? `: ${errorMessage}`
                 : '',
-            status: 'error',
           });
         }
         onClose();
@@ -407,9 +407,9 @@ const DescriptionModalContainer = ({
       onCompleted: (response: CourseSetDescriptionMutation$data, errors) => {
         const data = response.setDescription;
         if (!errors?.length && data) {
-          toast({
+          showSuccessToast({
+            toast,
             title: 'Descripción actualizada!',
-            status: 'success',
           });
 
           /* Update current course avoiding to reload */
@@ -419,13 +419,13 @@ const DescriptionModalContainer = ({
           };
         } else {
           const errorMessage = errors ? errors[0].message : null;
-          toast({
+          showErrorToast({
+            toast,
             title: 'Error',
             description:
               `No se pudo actualizar la descripción` + errorMessage
                 ? `: ${errorMessage}`
                 : '',
-            status: 'error',
           });
         }
         setShowSpinner(false);

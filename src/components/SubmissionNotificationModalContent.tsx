@@ -1,5 +1,5 @@
 import { GroupSubmitterRowData, RowData } from 'components/SubmissionsTable';
-import useToast from 'hooks/useToast';
+import useToast, { showErrorToast, showSuccessToast } from 'hooks/useToast';
 import React, { useState } from 'react';
 import { useMutation } from 'react-relay';
 import { SendAssignmentNotificationMutation } from '__generated__/SendAssignmentNotificationMutation.graphql';
@@ -63,16 +63,16 @@ const NotifyModalContent = ({
       onCompleted: (result, errors) => {
         setShowSpinner(false);
         if (errors?.length) {
-          toast({
+          showErrorToast({
+            toast,
             title: 'Error',
             description: 'No se pudo enviar la notificación',
-            status: 'error',
           });
         } else {
           onCompleted();
-          toast({
+          showSuccessToast({
+            toast,
             title: 'Notificación enviada',
-            status: 'success',
           });
         }
       },

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLazyLoadQuery, useMutation } from 'react-relay';
 import { useNavigate } from 'react-router-dom';
 
-import useToast from 'hooks/useToast';
+import useToast, { showErrorToast, showSuccessToast } from 'hooks/useToast';
 
 import { buildAssignmentRoute } from 'routes';
 
@@ -82,16 +82,16 @@ function Content({
       onCompleted: (_, errors) => {
         setShowSpinner(false);
         if (errors && errors.length) {
-          toast({
+          showErrorToast({
+            toast,
             title: 'Entrega fallida',
             description: 'No pudimos procesar tu entrega',
-            status: 'error',
           });
         } else {
-          toast({
+          showSuccessToast({
+            toast,
             title: 'Entrega creada',
             description: 'Entrega realizada con exito',
-            status: 'success',
           });
         }
         navigate(buildAssignmentRoute(course.id, values.assignmentId));

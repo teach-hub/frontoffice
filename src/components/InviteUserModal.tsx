@@ -7,7 +7,7 @@ import Input from 'components/InputField';
 import { Modal } from 'components/Modal';
 import { FormControl } from 'components/FormControl';
 import IconButton from 'components/IconButton';
-import useToast from 'hooks/useToast';
+import useToast, { showSuccessToast } from 'hooks/useToast';
 
 export type Props = {
   onGenerateLink: (_: { roleId: string; expirationMinutes?: number }) => Promise<string>;
@@ -39,9 +39,9 @@ export default ({ roles, isOpen, onClose, onGenerateLink }: Props) => {
 
   const _onCopy = () => {
     onCopy();
-    toast({
+    showSuccessToast({
+      toast,
       title: 'Link copiado',
-      status: 'success',
     });
   };
 
