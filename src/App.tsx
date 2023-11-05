@@ -20,8 +20,6 @@ import {
 } from 'chart.js';
 
 import environment from 'relayEnvironment';
-
-import HomePage from 'pages/Home';
 import NotFoundPage from 'pages/NotFound';
 import UserProfilePage from 'pages/UserProfile';
 import UserCoursesPage from 'pages/courses';
@@ -90,7 +88,7 @@ const App = () => {
           </ProtectedLayout>
         }
       >
-        <Route index element={<HomePage />} />
+        <Route index element={<Navigate to="/courses" />} />
         <Route path="invites/:inviteId" element={<InvitePage />} />
         <Route path="profile" element={<UserProfilePage />} />
         <Route path="courses">
