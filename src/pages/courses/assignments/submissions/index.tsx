@@ -55,6 +55,14 @@ type SubmissionType = NonNullable<
   >['submissions'][number]
 >;
 
+type NonExistentSubmissionType = NonNullable<
+  NonNullable<
+    NonNullable<
+      NonNullable<AssignmentSubmissionsQuery$data['viewer']>['course']
+    >['assignmentsWithSubmissions'][number]
+  >['nonExistentSubmissions'][number]
+>;
+
 type SubmitterType = NonNullable<SubmissionType['submitter']>;
 type ReviewerType = NonNullable<SubmissionType['reviewer']>;
 type ReviewType = NonNullable<SubmissionType['review']>;
@@ -154,16 +162,6 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const [selectedReviewerId, setSelectedReviewerId] =
     useState<Optional<Nullable<string>>>(null);
 
-  const handleOpenNotificationModal = (rowData: RowData) => {
-    setRowToNotify(rowData);
-    onOpenNotificationModal();
-  };
-
-  const handleCloseNotificationModal = () => {
-    setRowToNotify(null);
-    onCloseNotificationModal();
-  };
-
   const { setSubmissionIds } = useSubmissionContext();
 
   const data = useLazyLoadQuery<AssignmentSubmissionsQuery>(SubmissionsQuery, {
@@ -191,104 +189,113 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     const assignmentSubmissionsData =
       data.viewer?.course?.assignmentsWithSubmissions || [];
 
-    // Vemos si somos profesor o no.
-    // Si lo somos usamos la data de los alumnos y si no miramos solo las del viewer.
-    const submissions = assignmentSubmissionsData.flatMap(assignment => {
-      const assignmentSubmissions = courseContext.userIsTeacher
-        ? assignment?.submissions
-        : assignment?.viewerSubmission && [assignment?.viewerSubmission];
+    // Creamos `submissions` con las entregas hechas.
+    const submissions = assignmentSubmissionsData.flatMap(
+      (
+        assignment
+      ): (SubmissionType | (NonExistentSubmissionType & { assignmentId: string }))[] => {
+        // Vemos si somos profesor o no.
+        // Si lo somos usamos la data de los alumnos y si no miramos solo las del viewer.
+        const nonExistentSubmissions = courseContext.userIsTeacher
+          ? assignment?.nonExistentSubmissions
+          : assignment?.nonExistentViewerSubmission && [
+              assignment?.nonExistentViewerSubmission,
+            ];
 
-      return (assignmentSubmissions || []).filter(submission => {
-        return isRowEnabledByFilters({
-          submitter: submission.submitter,
-          reviewerId: submission.reviewer?.reviewer?.id,
-          review: submission.review,
-          submission,
+        const nonExistentFiltered = (nonExistentSubmissions || []).filter(
+          ({ reviewer, submitter }) => {
+            const reviewerUser = reviewer?.reviewer;
+
+            return isRowEnabledByFilters({
+              submitter,
+              reviewerId: reviewerUser?.id,
+              review: null,
+              submission: null,
+            });
+          }
+        );
+
+        // Vemos si somos profesor o no.
+        // Si lo somos usamos la data de los alumnos y si no miramos solo las del viewer.
+        const assignmentSubmissions = courseContext.userIsTeacher
+          ? assignment?.submissions
+          : assignment?.viewerSubmission && [assignment?.viewerSubmission];
+
+        const existentFiltered = (assignmentSubmissions || []).filter(submission => {
+          return isRowEnabledByFilters({
+            submitter: submission.submitter,
+            reviewerId: submission.reviewer?.reviewer?.id,
+            review: submission.review,
+            submission,
+          });
         });
-      });
-    });
+
+        return nonExistentFiltered
+          .map(s => ({ ...s, assignmentId: assignment.id }))
+          .concat(existentFiltered);
+      }
+    );
 
     const submissionsData = submissions.map((submission): RowData => {
-      const review = submission?.review;
-      const grade = review?.grade;
-      const revisionRequested = review?.revisionRequested;
-      const relatedAssignment = allAssignments.find(
-        a => a.id === submission.assignmentId
-      );
+      // Diferenciamos los non-existent de los existent.
+      if ('review' in submission) {
+        const review = submission?.review;
+        const grade = review?.grade;
+        const revisionRequested = review?.revisionRequested;
+        const relatedAssignment = allAssignments.find(
+          ({ id }) => id === submission.assignmentId
+        );
 
-      return {
-        submitter: getSubmitterRowData(submission.submitter),
-        assignmentId: submission.assignmentId,
-        assignmentTitle: relatedAssignment?.title,
-        reviewer: submission.reviewer
-          ? getReviewerRowData(submission.reviewer)
-          : undefined,
-        submission: submission.id
-          ? {
-              grade,
-              revisionRequested,
-              id: submission.id,
-              pullRequestUrl: submission.pullRequestUrl,
-              submittedAt: submission.submittedAt,
-              submittedAgainAt: submission.submittedAgainAt,
-              reviewedAt: review?.reviewedAt,
-              reviewedAgainAt: review?.reviewedAgainAt,
-            }
-          : undefined,
-      };
-    });
+        return {
+          submitter: getSubmitterRowData(submission.submitter),
+          assignmentId: submission.assignmentId,
+          assignmentTitle: relatedAssignment?.title,
+          reviewer: submission.reviewer
+            ? getReviewerRowData(submission.reviewer)
+            : undefined,
+          submission: submission.id
+            ? {
+                grade,
+                revisionRequested,
+                id: submission.id,
+                pullRequestUrl: submission.pullRequestUrl,
+                submittedAt: submission.submittedAt,
+                submittedAgainAt: submission.submittedAgainAt,
+                reviewedAt: review?.reviewedAt,
+                reviewedAgainAt: review?.reviewedAgainAt,
+              }
+            : undefined,
+        };
+      } else {
+        const assignment = allAssignments.find(
+          ({ id }) => id === submission.assignmentId
+        );
 
-    // Vemos si somos profesor o no.
-    // Si lo somos usamos la data de los alumnos y si no miramos solo las del viewer.
-    assignmentSubmissionsData.forEach(assignment => {
-      const assignmentSubmissions = courseContext.userIsTeacher
-        ? assignment?.nonExistentSubmissions
-        : assignment?.nonExistentViewerSubmission && [
-            assignment?.nonExistentViewerSubmission,
-          ];
-
-      (assignmentSubmissions || []).forEach(({ reviewer, submitter }) => {
-        const reviewerUser = reviewer?.reviewer;
-
-        const isRowEnabled = isRowEnabledByFilters({
-          submitter,
-          reviewerId: reviewerUser?.id,
-          review: null,
-          submission: null,
-        });
-
-        if (isRowEnabled) {
-          submissionsData.push({
-            submitter: getSubmitterRowData(submitter),
-            assignmentTitle: assignment.title,
-            assignmentId: assignment.id,
-            reviewer: reviewer ? getReviewerRowData(reviewer) : undefined,
-          });
-        }
-      });
+        return {
+          submitter: getSubmitterRowData(submission.submitter),
+          assignmentTitle: assignment?.title,
+          assignmentId: submission.assignmentId,
+          reviewer: submission.reviewer
+            ? getReviewerRowData(submission.reviewer)
+            : undefined,
+        };
+      }
     });
 
     /* Separate group from non group rows */
-    const groupRowDataList: RowData[] = [];
-    const nonGroupRowDataList: RowData[] = [];
-
-    submissionsData
-      .sort((a, b) => {
-        return a.submitter.name?.localeCompare(b.submitter.name || '') || 0;
-      }) // Sort rows by submitter name
-      .forEach(rowData => {
-        if (rowData.submitter.isGroup) {
-          groupRowDataList.push(rowData);
-        } else {
-          nonGroupRowDataList.push(rowData);
-        }
-      });
+    const [groupRowDataList, nonGroupRowDataList]: [RowData[], RowData[]] = partition(
+      submissionsData.sort(
+        (a, b) => a.submitter.name?.localeCompare(b.submitter.name || '') || 0
+      ),
+      rowData => rowData.submitter.isGroup
+    );
 
     setGroupRowDataList(groupRowDataList);
     setNonGroupRowDataList(nonGroupRowDataList);
 
     const emptyNonGroupRowDataList = nonGroupRowDataList.length === 0;
     const emptyGroupRowDataList = groupRowDataList.length === 0;
+
     const newTabIndex =
       emptyGroupRowDataList && emptyNonGroupRowDataList
         ? selectedTabIndex
@@ -370,6 +377,16 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
           title: 'No existe entrega asociada',
           description: 'Para acceder al detalle primero se debe realizar la entrega',
         });
+  };
+
+  const handleOpenNotificationModal = (rowData: RowData) => {
+    setRowToNotify(rowData);
+    onOpenNotificationModal();
+  };
+
+  const handleCloseNotificationModal = () => {
+    setRowToNotify(null);
+    onCloseNotificationModal();
   };
 
   return (
