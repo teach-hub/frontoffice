@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
-import { partition } from 'lodash';
+import { partition, sortBy } from 'lodash';
 
 import { FetchedContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
@@ -67,51 +67,32 @@ type SubmitterType = NonNullable<SubmissionType['submitter']>;
 type ReviewerType = NonNullable<SubmissionType['reviewer']>;
 type ReviewType = NonNullable<SubmissionType['review']>;
 
-const getSubmitterAsUser = (
-  submitter: SubmitterType
-): Extract<SubmitterType, { __typename: 'UserType' }> | null => {
-  if (submitter.__typename === 'UserType') {
-    return submitter;
-  }
-  return null;
-};
-
-const getSubmitterAsGroup = (
-  submitter: SubmitterType
-): Extract<SubmitterType, { __typename: 'InternalGroupType' }> | null => {
-  if (submitter.__typename === 'InternalGroupType') {
-    return submitter;
-  }
-  return null;
-};
-
 const getSubmitterRowData = (
   submitter: SubmitterType
 ): SubmitterRowData | GroupSubmitterRowData => {
-  const submitterAsUser = getSubmitterAsUser(submitter);
-  if (submitterAsUser) {
-    return {
-      id: submitterAsUser.id,
-      name: `${submitterAsUser.lastName}, ${submitterAsUser.name}`,
-      isGroup: false,
-      notificationEmail: submitterAsUser.notificationEmail,
-    };
+  switch (submitter.__typename) {
+    case 'UserType':
+      return {
+        id: submitter.id,
+        name: `${submitter.lastName}, ${submitter.name}`,
+        isGroup: false,
+        notificationEmail: submitter.notificationEmail,
+      };
+    case 'InternalGroupType':
+      return {
+        id: submitter.id,
+        name: submitter.groupName,
+        isGroup: true,
+        participants: submitter.members.map(user => ({
+          id: user.id,
+          name: `${user.lastName}, ${user.name}`,
+          notificationEmail: user.notificationEmail,
+        })),
+        notificationEmail: undefined, // Group has no email
+      };
+    default:
+      throw new Error('Submitter is neither a user nor a group');
   }
-  const submitterAsGroup = getSubmitterAsGroup(submitter);
-  if (submitterAsGroup) {
-    return {
-      id: submitterAsGroup.id,
-      name: submitterAsGroup.groupName,
-      isGroup: true,
-      participants: submitterAsGroup.members.map(user => ({
-        id: user.id,
-        name: `${user.lastName}, ${user.name}`,
-        notificationEmail: user.notificationEmail,
-      })),
-      notificationEmail: undefined, // Group has no email
-    };
-  }
-  throw new Error('Submitter is neither a user nor a group');
 };
 
 const getReviewerRowData = (reviewer: ReviewerType): Optional<ReviewerRowData> => {
@@ -202,17 +183,13 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
               assignment?.nonExistentViewerSubmission,
             ];
 
-        const nonExistentFiltered = (nonExistentSubmissions || []).filter(
-          ({ reviewer, submitter }) => {
-            const reviewerUser = reviewer?.reviewer;
-
-            return isRowEnabledByFilters({
-              submitter,
-              reviewerId: reviewerUser?.id,
-              review: null,
-              submission: null,
-            });
-          }
+        const nonExistentFiltered = (nonExistentSubmissions || []).filter(submission =>
+          isRowEnabledByFilters({
+            submitter: submission.submitter,
+            reviewerId: submission.reviewer?.reviewer.id,
+            review: null,
+            submission: null,
+          })
         );
 
         // Vemos si somos profesor o no.
@@ -221,14 +198,14 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
           ? assignment?.submissions
           : assignment?.viewerSubmission && [assignment?.viewerSubmission];
 
-        const existentFiltered = (assignmentSubmissions || []).filter(submission => {
-          return isRowEnabledByFilters({
+        const existentFiltered = (assignmentSubmissions || []).filter(submission =>
+          isRowEnabledByFilters({
             submitter: submission.submitter,
             reviewerId: submission.reviewer?.reviewer?.id,
             review: submission.review,
             submission,
-          });
-        });
+          })
+        );
 
         return nonExistentFiltered
           .map(s => ({ ...s, assignmentId: assignment.id }))
@@ -237,56 +214,39 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     );
 
     const submissionsData = submissions.map((submission): RowData => {
-      // Diferenciamos los non-existent de los existent.
-      if ('review' in submission) {
-        const review = submission?.review;
-        const grade = review?.grade;
-        const revisionRequested = review?.revisionRequested;
-        const relatedAssignment = allAssignments.find(
-          ({ id }) => id === submission.assignmentId
-        );
+      const relatedAssignment = allAssignments.find(
+        ({ id }) => id === submission.assignmentId
+      );
+      const submitter = getSubmitterRowData(submission.submitter);
+      const assignmentId = submission.assignmentId;
+      const assignmentTitle = relatedAssignment?.title;
+      const reviewer = !submission.reviewer
+        ? undefined
+        : getReviewerRowData(submission.reviewer);
 
-        return {
-          submitter: getSubmitterRowData(submission.submitter),
-          assignmentId: submission.assignmentId,
-          assignmentTitle: relatedAssignment?.title,
-          reviewer: submission.reviewer
-            ? getReviewerRowData(submission.reviewer)
-            : undefined,
-          submission: submission.id
-            ? {
-                grade,
-                revisionRequested,
-                id: submission.id,
-                pullRequestUrl: submission.pullRequestUrl,
-                submittedAt: submission.submittedAt,
-                submittedAgainAt: submission.submittedAgainAt,
-                reviewedAt: review?.reviewedAt,
-                reviewedAgainAt: review?.reviewedAgainAt,
-              }
-            : undefined,
-        };
-      } else {
-        const assignment = allAssignments.find(
-          ({ id }) => id === submission.assignmentId
-        );
-
-        return {
-          submitter: getSubmitterRowData(submission.submitter),
-          assignmentTitle: assignment?.title,
-          assignmentId: submission.assignmentId,
-          reviewer: submission.reviewer
-            ? getReviewerRowData(submission.reviewer)
-            : undefined,
-        };
-      }
+      return {
+        submitter,
+        assignmentId,
+        assignmentTitle,
+        reviewer,
+        submission: !('submittedAt' in submission)
+          ? undefined
+          : {
+              id: submission.id,
+              grade: submission.review?.grade,
+              revisionRequested: submission.review?.revisionRequested,
+              pullRequestUrl: submission.pullRequestUrl,
+              submittedAt: submission.submittedAt,
+              submittedAgainAt: submission.submittedAgainAt,
+              reviewedAt: submission.review?.reviewedAt,
+              reviewedAgainAt: submission.review?.reviewedAgainAt,
+            },
+      };
     });
 
     /* Separate group from non group rows */
     const [groupRowDataList, nonGroupRowDataList]: [RowData[], RowData[]] = partition(
-      submissionsData.sort(
-        (a, b) => a.submitter.name?.localeCompare(b.submitter.name || '') || 0
-      ),
+      sortBy(submissionsData, x => x.submitter.name),
       rowData => rowData.submitter.isGroup
     );
 
@@ -337,24 +297,26 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     submission,
     review,
   }: TargetRow) => {
-    let isValidStudent = true;
     let hasValidStatus = true;
 
     const hasValidReviewer = selectedReviewerId
       ? reviewerId === selectedReviewerId
       : true;
 
+    let isValidStudent = true;
+
     if (selectedStudentUserId) {
-      const submitterAsUser = getSubmitterAsUser(submitter);
-      if (submitterAsUser) {
-        isValidStudent = submitterAsUser.id === selectedStudentUserId;
-      } else {
-        const submitterAsGroup = getSubmitterAsGroup(submitter);
-        if (submitterAsGroup) {
-          isValidStudent = submitterAsGroup.members.some(
+      switch (submitter.__typename) {
+        case 'UserType':
+          isValidStudent = submitter.id === selectedStudentUserId;
+          break;
+        case 'InternalGroupType':
+          isValidStudent = submitter.members.some(
             user => user.id === selectedStudentUserId
           );
-        }
+          break;
+        default:
+          break;
       }
     }
 
