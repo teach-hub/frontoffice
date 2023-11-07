@@ -26,6 +26,9 @@ export const buildAddSubmissionRoute = (courseId: string) =>
 export const buildAssignmentRoute = (courseId: string, assignmentId: string) =>
   `${buildAssignmentsRoute(courseId)}/${assignmentId}`;
 
+export const buildAssignmentGroups = (courseId: string, assignmentId: string) =>
+  `${buildAssignmentRoute(courseId, assignmentId)}/groups`;
+
 export const buildSubmissionRoute = (courseId: string, submissionId: string) =>
   `${buildSubmissionsRoute(courseId)}/${submissionId}`;
 

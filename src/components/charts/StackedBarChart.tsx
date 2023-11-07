@@ -57,6 +57,7 @@ export const StackedBarChart = <T,>({
       data={chartData}
       options={{
         indexAxis: indexAxis,
+        responsive: true,
         plugins: {
           title: {
             display: true,

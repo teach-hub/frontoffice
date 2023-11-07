@@ -49,12 +49,16 @@ import {
 import { StackedBarChart } from 'components/charts/StackedBarChart';
 import Box from 'components/Box';
 import { Pie } from 'components/charts/Pie';
+import {
+  buildMyGroupsRoute,
+  buildAssignmentRoute,
+  buildAssignmentGroups,
+  buildSubmissionsRoute,
+  buildSubmissionRoute,
+} from 'routes';
 
 type Course = NonNullable<NonNullable<AssignmentQuery$data['viewer']>['course']>;
 type Assignment = NonNullable<Course['assignment']>;
-type ReviewerUserType = NonNullable<
-  NonNullable<NonNullable<Assignment['submissions']>[number]['reviewer']>['reviewer']
->;
 
 const LIST_ITEM_ICON_COLOR = 'teachHub.primary';
 
@@ -109,54 +113,83 @@ function AssignmentDetails({ assignment }: { assignment: Assignment }) {
   );
 }
 
+type NavigationActionData = {
+  icon: OcticonsIcon;
+  text: string;
+  link: string;
+  disabled?: boolean;
+};
+
 const AssignmentNavigationActions = ({ assignment }: { assignment: Assignment }) => {
   const courseContext = useUserContext();
   const viewerCanSubmit = assignment.isOpenForSubmissions && !assignment.viewerSubmission;
 
-  type NavigationActionData = {
-    icon: OcticonsIcon;
-    text: string;
-    link: string;
-    disabled?: boolean;
-  };
+  if (!courseContext.courseId) {
+    return null;
+  }
 
-  const isTeacher = courseContext.userIsTeacher;
+  const actions: NavigationActionData[] = [];
 
-  const actions: NavigationActionData[] = [
-    isTeacher && {
+  if (courseContext.userIsTeacher) {
+    actions.push({
       icon: SubmissionIcon,
       text: 'Ver entregas',
-      link: `../../submissions?${buildAssignmentUrlFilter(assignment.id)}`,
-    },
-    !isTeacher && {
+      link: `${buildSubmissionsRoute(courseContext.courseId)}?${buildAssignmentUrlFilter(
+        assignment.id
+      )}`,
+    });
+  } else {
+    actions.push({
       icon: SubmissionIcon,
       text: 'Ver entrega',
-      link: `../../submissions/${assignment.viewerSubmission?.id}`,
+      link: buildSubmissionRoute(
+        courseContext.courseId,
+        assignment.viewerSubmission?.id || ''
+      ),
       disabled: !assignment.viewerSubmission?.id,
-    },
-    courseContext.userHasPermission(Permission.AssignReviewer) && {
+    });
+  }
+
+  if (courseContext.userHasPermission(Permission.AssignReviewer)) {
+    actions.push({
       icon: ReviewerIcon,
       text: 'Asignar correctores',
-      link: `assign-reviewers`,
-    },
-    courseContext.userHasPermission(Permission.SubmitAssignment) && {
+      link: `${buildAssignmentRoute(
+        courseContext.courseId,
+        assignment.id
+      )}/assign-reviewers`,
+    });
+  }
+
+  if (courseContext.userHasPermission(Permission.SubmitAssignment)) {
+    actions.push({
       icon: SubmissionIcon,
       text: assignment.viewerSubmission ? 'Entrega realizada' : 'Realizar nueva entrega',
-      link: `add-submission`,
       disabled: !viewerCanSubmit,
-    },
-    courseContext.userHasPermission(Permission.CreateRepository) && {
+      link: `${buildAssignmentRoute(
+        courseContext.courseId,
+        assignment.id
+      )}/add-submission`,
+    });
+  }
+
+  if (courseContext.userHasPermission(Permission.CreateRepository)) {
+    actions.push({
       icon: CreateRepositoryIcon,
       text: 'Crear repositorios',
-      link: `new-repo/${assignment.isGroup ? 'groups' : 'students'}`,
-    },
-    courseContext.userHasPermission(Permission.ViewGroups) &&
-      assignment.isGroup && {
-        icon: GroupIcon,
-        text: 'Ver grupos',
-        link: `groups`,
-      },
-  ].filter(Boolean) as NavigationActionData[];
+      link: `${buildAssignmentRoute(courseContext.courseId, assignment.id)}/new-repo/${
+        assignment.isGroup ? 'groups' : 'students'
+      }`,
+    });
+  }
+
+  if (courseContext.userHasPermission(Permission.ViewGroups) && assignment.isGroup) {
+    actions.push({
+      icon: GroupIcon,
+      text: 'Ver grupos',
+      link: buildAssignmentGroups(courseContext.courseId, assignment.id),
+    });
+  }
 
   return (
     <Stack gap={'10px'} direction="row">

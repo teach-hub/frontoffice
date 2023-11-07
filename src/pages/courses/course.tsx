@@ -283,14 +283,14 @@ const CourseCharts = ({ course }: { course: CourseType }) => {
       gap={'20px'}
       justifyContent={'space-between'}
     >
-      <Box width={CHART_WIDTH}>
+      <Box minH="500px" width={CHART_WIDTH}>
         <StackedBarChart
           labels={nonGroupChartLabels}
           data={nonGroupChartDataset}
           title={'Estado Entregas - Individuales'}
         />
       </Box>
-      <Box width={CHART_WIDTH}>
+      <Box minH="500px" width={CHART_WIDTH}>
         <StackedBarChart
           labels={groupChartLabels}
           data={groupChartDataset}

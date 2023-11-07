@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLazyLoadQuery } from 'react-relay';
-import { partition } from 'lodash';
+import { partition, sortBy } from 'lodash';
 
 import { FetchedContext, Permission, useUserContext } from 'hooks/useUserCourseContext';
 import { useSubmissionContext } from 'hooks/useSubmissionsContext';
@@ -55,55 +55,44 @@ type SubmissionType = NonNullable<
   >['submissions'][number]
 >;
 
+type NonExistentSubmissionType = NonNullable<
+  NonNullable<
+    NonNullable<
+      NonNullable<AssignmentSubmissionsQuery$data['viewer']>['course']
+    >['assignmentsWithSubmissions'][number]
+  >['nonExistentSubmissions'][number]
+>;
+
 type SubmitterType = NonNullable<SubmissionType['submitter']>;
 type ReviewerType = NonNullable<SubmissionType['reviewer']>;
 type ReviewType = NonNullable<SubmissionType['review']>;
 
-const getSubmitterAsUser = (
-  submitter: SubmitterType
-): Extract<SubmitterType, { __typename: 'UserType' }> | null => {
-  if (submitter.__typename === 'UserType') {
-    return submitter;
-  }
-  return null;
-};
-
-const getSubmitterAsGroup = (
-  submitter: SubmitterType
-): Extract<SubmitterType, { __typename: 'InternalGroupType' }> | null => {
-  if (submitter.__typename === 'InternalGroupType') {
-    return submitter;
-  }
-  return null;
-};
-
 const getSubmitterRowData = (
   submitter: SubmitterType
 ): SubmitterRowData | GroupSubmitterRowData => {
-  const submitterAsUser = getSubmitterAsUser(submitter);
-  if (submitterAsUser) {
-    return {
-      id: submitterAsUser.id,
-      name: `${submitterAsUser.lastName}, ${submitterAsUser.name}`,
-      isGroup: false,
-      notificationEmail: submitterAsUser.notificationEmail,
-    };
+  switch (submitter.__typename) {
+    case 'UserType':
+      return {
+        id: submitter.id,
+        name: `${submitter.lastName}, ${submitter.name}`,
+        isGroup: false,
+        notificationEmail: submitter.notificationEmail,
+      };
+    case 'InternalGroupType':
+      return {
+        id: submitter.id,
+        name: submitter.groupName,
+        isGroup: true,
+        participants: submitter.members.map(user => ({
+          id: user.id,
+          name: `${user.lastName}, ${user.name}`,
+          notificationEmail: user.notificationEmail,
+        })),
+        notificationEmail: undefined, // Group has no email
+      };
+    default:
+      throw new Error('Submitter is neither a user nor a group');
   }
-  const submitterAsGroup = getSubmitterAsGroup(submitter);
-  if (submitterAsGroup) {
-    return {
-      id: submitterAsGroup.id,
-      name: submitterAsGroup.groupName,
-      isGroup: true,
-      participants: submitterAsGroup.members.map(user => ({
-        id: user.id,
-        name: `${user.lastName}, ${user.name}`,
-        notificationEmail: user.notificationEmail,
-      })),
-      notificationEmail: undefined, // Group has no email
-    };
-  }
-  throw new Error('Submitter is neither a user nor a group');
 };
 
 const getReviewerRowData = (reviewer: ReviewerType): Optional<ReviewerRowData> => {
@@ -154,16 +143,6 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
   const [selectedReviewerId, setSelectedReviewerId] =
     useState<Optional<Nullable<string>>>(null);
 
-  const handleOpenNotificationModal = (rowData: RowData) => {
-    setRowToNotify(rowData);
-    onOpenNotificationModal();
-  };
-
-  const handleCloseNotificationModal = () => {
-    setRowToNotify(null);
-    onCloseNotificationModal();
-  };
-
   const { setSubmissionIds } = useSubmissionContext();
 
   const data = useLazyLoadQuery<AssignmentSubmissionsQuery>(SubmissionsQuery, {
@@ -191,104 +170,92 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     const assignmentSubmissionsData =
       data.viewer?.course?.assignmentsWithSubmissions || [];
 
-    // Vemos si somos profesor o no.
-    // Si lo somos usamos la data de los alumnos y si no miramos solo las del viewer.
-    const submissions = assignmentSubmissionsData.flatMap(assignment => {
-      const assignmentSubmissions = courseContext.userIsTeacher
-        ? assignment?.submissions
-        : assignment?.viewerSubmission && [assignment?.viewerSubmission];
+    // Creamos `submissions` con las entregas hechas.
+    const submissions = assignmentSubmissionsData.flatMap(
+      (
+        assignment
+      ): (SubmissionType | (NonExistentSubmissionType & { assignmentId: string }))[] => {
+        // Vemos si somos profesor o no.
+        // Si lo somos usamos la data de los alumnos y si no miramos solo las del viewer.
+        const nonExistentSubmissions = courseContext.userIsTeacher
+          ? assignment?.nonExistentSubmissions
+          : assignment?.nonExistentViewerSubmission && [
+              assignment?.nonExistentViewerSubmission,
+            ];
 
-      return (assignmentSubmissions || []).filter(submission => {
-        return isRowEnabledByFilters({
-          submitter: submission.submitter,
-          reviewerId: submission.reviewer?.reviewer?.id,
-          review: submission.review,
-          submission,
-        });
-      });
-    });
+        const nonExistentFiltered = (nonExistentSubmissions || []).filter(submission =>
+          isRowEnabledByFilters({
+            submitter: submission.submitter,
+            reviewerId: submission.reviewer?.reviewer.id,
+            review: null,
+            submission: null,
+          })
+        );
+
+        // Vemos si somos profesor o no.
+        // Si lo somos usamos la data de los alumnos y si no miramos solo las del viewer.
+        const assignmentSubmissions = courseContext.userIsTeacher
+          ? assignment?.submissions
+          : assignment?.viewerSubmission && [assignment?.viewerSubmission];
+
+        const existentFiltered = (assignmentSubmissions || []).filter(submission =>
+          isRowEnabledByFilters({
+            submitter: submission.submitter,
+            reviewerId: submission.reviewer?.reviewer?.id,
+            review: submission.review,
+            submission,
+          })
+        );
+
+        return nonExistentFiltered
+          .map(s => ({ ...s, assignmentId: assignment.id }))
+          .concat(existentFiltered);
+      }
+    );
 
     const submissionsData = submissions.map((submission): RowData => {
-      const review = submission?.review;
-      const grade = review?.grade;
-      const revisionRequested = review?.revisionRequested;
       const relatedAssignment = allAssignments.find(
-        a => a.id === submission.assignmentId
+        ({ id }) => id === submission.assignmentId
       );
+      const submitter = getSubmitterRowData(submission.submitter);
+      const assignmentId = submission.assignmentId;
+      const assignmentTitle = relatedAssignment?.title;
+      const reviewer = !submission.reviewer
+        ? undefined
+        : getReviewerRowData(submission.reviewer);
 
       return {
-        submitter: getSubmitterRowData(submission.submitter),
-        assignmentId: submission.assignmentId,
-        assignmentTitle: relatedAssignment?.title,
-        reviewer: submission.reviewer
-          ? getReviewerRowData(submission.reviewer)
-          : undefined,
-        submission: submission.id
-          ? {
-              grade,
-              revisionRequested,
+        submitter,
+        assignmentId,
+        assignmentTitle,
+        reviewer,
+        submission: !('submittedAt' in submission)
+          ? undefined
+          : {
               id: submission.id,
+              grade: submission.review?.grade,
+              revisionRequested: submission.review?.revisionRequested,
               pullRequestUrl: submission.pullRequestUrl,
               submittedAt: submission.submittedAt,
               submittedAgainAt: submission.submittedAgainAt,
-              reviewedAt: review?.reviewedAt,
-              reviewedAgainAt: review?.reviewedAgainAt,
-            }
-          : undefined,
+              reviewedAt: submission.review?.reviewedAt,
+              reviewedAgainAt: submission.review?.reviewedAgainAt,
+            },
       };
     });
 
-    // Vemos si somos profesor o no.
-    // Si lo somos usamos la data de los alumnos y si no miramos solo las del viewer.
-    assignmentSubmissionsData.forEach(assignment => {
-      const assignmentSubmissions = courseContext.userIsTeacher
-        ? assignment?.nonExistentSubmissions
-        : assignment?.nonExistentViewerSubmission && [
-            assignment?.nonExistentViewerSubmission,
-          ];
-
-      (assignmentSubmissions || []).forEach(({ reviewer, submitter }) => {
-        const reviewerUser = reviewer?.reviewer;
-
-        const isRowEnabled = isRowEnabledByFilters({
-          submitter,
-          reviewerId: reviewerUser?.id,
-          review: null,
-          submission: null,
-        });
-
-        if (isRowEnabled) {
-          submissionsData.push({
-            submitter: getSubmitterRowData(submitter),
-            assignmentTitle: assignment.title,
-            assignmentId: assignment.id,
-            reviewer: reviewer ? getReviewerRowData(reviewer) : undefined,
-          });
-        }
-      });
-    });
-
     /* Separate group from non group rows */
-    const groupRowDataList: RowData[] = [];
-    const nonGroupRowDataList: RowData[] = [];
-
-    submissionsData
-      .sort((a, b) => {
-        return a.submitter.name?.localeCompare(b.submitter.name || '') || 0;
-      }) // Sort rows by submitter name
-      .forEach(rowData => {
-        if (rowData.submitter.isGroup) {
-          groupRowDataList.push(rowData);
-        } else {
-          nonGroupRowDataList.push(rowData);
-        }
-      });
+    const [groupRowDataList, nonGroupRowDataList]: [RowData[], RowData[]] = partition(
+      sortBy(submissionsData, x => x.submitter.name),
+      rowData => rowData.submitter.isGroup
+    );
 
     setGroupRowDataList(groupRowDataList);
     setNonGroupRowDataList(nonGroupRowDataList);
 
     const emptyNonGroupRowDataList = nonGroupRowDataList.length === 0;
     const emptyGroupRowDataList = groupRowDataList.length === 0;
+
     const newTabIndex =
       emptyGroupRowDataList && emptyNonGroupRowDataList
         ? selectedTabIndex
@@ -330,24 +297,26 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
     submission,
     review,
   }: TargetRow) => {
-    let isValidStudent = true;
     let hasValidStatus = true;
 
     const hasValidReviewer = selectedReviewerId
       ? reviewerId === selectedReviewerId
       : true;
 
+    let isValidStudent = true;
+
     if (selectedStudentUserId) {
-      const submitterAsUser = getSubmitterAsUser(submitter);
-      if (submitterAsUser) {
-        isValidStudent = submitterAsUser.id === selectedStudentUserId;
-      } else {
-        const submitterAsGroup = getSubmitterAsGroup(submitter);
-        if (submitterAsGroup) {
-          isValidStudent = submitterAsGroup.members.some(
+      switch (submitter.__typename) {
+        case 'UserType':
+          isValidStudent = submitter.id === selectedStudentUserId;
+          break;
+        case 'InternalGroupType':
+          isValidStudent = submitter.members.some(
             user => user.id === selectedStudentUserId
           );
-        }
+          break;
+        default:
+          break;
       }
     }
 
@@ -370,6 +339,16 @@ const SubmissionsPage = ({ courseContext }: { courseContext: FetchedContext }) =
           title: 'No existe entrega asociada',
           description: 'Para acceder al detalle primero se debe realizar la entrega',
         });
+  };
+
+  const handleOpenNotificationModal = (rowData: RowData) => {
+    setRowToNotify(rowData);
+    onOpenNotificationModal();
+  };
+
+  const handleCloseNotificationModal = () => {
+    setRowToNotify(null);
+    onCloseNotificationModal();
   };
 
   return (

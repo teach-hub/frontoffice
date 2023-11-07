@@ -63,13 +63,13 @@ export type SubmissionRowData = {
   reviewedAgainAt: Optional<Nullable<string>>;
 };
 
-export interface RowData {
-  submitter: SubmitterRowData;
+export type RowData = {
+  submitter: SubmitterRowData | GroupSubmitterRowData;
   reviewer?: ReviewerRowData;
   assignmentId: string;
   assignmentTitle: Optional<Nullable<string>>;
   submission?: SubmissionRowData;
-}
+};
 
 export const SubmissionsTable = ({
   rowDataList,
