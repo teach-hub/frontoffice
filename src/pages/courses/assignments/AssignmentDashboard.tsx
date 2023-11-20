@@ -222,20 +222,6 @@ function AssignmentPersistActions() {
     );
   }
 
-  if (courseContext.userHasPermission(Permission.DeleteAssignment)) {
-    actions.push(
-      <Button
-        // TODO: TH-93 Delete assignments (with a confirmation pop up)
-        onClick={() => null}
-        leftIcon={<TrashIcon />}
-        color={theme.colors.teachHub.red}
-        key={'delete'}
-      >
-        Eliminar
-      </Button>
-    );
-  }
-
   return (
     <Flex gap="5px" direction={'row'}>
       {actions}

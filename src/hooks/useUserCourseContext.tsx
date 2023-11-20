@@ -16,7 +16,6 @@ export enum Permission {
   ManageOwnGroups = 'manageOwnGroups',
   SubmitAssignment = 'submitAssignment',
   EditAssignment = 'editAssignment',
-  DeleteAssignment = 'deleteAssignment',
   SetOrganization = 'setOrganization',
   SetDescription = 'setDescription',
   ViewAllSubmissions = 'viewAllSubmissions',
