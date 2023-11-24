@@ -3,15 +3,7 @@ import { useLazyLoadQuery } from 'react-relay';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Flex, Grid, GridItem, Stack } from '@chakra-ui/react';
-import {
-  AlertIcon,
-  PencilIcon,
-  PeopleIcon,
-  PersonIcon,
-  TrashIcon,
-} from '@primer/octicons-react';
-
-import { theme } from 'theme';
+import { AlertIcon, PencilIcon, PeopleIcon, PersonIcon } from '@primer/octicons-react';
 
 import { Permission, useUserContext } from 'hooks/useUserCourseContext';
 
@@ -50,11 +42,10 @@ import { StackedBarChart } from 'components/charts/StackedBarChart';
 import Box from 'components/Box';
 import { Pie } from 'components/charts/Pie';
 import {
-  buildMyGroupsRoute,
-  buildAssignmentRoute,
   buildAssignmentGroups,
-  buildSubmissionsRoute,
+  buildAssignmentRoute,
   buildSubmissionRoute,
+  buildSubmissionsRoute,
 } from 'routes';
 
 type Course = NonNullable<NonNullable<AssignmentQuery$data['viewer']>['course']>;
@@ -183,7 +174,7 @@ const AssignmentNavigationActions = ({ assignment }: { assignment: Assignment })
     });
   }
 
-  if (courseContext.userHasPermission(Permission.ViewGroups) && assignment.isGroup) {
+  if (courseContext.userHasPermission(Permission.ManageGroups) && assignment.isGroup) {
     actions.push({
       icon: GroupIcon,
       text: 'Ver grupos',
@@ -218,20 +209,6 @@ function AssignmentPersistActions() {
     actions.push(
       <Button leftIcon={<PencilIcon />} onClick={() => navigate(`edit`)} key={'edit'}>
         Editar
-      </Button>
-    );
-  }
-
-  if (courseContext.userHasPermission(Permission.DeleteAssignment)) {
-    actions.push(
-      <Button
-        // TODO: TH-93 Delete assignments (with a confirmation pop up)
-        onClick={() => null}
-        leftIcon={<TrashIcon />}
-        color={theme.colors.teachHub.red}
-        key={'delete'}
-      >
-        Eliminar
       </Button>
     );
   }

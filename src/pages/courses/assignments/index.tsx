@@ -112,7 +112,7 @@ const AssignmentsPage = () => {
                 `${data.title}`,
                 data.endDate ? formatAsSimpleDateTime(data.endDate) : '-',
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'center'}>
-                  {courseContext.userHasPermission(Permission.ViewGroups) &&
+                  {courseContext.userHasPermission(Permission.ManageGroups) &&
                     data.isGroup && (
                       <Tooltip label={'Ver grupos'}>
                         <RRLink
