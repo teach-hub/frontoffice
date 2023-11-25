@@ -378,7 +378,7 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
   const initialRepositoryNameConfiguration: RepositoriesNameConfiguration = {
     prefix: '',
     useLastName: true,
-    useGroupName: true,
+    useGroupName: type !== RepositoryType.Students,
     useFile: true,
   };
   const [repositoryNameConfiguration, setRepositoryNameConfiguration] =
@@ -488,7 +488,20 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
     return (
       !courseOrganization ||
       errorInRepositoryName ||
-      tableData.map(row => row.checked).every(checked => !checked)
+      tableData.map(row => row.checked).every(checked => !checked) ||
+      !validRepositoryNameOption()
+    );
+  };
+
+  /**
+   * To avoid repeating repositories names, at least one option
+   * must be selected
+   * */
+  const validRepositoryNameOption = () => {
+    return (
+      repositoryNameConfiguration.useGroupName ||
+      repositoryNameConfiguration.useLastName ||
+      repositoryNameConfiguration.useFile
     );
   };
 
@@ -645,7 +658,11 @@ const CreateRepositoryPage = ({ type }: { type: RepositoryType }) => {
               type={'text'}
             />
           </FormControl>
-          <FormControl label={'Datos a incluir'}>
+          <FormControl
+            label={'Datos a incluir'}
+            isInvalid={!validRepositoryNameOption()}
+            errorMessage={'Seleccionar al menos una opción'}
+          >
             <CheckboxGroup>
               <Stack spacing={[1, 5]} direction={['column', 'row']}>
                 {type === RepositoryType.Groups && (

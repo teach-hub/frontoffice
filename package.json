@@ -30,7 +30,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "relay": "relay-compiler",
-    "prepare": "husky install",
+    "husky": "husky install",
     "lint": "eslint ."
   },
   "browserslist": {
