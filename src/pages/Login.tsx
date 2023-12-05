@@ -11,7 +11,7 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useMutation } from 'react-relay';
 
@@ -57,8 +57,14 @@ type LoginPageProps = {
   redirectTo?: string;
 };
 
-const CLIENT_ID = process.env.REACT_APP_GITHUB_CLIENT_ID || 'fake-id';
-const SCOPE = process.env.REACT_APP_GITHUB_SCOPE || 'repo';
+const CLIENT_ID =
+  process.env.REACT_APP_GITHUB_CLIENT_ID ||
+  window.__RUNTIME_CONFIG__.REACT_APP_GITHUB_CLIENT_ID ||
+  'fake-id';
+const SCOPE =
+  process.env.REACT_APP_GITHUB_SCOPE ||
+  window.__RUNTIME_CONFIG__.REACT_APP_GITHUB_CLIENT_SCOPE ||
+  'repo';
 
 const buildGithubAuthURL = () =>
   `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=${SCOPE}`;

@@ -22,11 +22,12 @@
     "react-router-dom": "^6.4.2",
     "react-scripts": "5.0.1",
     "relay-runtime": "^14.1.0",
+    "runtime-env-cra": "^0.2.4",
     "serve": "^14.2.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "BROWSER=none react-scripts start",
+    "start": "BROWSER=none NODE_ENV=development runtime-env-cra --config-name=./public/runtime-env.js && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

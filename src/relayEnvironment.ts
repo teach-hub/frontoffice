@@ -2,7 +2,10 @@ import { Environment, Network, RecordSource, Store } from 'relay-runtime';
 
 import { storeRemoveValue, storeGetValue } from 'hooks/useLocalStorage';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:4000';
+const BACKEND_URL =
+  process.env.REACT_APP_BACKEND_URL ||
+  window.__RUNTIME_CONFIG__.REACT_APP_BACKEND_URL ||
+  'http://localhost:4000';
 
 const isUnauthorizedResponse = (response: { errors: { message: string }[] }): boolean => {
   if ('errors' in response) {
